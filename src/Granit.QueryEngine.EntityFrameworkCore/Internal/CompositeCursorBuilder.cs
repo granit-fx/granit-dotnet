@@ -247,9 +247,47 @@ internal static class CompositeCursorBuilder
         Expression member = BuildMemberAccess(parameter, targetField.Path);
         ConstantExpression constant = Expression.Constant(converted, targetField.Property.PropertyType);
 
-        // Descending sort → cursor moves backward (less than), ascending → forward (greater than)
-        return targetField.Descending
+        // Descending sort → cursor moves backward (less than), ascending → forward (greater than).
+        return BuildOrderComparison(member, constant, targetField.Descending);
+    }
+
+    // Builds the keyset "member {<,>} value" comparison. Numeric / temporal / enum columns expose the
+    // relational operators directly. string, Guid and other operator-less IComparable scalars (e.g. the
+    // default Guid `Id` tiebreaker, or any string sort field) have no `>`/`<` operator — building one
+    // throws at expression-construction time — so they compare through `CompareTo`, which EF Core maps
+    // to a relational SQL comparison.
+    private static BinaryExpression BuildOrderComparison(Expression member, Expression constant, bool descending)
+    {
+        Type type = Nullable.GetUnderlyingType(member.Type) ?? member.Type;
+
+        if (!HasRelationalOperator(type))
+        {
+            MethodInfo? compareTo = member.Type.GetMethod(nameof(IComparable.CompareTo), [member.Type]);
+            if (compareTo is not null)
+            {
+                MethodCallExpression comparison = Expression.Call(member, compareTo, constant);
+                ConstantExpression zero = Expression.Constant(0);
+                return descending
+                    ? Expression.LessThan(comparison, zero)
+                    : Expression.GreaterThan(comparison, zero);
+            }
+        }
+
+        return descending
             ? Expression.LessThan(member, constant)
             : Expression.GreaterThan(member, constant);
     }
+
+    // Whether the type carries the built-in relational operators (so Expression.GreaterThan/LessThan is
+    // valid). Excludes bool (no ordering) and reference/struct types like string and Guid that order
+    // only through CompareTo.
+    private static bool HasRelationalOperator(Type type) =>
+        (type.IsPrimitive && type != typeof(bool))
+        || type.IsEnum
+        || type == typeof(decimal)
+        || type == typeof(DateTime)
+        || type == typeof(DateTimeOffset)
+        || type == typeof(DateOnly)
+        || type == typeof(TimeOnly)
+        || type == typeof(TimeSpan);
 }

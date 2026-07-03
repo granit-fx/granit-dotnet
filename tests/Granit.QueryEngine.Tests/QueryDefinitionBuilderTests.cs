@@ -150,15 +150,27 @@ public sealed class QueryDefinitionBuilderTests
     }
 
     [Fact]
-    public void Column_on_a_nested_member_records_the_dotted_path()
+    public void Column_on_a_nested_complex_member_records_the_dotted_path()
     {
         QueryDefinitionBuilder<TestEntity> builder = new();
 
-        // Nested member access is accepted and recorded as a dotted path (EF complex-type members);
+        // A member of a (user-defined) complex type is accepted and recorded as a dotted path;
         // whether it resolves to a mapped column is enforced at query time, not here.
-        builder.Column(e => e.Name.Length);
+        builder.Column(e => e.Address.City);
 
-        builder.Columns.Single().PropertyName.ShouldBe("Name.Length");
+        builder.Columns.Single().PropertyName.ShouldBe("Address.City");
+    }
+
+    [Fact]
+    public void Column_drilling_into_a_scalar_sub_member_throws()
+    {
+        QueryDefinitionBuilder<TestEntity> builder = new();
+
+        // string.Length is a CLR sub-member of a scalar column, not an EF complex-type member — the
+        // path cannot reach a mapped column, so it is rejected at build time (fail-fast) rather than
+        // surfacing as an opaque EF translation error at query time.
+        ArgumentException ex = Should.Throw<ArgumentException>(() => builder.Column(e => e.Name.Length));
+        ex.Message.ShouldContain("Name");
     }
 
     [Fact]
@@ -252,4 +264,11 @@ public sealed class TestEntity
     public int Age { get; set; }
     public DateTimeOffset? BirthDate { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
+    public TestAddress Address { get; set; } = new();
+}
+
+// A user-defined complex type used to exercise nested column paths (a => a.Address.City).
+public sealed class TestAddress
+{
+    public string City { get; set; } = string.Empty;
 }

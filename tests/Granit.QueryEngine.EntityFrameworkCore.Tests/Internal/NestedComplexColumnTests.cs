@@ -1,4 +1,6 @@
 using System.Linq.Expressions;
+using System.Reflection;
+using Granit.Domain;
 using Granit.QueryEngine.EntityFrameworkCore.Internal;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -154,6 +156,47 @@ public sealed class NestedComplexColumnTests : IDisposable
         compiled(new PartyAddress { Id = Guid.NewGuid(), Value = new Address { Street1 = "x", City = "x", Number = 10, Region = new GeoRegion { Continent = "EU" } } }).ShouldBeFalse();
     }
 
+    [Fact]
+    public async Task Cursor_pagination_by_a_nested_member_walks_pages_without_gap_or_overlap()
+    {
+        // Full two-page keyset roundtrip through the engine (not just the predicate in isolation):
+        // page 1 with an empty cursor, then page 2 fed the returned NextCursor. If the nested sort
+        // field did not participate in the keyset, the second page would skip or repeat a boundary row.
+        await using AddressCtx ctx = new(_options);
+        QueryEngine<PartyAddress> engine = NewEngine();
+
+        PagedResult<PartyAddress> page1 = await engine.ExecuteAsync(
+            ctx.Addresses,
+            new QueryRequest { Sort = "Value.Street1", PageSize = 2, Cursor = "" },
+            TestContext.Current.CancellationToken);
+
+        page1.Items.Select(a => a.Value.Street1).ShouldBe(["10 Rue A", "20 Rue B"]);
+        page1.NextCursor.ShouldNotBeNull();
+
+        PagedResult<PartyAddress> page2 = await engine.ExecuteAsync(
+            ctx.Addresses,
+            new QueryRequest { Sort = "Value.Street1", PageSize = 2, Cursor = page1.NextCursor },
+            TestContext.Current.CancellationToken);
+
+        page2.Items.Select(a => a.Value.Street1).ShouldBe(["30 Rue C", "40 Ave D"]);
+
+        // Both pages together cover every row exactly once — no gap, no overlap at the page boundary.
+        page1.Items.Concat(page2.Items).Select(a => a.Id).Distinct().Count().ShouldBe(4);
+    }
+
+    [Fact]
+    public void MemberPathResolver_drills_a_nested_queryable_value_object_leaf_to_its_value_scalar()
+    {
+        // A [QueryableValueObject] leaf reached through a complex-type hop must still resolve to its
+        // `.Value` scalar column (ADR-070) — the VO drill is not special-cased to top-level members.
+        ParameterExpression parameter = Expression.Parameter(typeof(Party), "e");
+        (Expression? member, PropertyInfo? leaf) = MemberPathResolver.Resolve(parameter, "Home.Code");
+
+        member.ShouldNotBeNull();
+        member!.ToString().ShouldBe("e.Home.Code.Value");
+        leaf!.Name.ShouldBe("Code");
+    }
+
     private static QueryEngine<PartyAddress> NewEngine() => new(
         new AddressQueryDefinition(),
         NullLogger<QueryEngine<PartyAddress>>.Instance,
@@ -169,7 +212,8 @@ public sealed class NestedComplexColumnTests : IDisposable
             builder
                 .Column(a => a.Value.Street1, c => c.Filterable().Sortable())
                 .Column(a => a.Value.City, c => c.Filterable().Sortable())
-                .Column(a => a.Value.Region.Continent, c => c.Filterable().Sortable());
+                .Column(a => a.Value.Region.Continent, c => c.Filterable().Sortable())
+                .SupportsCursorPagination(a => a.Id);
     }
 
     private sealed class Address
@@ -190,6 +234,25 @@ public sealed class NestedComplexColumnTests : IDisposable
     {
         public Guid Id { get; set; }
         public required Address Value { get; init; }
+    }
+
+    // Types used only by the nested [QueryableValueObject] resolver test (no EF mapping needed —
+    // the assertion is on the resolved expression shape, not a SQL roundtrip).
+    private sealed class PostalCode : SingleValueObject<string>
+    {
+        public override required string Value { get; init; }
+    }
+
+    private sealed class HomeInfo
+    {
+        [QueryableValueObject]
+        public required PostalCode Code { get; init; }
+    }
+
+    private sealed class Party
+    {
+        public Guid Id { get; set; }
+        public required HomeInfo Home { get; init; }
     }
 
     private sealed class AddressCtx(DbContextOptions<AddressCtx> options) : DbContext(options)

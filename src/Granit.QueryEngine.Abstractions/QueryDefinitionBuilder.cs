@@ -548,8 +548,11 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     // Extracts a (possibly dotted) member path for a column or group-by key. Unlike the single-level
     // GetPropertyName, this accepts a chain of member accesses over an EF complex-type member
     // (a => a.Value.Street1) and returns the dotted path "Value.Street1" plus whether the access is
-    // nested. It still rejects drilling into a SingleValueObject's `.Value` (#2767): that inner value
-    // is a whole-value ValueConverter column, not an independently queryable scalar column.
+    // nested. Two build-time guards keep a dotted path to a genuinely mapped column: it rejects
+    // drilling into a SingleValueObject's `.Value` (#2767, a whole-value ValueConverter column), and
+    // it rejects drilling into a scalar's CLR sub-member (e.g. string.Length) — only a member of an
+    // EF complex type is a nested column, and failing fast here beats an opaque EF translation error
+    // at query time.
     private static (string Path, bool IsNested) GetMemberPath<TProp>(Expression<Func<TEntity, TProp>> expression)
     {
         Expression body = expression.Body is UnaryExpression { NodeType: ExpressionType.Convert } convert
@@ -568,6 +571,21 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
                     $"value-object column, mark it [QueryableValueObject] and select the object itself " +
                     $"(x => x.Slug); to reach a nested field, select a member of an EF complex type. " +
                     $"See issue #2767.",
+                    nameof(expression));
+            }
+
+            // An intermediate hop must be an EF complex type (always a user-defined class/struct). A
+            // scalar's CLR sub-member (string.Length, DateTime.Year, …) is not a mapped column, so a
+            // path drilling into one is rejected here rather than silently accepted then failing to
+            // translate at query time.
+            if (member.Expression is MemberExpression container && IsScalarType(container.Type))
+            {
+                throw new ArgumentException(
+                    $"Expression '{expression.Body}' drills into a CLR member of the scalar column " +
+                    $"'{container.Member.Name}' ({container.Type.Name}); only a member of an EF Core " +
+                    $"complex type is a queryable nested column (a scalar's sub-members such as " +
+                    $"string.Length are not mapped columns). Select a top-level column or an EF " +
+                    $"complex-type member.",
                     nameof(expression));
             }
 
@@ -598,6 +616,27 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
         }
 
         return false;
+    }
+
+    // A scalar (primitive / string / enum / date-time / Guid / …) can never be an EF Core complex-type
+    // hop, so drilling into one of its CLR sub-members does not reach a mapped column. Complex types
+    // are always user-defined classes/structs, so anything outside this closed set is treated as a
+    // candidate complex type and accepted (its mapping is enforced at query time).
+    private static bool IsScalarType(Type type)
+    {
+        Type t = Nullable.GetUnderlyingType(type) ?? type;
+        return t.IsPrimitive
+            || t.IsEnum
+            || t == typeof(string)
+            || t == typeof(decimal)
+            || t == typeof(DateTime)
+            || t == typeof(DateTimeOffset)
+            || t == typeof(DateOnly)
+            || t == typeof(TimeOnly)
+            || t == typeof(TimeSpan)
+            || t == typeof(Guid)
+            || t == typeof(Uri)
+            || t == typeof(byte[]);
     }
 
     // A value-object selector is allowed in global search / group-by when the property opts into the

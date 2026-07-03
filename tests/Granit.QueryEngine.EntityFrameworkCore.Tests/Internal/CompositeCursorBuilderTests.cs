@@ -147,10 +147,55 @@ public sealed class CompositeCursorBuilderTests
     }
 
     [Fact]
+    public void BuildCursorPredicate_builds_string_comparison_for_a_string_sort_field()
+    {
+        // Regression: a string column has no `>` operator, so the keyset must compare through
+        // CompareTo. Expression.GreaterThan(string, string) throws "not defined for the types
+        // 'System.String'" — the reason cursor pagination with a string sort field was broken.
+        List<CompositeCursorBuilder.SortField> fields =
+            CompositeCursorBuilder.ParseSortFields<TestProduct>("Name");
+
+        var cursorValues = new Dictionary<string, string> { ["Name"] = "Laptop" };
+
+        Expression<Func<TestProduct, bool>>? predicate =
+            CompositeCursorBuilder.BuildCursorPredicate<TestProduct>(fields, cursorValues);
+
+        predicate.ShouldNotBeNull();
+
+        Func<TestProduct, bool> compiled = predicate.Compile();
+        compiled(new TestProduct { Name = "Monitor" }).ShouldBeTrue();  // "Monitor" > "Laptop"
+        compiled(new TestProduct { Name = "Laptop" }).ShouldBeFalse();
+        compiled(new TestProduct { Name = "Bag" }).ShouldBeFalse();     // "Bag" < "Laptop"
+    }
+
+    [Fact]
+    public void BuildCursorPredicate_builds_comparison_for_a_guid_tiebreaker()
+    {
+        // Regression: Guid also lacks a `>` operator. Since the default cursor tiebreaker is `Id`
+        // (a Guid) and every explicit-sort cursor page appends it, this path would have thrown for
+        // the common case. CompareTo makes the keyset build for Guid and match its ordering.
+        List<CompositeCursorBuilder.SortField> fields =
+            CompositeCursorBuilder.ParseSortFields<TestProduct>("Id");
+
+        var pivot = Guid.NewGuid();
+        var other = Guid.NewGuid();
+        var cursorValues = new Dictionary<string, string> { ["Id"] = pivot.ToString() };
+
+        Expression<Func<TestProduct, bool>>? predicate =
+            CompositeCursorBuilder.BuildCursorPredicate<TestProduct>(fields, cursorValues);
+
+        predicate.ShouldNotBeNull();
+
+        Func<TestProduct, bool> compiled = predicate.Compile();
+        compiled(new TestProduct { Id = pivot }).ShouldBeFalse();
+        compiled(new TestProduct { Id = other }).ShouldBe(other.CompareTo(pivot) > 0);
+    }
+
+    [Fact]
     public void BuildCursorPredicate_builds_compound_expression_for_multiple_fields()
     {
-        // Sort: -Price, Amount (descending price, then ascending amount)
-        // Uses two numeric fields to avoid GreaterThan not defined for String
+        // Sort: -Price, Amount (descending price, then ascending amount). Two numeric fields keep the
+        // arithmetic assertions simple; string/Guid keyset comparison is covered by the tests above.
         List<CompositeCursorBuilder.SortField> fields =
             CompositeCursorBuilder.ParseSortFields<TestProduct>("-Price,Amount");
 
