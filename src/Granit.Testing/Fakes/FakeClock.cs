@@ -41,6 +41,13 @@ public sealed class FakeClock : IClock
     /// <inheritdoc/>
     public DateTimeOffset ConvertToUtc(DateTimeOffset dateTime) => dateTime.ToUniversalTime();
 
+    /// <inheritdoc/>
+    public TimeZoneInfo ResolveUserTimeZone() => TimeZoneInfo.Utc;
+
+    /// <inheritdoc/>
+    public DateTimeOffset ToUtcFromUserLocal(DateTime wallClock) =>
+        new(DateTime.SpecifyKind(wallClock, DateTimeKind.Unspecified), TimeSpan.Zero);
+
     /// <summary>
     /// Advances the clock by the specified duration.
     /// </summary>

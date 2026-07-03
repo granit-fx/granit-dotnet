@@ -52436,6 +52436,18 @@
           "returnType": "DateTimeOffset"
         },
         {
+          "name": "ResolveUserTimeZone",
+          "kind": "method",
+          "signature": "ResolveUserTimeZone()",
+          "returnType": "TimeZoneInfo"
+        },
+        {
+          "name": "ToUtcFromUserLocal",
+          "kind": "method",
+          "signature": "ToUtcFromUserLocal(DateTime wallClock)",
+          "returnType": "DateTimeOffset"
+        },
+        {
           "name": "Advance",
           "kind": "method",
           "signature": "Advance(TimeSpan duration)",
@@ -54800,8 +54812,29 @@
           "kind": "method",
           "signature": "ConvertToUserTime(DateTimeOffset utcDateTime)",
           "returnType": "DateTimeOffset"
+        },
+        {
+          "name": "ConvertToUtc",
+          "kind": "method",
+          "signature": "ConvertToUtc(DateTimeOffset dateTime)",
+          "returnType": "DateTimeOffset"
+        },
+        {
+          "name": "ResolveUserTimeZone",
+          "kind": "method",
+          "signature": "ResolveUserTimeZone()",
+          "returnType": "TimeZoneInfo"
         }
       ]
+    },
+    {
+      "name": "CurrentFirstDayOfWeekProvider",
+      "fqn": "Granit.Timing.CurrentFirstDayOfWeekProvider",
+      "kind": "class",
+      "project": "Granit.Timing",
+      "file": "src/Granit.Timing/CurrentFirstDayOfWeekProvider.cs",
+      "line": 7,
+      "members": []
     },
     {
       "name": "CurrentTimezoneProvider",
@@ -54878,8 +54911,29 @@
           "kind": "method",
           "signature": "ConvertToUtc(DateTimeOffset dateTime)",
           "returnType": "DateTimeOffset"
+        },
+        {
+          "name": "ResolveUserTimeZone",
+          "kind": "method",
+          "signature": "ResolveUserTimeZone()",
+          "returnType": "TimeZoneInfo"
+        },
+        {
+          "name": "ToUtcFromUserLocal",
+          "kind": "method",
+          "signature": "ToUtcFromUserLocal(DateTime wallClock)",
+          "returnType": "DateTimeOffset"
         }
       ]
+    },
+    {
+      "name": "ICurrentFirstDayOfWeekProvider",
+      "fqn": "Granit.Timing.ICurrentFirstDayOfWeekProvider",
+      "kind": "interface",
+      "project": "Granit.Timing",
+      "file": "src/Granit.Timing/ICurrentFirstDayOfWeekProvider.cs",
+      "line": 11,
+      "members": []
     },
     {
       "name": "ICurrentTimezoneProvider",
@@ -54889,6 +54943,28 @@
       "file": "src/Granit.Timing/ICurrentTimezoneProvider.cs",
       "line": 6,
       "members": []
+    },
+    {
+      "name": "IPeriodResolver",
+      "fqn": "Granit.Timing.IPeriodResolver",
+      "kind": "interface",
+      "project": "Granit.Timing",
+      "file": "src/Granit.Timing/IPeriodResolver.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Resolve",
+          "kind": "method",
+          "signature": "Resolve(PeriodSpec spec)",
+          "returnType": "ResolvedPeriod"
+        },
+        {
+          "name": "ResolveComparison",
+          "kind": "method",
+          "signature": "ResolveComparison(PeriodSpec spec, ResolvedPeriod main)",
+          "returnType": "ResolvedPeriod"
+        }
+      ]
     },
     {
       "name": "ClockOptions",
@@ -54905,7 +54981,7 @@
       "kind": "record",
       "project": "Granit.Timing",
       "file": "src/Granit.Timing/PeriodSpec.cs",
-      "line": 21,
+      "line": 30,
       "members": [
         {
           "name": "FromToken",

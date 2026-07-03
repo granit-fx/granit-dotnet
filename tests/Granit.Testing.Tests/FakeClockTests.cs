@@ -88,6 +88,25 @@ public sealed class FakeClockTests
     }
 
     [Fact]
+    public void ResolveUserTimeZone_Returns_Utc()
+    {
+        FakeClock clock = new();
+
+        clock.ResolveUserTimeZone().ShouldBe(TimeZoneInfo.Utc);
+    }
+
+    [Fact]
+    public void ToUtcFromUserLocal_Treats_WallClock_As_Utc()
+    {
+        FakeClock clock = new();
+
+        DateTimeOffset result = clock.ToUtcFromUserLocal(new DateTime(2026, 6, 15, 14, 0, 0));
+
+        result.ShouldBe(new DateTimeOffset(2026, 6, 15, 14, 0, 0, TimeSpan.Zero));
+        result.Offset.ShouldBe(TimeSpan.Zero);
+    }
+
+    [Fact]
     public async Task AsyncLocal_Isolates_State_Across_Tasks()
     {
         FakeClock clock = new();

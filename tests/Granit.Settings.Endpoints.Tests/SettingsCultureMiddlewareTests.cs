@@ -17,6 +17,7 @@ public sealed class SettingsCultureMiddlewareTests
     private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
     private readonly ICurrentUserService _currentUserService = Substitute.For<ICurrentUserService>();
     private readonly ICurrentTimezoneProvider _timezoneProvider = Substitute.For<ICurrentTimezoneProvider>();
+    private readonly ICurrentFirstDayOfWeekProvider _firstDayOfWeekProvider = Substitute.For<ICurrentFirstDayOfWeekProvider>();
 
     [Fact]
     public async Task Authenticated_User_With_Locale_Sets_CurrentUICulture()
@@ -191,12 +192,51 @@ public sealed class SettingsCultureMiddlewareTests
         capturedCulture.Name.ShouldBe("es", "CurrentCulture (pas seulement CurrentUICulture) doit être défini");
     }
 
+    [Fact]
+    public async Task Authenticated_User_With_FirstDayOfWeek_Sets_Provider_CaseInsensitively()
+    {
+        _currentUserService.IsAuthenticated.Returns(true);
+        _currentUserService.UserId.Returns("user-1");
+        _settingProvider.GetOrNullAsync(WellKnownSettingNames.PreferredCulture, Arg.Any<CancellationToken>())
+            .Returns((string?)null);
+        _settingProvider.GetOrNullAsync(WellKnownSettingNames.PreferredTimezone, Arg.Any<CancellationToken>())
+            .Returns((string?)null);
+        _settingProvider.GetOrNullAsync(WellKnownSettingNames.PreferredFirstDayOfWeek, Arg.Any<CancellationToken>())
+            .Returns("monday");
+
+        SettingsCultureMiddleware middleware = new(_ => Task.CompletedTask);
+
+        await middleware.InvokeAsync(CreateHttpContext());
+
+        _firstDayOfWeekProvider.Received(1).FirstDayOfWeek = DayOfWeek.Monday;
+    }
+
+    [Fact]
+    public async Task Authenticated_User_With_Invalid_FirstDayOfWeek_Is_Ignored()
+    {
+        _currentUserService.IsAuthenticated.Returns(true);
+        _currentUserService.UserId.Returns("user-1");
+        _settingProvider.GetOrNullAsync(WellKnownSettingNames.PreferredCulture, Arg.Any<CancellationToken>())
+            .Returns((string?)null);
+        _settingProvider.GetOrNullAsync(WellKnownSettingNames.PreferredTimezone, Arg.Any<CancellationToken>())
+            .Returns((string?)null);
+        _settingProvider.GetOrNullAsync(WellKnownSettingNames.PreferredFirstDayOfWeek, Arg.Any<CancellationToken>())
+            .Returns("Funday");
+
+        SettingsCultureMiddleware middleware = new(_ => Task.CompletedTask);
+
+        await middleware.InvokeAsync(CreateHttpContext());
+
+        _firstDayOfWeekProvider.DidNotReceiveWithAnyArgs().FirstDayOfWeek = default;
+    }
+
     private DefaultHttpContext CreateHttpContext()
     {
         ServiceCollection services = new();
         services.AddSingleton(_settingProvider);
         services.AddSingleton(_currentUserService);
         services.AddSingleton(_timezoneProvider);
+        services.AddSingleton(_firstDayOfWeekProvider);
 
         DefaultHttpContext httpContext = new()
         {

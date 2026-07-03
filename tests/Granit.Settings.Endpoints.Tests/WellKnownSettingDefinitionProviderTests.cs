@@ -76,6 +76,48 @@ public sealed class WellKnownSettingDefinitionProviderTests
     }
 
     [Fact]
+    public void Defines_PreferredFirstDayOfWeek_Setting()
+    {
+        SettingDefinitionRegistry manager = BuildManager();
+
+        SettingDefinition? def = manager.GetOrNull(WellKnownSettingNames.PreferredFirstDayOfWeek);
+
+        def.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void PreferredFirstDayOfWeek_IsVisibleToClients()
+    {
+        SettingDefinitionRegistry manager = BuildManager();
+        SettingDefinition def = manager.Get(WellKnownSettingNames.PreferredFirstDayOfWeek);
+
+        def.IsVisibleToClients.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void PreferredFirstDayOfWeek_HasProviders_UTG()
+    {
+        SettingDefinitionRegistry manager = BuildManager();
+        SettingDefinition def = manager.Get(WellKnownSettingNames.PreferredFirstDayOfWeek);
+
+        def.Providers.ShouldContain("U");
+        def.Providers.ShouldContain("T");
+        def.Providers.ShouldContain("G");
+        def.Providers.Count.ShouldBe(3);
+    }
+
+    [Fact]
+    public void PreferredFirstDayOfWeek_AllowsExactlyTheSevenDayNames()
+    {
+        SettingDefinitionRegistry manager = BuildManager();
+        SettingDefinition def = manager.Get(WellKnownSettingNames.PreferredFirstDayOfWeek);
+
+        def.AllowedValues.ShouldBe(Enum.GetNames<DayOfWeek>(), ignoreOrder: false);
+        def.IsValidValue("Monday").ShouldBeTrue();
+        def.IsValidValue("Funday").ShouldBeFalse();
+    }
+
+    [Fact]
     public void PreferredCulture_HasDisplayName()
     {
         SettingDefinitionRegistry manager = BuildManager();

@@ -25,5 +25,14 @@ internal sealed class WellKnownSettingDefinitionProvider : ISettingDefinitionPro
             Description = "IANA timezone identifier for the user's preferred timezone (e.g. Europe/Brussels).",
             Providers = { "U", "T", "G" },
         });
+
+        context.Add(new SettingDefinition(WellKnownSettingNames.PreferredFirstDayOfWeek)
+        {
+            IsVisibleToClients = true,
+            DisplayName = "Preferred first day of week",
+            Description = "First day of the week used by week-relative period tokens (a DayOfWeek name, e.g. Monday).",
+            AllowedValues = Enum.GetNames<DayOfWeek>(),
+            Providers = { "U", "T", "G" },
+        });
     }
 }

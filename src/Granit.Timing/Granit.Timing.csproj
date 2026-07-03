@@ -15,4 +15,8 @@
     <ProjectReference Include="..\Granit\Granit.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Timing.Tests" />
+  </ItemGroup>
+
 </Project>

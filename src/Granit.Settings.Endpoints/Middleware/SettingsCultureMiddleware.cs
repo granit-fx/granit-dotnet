@@ -53,6 +53,22 @@ public sealed class SettingsCultureMiddleware(RequestDelegate next)
                     timezoneProvider.Timezone = timezone;
                 }
             }
+
+            string? firstDayOfWeek = await settingProvider
+                .GetOrNullAsync(WellKnownSettingNames.PreferredFirstDayOfWeek, context.RequestAborted)
+                .ConfigureAwait(false);
+
+            if (firstDayOfWeek is not null
+                && Enum.TryParse(firstDayOfWeek, ignoreCase: true, out DayOfWeek day))
+            {
+                ICurrentFirstDayOfWeekProvider? firstDayOfWeekProvider =
+                    context.RequestServices.GetService<ICurrentFirstDayOfWeekProvider>();
+
+                if (firstDayOfWeekProvider is not null)
+                {
+                    firstDayOfWeekProvider.FirstDayOfWeek = day;
+                }
+            }
         }
 
         await _next(context).ConfigureAwait(false);

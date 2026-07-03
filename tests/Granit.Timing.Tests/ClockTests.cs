@@ -240,4 +240,70 @@ public sealed class ClockTests
         userTime.Offset.ShouldBe(TimeSpan.Zero);
         userTime.ShouldBe(utcTime);
     }
+
+    [Fact]
+    public void ResolveUserTimeZone_WithKnownTimezone_ReturnsIt()
+    {
+        _timezoneProvider.Timezone.Returns("Europe/Brussels");
+
+        _clock.ResolveUserTimeZone().ShouldBe(TimeZoneInfo.FindSystemTimeZoneById("Europe/Brussels"));
+    }
+
+    [Fact]
+    public void ResolveUserTimeZone_WithoutTimezone_FallsBackToUtc()
+    {
+        _timezoneProvider.Timezone.Returns((string?)null);
+
+        _clock.ResolveUserTimeZone().ShouldBe(TimeZoneInfo.Utc);
+    }
+
+    [Fact]
+    public void ResolveUserTimeZone_WithInvalidTimezone_FallsBackToUtc()
+    {
+        _timezoneProvider.Timezone.Returns("Invalid/Timezone");
+
+        _clock.ResolveUserTimeZone().ShouldBe(TimeZoneInfo.Utc);
+    }
+
+    [Fact]
+    public void ToUtcFromUserLocal_WithoutTimezone_TreatsWallClockAsUtc()
+    {
+        _timezoneProvider.Timezone.Returns((string?)null);
+
+        DateTimeOffset utc = _clock.ToUtcFromUserLocal(new DateTime(2026, 5, 12, 0, 0, 0));
+
+        utc.ShouldBe(new DateTimeOffset(2026, 5, 12, 0, 0, 0, TimeSpan.Zero));
+    }
+
+    [Fact]
+    public void ToUtcFromUserLocal_WithTimezone_ConvertsWallClockDstCorrectly()
+    {
+        _timezoneProvider.Timezone.Returns("Europe/Brussels");
+
+        // Local midnight May 12 is CEST (+2) -> May 11 22:00Z.
+        DateTimeOffset utc = _clock.ToUtcFromUserLocal(new DateTime(2026, 5, 12, 0, 0, 0));
+
+        utc.ShouldBe(new DateTimeOffset(2026, 5, 11, 22, 0, 0, TimeSpan.Zero));
+        utc.Offset.ShouldBe(TimeSpan.Zero);
+    }
+
+    [Fact]
+    public void ToUtcFromUserLocal_AmbiguousLocalTime_AssumesStandardTime()
+    {
+        // 2026-10-25 02:30 occurs twice in Brussels (fall-back). Default: standard time (CET, +1).
+        _timezoneProvider.Timezone.Returns("Europe/Brussels");
+
+        DateTimeOffset utc = _clock.ToUtcFromUserLocal(new DateTime(2026, 10, 25, 2, 30, 0));
+
+        utc.ShouldBe(new DateTimeOffset(2026, 10, 25, 1, 30, 0, TimeSpan.Zero));
+    }
+
+    [Fact]
+    public void ToUtcFromUserLocal_InvalidLocalTime_ThrowsPerTimeZoneInfoDefault()
+    {
+        // 2026-03-29 02:30 is skipped in Brussels (spring-forward gap); TimeZoneInfo throws.
+        _timezoneProvider.Timezone.Returns("Europe/Brussels");
+
+        Should.Throw<ArgumentException>(() => _clock.ToUtcFromUserLocal(new DateTime(2026, 3, 29, 2, 30, 0)));
+    }
 }

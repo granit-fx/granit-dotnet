@@ -49,6 +49,34 @@ public sealed class TimingServiceCollectionExtensionsTests
     }
 
     [Fact]
+    public void AddGranitTiming_RegistersFirstDayOfWeekProvider()
+    {
+        ServiceCollection services = new();
+
+        services.AddGranitTiming();
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+
+        ICurrentFirstDayOfWeekProvider? provider = sp.GetService<ICurrentFirstDayOfWeekProvider>();
+        provider.ShouldNotBeNull();
+        provider.ShouldBeOfType<CurrentFirstDayOfWeekProvider>();
+    }
+
+    [Fact]
+    public void AddGranitTiming_RegistersPeriodResolver()
+    {
+        ServiceCollection services = new();
+
+        services.AddGranitTiming();
+
+        using ServiceProvider sp = services.BuildServiceProvider(validateScopes: true);
+        using IServiceScope scope = sp.CreateScope();
+
+        IPeriodResolver? resolver = scope.ServiceProvider.GetService<IPeriodResolver>();
+        resolver.ShouldNotBeNull();
+    }
+
+    [Fact]
     public void AddGranitTiming_RegistersTimeProvider()
     {
         // Arrange

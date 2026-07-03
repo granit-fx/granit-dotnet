@@ -23,22 +23,28 @@ public sealed class Clock(TimeProvider timeProvider, ICurrentTimezoneProvider ti
         dateTime.ToUniversalTime();
 
     /// <inheritdoc />
-    public DateTimeOffset ConvertToUserTime(DateTimeOffset utcDateTime)
-    {
-        string? tz = _timezoneProvider.Timezone;
-        if (string.IsNullOrWhiteSpace(tz))
-        {
-            return utcDateTime;
-        }
-
-        if (!TimeZoneInfo.TryFindSystemTimeZoneById(tz, out TimeZoneInfo? tzInfo))
-        {
-            return utcDateTime;
-        }
-
-        return TimeZoneInfo.ConvertTime(utcDateTime, tzInfo);
-    }
+    public DateTimeOffset ConvertToUserTime(DateTimeOffset utcDateTime) =>
+        TimeZoneInfo.ConvertTime(utcDateTime, ResolveUserTimeZone());
 
     /// <inheritdoc />
     public DateTimeOffset ConvertToUtc(DateTimeOffset dateTime) => dateTime.ToUniversalTime();
+
+    /// <inheritdoc />
+    public TimeZoneInfo ResolveUserTimeZone()
+    {
+        string? tz = _timezoneProvider.Timezone;
+
+        // No configured timezone (or an unknown identifier) → treat the user as operating in UTC.
+        return !string.IsNullOrWhiteSpace(tz) && TimeZoneInfo.TryFindSystemTimeZoneById(tz, out TimeZoneInfo? tzInfo)
+            ? tzInfo
+            : TimeZoneInfo.Utc;
+    }
+
+    /// <inheritdoc />
+    public DateTimeOffset ToUtcFromUserLocal(DateTime wallClock)
+    {
+        var unspecified = DateTime.SpecifyKind(wallClock, DateTimeKind.Unspecified);
+        DateTime utc = TimeZoneInfo.ConvertTimeToUtc(unspecified, ResolveUserTimeZone());
+        return new DateTimeOffset(utc, TimeSpan.Zero);
+    }
 }

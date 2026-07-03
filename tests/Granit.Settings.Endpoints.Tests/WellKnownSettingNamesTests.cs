@@ -13,9 +13,13 @@ public sealed class WellKnownSettingNamesTests
     public void PreferredTimezone_HasExpectedValue() => WellKnownSettingNames.PreferredTimezone.ShouldBe("Granit.Timing.PreferredTimezone");
 
     [Fact]
+    public void PreferredFirstDayOfWeek_HasExpectedValue() => WellKnownSettingNames.PreferredFirstDayOfWeek.ShouldBe("Granit.Timing.PreferredFirstDayOfWeek");
+
+    [Fact]
     public void Constants_AreNotNull()
     {
         WellKnownSettingNames.PreferredCulture.ShouldNotBeNullOrWhiteSpace();
         WellKnownSettingNames.PreferredTimezone.ShouldNotBeNullOrWhiteSpace();
+        WellKnownSettingNames.PreferredFirstDayOfWeek.ShouldNotBeNullOrWhiteSpace();
     }
 }
