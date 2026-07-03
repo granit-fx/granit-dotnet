@@ -169,4 +169,64 @@ public sealed class ColumnBuilderTests
 
         Should.Throw<ArgumentNullException>(() => builder.Lookup(null!));
     }
+
+    [Fact]
+    public void ValueKindValue_defaults_to_null()
+    {
+        ColumnBuilder<TestEntity> builder = new();
+
+        builder.ValueKindValue.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Currency_sets_kind_and_code()
+    {
+        ColumnBuilder<TestEntity> builder = new();
+
+        builder.Currency("EUR");
+
+        builder.ValueKindValue.ShouldBe(ValueKind.Currency);
+        builder.CurrencyCodeValue.ShouldBe("EUR");
+    }
+
+    [Fact]
+    public void Currency_throws_when_iso_code_is_blank()
+    {
+        ColumnBuilder<TestEntity> builder = new();
+
+        Should.Throw<ArgumentException>(() => builder.Currency(" "));
+    }
+
+    [Theory]
+    [InlineData(ValueKind.Percentage)]
+    [InlineData(ValueKind.Url)]
+    [InlineData(ValueKind.Email)]
+    [InlineData(ValueKind.Phone)]
+    [InlineData(ValueKind.Bytes)]
+    public void Dedicated_helpers_set_matching_kind(ValueKind expected)
+    {
+        ColumnBuilder<TestEntity> builder = new();
+
+        _ = expected switch
+        {
+            ValueKind.Percentage => builder.Percentage(),
+            ValueKind.Url => builder.Url(),
+            ValueKind.Email => builder.Email(),
+            ValueKind.Phone => builder.Phone(),
+            ValueKind.Bytes => builder.Bytes(),
+            _ => builder,
+        };
+
+        builder.ValueKindValue.ShouldBe(expected);
+    }
+
+    [Fact]
+    public void ValueKind_sets_arbitrary_kind()
+    {
+        ColumnBuilder<TestEntity> builder = new();
+
+        builder.ValueKind(ValueKind.Rating);
+
+        builder.ValueKindValue.ShouldBe(ValueKind.Rating);
+    }
 }

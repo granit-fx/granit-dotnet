@@ -20939,7 +20939,7 @@
       "kind": "class",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Forms/FieldBuilder.cs",
-      "line": 16,
+      "line": 17,
       "members": []
     },
     {
@@ -20948,7 +20948,7 @@
       "kind": "record",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Forms/FieldDescriptor.cs",
-      "line": 10,
+      "line": 11,
       "members": []
     },
     {
@@ -48749,7 +48749,32 @@
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/ColumnBuilder.cs",
       "line": 9,
-      "members": []
+      "members": [
+        {
+          "name": "Url",
+          "kind": "method",
+          "signature": "Url()",
+          "returnType": "ColumnBuilder<TEntity>"
+        },
+        {
+          "name": "Email",
+          "kind": "method",
+          "signature": "Email()",
+          "returnType": "ColumnBuilder<TEntity>"
+        },
+        {
+          "name": "Phone",
+          "kind": "method",
+          "signature": "Phone()",
+          "returnType": "ColumnBuilder<TEntity>"
+        },
+        {
+          "name": "Bytes",
+          "kind": "method",
+          "signature": "Bytes()",
+          "returnType": "ColumnBuilder<TEntity>"
+        }
+      ]
     },
     {
       "name": "ColumnDescriptor",
@@ -49114,7 +49139,7 @@
       "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Meta/ColumnDefinition.cs",
-      "line": 14,
+      "line": 21,
       "members": []
     },
     {
@@ -49389,6 +49414,15 @@
           "returnType": "IQueryable<TEntity>"
         }
       ]
+    },
+    {
+      "name": "ValueKind",
+      "fqn": "Granit.QueryEngine.ValueKind",
+      "kind": "enum",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/ValueKind.cs",
+      "line": 17,
+      "members": []
     },
     {
       "name": "IRateLimitCounterStore",

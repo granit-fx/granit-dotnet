@@ -1,5 +1,6 @@
 using Granit.DataLookup.Descriptors;
 using Granit.Entities.Visibility;
+using Granit.QueryEngine;
 
 namespace Granit.Entities.Forms;
 
@@ -64,4 +65,12 @@ public sealed record FieldDescriptor
     /// fields without a declared lookup.
     /// </summary>
     public LookupDescriptor? Lookup { get; init; }
+
+    /// <summary>
+    /// Optional semantic display-type (<c>Currency</c>, <c>Url</c>, <c>Email</c>, …) — the same
+    /// vocabulary a query column carries (<see cref="QueryEngine.ValueKind"/>). Lets the frontend
+    /// pick a better default edit input when <see cref="Component"/> was left at its CLR-type
+    /// default; an explicit component still wins. <c>null</c> when no hint is declared.
+    /// </summary>
+    public ValueKind? ValueKind { get; init; }
 }

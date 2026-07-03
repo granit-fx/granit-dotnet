@@ -44,6 +44,15 @@ public sealed class ColumnDescriptor
     public string? CurrencyCode { get; init; }
 
     /// <summary>
+    /// Semantic display-type of the column (<c>Currency</c>, <c>Percentage</c>, <c>Url</c>, …),
+    /// or <c>null</c> to let the frontend fall back to the CLR type. Set via the
+    /// <see cref="ColumnBuilder{TEntity}"/> helpers (<c>Currency</c>, <c>Percentage</c>,
+    /// <c>Url</c>, …) or <see cref="ColumnBuilder{TEntity}.ValueKind(QueryEngine.ValueKind)"/>.
+    /// Surfaced on the wire <see cref="Meta.ColumnDefinition"/> so tables pick the right renderer.
+    /// </summary>
+    public ValueKind? ValueKind { get; init; }
+
+    /// <summary>
     /// Whether this column maps to an EF Core Shadow Property (not a CLR property).
     /// Shadow columns are accessed via <c>EF.Property&lt;T&gt;(entity, name)</c> instead of
     /// direct member access.

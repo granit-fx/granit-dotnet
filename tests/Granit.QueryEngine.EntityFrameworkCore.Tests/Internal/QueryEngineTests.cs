@@ -340,6 +340,39 @@ public sealed class QueryEngineTests : IAsyncLifetime
         field.Lookup.ScopeKeys.ShouldBe(["tenantId"]);
     }
 
+    [Fact]
+    public void GetMetadata_surfaces_value_kind_and_currency_code_on_columns()
+    {
+        ValueKindDefinition definition = new();
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
+
+        QueryMetadata metadata = engine.GetMetadata();
+
+        ColumnDefinition price = metadata.Columns.First(c => c.Name == "Price");
+        price.ValueKind.ShouldBe(ValueKind.Currency);
+        price.CurrencyCode.ShouldBe("EUR");
+
+        ColumnDefinition name = metadata.Columns.First(c => c.Name == "Name");
+        name.ValueKind.ShouldBe(ValueKind.Url);
+        name.CurrencyCode.ShouldBeNull();
+
+        ColumnDefinition category = metadata.Columns.First(c => c.Name == "Category");
+        category.ValueKind.ShouldBeNull();
+        category.CurrencyCode.ShouldBeNull();
+    }
+
+    private sealed class ValueKindDefinition : QueryDefinition<TestProduct>
+    {
+        public override string Name => "Test.Products.ValueKind";
+
+        protected override void Configure(QueryDefinitionBuilder<TestProduct> builder) =>
+            builder
+                .Column(p => p.Name, c => c.Label("Name").Url())
+                .Column(p => p.Price, c => c.Label("Price").Currency("EUR"))
+                .Column(p => p.Category, c => c.Label("Category"))
+                .DefaultPageSize(10);
+    }
+
     private sealed class LookupDefinition : QueryDefinition<TestProduct>
     {
         public override string Name => "Test.Products.Lookup";

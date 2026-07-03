@@ -11,6 +11,13 @@ namespace Granit.QueryEngine.Meta;
 /// <param name="IsFilterable">Whether filtering is allowed.</param>
 /// <param name="IsVisible">Whether the column is visible by default.</param>
 /// <param name="Format">Display format hint, or <c>null</c>.</param>
+/// <param name="ValueKind">
+/// Semantic display-type (<c>"Currency"</c>, <c>"Percentage"</c>, <c>"Url"</c>, …), or <c>null</c>
+/// to fall back to <paramref name="Type"/>. Lets the table pick a renderer from the column itself.
+/// </param>
+/// <param name="CurrencyCode">
+/// ISO 4217 code accompanying a <c>Currency</c> <paramref name="ValueKind"/>, or <c>null</c>.
+/// </param>
 public sealed record ColumnDefinition(
     string Name,
     string Label,
@@ -19,4 +26,6 @@ public sealed record ColumnDefinition(
     bool IsSortable,
     bool IsFilterable,
     bool IsVisible,
-    string? Format);
+    string? Format,
+    ValueKind? ValueKind = null,
+    string? CurrencyCode = null);

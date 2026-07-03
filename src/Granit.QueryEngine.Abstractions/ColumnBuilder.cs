@@ -17,6 +17,7 @@ public sealed class ColumnBuilder<TEntity> where TEntity : class
     internal string? FormatValue { get; private set; }
     internal LookupDescriptor? LookupValue { get; private set; }
     internal string? CurrencyCodeValue { get; private set; }
+    internal ValueKind? ValueKindValue { get; private set; }
 
     /// <summary>
     /// Sets the user-facing label for this column.
@@ -152,6 +153,36 @@ public sealed class ColumnBuilder<TEntity> where TEntity : class
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(isoCode);
         CurrencyCodeValue = isoCode;
+        ValueKindValue = QueryEngine.ValueKind.Currency;
         return this;
     }
+
+    /// <summary>
+    /// Tags this column with a semantic <see cref="QueryEngine.ValueKind"/> — a display-type hint
+    /// telling the frontend what the value means (percentage, URL, email, …) so it can pick the
+    /// right renderer. Prefer the dedicated helpers (<see cref="Percentage"/>, <see cref="Url"/>,
+    /// <see cref="Email"/>, <see cref="Phone"/>, <see cref="Bytes"/>, <see cref="Currency"/>) where
+    /// one exists; use this for the remaining kinds.
+    /// </summary>
+    /// <param name="kind">The semantic value-kind.</param>
+    public ColumnBuilder<TEntity> ValueKind(QueryEngine.ValueKind kind)
+    {
+        ValueKindValue = kind;
+        return this;
+    }
+
+    /// <summary>Tags this column as a ratio in <c>[0, 1]</c> rendered as a percentage.</summary>
+    public ColumnBuilder<TEntity> Percentage() => ValueKind(QueryEngine.ValueKind.Percentage);
+
+    /// <summary>Tags this column as a URL rendered as a clickable link.</summary>
+    public ColumnBuilder<TEntity> Url() => ValueKind(QueryEngine.ValueKind.Url);
+
+    /// <summary>Tags this column as an email address rendered as a <c>mailto:</c> link.</summary>
+    public ColumnBuilder<TEntity> Email() => ValueKind(QueryEngine.ValueKind.Email);
+
+    /// <summary>Tags this column as a telephone number rendered as a <c>tel:</c> link.</summary>
+    public ColumnBuilder<TEntity> Phone() => ValueKind(QueryEngine.ValueKind.Phone);
+
+    /// <summary>Tags this column as a data size in bytes rendered humanized (KB / MB / GB).</summary>
+    public ColumnBuilder<TEntity> Bytes() => ValueKind(QueryEngine.ValueKind.Bytes);
 }

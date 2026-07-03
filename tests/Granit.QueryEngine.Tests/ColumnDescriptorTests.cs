@@ -115,6 +115,33 @@ public sealed class ColumnDescriptorTests
         descriptor.IsShadowProperty.ShouldBeFalse();
     }
 
+    [Fact]
+    public void ValueKind_DefaultsToNull()
+    {
+        ColumnDescriptor descriptor = new()
+        {
+            PropertyName = "Name",
+            ClrType = typeof(string),
+        };
+
+        descriptor.ValueKind.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ValueKind_CanBeSet()
+    {
+        ColumnDescriptor descriptor = new()
+        {
+            PropertyName = "Amount",
+            ClrType = typeof(decimal),
+            ValueKind = QueryEngine.ValueKind.Currency,
+            CurrencyCode = "EUR",
+        };
+
+        descriptor.ValueKind.ShouldBe(QueryEngine.ValueKind.Currency);
+        descriptor.CurrencyCode.ShouldBe("EUR");
+    }
+
     // ──── Optional properties ────
 
     [Fact]

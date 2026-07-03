@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Granit.DataLookup.Descriptors;
 using Granit.Entities.Visibility;
+using Granit.QueryEngine;
 
 namespace Granit.Entities.Forms;
 
@@ -27,6 +28,7 @@ public sealed class FieldBuilder<TEntity, TProperty>
     private bool _readOnly;
     private VisibilityCondition? _visibleIf;
     private LookupDescriptor? _lookup;
+    private ValueKind? _valueKind;
 
     internal FieldBuilder(Expression<Func<TEntity, TProperty>> propertySelector, int order)
     {
@@ -100,6 +102,21 @@ public sealed class FieldBuilder<TEntity, TProperty>
     }
 
     /// <summary>
+    /// Tags this field with a semantic <see cref="QueryEngine.ValueKind"/> — the same display-type
+    /// vocabulary a query column carries via <c>ColumnBuilder</c>. On the write side it lets the
+    /// frontend pick a better default edit input (e.g. <c>Currency</c> → money, <c>Url</c> → url)
+    /// when <see cref="Component(string, IReadOnlyDictionary{string, object?}?)"/> was left at its
+    /// CLR-type default; an explicit component always wins. Orthogonal to validation, which keeps
+    /// flowing from the request validators / OpenAPI schema.
+    /// </summary>
+    /// <param name="kind">The semantic value-kind.</param>
+    public FieldBuilder<TEntity, TProperty> ValueKind(Granit.QueryEngine.ValueKind kind)
+    {
+        _valueKind = kind;
+        return this;
+    }
+
+    /// <summary>
     /// Conditional visibility rule against another field (closed enum operators per
     /// ADR-040). Evaluated client-side; permission gating
     /// (<see cref="RequiresPermission"/>) is server-side and takes precedence.
@@ -162,6 +179,7 @@ public sealed class FieldBuilder<TEntity, TProperty>
             ReadOnly = _readOnly,
             VisibleIf = _visibleIf,
             Lookup = _lookup,
+            ValueKind = _valueKind,
         };
 
     /// <summary>

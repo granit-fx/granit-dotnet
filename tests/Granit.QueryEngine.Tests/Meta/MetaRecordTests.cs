@@ -247,6 +247,35 @@ public sealed class ColumnDefinitionEqualityTests
 
         a.ShouldNotBe(b);
     }
+
+    [Fact]
+    public void ValueKind_And_CurrencyCode_DefaultToNull()
+    {
+        ColumnDefinition column = new("Name", "Nom", "String", 1, true, true, true, null);
+
+        column.ValueKind.ShouldBeNull();
+        column.CurrencyCode.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ValueKind_And_CurrencyCode_CanBeSet()
+    {
+        ColumnDefinition column = new(
+            "Amount", "Montant", "Decimal", 1, true, true, true, null,
+            ValueKind.Currency, "EUR");
+
+        column.ValueKind.ShouldBe(ValueKind.Currency);
+        column.CurrencyCode.ShouldBe("EUR");
+    }
+
+    [Fact]
+    public void Equality_DifferentValueKind_AreNotEqual()
+    {
+        ColumnDefinition a = new("Amount", "Montant", "Decimal", 1, true, true, true, null, ValueKind.Currency, "EUR");
+        ColumnDefinition b = new("Amount", "Montant", "Decimal", 1, true, true, true, null, ValueKind.Percentage);
+
+        a.ShouldNotBe(b);
+    }
 }
 
 public sealed class FilterableFieldEqualityTests
