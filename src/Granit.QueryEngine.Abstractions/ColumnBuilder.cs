@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Granit.DataLookup.Descriptors;
 
 namespace Granit.QueryEngine;
@@ -17,6 +18,7 @@ public sealed class ColumnBuilder<TEntity> where TEntity : class
     internal string? FormatValue { get; private set; }
     internal LookupDescriptor? LookupValue { get; private set; }
     internal string? CurrencyCodeValue { get; private set; }
+    internal string? CurrencyCodeFieldValue { get; private set; }
     internal ValueKind? ValueKindValue { get; private set; }
 
     /// <summary>
@@ -158,10 +160,32 @@ public sealed class ColumnBuilder<TEntity> where TEntity : class
     }
 
     /// <summary>
+    /// Tags this column as a monetary amount whose ISO 4217 code is carried per-row by a sibling
+    /// column (selected by <paramref name="currencyCodeSelector"/>) rather than fixed at design time.
+    /// Use for multi-currency entities where different rows carry different currencies; use the
+    /// <see cref="Currency(string)"/> overload when a single fixed code is correct.
+    /// </summary>
+    /// <remarks>
+    /// The selected property's name is recorded as <see cref="ColumnDescriptor.CurrencyCodeField"/>
+    /// (the sibling column's wire <c>Name</c>), so the frontend reads the ISO code from that field on
+    /// each row. The referenced property must be present in the result rows (declared as a column or
+    /// included in the projection). Mutually exclusive with <see cref="Currency(string)"/> — a fixed
+    /// code takes precedence on the frontend.
+    /// </remarks>
+    /// <param name="currencyCodeSelector">Selector for the sibling column holding the ISO 4217 code.</param>
+    public ColumnBuilder<TEntity> Currency(Expression<Func<TEntity, string?>> currencyCodeSelector)
+    {
+        ArgumentNullException.ThrowIfNull(currencyCodeSelector);
+        CurrencyCodeFieldValue = QueryDefinitionBuilder<TEntity>.GetPropertyName(currencyCodeSelector);
+        ValueKindValue = QueryEngine.ValueKind.Currency;
+        return this;
+    }
+
+    /// <summary>
     /// Tags this column with a semantic <see cref="QueryEngine.ValueKind"/> — a display-type hint
     /// telling the frontend what the value means (percentage, URL, email, …) so it can pick the
     /// right renderer. Prefer the dedicated helpers (<see cref="Percentage"/>, <see cref="Url"/>,
-    /// <see cref="Email"/>, <see cref="Phone"/>, <see cref="Bytes"/>, <see cref="Currency"/>) where
+    /// <see cref="Email"/>, <see cref="Phone"/>, <see cref="Bytes"/>, <see cref="Currency(string)"/>) where
     /// one exists; use this for the remaining kinds.
     /// </summary>
     /// <param name="kind">The semantic value-kind.</param>

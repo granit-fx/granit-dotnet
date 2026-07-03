@@ -44,6 +44,14 @@ public sealed class ColumnDescriptor
     public string? CurrencyCode { get; init; }
 
     /// <summary>
+    /// Name of the sibling column carrying this column's ISO 4217 code per row, when the amount is
+    /// multi-currency; <c>null</c> otherwise. Set via
+    /// <see cref="ColumnBuilder{TEntity}.Currency(System.Linq.Expressions.Expression{System.Func{TEntity, string}})"/>.
+    /// Mutually exclusive with <see cref="CurrencyCode"/> (a fixed code wins on the frontend).
+    /// </summary>
+    public string? CurrencyCodeField { get; init; }
+
+    /// <summary>
     /// Semantic display-type of the column (<c>Currency</c>, <c>Percentage</c>, <c>Url</c>, …),
     /// or <c>null</c> to let the frontend fall back to the CLR type. Set via the
     /// <see cref="ColumnBuilder{TEntity}"/> helpers (<c>Currency</c>, <c>Percentage</c>,

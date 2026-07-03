@@ -48748,7 +48748,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/ColumnBuilder.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "Url",
@@ -49139,7 +49139,7 @@
       "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Meta/ColumnDefinition.cs",
-      "line": 21,
+      "line": 25,
       "members": []
     },
     {

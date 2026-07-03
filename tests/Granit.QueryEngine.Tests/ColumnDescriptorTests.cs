@@ -142,6 +142,33 @@ public sealed class ColumnDescriptorTests
         descriptor.CurrencyCode.ShouldBe("EUR");
     }
 
+    [Fact]
+    public void CurrencyCodeField_DefaultsToNull()
+    {
+        ColumnDescriptor descriptor = new()
+        {
+            PropertyName = "Amount",
+            ClrType = typeof(decimal),
+        };
+
+        descriptor.CurrencyCodeField.ShouldBeNull();
+    }
+
+    [Fact]
+    public void CurrencyCodeField_CanBeSet()
+    {
+        ColumnDescriptor descriptor = new()
+        {
+            PropertyName = "Amount",
+            ClrType = typeof(decimal),
+            ValueKind = QueryEngine.ValueKind.Currency,
+            CurrencyCodeField = "Currency",
+        };
+
+        descriptor.CurrencyCodeField.ShouldBe("Currency");
+        descriptor.CurrencyCode.ShouldBeNull();
+    }
+
     // ──── Optional properties ────
 
     [Fact]

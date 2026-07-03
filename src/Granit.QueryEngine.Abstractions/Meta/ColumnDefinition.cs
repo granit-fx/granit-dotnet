@@ -16,7 +16,11 @@ namespace Granit.QueryEngine.Meta;
 /// to fall back to <paramref name="Type"/>. Lets the table pick a renderer from the column itself.
 /// </param>
 /// <param name="CurrencyCode">
-/// ISO 4217 code accompanying a <c>Currency</c> <paramref name="ValueKind"/>, or <c>null</c>.
+/// Fixed ISO 4217 code accompanying a <c>Currency</c> <paramref name="ValueKind"/>, or <c>null</c>.
+/// </param>
+/// <param name="CurrencyCodeField">
+/// Name of the sibling column carrying the ISO 4217 code per row (multi-currency amounts), or
+/// <c>null</c>. The frontend prefers <paramref name="CurrencyCode"/> when both are set.
 /// </param>
 public sealed record ColumnDefinition(
     string Name,
@@ -28,4 +32,5 @@ public sealed record ColumnDefinition(
     bool IsVisible,
     string? Format,
     ValueKind? ValueKind = null,
-    string? CurrencyCode = null);
+    string? CurrencyCode = null,
+    string? CurrencyCodeField = null);

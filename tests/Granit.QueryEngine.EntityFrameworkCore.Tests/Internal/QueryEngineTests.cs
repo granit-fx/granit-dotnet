@@ -359,6 +359,21 @@ public sealed class QueryEngineTests : IAsyncLifetime
         ColumnDefinition category = metadata.Columns.First(c => c.Name == "Category");
         category.ValueKind.ShouldBeNull();
         category.CurrencyCode.ShouldBeNull();
+        category.CurrencyCodeField.ShouldBeNull();
+    }
+
+    [Fact]
+    public void GetMetadata_surfaces_per_row_currency_code_field()
+    {
+        PerRowCurrencyDefinition definition = new();
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
+
+        QueryMetadata metadata = engine.GetMetadata();
+
+        ColumnDefinition price = metadata.Columns.First(c => c.Name == "Price");
+        price.ValueKind.ShouldBe(ValueKind.Currency);
+        price.CurrencyCode.ShouldBeNull();
+        price.CurrencyCodeField.ShouldBe("Name");
     }
 
     private sealed class ValueKindDefinition : QueryDefinition<TestProduct>
@@ -370,6 +385,17 @@ public sealed class QueryEngineTests : IAsyncLifetime
                 .Column(p => p.Name, c => c.Label("Name").Url())
                 .Column(p => p.Price, c => c.Label("Price").Currency("EUR"))
                 .Column(p => p.Category, c => c.Label("Category"))
+                .DefaultPageSize(10);
+    }
+
+    private sealed class PerRowCurrencyDefinition : QueryDefinition<TestProduct>
+    {
+        public override string Name => "Test.Products.PerRowCurrency";
+
+        protected override void Configure(QueryDefinitionBuilder<TestProduct> builder) =>
+            builder
+                .Column(p => p.Price, c => c.Label("Price").Currency(p => p.Name))
+                .Column(p => p.Name, c => c.Label("Currency"))
                 .DefaultPageSize(10);
     }
 

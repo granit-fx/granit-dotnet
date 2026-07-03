@@ -197,6 +197,34 @@ public sealed class ColumnBuilderTests
         Should.Throw<ArgumentException>(() => builder.Currency(" "));
     }
 
+    [Fact]
+    public void Currency_by_selector_sets_kind_and_field()
+    {
+        ColumnBuilder<TestEntity> builder = new();
+
+        builder.Currency(e => e.Name);
+
+        builder.ValueKindValue.ShouldBe(ValueKind.Currency);
+        builder.CurrencyCodeFieldValue.ShouldBe(nameof(TestEntity.Name));
+        builder.CurrencyCodeValue.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Currency_by_selector_throws_when_null()
+    {
+        ColumnBuilder<TestEntity> builder = new();
+
+        Should.Throw<ArgumentNullException>(() => builder.Currency((System.Linq.Expressions.Expression<Func<TestEntity, string?>>)null!));
+    }
+
+    [Fact]
+    public void CurrencyCodeFieldValue_defaults_to_null()
+    {
+        ColumnBuilder<TestEntity> builder = new();
+
+        builder.CurrencyCodeFieldValue.ShouldBeNull();
+    }
+
     [Theory]
     [InlineData(ValueKind.Percentage)]
     [InlineData(ValueKind.Url)]

@@ -71,6 +71,7 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
             Format = builder.FormatValue,
             Lookup = builder.LookupValue,
             CurrencyCode = builder.CurrencyCodeValue,
+            CurrencyCodeField = builder.CurrencyCodeFieldValue,
             ValueKind = builder.ValueKindValue,
         });
 
@@ -106,6 +107,7 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
             Format = builder.FormatValue,
             Lookup = builder.LookupValue,
             CurrencyCode = builder.CurrencyCodeValue,
+            CurrencyCodeField = builder.CurrencyCodeFieldValue,
             ValueKind = builder.ValueKindValue,
             IsShadowProperty = true,
         });
@@ -143,6 +145,7 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
             Format = builder.FormatValue,
             Lookup = builder.LookupValue,
             CurrencyCode = builder.CurrencyCodeValue,
+            CurrencyCodeField = builder.CurrencyCodeFieldValue,
             ValueKind = builder.ValueKindValue,
             IsShadowProperty = true,
         });

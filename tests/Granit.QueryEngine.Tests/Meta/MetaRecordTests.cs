@@ -276,6 +276,25 @@ public sealed class ColumnDefinitionEqualityTests
 
         a.ShouldNotBe(b);
     }
+
+    [Fact]
+    public void CurrencyCodeField_DefaultsToNull()
+    {
+        ColumnDefinition column = new("Amount", "Montant", "Decimal", 1, true, true, true, null, ValueKind.Currency);
+
+        column.CurrencyCodeField.ShouldBeNull();
+    }
+
+    [Fact]
+    public void CurrencyCodeField_CanBeSet()
+    {
+        ColumnDefinition column = new(
+            "Amount", "Montant", "Decimal", 1, true, true, true, null,
+            ValueKind.Currency, CurrencyCode: null, CurrencyCodeField: "Currency");
+
+        column.CurrencyCodeField.ShouldBe("Currency");
+        column.CurrencyCode.ShouldBeNull();
+    }
 }
 
 public sealed class FilterableFieldEqualityTests

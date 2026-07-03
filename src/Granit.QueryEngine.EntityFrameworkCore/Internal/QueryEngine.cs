@@ -313,7 +313,8 @@ internal sealed class QueryEngine<TEntity>(
                 c.IsVisible,
                 c.Format,
                 c.ValueKind,
-                c.CurrencyCode)).ToList(),
+                c.CurrencyCode,
+                c.CurrencyCodeField)).ToList(),
             FilterableFields = _builder.Columns
                 .Where(c => c.IsFilterable)
                 .Select(c => new FilterableField(
