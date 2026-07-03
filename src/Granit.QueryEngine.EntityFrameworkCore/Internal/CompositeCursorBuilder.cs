@@ -19,9 +19,11 @@ namespace Granit.QueryEngine.EntityFrameworkCore.Internal;
 internal static class CompositeCursorBuilder
 {
     /// <summary>
-    /// Describes a sort field with its direction and resolved property info.
+    /// Describes a sort field with its direction, resolved leaf property, and the (possibly dotted)
+    /// canonical member path. <see cref="Path"/> equals the property name for a top-level field and a
+    /// dotted path such as <c>"Value.Street1"</c> for a nested complex-type member.
     /// </summary>
-    internal readonly record struct SortField(PropertyInfo Property, bool Descending);
+    internal readonly record struct SortField(string Path, PropertyInfo Property, bool Descending);
 
     /// <summary>
     /// Parses a sort specification string into a list of <see cref="SortField"/> entries.
@@ -49,16 +51,79 @@ internal static class CompositeCursorBuilder
                 continue;
             }
 
-            PropertyInfo? property = typeof(T).GetProperty(
-                fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-
-            if (property is not null)
+            // Walk a (possibly dotted) path so a nested complex-member sort field such as
+            // "Value.Street1" participates in the keyset — otherwise it would be silently dropped and
+            // the cursor predicate would disagree with the ORDER BY, skipping/duplicating rows at
+            // page boundaries. Canonicalises segment casing off the resolved PropertyInfo.
+            (string CanonicalPath, PropertyInfo Leaf)? resolved = ResolvePath(typeof(T), fieldName);
+            if (resolved is not null)
             {
-                fields.Add(new SortField(property, descending));
+                fields.Add(new SortField(resolved.Value.CanonicalPath, resolved.Value.Leaf, descending));
             }
         }
 
         return fields;
+    }
+
+    // Resolves a (possibly dotted) member path to its leaf PropertyInfo plus the canonical dotted path
+    // (segment casing taken from the resolved properties). Returns null if any segment is unknown.
+    private static (string CanonicalPath, PropertyInfo Leaf)? ResolvePath(Type root, string path)
+    {
+        Type current = root;
+        PropertyInfo? property = null;
+        List<string> canonical = [];
+
+        foreach (string segment in path.Split('.'))
+        {
+            property = current.GetProperty(
+                segment, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            if (property is null)
+            {
+                return null;
+            }
+
+            canonical.Add(property.Name);
+            current = property.PropertyType;
+        }
+
+        return property is null ? null : (string.Join('.', canonical), property);
+    }
+
+    // Builds a plain member-access chain for a (possibly dotted) path — no [QueryableValueObject]
+    // drilling, so a top-level VO cursor key keeps comparing whole-value as it did before.
+    private static Expression BuildMemberAccess(ParameterExpression parameter, string path)
+    {
+        Expression member = parameter;
+        foreach (string segment in path.Split('.'))
+        {
+            member = Expression.Property(member, segment);
+        }
+
+        return member;
+    }
+
+    // Reads a (possibly dotted) member path off a materialized instance for cursor encoding.
+    private static object? ReadPath(object instance, string path)
+    {
+        object? current = instance;
+        foreach (string segment in path.Split('.'))
+        {
+            if (current is null)
+            {
+                return null;
+            }
+
+            PropertyInfo? property = current.GetType().GetProperty(
+                segment, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            if (property is null)
+            {
+                return null;
+            }
+
+            current = property.GetValue(current);
+        }
+
+        return current;
     }
 
     /// <summary>
@@ -112,9 +177,9 @@ internal static class CompositeCursorBuilder
         where T : class
     {
         var values = sortFields
-            .Select(field => (field.Property.Name, Value: field.Property.GetValue(lastItem)))
+            .Select(field => (field.Path, Value: ReadPath(lastItem, field.Path)))
             .Where(x => x.Value is not null)
-            .ToDictionary(x => x.Name, x => x.Value!.ToString()!, StringComparer.OrdinalIgnoreCase);
+            .ToDictionary(x => x.Path, x => x.Value!.ToString()!, StringComparer.OrdinalIgnoreCase);
 
         return CursorEncoder.EncodeComposite(values, hmacKey);
     }
@@ -132,19 +197,19 @@ internal static class CompositeCursorBuilder
         for (int j = 0; j < targetIndex; j++)
         {
             SortField field = sortFields[j];
-            if (!cursorValues.TryGetValue(field.Property.Name, out string? rawValue))
+            if (!cursorValues.TryGetValue(field.Path, out string? rawValue))
             {
                 return null; // Missing cursor value — cannot build this branch
             }
 
             Type propertyType = Nullable.GetUnderlyingType(field.Property.PropertyType) ?? field.Property.PropertyType;
-            object? converted = FilterExpressionBuilder.ConvertValue(rawValue, propertyType, logger, field.Property.Name);
+            object? converted = FilterExpressionBuilder.ConvertValue(rawValue, propertyType, logger, field.Path);
             if (converted is null)
             {
                 return null;
             }
 
-            MemberExpression member = Expression.Property(parameter, field.Property);
+            Expression member = BuildMemberAccess(parameter, field.Path);
             ConstantExpression constant = Expression.Constant(converted, field.Property.PropertyType);
             BinaryExpression equality = Expression.Equal(member, constant);
 
@@ -167,19 +232,19 @@ internal static class CompositeCursorBuilder
         Dictionary<string, string> cursorValues,
         ILogger? logger)
     {
-        if (!cursorValues.TryGetValue(targetField.Property.Name, out string? rawValue))
+        if (!cursorValues.TryGetValue(targetField.Path, out string? rawValue))
         {
             return null;
         }
 
         Type propertyType = Nullable.GetUnderlyingType(targetField.Property.PropertyType) ?? targetField.Property.PropertyType;
-        object? converted = FilterExpressionBuilder.ConvertValue(rawValue, propertyType, logger, targetField.Property.Name);
+        object? converted = FilterExpressionBuilder.ConvertValue(rawValue, propertyType, logger, targetField.Path);
         if (converted is null)
         {
             return null;
         }
 
-        MemberExpression member = Expression.Property(parameter, targetField.Property);
+        Expression member = BuildMemberAccess(parameter, targetField.Path);
         ConstantExpression constant = Expression.Constant(converted, targetField.Property.PropertyType);
 
         // Descending sort → cursor moves backward (less than), ascending → forward (greater than)

@@ -43,29 +43,31 @@ internal static class FilterExpressionBuilder
         IReadOnlyDictionary<string, ColumnDescriptor>? shadowColumns = null)
         where TEntity : class
     {
-        PropertyInfo? property = typeof(TEntity).GetProperty(
-            criteria.Field,
-            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-
         ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "e");
+
+        // Resolve the (possibly dotted) field to a member access. A nested path such as
+        // "Value.Street1" walks the EF complex-type hops; the leaf still drills a
+        // [QueryableValueObject] into its `.Value` scalar. Returns (null, null) for an unknown field.
+        (Expression? resolvedMember, PropertyInfo? property) = MemberPathResolver.Resolve(parameter, criteria.Field);
+
         Expression member;
         Type propertyType;
 
-        if (property is not null)
+        if (resolvedMember is not null)
         {
             // A [QueryableValueObject] column resolves to its `.Value` string column (ADR-070,
             // strategy B) so equality/IN/substring operate on the real scalar. Range operators are
             // dropped (a string value object has no meaningful ordering — the same stance as a
             // converter-mapped VO). A plain value-object column stays the VO type (equality
             // reconstructs it).
-            if (ValueObjectMemberResolver.IsQueryableValueObject(property)
+            if (ValueObjectMemberResolver.IsQueryableValueObject(property!)
                 && criteria.Operator is FilterOperator.Gt or FilterOperator.Gte
                     or FilterOperator.Lt or FilterOperator.Lte or FilterOperator.Between)
             {
                 return null;
             }
 
-            member = ValueObjectMemberResolver.Resolve(parameter, property);
+            member = resolvedMember;
             propertyType = Nullable.GetUnderlyingType(member.Type) ?? member.Type;
         }
         else if (shadowColumns is not null

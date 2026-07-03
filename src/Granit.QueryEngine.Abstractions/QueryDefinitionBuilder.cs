@@ -45,7 +45,11 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
 
     /// <summary>
     /// Declares a column on the target entity. Only explicitly declared columns are
-    /// exposed to the frontend (whitelist-first).
+    /// exposed to the frontend (whitelist-first). Accepts a top-level property
+    /// (<c>a =&gt; a.Kind</c>) or a member of an EF Core complex type
+    /// (<c>a =&gt; a.Value.Street1</c>), the latter recorded as the dotted path
+    /// <c>"Value.Street1"</c> and resolved to its mapped scalar column for
+    /// filtering / sorting / group-by.
     /// </summary>
     /// <typeparam name="TProp">The property type.</typeparam>
     /// <param name="property">Expression selecting the property.</param>
@@ -54,7 +58,7 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
         Expression<Func<TEntity, TProp>> property,
         Action<ColumnBuilder<TEntity>>? configure = null)
     {
-        string propertyName = GetPropertyName(property);
+        (string propertyName, _) = GetMemberPath(property);
         ColumnBuilder<TEntity> builder = new();
         configure?.Invoke(builder);
 
@@ -286,7 +290,7 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     public QueryDefinitionBuilder<TEntity> AllowGroupBy<TProp>(
         Expression<Func<TEntity, TProp>> property)
     {
-        (string propertyName, bool isNested) = GetGroupByPath(property);
+        (string propertyName, bool isNested) = GetMemberPath(property);
 
         // A nested leaf (a member of an EF complex type) is a plain scalar column, so the whole-value
         // VO guard does not apply. For a top-level member, reject a converter-mapped SingleValueObject
@@ -541,12 +545,12 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
         return member.Member.Name;
     }
 
-    // Extracts a (possibly dotted) member path for group-by. Unlike the single-level GetPropertyName,
-    // this accepts a chain of member accesses over an EF complex-type member (a => a.Value.Country) and
-    // returns the dotted path "Value.Country" plus whether the access is nested. It still rejects
-    // drilling into a SingleValueObject's `.Value` (#2767): that inner value is a whole-value
-    // ValueConverter column, not an independently groupable scalar column.
-    private static (string Path, bool IsNested) GetGroupByPath<TProp>(Expression<Func<TEntity, TProp>> expression)
+    // Extracts a (possibly dotted) member path for a column or group-by key. Unlike the single-level
+    // GetPropertyName, this accepts a chain of member accesses over an EF complex-type member
+    // (a => a.Value.Street1) and returns the dotted path "Value.Street1" plus whether the access is
+    // nested. It still rejects drilling into a SingleValueObject's `.Value` (#2767): that inner value
+    // is a whole-value ValueConverter column, not an independently queryable scalar column.
+    private static (string Path, bool IsNested) GetMemberPath<TProp>(Expression<Func<TEntity, TProp>> expression)
     {
         Expression body = expression.Body is UnaryExpression { NodeType: ExpressionType.Convert } convert
             ? convert.Operand
@@ -558,11 +562,12 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
             if (IsSingleValueObjectType(member.Expression?.Type))
             {
                 throw new ArgumentException(
-                    $"Group-by expression '{expression.Body}' drills into the '.Value' of a " +
+                    $"Expression '{expression.Body}' drills into the '.Value' of a " +
                     $"SingleValueObject ('{member.Expression!.Type.Name}'), which is mapped as an opaque " +
-                    $"whole-value ValueConverter and cannot be a GROUP BY key. To group by a value-object " +
-                    $"column, mark it [QueryableValueObject] and select the object itself (x => x.Slug); to " +
-                    $"group by a nested field, select a member of an EF complex type. See issue #2767.",
+                    $"whole-value ValueConverter and cannot be an independently queryable column. To use a " +
+                    $"value-object column, mark it [QueryableValueObject] and select the object itself " +
+                    $"(x => x.Slug); to reach a nested field, select a member of an EF complex type. " +
+                    $"See issue #2767.",
                     nameof(expression));
             }
 
@@ -576,7 +581,7 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
         }
 
         throw new ArgumentException(
-            "Group-by expression must be a property access (e.g. x => x.Kind) or a nested complex-type " +
+            "Expression must be a property access (e.g. x => x.Kind) or a nested complex-type " +
             "member access (e.g. x => x.Address.Country).",
             nameof(expression));
     }

@@ -90,9 +90,9 @@ internal static class QueryablePaginationExtensions
             sortFields = CompositeCursorBuilder.ParseSortFields<T>(effectiveSort, sortableFields);
 
             // Ensure cursor property is included as tiebreaker (append if missing)
-            if (!sortFields.Exists(f => f.Property.Name.Equals(cursorPropertyName, StringComparison.OrdinalIgnoreCase)))
+            if (!sortFields.Exists(f => f.Path.Equals(cursorPropertyName, StringComparison.OrdinalIgnoreCase)))
             {
-                sortFields.Add(new CompositeCursorBuilder.SortField(cursorProperty, Descending: false));
+                sortFields.Add(new CompositeCursorBuilder.SortField(cursorProperty.Name, cursorProperty, Descending: false));
             }
         }
 

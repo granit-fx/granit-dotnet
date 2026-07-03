@@ -92,13 +92,14 @@ internal static class QueryableSortExtensions
             return (ApplyOrderByShadow(source, fieldName, shadowCol.ClrType, descending, isFirst), true);
         }
 
-        PropertyInfo? property = typeof(TEntity).GetProperty(
-            fieldName,
-            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        // Resolve the (possibly dotted) field to a member access, walking EF complex-type hops for a
+        // nested column such as "Value.Street1". An unknown field leaves the source untouched.
+        ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "e");
+        (Expression? member, _) = MemberPathResolver.Resolve(parameter, fieldName);
 
-        return property is null
+        return member is null
             ? (source, false)
-            : (ApplyOrderBy(source, property, descending, isFirst), true);
+            : (ApplyOrderBy(source, parameter, member, descending, isFirst), true);
     }
 
     /// <summary>
@@ -112,24 +113,23 @@ internal static class QueryableSortExtensions
         QueryDefinitionBuilder<TEntity> builder)
         where TEntity : class
     {
-        PropertyInfo? property = ResolveProperty<TEntity>(builder.CursorPropertyName)
-            ?? ResolveProperty<TEntity>("Id")
+        ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "e");
+
+        Expression? member = ResolveMember<TEntity>(parameter, builder.CursorPropertyName)
+            ?? ResolveMember<TEntity>(parameter, "Id")
             ?? builder.Columns
                 .Where(c => c.IsSortable && !c.IsShadowProperty)
-                .Select(c => ResolveProperty<TEntity>(c.PropertyName))
-                .FirstOrDefault(p => p is not null);
+                .Select(c => ResolveMember<TEntity>(parameter, c.PropertyName))
+                .FirstOrDefault(m => m is not null);
 
-        return property is null
+        return member is null
             ? source
-            : ApplyOrderBy(source, property, descending: false, isFirst: true);
+            : ApplyOrderBy(source, parameter, member, descending: false, isFirst: true);
     }
 
-    private static PropertyInfo? ResolveProperty<TEntity>(string? name) =>
-        string.IsNullOrEmpty(name)
-            ? null
-            : typeof(TEntity).GetProperty(
-                name,
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+    private static Expression? ResolveMember<TEntity>(ParameterExpression parameter, string? name)
+        where TEntity : class =>
+        string.IsNullOrEmpty(name) ? null : MemberPathResolver.Resolve(parameter, name).Member;
 
     private static IQueryable<TEntity> ApplyOrderByShadow<TEntity>(
         IQueryable<TEntity> source,
@@ -169,15 +169,15 @@ internal static class QueryableSortExtensions
 
     private static IQueryable<TEntity> ApplyOrderBy<TEntity>(
         IQueryable<TEntity> source,
-        PropertyInfo property,
+        ParameterExpression parameter,
+        Expression member,
         bool descending,
         bool isFirst)
         where TEntity : class
     {
-        ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "e");
-        // A [QueryableValueObject] column sorts by its real `.Value` scalar column (ADR-070);
-        // a plain converter-mapped VO still sorts whole-value (the converter round-trips).
-        Expression member = ValueObjectMemberResolver.Resolve(parameter, property);
+        // `member` is already resolved by MemberPathResolver — a nested complex-member path is walked,
+        // and a [QueryableValueObject] leaf sorts by its real `.Value` scalar column (ADR-070); a plain
+        // converter-mapped VO still sorts whole-value (the converter round-trips).
         LambdaExpression keySelector = Expression.Lambda(member, parameter);
 
         string methodName = (isFirst, descending) switch

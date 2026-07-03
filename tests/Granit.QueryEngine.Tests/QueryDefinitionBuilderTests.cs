@@ -144,8 +144,21 @@ public sealed class QueryDefinitionBuilderTests
     {
         QueryDefinitionBuilder<TestEntity> builder = new();
 
+        // A non-member expression (method call) is not a resolvable column path.
         Should.Throw<ArgumentException>(() =>
-            builder.Column(e => e.Name.Length));
+            builder.Column(e => e.Name.Substring(0)));
+    }
+
+    [Fact]
+    public void Column_on_a_nested_member_records_the_dotted_path()
+    {
+        QueryDefinitionBuilder<TestEntity> builder = new();
+
+        // Nested member access is accepted and recorded as a dotted path (EF complex-type members);
+        // whether it resolves to a mapped column is enforced at query time, not here.
+        builder.Column(e => e.Name.Length);
+
+        builder.Columns.Single().PropertyName.ShouldBe("Name.Length");
     }
 
     [Fact]
