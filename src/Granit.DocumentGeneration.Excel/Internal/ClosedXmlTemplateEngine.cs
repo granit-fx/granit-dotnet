@@ -43,7 +43,7 @@ internal sealed class ClosedXmlTemplateEngine : ITemplateEngine
         string.Equals(descriptor.MimeType, ExcelMimeType, StringComparison.OrdinalIgnoreCase);
 
     /// <inheritdoc/>
-    public Task<RenderedContent> RenderAsync<TData>(
+    public async Task<RenderedContent> RenderAsync<TData>(
         TemplateDescriptor descriptor,
         TData data,
         TemplatingDocFormat targetFormat,
@@ -53,8 +53,8 @@ internal sealed class ClosedXmlTemplateEngine : ITemplateEngine
         byte[] templateBytes = Convert.FromBase64String(descriptor.Content);
         Dictionary<string, string> substitutions = BuildSubstitutions(data);
 
-        using MemoryStream outputStream = new();
-        using (MemoryStream inputStream = new(templateBytes))
+        await using MemoryStream outputStream = new();
+        await using (MemoryStream inputStream = new(templateBytes))
         using (XLWorkbook workbook = new(inputStream))
         {
             ApplySubstitutions(workbook, substitutions);
@@ -67,7 +67,7 @@ internal sealed class ClosedXmlTemplateEngine : ITemplateEngine
             RevisionId = descriptor.RevisionId,
         };
 
-        return Task.FromResult(result);
+        return await Task.FromResult(result);
     }
 
     private static Dictionary<string, string> BuildSubstitutions<TData>(TData data)

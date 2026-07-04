@@ -121,7 +121,7 @@ internal sealed partial class TokenEndpointService(
             ? nonces.FirstOrDefault()
             : null;
 
-        using Stream responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken)
+        await using Stream responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken)
             .ConfigureAwait(false);
 
         using JsonDocument doc = await JsonDocument.ParseAsync(responseStream, cancellationToken: cancellationToken)

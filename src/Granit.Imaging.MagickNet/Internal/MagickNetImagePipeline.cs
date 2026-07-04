@@ -138,14 +138,14 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
     }
 
     /// <inheritdoc/>
-    public Task<ImageResult> ToResultAsync(CancellationToken cancellationToken = default)
+    public async Task<ImageResult> ToResultAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         ApplyOutputSettings();
 
         ImageFormat outputFormat = _targetFormat ?? SourceFormat;
-        using MemoryStream ms = new();
+        await using MemoryStream ms = new();
         _image.Write(ms, MagickFormatMapper.ToMagickFormat(outputFormat));
 
         RecordMetrics(outputFormat);
@@ -156,7 +156,7 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
             (int)_image.Width,
             (int)_image.Height);
 
-        return Task.FromResult(result);
+        return await Task.FromResult(result);
     }
 
     /// <inheritdoc/>

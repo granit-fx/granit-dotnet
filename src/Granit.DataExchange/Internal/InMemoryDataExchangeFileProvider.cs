@@ -33,17 +33,17 @@ internal sealed class InMemoryDataExchangeFileProvider : IDataExchangeFileProvid
     }
 
     /// <inheritdoc/>
-    public Task<BlobReference> SaveAsync(string fileName, Stream content, CancellationToken cancellationToken = default)
+    public async Task<BlobReference> SaveAsync(string fileName, Stream content, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(content);
 
-        using MemoryStream buffer = new();
+        await using MemoryStream buffer = new();
         content.CopyTo(buffer);
 
         string reference = $"mem-{Interlocked.Increment(ref _counter)}";
         _store[reference] = buffer.ToArray();
 
-        return Task.FromResult(BlobReference.Create(reference));
+        return await Task.FromResult(BlobReference.Create(reference));
     }
 
     /// <inheritdoc/>

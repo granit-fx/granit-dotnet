@@ -19,7 +19,7 @@ internal sealed class DefaultBlobContentReader(
         Stream stream = await storeProvider.OpenReadAsync(bucket, descriptor.ObjectKey, cancellationToken).ConfigureAwait(false);
         await using (stream.ConfigureAwait(false))
         {
-            using var ms = new MemoryStream();
+            await using var ms = new MemoryStream();
             await stream.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
             return new BlobContent(ms.ToArray(), descriptor.VerifiedContentType!, descriptor.OriginalFileName);
         }

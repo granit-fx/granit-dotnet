@@ -48,7 +48,7 @@ internal sealed class DatabaseBlobClient(
 
         // EF Core maps the column as `byte[]`, which requires full materialization before SaveChanges;
         // we still cap the read at MaxBlobSizeBytes + 1 to fail fast on oversize unseekable streams.
-        using MemoryStream ms = new();
+        await using MemoryStream ms = new();
         byte[] buffer = new byte[81920];
         long totalRead = 0;
         int read;

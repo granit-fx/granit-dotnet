@@ -241,7 +241,7 @@ public sealed partial class PdfOcrTextExtractor : ITextExtractor
 
         try
         {
-            using MemoryStream pngStream = new(pngBytes);
+            await using MemoryStream pngStream = new(pngBytes);
             TextExtractionResult result = await ocrExtractor.ExtractAsync(
                 pngStream, ImagePng, maxCharLength, cancellationToken).ConfigureAwait(false);
             return result.Content;
@@ -290,7 +290,7 @@ public sealed partial class PdfOcrTextExtractor : ITextExtractor
         Stream source, long maxBytes, CancellationToken cancellationToken)
     {
         LimitedStream limited = new(source, maxBytes);
-        using MemoryStream buffer = new();
+        await using MemoryStream buffer = new();
         await limited.CopyToAsync(buffer, cancellationToken).ConfigureAwait(false);
         return buffer.ToArray();
     }

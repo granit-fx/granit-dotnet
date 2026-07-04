@@ -443,7 +443,7 @@ internal static partial class BffLoginEndpoints
                 dpopNonce = successNonce.FirstOrDefault() ?? dpopNonce;
             }
 
-            using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
+            await using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             JsonElement tokenResponse = await JsonSerializer.DeserializeAsync<JsonElement>(stream, cancellationToken: cancellationToken)
@@ -526,7 +526,7 @@ internal static partial class BffLoginEndpoints
                 return null;
             }
 
-            using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
+            await using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             JsonElement parResponse = await JsonSerializer.DeserializeAsync<JsonElement>(
@@ -583,7 +583,7 @@ internal static partial class BffLoginEndpoints
     {
         try
         {
-            using Stream errorStream = await response.Content.ReadAsStreamAsync(cancellationToken)
+            await using Stream errorStream = await response.Content.ReadAsStreamAsync(cancellationToken)
                 .ConfigureAwait(false);
             JsonElement errorBody = await JsonSerializer.DeserializeAsync<JsonElement>(
                 errorStream, cancellationToken: cancellationToken).ConfigureAwait(false);

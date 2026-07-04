@@ -166,7 +166,7 @@ internal sealed partial class LogoutTokenValidator(
             .GetAsync(discoveryUrl, ct).ConfigureAwait(false);
         discoveryResponse.EnsureSuccessStatusCode();
 
-        using Stream discoveryStream = await discoveryResponse.Content
+        await using Stream discoveryStream = await discoveryResponse.Content
             .ReadAsStreamAsync(ct).ConfigureAwait(false);
         using JsonDocument discoveryDoc = await JsonDocument
             .ParseAsync(discoveryStream, cancellationToken: ct).ConfigureAwait(false);
@@ -185,7 +185,7 @@ internal sealed partial class LogoutTokenValidator(
             .GetAsync(jwksUri, ct).ConfigureAwait(false);
         jwksResponse.EnsureSuccessStatusCode();
 
-        using Stream jwksStream = await jwksResponse.Content
+        await using Stream jwksStream = await jwksResponse.Content
             .ReadAsStreamAsync(ct).ConfigureAwait(false);
         using JsonDocument jwksDoc = await JsonDocument
             .ParseAsync(jwksStream, cancellationToken: ct).ConfigureAwait(false);

@@ -63,7 +63,7 @@ internal static class IdentityWebhookEndpoints
     {
         // Read raw body for signature validation (server-verified size check)
         request.EnableBuffering();
-        using var ms = new MemoryStream(capacity: 1024);
+        await using var ms = new MemoryStream(capacity: 1024);
         await request.Body.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
 
         if (ms.Length > MaxWebhookBodySize)

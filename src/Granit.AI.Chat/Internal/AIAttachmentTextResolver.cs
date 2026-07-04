@@ -51,7 +51,7 @@ internal sealed class AIAttachmentTextResolver(
                 continue;
             }
 
-            using var stream = new MemoryStream(data.Bytes.ToArray(), writable: false);
+            await using var stream = new MemoryStream(data.Bytes.ToArray(), writable: false);
             TextExtractionResult result = await extractionPipeline
                 .ExtractAsync(stream, data.ContentType, cancellationToken).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(result.Content))

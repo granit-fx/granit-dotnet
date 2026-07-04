@@ -47,7 +47,7 @@ internal static class OpenXmlExtraction
         ArgumentNullException.ThrowIfNull(source);
 
         LimitedStream limited = new(source, maxBytes);
-        using MemoryStream buffer = new();
+        await using MemoryStream buffer = new();
         await limited.CopyToAsync(buffer, cancellationToken).ConfigureAwait(false);
         return buffer.ToArray();
     }

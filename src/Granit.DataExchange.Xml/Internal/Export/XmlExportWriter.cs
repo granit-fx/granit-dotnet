@@ -63,7 +63,7 @@ internal sealed class XmlExportWriter : IExportWriter
             GetOrCreateSerializer(field.SelectorType!);
         }
 
-        using var xmlWriter = XmlWriter.Create(output, WriterSettings);
+        await using var xmlWriter = XmlWriter.Create(output, WriterSettings);
 
         await xmlWriter.WriteStartDocumentAsync().ConfigureAwait(false);
         await xmlWriter.WriteStartElementAsync(null, "Export", null).ConfigureAwait(false);

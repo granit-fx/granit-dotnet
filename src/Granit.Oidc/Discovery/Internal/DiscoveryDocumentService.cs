@@ -41,7 +41,7 @@ internal sealed partial class DiscoveryDocumentService(
                 using HttpResponseMessage response = await httpClient.GetAsync(discoveryUrl, ct).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
-                using Stream stream = await response.Content.ReadAsStreamAsync(ct).ConfigureAwait(false);
+                await using Stream stream = await response.Content.ReadAsStreamAsync(ct).ConfigureAwait(false);
                 using JsonDocument doc = await JsonDocument.ParseAsync(stream, cancellationToken: ct).ConfigureAwait(false);
 
                 var discoveryDocument = OidcDiscoveryDocument.FromJson(doc.RootElement);

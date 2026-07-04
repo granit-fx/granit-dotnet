@@ -134,7 +134,7 @@ public sealed partial class TesseractOcrExtractor : ITextExtractor
         Stream source, long maxBytes, CancellationToken cancellationToken)
     {
         LimitedStream limited = new(source, maxBytes);
-        using MemoryStream buffer = new();
+        await using MemoryStream buffer = new();
         await limited.CopyToAsync(buffer, cancellationToken).ConfigureAwait(false);
         return buffer.ToArray();
     }

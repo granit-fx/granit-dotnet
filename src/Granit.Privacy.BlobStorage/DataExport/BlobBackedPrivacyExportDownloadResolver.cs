@@ -121,7 +121,7 @@ internal sealed class BlobBackedPrivacyExportDownloadResolver(
             .OpenReadAsync(PrivacyExportContainerNames.FragmentContainer, descriptor.ObjectKey, cancellationToken)
             .ConfigureAwait(false);
 
-        using MemoryStream buffer = new();
+        await using MemoryStream buffer = new();
         await ciphertextStream.CopyToAsync(buffer, cancellationToken).ConfigureAwait(false);
 
         return contentEncryptor.Decrypt(buffer.GetBuffer().AsSpan(0, (int)buffer.Length));

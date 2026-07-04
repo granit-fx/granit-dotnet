@@ -64,7 +64,7 @@ public sealed partial class ExcelTextExtractor : ITextExtractor
 
         try
         {
-            using MemoryStream pkg = new(bytes, writable: false);
+            await using MemoryStream pkg = new(bytes, writable: false);
             using var doc = SpreadsheetDocument.Open(
                 pkg, isEditable: false, OpenXmlExtraction.BuildOpenSettings(_options));
 

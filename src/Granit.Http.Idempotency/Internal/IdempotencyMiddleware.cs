@@ -213,7 +213,7 @@ internal sealed partial class IdempotencyMiddleware(
         Stream originalBody = context.Response.Body;
         CancellationToken originalAborted = context.RequestAborted;
 
-        using RecyclableMemoryStream captureStream = _streamManager.GetStream("idempotency");
+        await using RecyclableMemoryStream captureStream = _streamManager.GetStream("idempotency");
         context.Response.Body = captureStream;
 
         using CancellationTokenSource timeoutCts = new(_opts.ExecutionTimeout);

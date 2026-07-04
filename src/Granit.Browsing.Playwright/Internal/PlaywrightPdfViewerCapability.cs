@@ -82,7 +82,7 @@ internal sealed partial class PlaywrightPdfViewerCapability : IPdfViewerCapabili
 
         using Activity? activity = BrowsingActivitySource.Source.StartActivity(BrowsingActivitySource.PdfViewerOpen);
 
-        using MemoryStream buffer = new();
+        await using MemoryStream buffer = new();
         await pdf.CopyToAsync(buffer, cancellationToken).ConfigureAwait(false);
         byte[] bytes = buffer.ToArray();
 

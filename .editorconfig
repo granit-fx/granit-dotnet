@@ -140,6 +140,10 @@ dotnet_diagnostic.RCS1006.severity = warning
 dotnet_diagnostic.RCS1196.severity = warning
 # RCS1267: use string interpolation instead of string.Concat
 dotnet_diagnostic.RCS1267.severity = warning
+# RCS1261: resource can be disposed asynchronously (using → await using in async methods).
+# Note: the implicit DisposeAsync await carries no ConfigureAwait(false), but that is moot
+# under ASP.NET Core (no sync context) and no analyzer flags it.
+dotnet_diagnostic.RCS1261.severity = warning
 #
 # RCS1243 (duplicate word in comment) deliberately NOT promoted: it corrupts legitimate
 # repeated format placeholders (e.g. "XXX XXX XXX" SIN masks → "XXX XXX") — a silent doc bug.

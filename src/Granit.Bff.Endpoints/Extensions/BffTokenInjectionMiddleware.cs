@@ -347,7 +347,7 @@ public sealed partial class BffTokenInjectionMiddleware
                 dpopNonce = nonceValues.FirstOrDefault() ?? dpopNonce;
             }
 
-            using Stream stream = await response.Content.ReadAsStreamAsync(context.RequestAborted)
+            await using Stream stream = await response.Content.ReadAsStreamAsync(context.RequestAborted)
                 .ConfigureAwait(false);
 
             JsonElement tokenResponse = await JsonSerializer.DeserializeAsync<JsonElement>(

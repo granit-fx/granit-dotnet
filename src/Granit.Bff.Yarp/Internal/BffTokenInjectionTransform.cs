@@ -251,7 +251,7 @@ internal sealed partial class BffTokenInjectionTransform(
                 dpopNonce = nonceValues.FirstOrDefault() ?? dpopNonce;
             }
 
-            using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
+            await using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             JsonElement tokenResponse = await JsonSerializer.DeserializeAsync<JsonElement>(

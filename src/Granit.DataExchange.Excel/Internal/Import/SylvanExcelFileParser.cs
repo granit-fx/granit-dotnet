@@ -26,7 +26,7 @@ internal sealed class SylvanExcelFileParser : IFileParser
         FileParsingOptions options,
         CancellationToken cancellationToken = default)
     {
-        using ExcelDataReader reader = await CreateReaderAsync(stream, options, cancellationToken).ConfigureAwait(false);
+        await using ExcelDataReader reader = await CreateReaderAsync(stream, options, cancellationToken).ConfigureAwait(false);
 
         List<string> headers = new(reader.FieldCount);
         for (int i = 0; i < reader.FieldCount; i++)
@@ -44,7 +44,7 @@ internal sealed class SylvanExcelFileParser : IFileParser
         int maxRows = 10,
         CancellationToken cancellationToken = default)
     {
-        using ExcelDataReader reader = await CreateReaderAsync(stream, options, cancellationToken).ConfigureAwait(false);
+        await using ExcelDataReader reader = await CreateReaderAsync(stream, options, cancellationToken).ConfigureAwait(false);
         int fieldCount = reader.FieldCount;
 
         List<string[]> rows = [];
@@ -78,7 +78,7 @@ internal sealed class SylvanExcelFileParser : IFileParser
         FileParsingOptions options,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        using ExcelDataReader reader = await CreateReaderAsync(stream, options, cancellationToken).ConfigureAwait(false);
+        await using ExcelDataReader reader = await CreateReaderAsync(stream, options, cancellationToken).ConfigureAwait(false);
 
         List<string> headers = new(reader.FieldCount);
         for (int i = 0; i < reader.FieldCount; i++)

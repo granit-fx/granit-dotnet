@@ -61,7 +61,7 @@ public sealed partial class WordTextExtractor : ITextExtractor
 
         try
         {
-            using MemoryStream pkg = new(bytes, writable: false);
+            await using MemoryStream pkg = new(bytes, writable: false);
             using var doc = WordprocessingDocument.Open(
                 pkg, isEditable: false, OpenXmlExtraction.BuildOpenSettings(_options));
 
