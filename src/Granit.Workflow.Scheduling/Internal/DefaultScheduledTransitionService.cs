@@ -42,12 +42,9 @@ internal sealed class DefaultScheduledTransitionService(
             .GetByCorrelationIdAsync(correlationId, cancellationToken)
             .ConfigureAwait(false);
 
-        foreach (ScheduledAction action in actions)
+        foreach (ScheduledAction action in actions.Where(a => a.Status == ScheduledActionStatus.Pending))
         {
-            if (action.Status == ScheduledActionStatus.Pending)
-            {
-                await scheduler.CancelAsync(ScheduledActionId.Create(action.Id), cancellationToken).ConfigureAwait(false);
-            }
+            await scheduler.CancelAsync(ScheduledActionId.Create(action.Id), cancellationToken).ConfigureAwait(false);
         }
     }
 
