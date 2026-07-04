@@ -108,6 +108,11 @@ dotnet_diagnostic.RCS1077.severity = warning
 dotnet_diagnostic.RCS1197.severity = warning
 # RCS1123: add parentheses when necessary (explicit *-in-+ grouping; precedence unchanged)
 dotnet_diagnostic.RCS1123.severity = warning
+#
+# RCS1124 (inline single-use local) was evaluated and deliberately left at the suggestion
+# baseline: its auto-fix removes named `snapshot` locals that document volatile-read
+# semantics, emits `(MemoryStream)new()`-style casts, and left non-fixable cases — a
+# net readability loss for a subjective gain. Do not promote without hand-curation.
 
 [*.{csproj,props,targets}]
 indent_size = 2
