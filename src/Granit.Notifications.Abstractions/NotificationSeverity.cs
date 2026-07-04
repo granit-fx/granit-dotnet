@@ -4,13 +4,13 @@ namespace Granit.Notifications;
 public enum NotificationSeverity
 {
     /// <summary>Informational notification.</summary>
-    Info = 0,
+    Info,
     /// <summary>Success notification.</summary>
-    Success = 1,
+    Success,
     /// <summary>Warning notification.</summary>
-    Warning = 2,
+    Warning,
     /// <summary>Error notification.</summary>
-    Error = 3,
+    Error,
     /// <summary>Fatal/critical notification.</summary>
-    Fatal = 4,
+    Fatal,
 }

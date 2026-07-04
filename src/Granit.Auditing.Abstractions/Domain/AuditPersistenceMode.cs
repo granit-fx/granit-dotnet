@@ -15,12 +15,12 @@ public enum AuditPersistenceMode
     /// <c>AuditingOptions.PersistenceMode</c> never silently
     /// falls back to a lossy mode. Opt into <see cref="Async"/> explicitly for throughput.
     /// </remarks>
-    Strict = 0,
+    Strict,
 
     /// <summary>
     /// Entries are published to a <c>Channel&lt;T&gt;</c> and persisted asynchronously
     /// by a background worker. Best performance, but buffered entries may be lost on an
     /// ungraceful crash (the graceful-shutdown drain only covers SIGTERM, not SIGKILL).
     /// </summary>
-    Async = 1,
+    Async,
 }

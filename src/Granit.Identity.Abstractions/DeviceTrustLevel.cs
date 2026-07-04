@@ -7,17 +7,17 @@ namespace Granit.Identity;
 public enum DeviceTrustLevel
 {
     /// <summary>No trust recorded — the device is treated as new/unknown.</summary>
-    None = 0,
+    None,
 
     /// <summary>
     /// Trust established from a signed, revocable device token ("remember this device"). Bound to a
     /// data-protected cookie, time-bounded; spoofable only by exfiltrating the token.
     /// </summary>
-    Remembered = 1,
+    Remembered,
 
     /// <summary>
     /// Trust backed by a device-bound credential (passkey / WebAuthn) — the strongest signal, since the
     /// credential cannot leave the authenticator.
     /// </summary>
-    Strong = 2,
+    Strong,
 }

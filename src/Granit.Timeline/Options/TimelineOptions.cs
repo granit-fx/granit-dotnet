@@ -47,8 +47,8 @@ public enum SourceFailurePolicy
     /// Drop the failing source from the merged response and surface it via the
     /// <c>X-Timeline-Degraded-Sources</c> header. Recommended for production.
     /// </summary>
-    DegradeGracefully = 0,
+    DegradeGracefully,
 
     /// <summary>Rethrow the first source failure as a 500. Use in dev/test to fail loud.</summary>
-    ThrowAll = 1,
+    ThrowAll,
 }

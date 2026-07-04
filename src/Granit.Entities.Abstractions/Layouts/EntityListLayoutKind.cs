@@ -9,14 +9,14 @@ namespace Granit.Entities.Layouts;
 public enum EntityListLayoutKind
 {
     /// <summary>Default tabular layout — driven by the entity's <c>QueryDefinition</c> columns.</summary>
-    List = 0,
+    List,
 
     /// <summary>Card-board layout grouped by a discrete property (typically an enum or lookup).</summary>
-    Kanban = 1,
+    Kanban,
 
     /// <summary>Time-axis layout (month / week / day grid) keyed on a date or datetime property.</summary>
-    Calendar = 2,
+    Calendar,
 
     /// <summary>Image-card grid layout keyed on a <c>BlobReference</c> property.</summary>
-    Gallery = 3,
+    Gallery,
 }

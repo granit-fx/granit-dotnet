@@ -10,18 +10,18 @@ public enum SensitiveDataMode
     /// Replace the value with a fixed mask (<c>"***"</c>).
     /// Default — suitable for most PII (names, emails, addresses).
     /// </summary>
-    Mask = 0,
+    Mask,
 
     /// <summary>
     /// Remove the property entirely from the output.
     /// Use for secrets, passwords, tokens — values that should never leave the system boundary.
     /// </summary>
-    Omit = 1,
+    Omit,
 
     /// <summary>
     /// Replace the value with a one-way SHA-256 hash.
     /// Preserves correlation capability (same input → same hash) without exposing the actual value.
     /// Use for identifiers that consumers need to group or deduplicate (e.g., external user IDs).
     /// </summary>
-    Hash = 2,
+    Hash,
 }

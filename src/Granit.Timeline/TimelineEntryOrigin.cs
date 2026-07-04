@@ -11,8 +11,8 @@ namespace Granit.Timeline;
 public enum TimelineEntryOrigin
 {
     /// <summary>Entry stored directly in the Timeline table (Comment, InternalNote, or native SystemLog).</summary>
-    Native = 0,
+    Native,
 
     /// <summary>Entry projected from a registered <see cref="Abstractions.ITimelineSource"/>.</summary>
-    External = 1,
+    External,
 }

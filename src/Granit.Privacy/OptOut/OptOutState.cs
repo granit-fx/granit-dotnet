@@ -6,8 +6,8 @@ namespace Granit.Privacy.OptOut;
 public enum OptOutState
 {
     /// <summary>Opt-out is active — data must not be sold or shared.</summary>
-    Active = 0,
+    Active,
 
     /// <summary>Opt-out has been revoked by the user.</summary>
-    Revoked = 1,
+    Revoked,
 }

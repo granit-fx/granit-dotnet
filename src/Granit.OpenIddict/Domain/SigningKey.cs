@@ -100,11 +100,11 @@ public sealed class SigningKey : CreationAuditedEntity, IConcurrencyAware
 public enum SigningKeyStatus
 {
     /// <summary>Key is actively used for signing new tokens.</summary>
-    Active = 0,
+    Active,
 
     /// <summary>Key is retired but still valid for verification (grace period).</summary>
-    Retired = 1,
+    Retired,
 
     /// <summary>Key is revoked and should not be used for anything.</summary>
-    Revoked = 2,
+    Revoked,
 }

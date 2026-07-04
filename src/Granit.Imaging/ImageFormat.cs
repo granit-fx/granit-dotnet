@@ -6,23 +6,23 @@ namespace Granit.Imaging;
 public enum ImageFormat
 {
     /// <summary>JPEG format — lossy compression, no transparency.</summary>
-    Jpeg = 0,
+    Jpeg,
 
     /// <summary>PNG format — lossless compression, supports transparency.</summary>
-    Png = 1,
+    Png,
 
     /// <summary>WebP format — modern lossy/lossless, smaller than JPEG at equivalent quality.</summary>
-    WebP = 2,
+    WebP,
 
     /// <summary>AVIF format — next-gen lossy/lossless based on AV1, best compression ratio.</summary>
-    Avif = 3,
+    Avif,
 
     /// <summary>GIF format — limited to 256 colors, supports animation.</summary>
-    Gif = 4,
+    Gif,
 
     /// <summary>BMP format — uncompressed bitmap.</summary>
-    Bmp = 5,
+    Bmp,
 
     /// <summary>TIFF format — lossless, used in print and medical imaging.</summary>
-    Tiff = 6,
+    Tiff,
 }

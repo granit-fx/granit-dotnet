@@ -21,17 +21,17 @@ public enum Sensitivity
     /// Low-sensitivity personal data — not a direct identifier on its own.
     /// Examples: first name, last name, username, display name, job title.
     /// </summary>
-    Internal = 0,
+    Internal,
 
     /// <summary>
     /// PII that can identify a person directly or indirectly.
     /// Examples: email, phone number, IP address, postal address, date of birth.
     /// </summary>
-    Confidential = 1,
+    Confidential,
 
     /// <summary>
     /// Highly sensitive data — secrets, credentials, or special-category PII (GDPR Art. 9).
     /// Examples: password hash, API key, token, SSN, health data, bank account, biometric data.
     /// </summary>
-    Restricted = 2,
+    Restricted,
 }

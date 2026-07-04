@@ -7,14 +7,14 @@ namespace Granit.Http.Cookies;
 public enum CookieConsentMode
 {
     /// <summary>User must explicitly opt in before non-essential cookies are set (GDPR, LGPD).</summary>
-    OptIn = 0,
+    OptIn,
 
     /// <summary>Cookies allowed by default; user can opt out (CCPA).</summary>
-    OptOut = 1,
+    OptOut,
 
     /// <summary>Opt-in for sensitive categories, opt-out for non-sensitive (some US states).</summary>
-    Hybrid = 2,
+    Hybrid,
 
     /// <summary>No specific consent requirement for this jurisdiction.</summary>
-    None = 3,
+    None,
 }

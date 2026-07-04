@@ -7,17 +7,17 @@ namespace Granit.RateLimiting.Options;
 public enum RateLimitPartition : byte
 {
     /// <summary>Partition by tenant only. All users of a tenant share the same quota.</summary>
-    Tenant = 0,
+    Tenant,
 
     /// <summary>Partition by tenant and client IP. Each IP gets its own quota within a tenant.</summary>
-    TenantAndIp = 1,
+    TenantAndIp,
 
     /// <summary>Partition by client IP only. Recommended for unauthenticated endpoints (login, password reset).</summary>
-    Ip = 2,
+    Ip,
 
     /// <summary>Partition by authenticated user. Each user gets their own quota.</summary>
-    User = 3,
+    User,
 
     /// <summary>Partition by tenant and authenticated user. Each user gets their own quota within a tenant.</summary>
-    TenantAndUser = 4,
+    TenantAndUser,
 }

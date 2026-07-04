@@ -22,7 +22,7 @@ public enum OrphanedRolePolicy
     /// Zero-config upgrade target: existing Phase 2 consumers stay on this policy
     /// unless they explicitly opt in to a stricter one.
     /// </remarks>
-    KeepAndLog = 0,
+    KeepAndLog,
 
     /// <summary>
     /// The sync flips <c>IsOrphaned = true</c> and stamps <c>OrphanedAt</c> on any
@@ -32,7 +32,7 @@ public enum OrphanedRolePolicy
     /// restores (admin re-adds the role upstream, the next sync clears the flag) or
     /// hard-deletes (via the admin endpoint, tracked separately).
     /// </summary>
-    SoftDelete = 1,
+    SoftDelete,
 
     /// <summary>
     /// The sync removes the <see cref="Domain.RoleMetadata"/> row entirely. The
@@ -42,5 +42,5 @@ public enum OrphanedRolePolicy
     /// of truth (IaC rewrites, SSO group mapping) or during a migration that
     /// explicitly accepts the blast radius.
     /// </summary>
-    HardDelete = 2,
+    HardDelete,
 }

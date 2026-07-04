@@ -6,14 +6,14 @@ namespace Granit.Auditing.Domain;
 public enum AuditChangeType
 {
     /// <summary>A new entity was created.</summary>
-    Created = 0,
+    Created,
 
     /// <summary>An existing entity was modified.</summary>
-    Modified = 1,
+    Modified,
 
     /// <summary>An entity was physically deleted.</summary>
-    Deleted = 2,
+    Deleted,
 
     /// <summary>An entity was soft-deleted (IsDeleted set to true).</summary>
-    SoftDeleted = 3,
+    SoftDeleted,
 }

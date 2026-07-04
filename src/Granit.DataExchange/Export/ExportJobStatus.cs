@@ -6,14 +6,14 @@ namespace Granit.DataExchange.Export;
 public enum ExportJobStatus
 {
     /// <summary>Job created and queued for background execution.</summary>
-    Queued = 0,
+    Queued,
 
     /// <summary>Export is currently being generated.</summary>
-    Exporting = 1,
+    Exporting,
 
     /// <summary>Export completed successfully — file available for download.</summary>
-    Completed = 2,
+    Completed,
 
     /// <summary>Export failed.</summary>
-    Failed = 3,
+    Failed,
 }

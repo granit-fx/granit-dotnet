@@ -40,8 +40,8 @@ public sealed class PdfAConversionOptions
 public enum PdfAConformanceLevel
 {
     /// <summary>PDF/A-3b — visual appearance preserved, embedded files allowed. Required for Factur-X.</summary>
-    PdfA3b = 0,
+    PdfA3b,
 
     /// <summary>PDF/A-2a — tagged PDF with accessibility support. Suitable for medical document archival.</summary>
-    PdfA2a = 1,
+    PdfA2a,
 }

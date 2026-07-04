@@ -8,21 +8,21 @@ namespace Granit.Workflow.Domain;
 public enum WorkflowLifecycleStatus
 {
     /// <summary>Being edited. Not visible to standard queries (filtered by IPublishable).</summary>
-    Draft = 0,
+    Draft,
 
     /// <summary>Submitted for review. Awaiting approval from a user with the required permission.</summary>
-    PendingReview = 1,
+    PendingReview,
 
     /// <summary>
     /// Active published version. Exactly one per <see cref="IVersioned.VersionId"/>
     /// at any time (enforced by unique filtered index).
     /// Maps to <c>IPublishable.IsPublished = true</c>.
     /// </summary>
-    Published = 2,
+    Published,
 
     /// <summary>
     /// Former published version, superseded by a newer publication.
     /// Preserved indefinitely for ISO 27001 audit trail (3-year retention).
     /// </summary>
-    Archived = 3,
+    Archived,
 }

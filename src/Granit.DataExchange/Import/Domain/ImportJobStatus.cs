@@ -6,26 +6,26 @@ namespace Granit.DataExchange.Import.Domain;
 public enum ImportJobStatus
 {
     /// <summary>File uploaded, job created.</summary>
-    Created = 0,
+    Created,
 
     /// <summary>Headers extracted, preview and mapping suggestions generated.</summary>
-    Previewed = 1,
+    Previewed,
 
     /// <summary>Column mappings confirmed by the user.</summary>
-    Mapped = 2,
+    Mapped,
 
     /// <summary>Import is currently executing (Wolverine background handler).</summary>
-    Executing = 3,
+    Executing,
 
     /// <summary>All rows imported successfully.</summary>
-    Completed = 4,
+    Completed,
 
     /// <summary>Some rows failed but others succeeded.</summary>
-    PartiallyCompleted = 5,
+    PartiallyCompleted,
 
     /// <summary>Import failed entirely.</summary>
-    Failed = 6,
+    Failed,
 
     /// <summary>Import was cancelled by the user.</summary>
-    Cancelled = 7,
+    Cancelled,
 }

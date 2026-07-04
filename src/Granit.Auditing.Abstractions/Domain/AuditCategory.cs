@@ -15,21 +15,21 @@ namespace Granit.Auditing.Domain;
 public enum AuditCategory
 {
     /// <summary>Entity Create / Update / Delete / SoftDelete operations.</summary>
-    DataMutation = 0,
+    DataMutation,
 
     /// <summary>Settings and feature flag changes (always-on, non-disableable).</summary>
-    ConfigurationChange = 1,
+    ConfigurationChange,
 
     /// <summary>Read operations (opt-in, disabled by default).</summary>
-    DataAccess = 2,
+    DataAccess,
 
     /// <summary>Authorization failures (opt-in).</summary>
-    AccessDenied = 3,
+    AccessDenied,
 
     /// <summary>
     /// Privileged-access operations that were granted (e.g. host tenant impersonation, admin masquerading).
     /// Recorded as a counterpart to <see cref="AccessDenied"/> so RSSI dashboards can answer
     /// "what did privileged actors successfully do" without joining against logs/metrics.
     /// </summary>
-    PrivilegedAccess = 4,
+    PrivilegedAccess,
 }

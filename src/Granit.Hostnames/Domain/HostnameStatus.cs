@@ -8,14 +8,14 @@ namespace Granit.Hostnames.Domain;
 public enum HostnameStatus
 {
     /// <summary>Registered but not yet verified — no DNS challenge attempted.</summary>
-    Pending = 0,
+    Pending,
 
     /// <summary>Verification in progress — DNS is being polled against the expected records.</summary>
-    Verifying = 1,
+    Verifying,
 
     /// <summary>Verified and serving — eligible for host-based routing.</summary>
-    Active = 2,
+    Active,
 
     /// <summary>Verification failed — misconfigured DNS or a conflicting record.</summary>
-    Error = 3,
+    Error,
 }

@@ -6,17 +6,17 @@ namespace Granit.Http.Cookies;
 public enum CookieCategory
 {
     /// <summary>Cookies essential for the application to function (no consent required).</summary>
-    StrictlyNecessary = 0,
+    StrictlyNecessary,
 
     /// <summary>Cookies that remember user preferences (language, theme).</summary>
-    Preferences = 1,
+    Preferences,
 
     /// <summary>Cookies used for analytics and usage tracking.</summary>
-    Analytics = 2,
+    Analytics,
 
     /// <summary>Cookies used for advertising and marketing.</summary>
-    Marketing = 3,
+    Marketing,
 
     /// <summary>Cookies used for selling or sharing personal information (CCPA "Do Not Sell or Share").</summary>
-    SaleOrSharing = 4,
+    SaleOrSharing,
 }

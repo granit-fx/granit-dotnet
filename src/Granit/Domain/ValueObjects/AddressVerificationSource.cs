@@ -7,20 +7,20 @@ namespace Granit.Domain.ValueObjects;
 public enum AddressVerificationSource
 {
     /// <summary>No source (the default for <see cref="AddressVerificationStatus.Unverified"/>).</summary>
-    None = 0,
+    None,
 
     /// <summary>Inferred from geocoding plausibility — weak (existence, not deliverability).</summary>
-    Geocoding = 1,
+    Geocoding,
 
     /// <summary>An authoritative address-verification provider.</summary>
-    VerificationProvider = 2,
+    VerificationProvider,
 
     /// <summary>A human operator confirmed it.</summary>
-    Manual = 3,
+    Manual,
 
     /// <summary>A successful courier delivery to the address.</summary>
-    Delivery = 4,
+    Delivery,
 
     /// <summary>A successful postal mailing (non-returned mail).</summary>
-    PostalMail = 5,
+    PostalMail,
 }

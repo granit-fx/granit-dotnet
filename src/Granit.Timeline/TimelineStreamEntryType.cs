@@ -12,11 +12,11 @@ namespace Granit.Timeline;
 public enum TimelineStreamEntryType
 {
     /// <summary>Human-authored comment.</summary>
-    Comment = 0,
+    Comment,
 
     /// <summary>Auto-generated system log entry.</summary>
-    SystemLog = 1,
+    SystemLog,
 
     /// <summary>Human-authored internal note (staff-only).</summary>
-    InternalNote = 2,
+    InternalNote,
 }

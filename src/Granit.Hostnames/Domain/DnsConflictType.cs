@@ -4,20 +4,20 @@ namespace Granit.Hostnames.Domain;
 public enum DnsConflictType
 {
     /// <summary>An unexpected A record is present (e.g. pointing at a different IP).</summary>
-    UnexpectedA = 0,
+    UnexpectedA,
 
     /// <summary>An unexpected AAAA record is present.</summary>
-    UnexpectedAaaa = 1,
+    UnexpectedAaaa,
 
     /// <summary>A CNAME record points to the wrong target.</summary>
-    DivergentCname = 2,
+    DivergentCname,
 
     /// <summary>The expected CNAME record is missing.</summary>
-    MissingCname = 3,
+    MissingCname,
 
     /// <summary>The expected TXT verification challenge record is absent or wrong.</summary>
-    MissingTxt = 4,
+    MissingTxt,
 
     /// <summary>DNS resolution failed or timed out.</summary>
-    ResolutionFailure = 5,
+    ResolutionFailure,
 }

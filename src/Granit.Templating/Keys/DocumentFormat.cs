@@ -11,11 +11,11 @@ namespace Granit.Templating.Keys;
 public enum DocumentFormat
 {
     /// <summary>HTML text output — used by <c>ITextTemplateRenderer</c> for email, SMS and push notifications.</summary>
-    Html = 0,
+    Html,
 
     /// <summary>PDF binary output — requires <c>Granit.DocumentGeneration.Pdf</c>.</summary>
-    Pdf = 1,
+    Pdf,
 
     /// <summary>Excel binary output — requires <c>Granit.DocumentGeneration.Excel</c>.</summary>
-    Excel = 2,
+    Excel,
 }

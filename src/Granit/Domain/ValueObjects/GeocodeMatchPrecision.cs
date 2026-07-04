@@ -8,11 +8,11 @@ namespace Granit.Domain.ValueObjects;
 public enum GeocodeMatchPrecision
 {
     /// <summary>Matched to an exact building / house number.</summary>
-    Rooftop = 0,
+    Rooftop,
 
     /// <summary>Matched to a street (interpolated along the road).</summary>
-    Street = 1,
+    Street,
 
     /// <summary>Matched only to a locality / postcode centroid.</summary>
-    Locality = 2,
+    Locality,
 }

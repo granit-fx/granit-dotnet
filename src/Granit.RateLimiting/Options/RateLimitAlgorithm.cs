@@ -6,14 +6,14 @@ namespace Granit.RateLimiting.Options;
 public enum RateLimitAlgorithm : byte
 {
     /// <summary>Sliding window with configurable segments. Most accurate, moderate memory.</summary>
-    SlidingWindow = 0,
+    SlidingWindow,
 
     /// <summary>Fixed window with single counter. Lightest but subject to burst at window edges.</summary>
-    FixedWindow = 1,
+    FixedWindow,
 
     /// <summary>Token bucket with configurable refill rate. Best for controlled burst allowance.</summary>
-    TokenBucket = 2,
+    TokenBucket,
 
     /// <summary>Concurrency limiter. Limits simultaneous in-flight requests, not rate.</summary>
-    Concurrency = 3,
+    Concurrency,
 }

@@ -4,8 +4,8 @@ namespace Granit.Notifications.MobilePush;
 public enum MobilePlatform
 {
     /// <summary>Android device.</summary>
-    Android = 0,
+    Android,
 
     /// <summary>iOS device (iPhone, iPad).</summary>
-    Ios = 1,
+    Ios,
 }

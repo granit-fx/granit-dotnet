@@ -8,11 +8,11 @@ namespace Granit.Entities.Layouts;
 public enum GalleryCardSize
 {
     /// <summary>Compact tile — high density, smaller thumbnails.</summary>
-    Small = 0,
+    Small,
 
     /// <summary>Default tile — balanced density vs preview clarity.</summary>
-    Medium = 1,
+    Medium,
 
     /// <summary>Showcase tile — large preview area, lower density.</summary>
-    Large = 2,
+    Large,
 }

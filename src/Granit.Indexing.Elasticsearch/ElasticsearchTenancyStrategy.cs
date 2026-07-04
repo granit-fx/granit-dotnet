@@ -10,7 +10,7 @@ public enum ElasticsearchTenancyStrategy
     /// on <c>tenant_id</c> applied to every read and write. Cheap on cluster resources;
     /// relies on the framework's filter discipline to keep tenants apart.
     /// </summary>
-    Shared = 0,
+    Shared,
 
     /// <summary>
     /// One physical index per <c>(TKey, TenantId)</c> pair. Stricter isolation
@@ -18,5 +18,5 @@ public enum ElasticsearchTenancyStrategy
     /// extra index per tenant. Recommended for ISO 27001 deployments with hard tenant
     /// separation requirements.
     /// </summary>
-    PerTenant = 1,
+    PerTenant,
 }

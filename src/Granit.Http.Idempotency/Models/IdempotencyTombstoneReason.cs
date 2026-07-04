@@ -15,5 +15,5 @@ public enum IdempotencyTombstoneReason : byte
     /// Response body exceeded <see cref="IdempotencyOptions.MaxResponseSizeBytes"/>.
     /// Replays return HTTP 413 Payload Too Large.
     /// </summary>
-    ResponseTooLarge = 0,
+    ResponseTooLarge,
 }

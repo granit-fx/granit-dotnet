@@ -6,14 +6,14 @@ namespace Granit.Privacy.Regulations;
 public enum ConsentModel
 {
     /// <summary>User must explicitly opt in before processing (GDPR, LGPD, PIPL, DPDPA).</summary>
-    OptIn = 0,
+    OptIn,
 
     /// <summary>Processing allowed by default; user can opt out (CCPA).</summary>
-    OptOut = 1,
+    OptOut,
 
     /// <summary>Opt-in for sensitive data, opt-out for non-sensitive (some US states).</summary>
-    Hybrid = 2,
+    Hybrid,
 
     /// <summary>No specific consent requirement for this jurisdiction.</summary>
-    None = 3,
+    None,
 }

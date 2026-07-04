@@ -7,11 +7,11 @@ namespace Granit.Entities.Layouts;
 public enum KanbanColumnState
 {
     /// <summary>Expanded — header + cards visible.</summary>
-    Open = 0,
+    Open,
 
     /// <summary>Collapsed — header + count only.</summary>
-    Collapsed = 1,
+    Collapsed,
 
     /// <summary>Hidden — column is not rendered (toggleable from the column manager).</summary>
-    Hidden = 2,
+    Hidden,
 }

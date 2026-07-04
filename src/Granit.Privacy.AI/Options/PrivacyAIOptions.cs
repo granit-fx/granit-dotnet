@@ -51,8 +51,8 @@ public sealed class PrivacyAIOptions
 public enum PiiDetectionFailMode
 {
     /// <summary>Assume PII is present on failure (conservative — safe default).</summary>
-    Closed = 0,
+    Closed,
 
     /// <summary>Assume no PII on failure (permissive — for development/testing only).</summary>
-    Open = 1,
+    Open,
 }

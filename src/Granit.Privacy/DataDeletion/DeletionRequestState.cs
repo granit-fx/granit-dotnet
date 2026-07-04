@@ -6,17 +6,17 @@ namespace Granit.Privacy.DataDeletion;
 public enum DeletionRequestState
 {
     /// <summary>Grace period active — deletion not yet executed, user may cancel.</summary>
-    Deferred = 0,
+    Deferred,
 
     /// <summary>
     /// Deadline reached and every registered provider has acknowledged erasure of its data.
     /// This is the only state that proves GDPR Art. 17 completion — the fan-in over provider
     /// acknowledgements guarantees it is never reached while a downstream deletion is still pending.
     /// </summary>
-    Executed = 1,
+    Executed,
 
     /// <summary>User cancelled the deletion request during the grace period.</summary>
-    Cancelled = 2,
+    Cancelled,
 
     /// <summary>
     /// Deadline reached and the provider fan-out has started, but not every provider has
@@ -25,7 +25,7 @@ public enum DeletionRequestState
     /// (<see cref="Events.PersonalDataDeletedEto"/> from each provider) or the acknowledgement
     /// window elapses.
     /// </summary>
-    Executing = 3,
+    Executing,
 
     /// <summary>
     /// The acknowledgement window elapsed before every provider confirmed erasure. At least one
@@ -33,5 +33,5 @@ public enum DeletionRequestState
     /// The request is NOT provably complete — an operator must reconcile the missing providers
     /// (surfaced by the stuck-deletion metric/log) before the erasure can be attested for Art. 17.
     /// </summary>
-    PartiallyExecuted = 4,
+    PartiallyExecuted,
 }

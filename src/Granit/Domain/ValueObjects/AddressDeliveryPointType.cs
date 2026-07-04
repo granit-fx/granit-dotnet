@@ -7,11 +7,11 @@ namespace Granit.Domain.ValueObjects;
 public enum AddressDeliveryPointType
 {
     /// <summary>A regular street address.</summary>
-    Street = 0,
+    Street,
 
     /// <summary>A post-office box — postal mail only, no courier delivery.</summary>
-    PoBox = 1,
+    PoBox,
 
     /// <summary>Any other delivery point (military, poste restante, …).</summary>
-    Other = 2,
+    Other,
 }

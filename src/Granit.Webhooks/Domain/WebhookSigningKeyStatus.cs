@@ -18,14 +18,14 @@ namespace Granit.Webhooks.Domain;
 public enum WebhookSigningKeyStatus
 {
     /// <summary>Currently used to sign outgoing deliveries.</summary>
-    Active = 0,
+    Active,
 
     /// <summary>
     /// Replaced by a newer <see cref="Active"/> key but still accepted during the
     /// rotation grace period (controlled by <see cref="WebhookSigningKey.ExpiresAt"/>).
     /// </summary>
-    Retired = 1,
+    Retired,
 
     /// <summary>Explicitly invalidated by an operator. Never accepted.</summary>
-    Revoked = 2,
+    Revoked,
 }

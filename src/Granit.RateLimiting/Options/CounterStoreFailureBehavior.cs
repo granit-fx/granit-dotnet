@@ -9,11 +9,11 @@ public enum CounterStoreFailureBehavior : byte
     /// Open degradation: allow the request and log a warning.
     /// Prevents a Redis outage from causing complete service unavailability.
     /// </summary>
-    Allow = 0,
+    Allow,
 
     /// <summary>
     /// Closed degradation: reject the request with 429.
     /// Conservative approach — prefer availability loss over quota bypass.
     /// </summary>
-    Deny = 1,
+    Deny,
 }

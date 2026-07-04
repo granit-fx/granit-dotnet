@@ -8,26 +8,26 @@ public enum ScheduledActionStatus
     /// <summary>
     /// The action is waiting for its scheduled execution time.
     /// </summary>
-    Pending = 0,
+    Pending,
 
     /// <summary>
     /// The action has been executed successfully.
     /// </summary>
-    Executed = 1,
+    Executed,
 
     /// <summary>
     /// The action was cancelled before execution.
     /// </summary>
-    Cancelled = 2,
+    Cancelled,
 
     /// <summary>
     /// The action failed during execution (handler threw after exhausting retries).
     /// </summary>
-    Failed = 3,
+    Failed,
 
     /// <summary>
     /// The action has been claimed for execution and is currently being processed.
     /// Transitional status that prevents double-execution via concurrent dispatch.
     /// </summary>
-    Processing = 4,
+    Processing,
 }

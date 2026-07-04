@@ -11,7 +11,7 @@ public enum EntityEndpointKind
     /// Paginated query / collection endpoint. By convention the frontend calls
     /// <c>{path}</c> for the page and <c>{path}/meta</c> for the column metadata.
     /// </summary>
-    List = 0,
+    List,
 }
 
 /// <summary>

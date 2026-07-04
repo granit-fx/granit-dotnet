@@ -134,14 +134,14 @@ public sealed class RetryWebhookResult
 public enum RetryWebhookErrorKind
 {
     /// <summary>No error.</summary>
-    None = 0,
+    None,
 
     /// <summary>The delivery attempt or subscription was not found (404).</summary>
-    NotFound = 1,
+    NotFound,
 
     /// <summary>The delivery attempt is not eligible for retry (400).</summary>
-    InvalidRequest = 2,
+    InvalidRequest,
 
     /// <summary>The subscription is deactivated (409).</summary>
-    Conflict = 3,
+    Conflict,
 }

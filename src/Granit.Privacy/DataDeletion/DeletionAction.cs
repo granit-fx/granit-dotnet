@@ -7,20 +7,20 @@ namespace Granit.Privacy.DataDeletion;
 public enum DeletionAction
 {
     /// <summary>Data was permanently removed from the database.</summary>
-    PhysicalDelete = 0,
+    PhysicalDelete,
 
     /// <summary>Data was soft-deleted via <c>ISoftDeletable</c>.</summary>
-    SoftDelete = 1,
+    SoftDelete,
 
     /// <summary>PII was replaced with pseudonymized values (ISO 27001 retention — data preserved, identity removed).</summary>
-    Anonymized = 2,
+    Anonymized,
 
     /// <summary>Data was retained as-is due to a legal obligation (e.g., ISO 27001 20-year retention).</summary>
-    Retained = 3,
+    Retained,
 
     /// <summary>Combination of multiple actions (e.g., PII anonymized + medical data retained).</summary>
-    Mixed = 4,
+    Mixed,
 
     /// <summary>Per-entity encryption key was permanently destroyed — ciphertext is mathematically unreadable (GDPR Art. 17 crypto-shredding).</summary>
-    CryptoShredding = 5
+    CryptoShredding
 }

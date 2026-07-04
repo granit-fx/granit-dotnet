@@ -6,20 +6,20 @@ namespace Granit.Privacy.Regulations.ResponseDeadline;
 public enum PrivacyRequestType
 {
     /// <summary>Data subject access request (GDPR Art. 15, LGPD Art. 18, CCPA).</summary>
-    SubjectAccessRequest = 0,
+    SubjectAccessRequest,
 
     /// <summary>Data deletion request (GDPR Art. 17, LGPD Art. 18, CCPA).</summary>
-    DeletionRequest = 1,
+    DeletionRequest,
 
     /// <summary>Data rectification request (GDPR Art. 16).</summary>
-    RectificationRequest = 2,
+    RectificationRequest,
 
     /// <summary>Data portability request (GDPR Art. 20).</summary>
-    DataPortability = 3,
+    DataPortability,
 
     /// <summary>Processing restriction request (GDPR Art. 18).</summary>
-    ProcessingRestriction = 4,
+    ProcessingRestriction,
 
     /// <summary>Opt-out of sale/sharing (CCPA).</summary>
-    OptOut = 5,
+    OptOut,
 }

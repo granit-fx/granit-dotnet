@@ -19,14 +19,14 @@ public sealed class TimelineEntryNotEditableException(TimelineEntryNotEditableRe
 public enum TimelineEntryNotEditableReason
 {
     /// <summary>The entry is projected from an external <see cref="ITimelineSource"/> (anchor shadow or live projection).</summary>
-    ExternalOrigin = 0,
+    ExternalOrigin,
 
     /// <summary>The entry is a <c>SystemLog</c> — immutable by design (ISO 27001).</summary>
-    SystemLog = 1,
+    SystemLog,
 
     /// <summary>The current user is not the author of the entry.</summary>
-    NotAuthor = 2,
+    NotAuthor,
 
     /// <summary>The edit window configured in <c>TimelineOptions.EditWindow</c> has elapsed.</summary>
-    WindowExpired = 3,
+    WindowExpired,
 }

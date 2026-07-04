@@ -6,17 +6,17 @@ namespace Granit.Imaging;
 public enum WatermarkPosition
 {
     /// <summary>Centered on the image.</summary>
-    Center = 0,
+    Center,
 
     /// <summary>Top-left corner.</summary>
-    TopLeft = 1,
+    TopLeft,
 
     /// <summary>Top-right corner.</summary>
-    TopRight = 2,
+    TopRight,
 
     /// <summary>Bottom-left corner.</summary>
-    BottomLeft = 3,
+    BottomLeft,
 
     /// <summary>Bottom-right corner.</summary>
-    BottomRight = 4,
+    BottomRight,
 }

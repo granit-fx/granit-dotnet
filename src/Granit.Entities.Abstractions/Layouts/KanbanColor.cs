@@ -8,29 +8,29 @@ namespace Granit.Entities.Layouts;
 public enum KanbanColor
 {
     /// <summary>Theme-neutral grey — for archived / terminal states.</summary>
-    Neutral = 0,
+    Neutral,
 
     /// <summary>Cool grey — for draft / pending states.</summary>
-    Gray = 1,
+    Gray,
 
     /// <summary>Blue — for in-progress / active states.</summary>
-    Blue = 2,
+    Blue,
 
     /// <summary>Green — for completed / success states.</summary>
-    Green = 3,
+    Green,
 
     /// <summary>Orange — for waiting / attention states.</summary>
-    Orange = 4,
+    Orange,
 
     /// <summary>Red — for blocked / error states.</summary>
-    Red = 5,
+    Red,
 
     /// <summary>Yellow — for warning / soft-attention states.</summary>
-    Yellow = 6,
+    Yellow,
 
     /// <summary>Purple — for special / categorical highlights.</summary>
-    Purple = 7,
+    Purple,
 
     /// <summary>Cyan — for informational / secondary highlights.</summary>
-    Cyan = 8,
+    Cyan,
 }

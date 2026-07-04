@@ -7,17 +7,17 @@ namespace Granit.DataExchange.Import.Mapping;
 public enum MappingConfidence
 {
     /// <summary>User-confirmed manual mapping (highest priority).</summary>
-    Manual = 0,
+    Manual,
 
     /// <summary>Mapping previously saved and reused.</summary>
-    Saved = 1,
+    Saved,
 
     /// <summary>Exact case-insensitive match on property name or display name.</summary>
-    Exact = 2,
+    Exact,
 
     /// <summary>Fuzzy match (Levenshtein distance within threshold).</summary>
-    Fuzzy = 3,
+    Fuzzy,
 
     /// <summary>AI-assisted semantic match (header metadata only, GDPR-safe).</summary>
-    Semantic = 4,
+    Semantic,
 }

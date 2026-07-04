@@ -22,8 +22,8 @@ public sealed record ReactionToggledEvent(
 public enum ReactionToggleAction
 {
     /// <summary>The reaction was previously absent and has been added.</summary>
-    Added = 0,
+    Added,
 
     /// <summary>The reaction was previously present and has been removed.</summary>
-    Removed = 1,
+    Removed,
 }

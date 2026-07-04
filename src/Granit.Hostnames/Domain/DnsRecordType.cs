@@ -4,14 +4,14 @@ namespace Granit.Hostnames.Domain;
 public enum DnsRecordType
 {
     /// <summary>IPv4 address record.</summary>
-    A = 0,
+    A,
 
     /// <summary>IPv6 address record.</summary>
-    Aaaa = 1,
+    Aaaa,
 
     /// <summary>Canonical name record (alias).</summary>
-    Cname = 2,
+    Cname,
 
     /// <summary>Text record, used for verification challenges.</summary>
-    Txt = 3,
+    Txt,
 }

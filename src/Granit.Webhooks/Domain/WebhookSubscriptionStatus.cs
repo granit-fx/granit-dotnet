@@ -6,16 +6,16 @@ namespace Granit.Webhooks.Domain;
 public enum WebhookSubscriptionStatus
 {
     /// <summary>Subscription is active and receives delivery attempts.</summary>
-    Active = 0,
+    Active,
 
     /// <summary>
     /// Subscription is temporarily suspended (e.g., after repeated HTTP failures).
     /// Can be reactivated by an operator.
     /// </summary>
-    Suspended = 1,
+    Suspended,
 
     /// <summary>
     /// Subscription has been permanently deactivated and will never receive deliveries.
     /// </summary>
-    Deactivated = 2,
+    Deactivated,
 }

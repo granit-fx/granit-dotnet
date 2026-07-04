@@ -6,10 +6,10 @@ namespace Granit.Http.Idempotency.Models;
 public enum IdempotencyState : byte
 {
     /// <summary>Request is being executed. Lock held via InProgress TTL.</summary>
-    InProgress = 0,
+    InProgress,
 
     /// <summary>Request completed. Response stored for replay.</summary>
-    Completed = 1,
+    Completed,
 
     /// <summary>
     /// Request completed but its response cannot be replayed (e.g. exceeded
@@ -19,5 +19,5 @@ public enum IdempotencyState : byte
     /// logic. Preserves the at-most-once idempotency guarantee when the
     /// response itself is not cacheable.
     /// </summary>
-    Tombstoned = 2,
+    Tombstoned,
 }

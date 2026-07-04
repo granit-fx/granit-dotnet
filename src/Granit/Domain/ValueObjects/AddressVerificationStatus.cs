@@ -8,20 +8,20 @@ namespace Granit.Domain.ValueObjects;
 public enum AddressVerificationStatus
 {
     /// <summary>No verification evidence yet.</summary>
-    Unverified = 0,
+    Unverified,
 
     /// <summary>Confirmed by an authoritative verification provider (DPV / RDI).</summary>
-    ProviderVerified = 1,
+    ProviderVerified,
 
     /// <summary>Confirmed by a provider, which standardized / corrected the input.</summary>
-    Corrected = 2,
+    Corrected,
 
     /// <summary>Confirmed manually by an operator.</summary>
-    ManuallyConfirmed = 3,
+    ManuallyConfirmed,
 
     /// <summary>Confirmed by a real-world positive outcome (successful courier delivery or postal mail).</summary>
-    DeliveryConfirmed = 4,
+    DeliveryConfirmed,
 
     /// <summary>Known bad — a provider rejected it, or a delivery / mailing came back undeliverable.</summary>
-    Invalid = 5,
+    Invalid,
 }

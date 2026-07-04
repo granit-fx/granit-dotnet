@@ -18,14 +18,14 @@ public enum ExtractionConfidence
     /// PdfPig, Markdig). The same input always produces the same output; no opportunity for
     /// an attacker to hijack the extraction loop through the document contents.
     /// </summary>
-    Deterministic = 0,
+    Deterministic,
 
     /// <summary>
     /// Output of a deterministic parser running on degraded input — typically a recovery
     /// path (e.g. PdfPig's raw-word fallback on a layout-analysis failure). The result is
     /// still produced by code, not a model, but ordering or punctuation may be wrong.
     /// </summary>
-    Heuristic = 1,
+    Heuristic,
 
     /// <summary>
     /// Output produced by an LLM or VLM (vision OCR, future structured-extraction prompts).
@@ -33,5 +33,5 @@ public enum ExtractionConfidence
     /// an explicit envelope (<c>&lt;extracted&gt;...&lt;/extracted&gt;</c>) in the downstream
     /// system message, or strip before re-use.
     /// </summary>
-    ModelGenerated = 2,
+    ModelGenerated,
 }

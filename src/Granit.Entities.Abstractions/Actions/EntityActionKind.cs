@@ -8,13 +8,13 @@ namespace Granit.Entities.Actions;
 public enum EntityActionKind
 {
     /// <summary>HTTP write call (POST / PUT / DELETE) to <c>UrlTemplate</c>; optional confirmation modal.</summary>
-    ApiCall = 0,
+    ApiCall,
 
     /// <summary>HTTP GET against <c>UrlTemplate</c> returning a binary payload — opens the browser's download dialog.</summary>
-    Download = 1,
+    Download,
 
     /// <summary>Client-side navigation to <c>UrlTemplate</c> (route or external URL).</summary>
-    Navigate = 2,
+    Navigate,
 
     /// <summary>
     /// Workflow state transition resolved through the entity's
@@ -22,7 +22,7 @@ public enum EntityActionKind
     /// to know whether the transition is currently allowed for the row.
     /// <c>WorkflowTransitionName</c> carries the target state name.
     /// </summary>
-    WorkflowTransition = 3,
+    WorkflowTransition,
 
     /// <summary>
     /// Pure-frontend action that opens the entity's side drawer (peek). When
@@ -31,7 +31,7 @@ public enum EntityActionKind
     /// the renderer fetches the URL and renders the result inside the drawer
     /// (escape hatch for non-default detail surfaces).
     /// </summary>
-    OpenDrawer = 4,
+    OpenDrawer,
 
     /// <summary>
     /// Pure-frontend action that opens a modal dialog. When
@@ -40,5 +40,5 @@ public enum EntityActionKind
     /// inline-edit case). When set, the renderer fetches the URL and renders
     /// the result inside the modal (e.g. import / export wizards).
     /// </summary>
-    OpenModal = 5,
+    OpenModal,
 }

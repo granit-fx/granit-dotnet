@@ -6,11 +6,11 @@ namespace Granit.Presence.Domain;
 public enum PresenceConnectivity
 {
     /// <summary>Active heartbeat recently and reported activity recently.</summary>
-    Online = 0,
+    Online,
 
     /// <summary>Active heartbeat but user reported being idle for longer than the away threshold.</summary>
-    Away = 1,
+    Away,
 
     /// <summary>No heartbeat within the offline threshold.</summary>
-    Offline = 2,
+    Offline,
 }

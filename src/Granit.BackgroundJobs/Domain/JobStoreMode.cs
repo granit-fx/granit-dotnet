@@ -11,12 +11,12 @@ public enum JobStoreMode
     /// No database required. State is lost on application restart.
     /// Suitable for development and integration tests.
     /// </summary>
-    InMemory = 0,
+    InMemory,
 
     /// <summary>
     /// Jobs are persisted in a relational database via EF Core.
     /// Supports SQL Server and PostgreSQL (GDPR/ISO 27001 compliant).
     /// Requires <see cref="BackgroundJobsOptions.ConnectionString"/>.
     /// </summary>
-    Durable = 1,
+    Durable,
 }

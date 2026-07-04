@@ -8,14 +8,14 @@ namespace Granit.AddressDeliverability;
 public enum AddressDeliverabilityOutcome
 {
     /// <summary>The address was confirmed deliverable as submitted.</summary>
-    Verified = 0,
+    Verified,
 
     /// <summary>The address was confirmed after the provider standardized / corrected it.</summary>
-    Corrected = 1,
+    Corrected,
 
     /// <summary>The provider could not confirm the address (no authoritative match) — neither valid nor invalid.</summary>
-    Unverifiable = 2,
+    Unverifiable,
 
     /// <summary>The provider determined the address is not deliverable.</summary>
-    Invalid = 3,
+    Invalid,
 }
