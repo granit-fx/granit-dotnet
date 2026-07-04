@@ -54,6 +54,7 @@
       "src/Granit.QueryEngine.AspNetCore/Granit.QueryEngine.AspNetCore.csproj",
       "src/Granit.QueryEngine.EntityFrameworkCore/Granit.QueryEngine.EntityFrameworkCore.csproj",
       "src/Granit.QueryEngine/Granit.QueryEngine.csproj",
+      "src/Granit.Scheduling/Granit.Scheduling.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",
       "src/Granit.Templating.AI/Granit.Templating.AI.csproj",
       "src/Granit.Templating.Endpoints/Granit.Templating.Endpoints.csproj",
@@ -76,6 +77,7 @@
       "src/Granit.Workflow.Endpoints/Granit.Workflow.Endpoints.csproj",
       "src/Granit.Workflow.EntityFrameworkCore/Granit.Workflow.EntityFrameworkCore.csproj",
       "src/Granit.Workflow.Notifications/Granit.Workflow.Notifications.csproj",
+      "src/Granit.Workflow.Scheduling/Granit.Workflow.Scheduling.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
       "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
@@ -121,6 +123,7 @@
       "tests/Granit.Workflow.Endpoints.Tests/Granit.Workflow.Endpoints.Tests.csproj",
       "tests/Granit.Workflow.EntityFrameworkCore.Tests/Granit.Workflow.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Workflow.Notifications.Tests/Granit.Workflow.Notifications.Tests.csproj",
+      "tests/Granit.Workflow.Scheduling.Tests/Granit.Workflow.Scheduling.Tests.csproj",
       "tests/Granit.Workflow.Tests/Granit.Workflow.Tests.csproj",
       "tests/Granit.Workspaces.Abstractions.Tests/Granit.Workspaces.Abstractions.Tests.csproj"
     ]

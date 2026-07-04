@@ -370,6 +370,7 @@
     <ProjectReference Include="..\..\src\Granit.Workflow.Endpoints\Granit.Workflow.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Workflow.EntityFrameworkCore\Granit.Workflow.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Workflow.Notifications\Granit.Workflow.Notifications.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Workflow.Scheduling\Granit.Workflow.Scheduling.csproj" />
     <ProjectReference Include="..\..\src\Granit.Workspaces.Abstractions\Granit.Workspaces.Abstractions.csproj" />
   </ItemGroup>
 

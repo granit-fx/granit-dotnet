@@ -226,6 +226,7 @@
     <Project Path="src/Granit.Workflow.Endpoints/Granit.Workflow.Endpoints.csproj" />
     <Project Path="src/Granit.Workflow.EntityFrameworkCore/Granit.Workflow.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Workflow.Notifications/Granit.Workflow.Notifications.csproj" />
+    <Project Path="src/Granit.Workflow.Scheduling/Granit.Workflow.Scheduling.csproj" />
     <Project Path="src/Granit.Workflow/Granit.Workflow.csproj" />
   </Folder>
   <Folder Name="/src/Infrastructure/">
@@ -607,6 +608,7 @@
     <Project Path="tests/Granit.Workflow.Endpoints.Tests/Granit.Workflow.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Workflow.EntityFrameworkCore.Tests/Granit.Workflow.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Workflow.Notifications.Tests/Granit.Workflow.Notifications.Tests.csproj" />
+    <Project Path="tests/Granit.Workflow.Scheduling.Tests/Granit.Workflow.Scheduling.Tests.csproj" />
     <Project Path="tests/Granit.Workflow.Tests/Granit.Workflow.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/Infrastructure/">

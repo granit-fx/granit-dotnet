@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Workflow.Scheduling</PackageId>
+    <Description>Bridge between Granit.Workflow (FSM validation + ISO 27001 audit) and Granit.Scheduling (durable one-shot execution): schedule, cancel and reschedule time-based workflow transitions for any workflow-stateful entity. Ships the ScheduledWorkflowTransitionPayload, a minimal IScheduledTransitionService, a keyed IWorkflowTransitionApplier registry, a Wolverine handler and a WorkflowTransitionApplierBase&lt;TEntity, TState&gt; reference base. Scheduled transitions run in system context (pre-authorized at scheduling time).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Workflow.Scheduling.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Scheduling\Granit.Scheduling.csproj" />
+    <ProjectReference Include="..\Granit.Workflow\Granit.Workflow.csproj" />
+  </ItemGroup>
+
+</Project>

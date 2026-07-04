@@ -3010,6 +3010,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Workflow.Scheduling",
+      "deps": [
+        "Granit.Scheduling",
+        "Granit.Workflow"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Workspaces.Abstractions",
       "deps": [
         "Granit"
@@ -59450,6 +59458,139 @@
       "file": "src/Granit.Workflow/IWorkflowTransitionRecorder.cs",
       "line": 6,
       "members": []
+    },
+    {
+      "name": "WorkflowSchedulingServiceCollectionExtensions",
+      "fqn": "Granit.Workflow.Scheduling.Extensions.WorkflowSchedulingServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Workflow.Scheduling",
+      "file": "src/Granit.Workflow.Scheduling/Extensions/WorkflowSchedulingServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddWorkflowScheduling",
+          "kind": "method",
+          "signature": "AddWorkflowScheduling(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitWorkflowSchedulingModule",
+      "fqn": "Granit.Workflow.Scheduling.GranitWorkflowSchedulingModule",
+      "kind": "class",
+      "project": "Granit.Workflow.Scheduling",
+      "file": "src/Granit.Workflow.Scheduling/GranitWorkflowSchedulingModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IScheduledTransitionService",
+      "fqn": "Granit.Workflow.Scheduling.IScheduledTransitionService",
+      "kind": "interface",
+      "project": "Granit.Workflow.Scheduling",
+      "file": "src/Granit.Workflow.Scheduling/IScheduledTransitionService.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "ScheduleTransitionAsync",
+          "kind": "method",
+          "signature": "ScheduleTransitionAsync(string workflowEntityType, Guid entityId, string targetState, DateTimeOffset executeAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ScheduledActionId>"
+        },
+        {
+          "name": "CancelScheduledTransitionAsync",
+          "kind": "method",
+          "signature": "CancelScheduledTransitionAsync(string workflowEntityType, Guid entityId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RescheduleTransitionAsync",
+          "kind": "method",
+          "signature": "RescheduleTransitionAsync(string workflowEntityType, Guid entityId, string targetState, DateTimeOffset newExecuteAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ScheduledActionId>"
+        }
+      ]
+    },
+    {
+      "name": "IWorkflowTransitionApplier",
+      "fqn": "Granit.Workflow.Scheduling.IWorkflowTransitionApplier",
+      "kind": "interface",
+      "project": "Granit.Workflow.Scheduling",
+      "file": "src/Granit.Workflow.Scheduling/IWorkflowTransitionApplier.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "ApplyAsync",
+          "kind": "method",
+          "signature": "ApplyAsync(Guid entityId, string targetState, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IWorkflowTransitionApplierRegistry",
+      "fqn": "Granit.Workflow.Scheduling.IWorkflowTransitionApplierRegistry",
+      "kind": "interface",
+      "project": "Granit.Workflow.Scheduling",
+      "file": "src/Granit.Workflow.Scheduling/IWorkflowTransitionApplierRegistry.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Resolve",
+          "kind": "method",
+          "signature": "Resolve(string workflowEntityType)",
+          "returnType": "IWorkflowTransitionApplier"
+        }
+      ]
+    },
+    {
+      "name": "ScheduledWorkflowTransitionHandler",
+      "fqn": "Granit.Workflow.Scheduling.ScheduledWorkflowTransitionHandler",
+      "kind": "class",
+      "project": "Granit.Workflow.Scheduling",
+      "file": "src/Granit.Workflow.Scheduling/ScheduledWorkflowTransitionHandler.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "Handle",
+          "kind": "method",
+          "signature": "Handle(ScheduledWorkflowTransitionPayload payload, IWorkflowTransitionApplierRegistry registry, ILogger<ScheduledWorkflowTransitionHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ScheduledWorkflowTransitionPayload",
+      "fqn": "Granit.Workflow.Scheduling.ScheduledWorkflowTransitionPayload",
+      "kind": "record",
+      "project": "Granit.Workflow.Scheduling",
+      "file": "src/Granit.Workflow.Scheduling/ScheduledWorkflowTransitionPayload.cs",
+      "line": 39,
+      "members": []
+    },
+    {
+      "name": "WorkflowTransitionApplierBase",
+      "fqn": "Granit.Workflow.Scheduling.WorkflowTransitionApplierBase",
+      "kind": "class",
+      "project": "Granit.Workflow.Scheduling",
+      "file": "src/Granit.Workflow.Scheduling/WorkflowTransitionApplierBase.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ApplyAsync",
+          "kind": "method",
+          "signature": "ApplyAsync(Guid entityId, string targetState, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "TransitionBuilder",
