@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Granit.Geocoding.Internal;
 using Granit.Geocoding.Nominatim.Internal;
 using Granit.Geocoding.Nominatim.Options;
 using Microsoft.Extensions.DependencyInjection;

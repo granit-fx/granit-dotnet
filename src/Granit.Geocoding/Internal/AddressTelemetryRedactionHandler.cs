@@ -1,17 +1,18 @@
 using System.Diagnostics;
 
-namespace Granit.Geocoding.Photon.Internal;
+namespace Granit.Geocoding.Internal;
 
 /// <summary>
 /// Strips the address from the outbound HTTP trace emitted by the built-in <c>System.Net.Http</c> instrumentation.
 /// </summary>
 /// <remarks>
-/// The Photon provider passes the address in the request query string (<c>?q=…</c>), which the instrumentation
-/// records verbatim in the span's <c>url.full</c> / <c>url.query</c> tags — leaking personal data (GDPR) into trace
-/// exporters. This handler sits inside the diagnostics handler in the <c>HttpClient</c> pipeline, so
-/// <see cref="Activity.Current"/> is the live HTTP-client activity; it overwrites those tags before the span is
+/// Geocoding providers pass the address in the request query string (e.g. <c>?street=…&amp;city=…</c> or <c>?q=…</c>),
+/// which the instrumentation records verbatim in the span's <c>url.full</c> / <c>url.query</c> tags — leaking personal
+/// data (GDPR) into trace exporters. This handler sits inside the diagnostics handler in the <c>HttpClient</c> pipeline,
+/// so <see cref="Activity.Current"/> is the live HTTP-client activity; it overwrites those tags before the span is
 /// exported. The source-name guard ensures it only ever touches the HTTP-client activity, never an ambient inbound
-/// (e.g. ASP.NET Core) activity when tracing is otherwise disabled.
+/// (e.g. ASP.NET Core) activity when tracing is otherwise disabled. Shared by every <c>Granit.Geocoding.*</c> provider
+/// registered over a plain <c>HttpClient</c>.
 /// </remarks>
 internal sealed class AddressTelemetryRedactionHandler : DelegatingHandler
 {

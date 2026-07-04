@@ -1,14 +1,16 @@
 using System.Diagnostics;
 using System.Net;
-using Granit.Geocoding.Photon.Internal;
+using Granit.Geocoding.Internal;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Geocoding.Photon.Tests;
+namespace Granit.Geocoding.Tests;
 
 public sealed class AddressTelemetryRedactionHandlerTests
 {
-    private const string AddressQuery = "api?q=Rue%20de%20la%20Loi%2C%20Brussels%2C%20BE&limit=1";
+    private const string BaseUri = "https://geocoder.example";
+    private const string AddressQuery = "search?street=Rue%20de%20la%20Loi&city=Brussels&country=BE";
+    private const string RawQuery = "street=Rue%20de%20la%20Loi&city=Brussels&country=BE";
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
 
@@ -20,12 +22,12 @@ public sealed class AddressTelemetryRedactionHandlerTests
 
         using ActivitySource source = new("System.Net.Http");
         using Activity activity = source.StartActivity("System.Net.Http.HttpRequestOut")!;
-        activity.SetTag("url.full", $"https://photon.komoot.io/{AddressQuery}");
-        activity.SetTag("url.query", "q=Rue%20de%20la%20Loi%2C%20Brussels%2C%20BE&limit=1");
+        activity.SetTag("url.full", $"{BaseUri}/{AddressQuery}");
+        activity.SetTag("url.query", RawQuery);
 
-        await SendThroughHandlerAsync($"https://photon.komoot.io/{AddressQuery}");
+        await SendThroughHandlerAsync($"{BaseUri}/{AddressQuery}");
 
-        activity.GetTagItem("url.full").ShouldBe("https://photon.komoot.io/api?redacted");
+        activity.GetTagItem("url.full").ShouldBe($"{BaseUri}/search?redacted");
         activity.GetTagItem("url.query").ShouldBe("redacted");
     }
 
@@ -37,11 +39,11 @@ public sealed class AddressTelemetryRedactionHandlerTests
 
         using ActivitySource source = new("System.Net.Http");
         using Activity activity = source.StartActivity("System.Net.Http.HttpRequestOut")!;
-        activity.SetTag("http.url", $"https://photon.komoot.io/{AddressQuery}");
+        activity.SetTag("http.url", $"{BaseUri}/{AddressQuery}");
 
-        await SendThroughHandlerAsync($"https://photon.komoot.io/{AddressQuery}");
+        await SendThroughHandlerAsync($"{BaseUri}/{AddressQuery}");
 
-        activity.GetTagItem("http.url").ShouldBe("https://photon.komoot.io/api?redacted");
+        activity.GetTagItem("http.url").ShouldBe($"{BaseUri}/search?redacted");
     }
 
     [Fact]
@@ -55,7 +57,7 @@ public sealed class AddressTelemetryRedactionHandlerTests
         using Activity activity = source.StartActivity("inbound")!;
         activity.SetTag("url.full", $"https://app.example/{AddressQuery}");
 
-        await SendThroughHandlerAsync($"https://photon.komoot.io/{AddressQuery}");
+        await SendThroughHandlerAsync($"{BaseUri}/{AddressQuery}");
 
         activity.GetTagItem("url.full").ShouldBe($"https://app.example/{AddressQuery}");
     }

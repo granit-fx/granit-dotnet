@@ -10,6 +10,8 @@
     <InternalsVisibleTo Include="Granit.Geocoding.Tests" />
     <InternalsVisibleTo Include="Granit.Geocoding.Nominatim" />
     <InternalsVisibleTo Include="Granit.Geocoding.Nominatim.Tests" />
+    <InternalsVisibleTo Include="Granit.Geocoding.Photon" />
+    <InternalsVisibleTo Include="Granit.Geocoding.Photon.Tests" />
     <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>

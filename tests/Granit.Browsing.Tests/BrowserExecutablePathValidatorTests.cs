@@ -1,15 +1,17 @@
 using Granit.Browsing.Exceptions;
-using Granit.Browsing.Playwright.Internal;
+using Granit.Browsing.Sandbox;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Browsing.Playwright.Tests;
+namespace Granit.Browsing.Tests;
 
-public sealed class PlaywrightExecutablePathValidatorTests
+public sealed class BrowserExecutablePathValidatorTests
 {
+    private const string OptionName = "ExecutablePath";
+
     [Fact]
     public void Null_executable_returns_null()
-        => PlaywrightExecutablePathValidator.Validate(null, "/usr/lib/chromium/").ShouldBeNull();
+        => BrowserExecutablePathValidator.Validate(null, "/usr/lib/chromium/", OptionName).ShouldBeNull();
 
     [Fact]
     public void Null_prefix_returns_resolved_path()
@@ -17,7 +19,7 @@ public sealed class PlaywrightExecutablePathValidatorTests
         string path = Path.GetTempFileName();
         try
         {
-            string? result = PlaywrightExecutablePathValidator.Validate(path, null);
+            string? result = BrowserExecutablePathValidator.Validate(path, null, OptionName);
             result.ShouldBe(Path.GetFullPath(path));
         }
         finally
@@ -30,20 +32,20 @@ public sealed class PlaywrightExecutablePathValidatorTests
     public void Path_outside_prefix_throws_sandbox_violation()
     {
         SandboxViolationException ex = Should.Throw<SandboxViolationException>(
-            () => PlaywrightExecutablePathValidator.Validate("/tmp/evil-chrome", "/usr/lib/chromium/"));
+            () => BrowserExecutablePathValidator.Validate("/tmp/evil-chrome", "/usr/lib/chromium/", OptionName));
         ex.Kind.ShouldBe(SandboxViolationKind.ExecutablePathRejected);
     }
 
     [Fact]
     public void Path_under_prefix_is_accepted()
     {
-        string prefix = Path.Combine(Path.GetTempPath(), "granit-pw-test-prefix");
+        string prefix = Path.Combine(Path.GetTempPath(), "granit-browser-test-prefix");
         Directory.CreateDirectory(prefix);
         string exe = Path.Combine(prefix, "chrome");
         File.WriteAllText(exe, string.Empty);
         try
         {
-            string? result = PlaywrightExecutablePathValidator.Validate(exe, prefix);
+            string? result = BrowserExecutablePathValidator.Validate(exe, prefix, OptionName);
             result.ShouldBe(Path.GetFullPath(exe));
         }
         finally

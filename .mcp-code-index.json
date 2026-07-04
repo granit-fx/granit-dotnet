@@ -23212,7 +23212,7 @@
       "kind": "class",
       "project": "Granit.Geocoding.Nominatim",
       "file": "src/Granit.Geocoding.Nominatim/Extensions/GeocodingNominatimHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitGeocodingNominatim",
@@ -23311,7 +23311,7 @@
       "kind": "class",
       "project": "Granit.Geocoding.Photon",
       "file": "src/Granit.Geocoding.Photon/Extensions/GeocodingPhotonHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitGeocodingPhoton",

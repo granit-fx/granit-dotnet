@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Granit.Geocoding.Internal;
 using Granit.Geocoding.Photon.Internal;
 using Granit.Geocoding.Photon.Options;
 using Microsoft.Extensions.DependencyInjection;

@@ -4,6 +4,7 @@ using Granit.Browsing.Options;
 using Granit.Browsing.Pages;
 using Granit.Browsing.Playwright.Options;
 using Granit.Browsing.Pool;
+using Granit.Browsing.Sandbox;
 using Granit.Events;
 using Granit.Guids;
 using Granit.Http.Security;
@@ -375,9 +376,10 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
 
             // Refuse a browser binary outside the sandbox-allowed prefix, and refuse a
             // production deploy that overrides the executable without an allowlist prefix.
-            string? executablePath = PlaywrightExecutablePathValidator.Validate(
+            string? executablePath = BrowserExecutablePathValidator.Validate(
                 opts.ExecutablePath,
                 _sandbox.AllowedExecutablePathPrefix,
+                nameof(opts.ExecutablePath),
                 _hostEnvironment);
 
             _playwright ??= await Microsoft.Playwright.Playwright.CreateAsync().ConfigureAwait(false);

@@ -1,14 +1,15 @@
 using Granit.Browsing.Exceptions;
 using Microsoft.Extensions.Hosting;
 
-namespace Granit.Browsing.PuppeteerSharp.Internal;
+namespace Granit.Browsing.Sandbox;
 
 /// <summary>
-/// Validates the configured <c>ChromiumExecutablePath</c> against
-/// <see cref="IBrowserSandboxProfile.AllowedExecutablePathPrefix"/>, preventing the
-/// provider from spawning a weaponised Chromium binary out of a writable location.
+/// Validates a provider-configured browser executable path against
+/// <see cref="IBrowserSandboxProfile.AllowedExecutablePathPrefix"/>, preventing any
+/// <c>Granit.Browsing.*</c> provider from spawning a weaponised browser binary out of a
+/// writable location.
 /// </summary>
-internal static class PuppeteerExecutablePathValidator
+internal static class BrowserExecutablePathValidator
 {
     /// <summary>
     /// Resolves <paramref name="executablePath"/> to its full path and ensures it sits
@@ -17,11 +18,19 @@ internal static class PuppeteerExecutablePathValidator
     /// AND an explicit executable override is set without an allowlist prefix, the
     /// caller is refused: production deploys MUST vet the binary location.
     /// </summary>
+    /// <param name="executablePath">The provider-configured executable path, or <c>null</c>/empty to use the provider default.</param>
+    /// <param name="allowedPrefix">The sandbox-allowed prefix the resolved path must sit under, or <c>null</c>/empty to allow any location outside production.</param>
+    /// <param name="executablePathOptionName">The provider option name reported in the production-refusal message (e.g. <c>ExecutablePath</c>, <c>ChromiumExecutablePath</c>).</param>
+    /// <param name="hostEnvironment">The host environment used to enforce the production allowlist requirement, or <c>null</c> to skip that check.</param>
     /// <exception cref="SandboxViolationException">
     /// When the resolved path is outside the allowlisted prefix, or when no prefix is
     /// configured and the host is running in production.
     /// </exception>
-    public static string? Validate(string? executablePath, string? allowedPrefix, IHostEnvironment? hostEnvironment = null)
+    public static string? Validate(
+        string? executablePath,
+        string? allowedPrefix,
+        string executablePathOptionName,
+        IHostEnvironment? hostEnvironment = null)
     {
         if (string.IsNullOrEmpty(executablePath))
         {
@@ -36,7 +45,7 @@ internal static class PuppeteerExecutablePathValidator
             {
                 throw new SandboxViolationException(
                     SandboxViolationKind.ExecutablePathRejected,
-                    $"IBrowserSandboxProfile.AllowedExecutablePathPrefix must be set when overriding ChromiumExecutablePath ('{resolved}') in production.");
+                    $"IBrowserSandboxProfile.AllowedExecutablePathPrefix must be set when overriding {executablePathOptionName} ('{resolved}') in production.");
             }
             return resolved;
         }
@@ -46,7 +55,7 @@ internal static class PuppeteerExecutablePathValidator
         {
             throw new SandboxViolationException(
                 SandboxViolationKind.ExecutablePathRejected,
-                $"Chromium executable '{resolved}' is outside the sandbox-allowed prefix '{prefix}'.");
+                $"Browser executable '{resolved}' is outside the sandbox-allowed prefix '{prefix}'.");
         }
 
         return resolved;

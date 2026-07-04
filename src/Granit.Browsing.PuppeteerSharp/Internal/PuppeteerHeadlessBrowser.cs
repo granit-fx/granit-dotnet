@@ -4,6 +4,7 @@ using Granit.Browsing.Options;
 using Granit.Browsing.Pages;
 using Granit.Browsing.Pool;
 using Granit.Browsing.PuppeteerSharp.Options;
+using Granit.Browsing.Sandbox;
 using Granit.Events;
 using Granit.Guids;
 using Granit.Http.Security;
@@ -311,9 +312,10 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
 
             // Refuse a Chromium binary outside the sandbox-allowed prefix, and refuse a
             // production deploy that overrides the executable without an allowlist prefix.
-            string? executablePath = PuppeteerExecutablePathValidator.Validate(
+            string? executablePath = BrowserExecutablePathValidator.Validate(
                 opts.ChromiumExecutablePath,
                 _sandbox.AllowedExecutablePathPrefix,
+                nameof(opts.ChromiumExecutablePath),
                 _hostEnvironment);
 
             PuppeteerLaunchOptions launch = new()
