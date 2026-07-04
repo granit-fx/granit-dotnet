@@ -28,7 +28,17 @@ public sealed class SettingsCultureMiddleware(RequestDelegate next)
         {
             ISettingProvider settingProvider = context.RequestServices.GetRequiredService<ISettingProvider>();
 
-            await ApplyCultureAsync(context, settingProvider).ConfigureAwait(false);
+            // The culture MUST be assigned in this method's async context, not inside a nested
+            // async helper: CultureInfo.Current(UI)Culture is backed by an AsyncLocal, and a value
+            // set inside a callee does not flow back to the caller. Setting it here — the same
+            // async frame that awaits _next — is what makes it visible to downstream handlers.
+            CultureInfo? culture = await ResolveCultureAsync(context, settingProvider).ConfigureAwait(false);
+            if (culture is not null)
+            {
+                CultureInfo.CurrentCulture = culture;
+                CultureInfo.CurrentUICulture = culture;
+            }
+
             await ApplyTimezoneAsync(context, settingProvider).ConfigureAwait(false);
             await ApplyFirstDayOfWeekAsync(context, settingProvider).ConfigureAwait(false);
         }
@@ -36,18 +46,15 @@ public sealed class SettingsCultureMiddleware(RequestDelegate next)
         await _next(context).ConfigureAwait(false);
     }
 
-    private static async Task ApplyCultureAsync(HttpContext context, ISettingProvider settingProvider)
+    private static async Task<CultureInfo?> ResolveCultureAsync(HttpContext context, ISettingProvider settingProvider)
     {
         string? locale = await settingProvider
             .GetOrNullAsync(WellKnownSettingNames.PreferredCulture, context.RequestAborted)
             .ConfigureAwait(false);
 
-        if (locale is not null && IsKnownCulture(locale))
-        {
-            var culture = CultureInfo.GetCultureInfo(locale);
-            CultureInfo.CurrentCulture = culture;
-            CultureInfo.CurrentUICulture = culture;
-        }
+        return locale is not null && IsKnownCulture(locale)
+            ? CultureInfo.GetCultureInfo(locale)
+            : null;
     }
 
     private static async Task ApplyTimezoneAsync(HttpContext context, ISettingProvider settingProvider)
