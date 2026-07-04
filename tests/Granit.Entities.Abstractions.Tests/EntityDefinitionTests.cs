@@ -219,8 +219,8 @@ public sealed class EntityDefinitionTests
 
     private enum SampleKind
     {
-        Individual = 0,
-        Company = 1,
+        Individual,
+        Company,
     }
 
     [Flags]

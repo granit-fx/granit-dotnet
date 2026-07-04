@@ -152,13 +152,13 @@ internal sealed class PeriodResolver(IClock clock, ICurrentFirstDayOfWeekProvide
         return d.AddDays(-diff);
     }
 
-    private static DateTime FirstOfMonth(DateTime d) => new(d.Year, d.Month, 1);
+    private static DateTime FirstOfMonth(DateTime d) => new(d.Year, d.Month, 1, 0, 0, 0, d.Kind);
 
-    private static DateTime FirstOfYear(DateTime d) => new(d.Year, 1, 1);
+    private static DateTime FirstOfYear(DateTime d) => new(d.Year, 1, 1, 0, 0, 0, d.Kind);
 
     private static DateTime QuarterStart(DateTime d)
     {
         int quarterStartMonth = ((d.Month - 1) / 3 * 3) + 1;
-        return new DateTime(d.Year, quarterStartMonth, 1);
+        return new DateTime(d.Year, quarterStartMonth, 1, 0, 0, 0, d.Kind);
     }
 }

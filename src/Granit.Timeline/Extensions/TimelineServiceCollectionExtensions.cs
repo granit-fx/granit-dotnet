@@ -27,8 +27,8 @@ public static class TimelineServiceCollectionExtensions
     {
         services.AddOptions<TimelineOptions>();
 
-        // Diagnostics: meter resolved from IMeterFactory (host adds it via AddMetrics);
-        // ActivitySource exported for the host's OpenTelemetry tracer pipeline.
+        // Diagnostics: the meter is resolved from IMeterFactory, which the host registers via
+        // AddMetrics, and the ActivitySource is exported for the host's OpenTelemetry tracer pipeline.
         GranitActivitySourceRegistry.Register(TimelineActivitySource.Name);
         services.TryAddSingleton<TimelineMetrics>();
 

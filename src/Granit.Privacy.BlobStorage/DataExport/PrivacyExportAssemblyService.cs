@@ -432,8 +432,8 @@ internal sealed partial class PrivacyExportAssemblyService(
         // thing standing between a storage-tier compromise and plaintext PII. The HMAC
         // integrity tag stays sealed inside the ciphertext (defence in depth); GCM's own
         // authentication tag already guarantees the ciphertext is tamper-evident on
-        // decrypt. The key never leaves the process (ephemeral) or Vault (production);
-        // the subject's client receives the decrypted bytes server-side, streamed over the
+        // decrypt. The key never leaves the process when ephemeral, or Vault in production.
+        // The subject's client receives the decrypted bytes server-side, streamed over the
         // step-up-gated download endpoint — it never handles the key itself.
         byte[] payload = contentEncryptor.Encrypt(signedEnvelope);
 

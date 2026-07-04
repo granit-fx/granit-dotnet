@@ -28,50 +28,53 @@ public sealed class SettingsCultureMiddleware(RequestDelegate next)
         {
             ISettingProvider settingProvider = context.RequestServices.GetRequiredService<ISettingProvider>();
 
-            string? locale = await settingProvider
-                .GetOrNullAsync(WellKnownSettingNames.PreferredCulture, context.RequestAborted)
-                .ConfigureAwait(false);
-
-            if (locale is not null && IsKnownCulture(locale))
-            {
-                var culture = CultureInfo.GetCultureInfo(locale);
-                CultureInfo.CurrentCulture = culture;
-                CultureInfo.CurrentUICulture = culture;
-            }
-
-            string? timezone = await settingProvider
-                .GetOrNullAsync(WellKnownSettingNames.PreferredTimezone, context.RequestAborted)
-                .ConfigureAwait(false);
-
-            if (timezone is not null)
-            {
-                ICurrentTimezoneProvider? timezoneProvider =
-                    context.RequestServices.GetService<ICurrentTimezoneProvider>();
-
-                if (timezoneProvider is not null)
-                {
-                    timezoneProvider.Timezone = timezone;
-                }
-            }
-
-            string? firstDayOfWeek = await settingProvider
-                .GetOrNullAsync(WellKnownSettingNames.PreferredFirstDayOfWeek, context.RequestAborted)
-                .ConfigureAwait(false);
-
-            if (firstDayOfWeek is not null
-                && Enum.TryParse(firstDayOfWeek, ignoreCase: true, out DayOfWeek day))
-            {
-                ICurrentFirstDayOfWeekProvider? firstDayOfWeekProvider =
-                    context.RequestServices.GetService<ICurrentFirstDayOfWeekProvider>();
-
-                if (firstDayOfWeekProvider is not null)
-                {
-                    firstDayOfWeekProvider.FirstDayOfWeek = day;
-                }
-            }
+            await ApplyCultureAsync(context, settingProvider).ConfigureAwait(false);
+            await ApplyTimezoneAsync(context, settingProvider).ConfigureAwait(false);
+            await ApplyFirstDayOfWeekAsync(context, settingProvider).ConfigureAwait(false);
         }
 
         await _next(context).ConfigureAwait(false);
+    }
+
+    private static async Task ApplyCultureAsync(HttpContext context, ISettingProvider settingProvider)
+    {
+        string? locale = await settingProvider
+            .GetOrNullAsync(WellKnownSettingNames.PreferredCulture, context.RequestAborted)
+            .ConfigureAwait(false);
+
+        if (locale is not null && IsKnownCulture(locale))
+        {
+            var culture = CultureInfo.GetCultureInfo(locale);
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.CurrentUICulture = culture;
+        }
+    }
+
+    private static async Task ApplyTimezoneAsync(HttpContext context, ISettingProvider settingProvider)
+    {
+        string? timezone = await settingProvider
+            .GetOrNullAsync(WellKnownSettingNames.PreferredTimezone, context.RequestAborted)
+            .ConfigureAwait(false);
+
+        if (timezone is not null
+            && context.RequestServices.GetService<ICurrentTimezoneProvider>() is { } timezoneProvider)
+        {
+            timezoneProvider.Timezone = timezone;
+        }
+    }
+
+    private static async Task ApplyFirstDayOfWeekAsync(HttpContext context, ISettingProvider settingProvider)
+    {
+        string? firstDayOfWeek = await settingProvider
+            .GetOrNullAsync(WellKnownSettingNames.PreferredFirstDayOfWeek, context.RequestAborted)
+            .ConfigureAwait(false);
+
+        if (firstDayOfWeek is not null
+            && Enum.TryParse(firstDayOfWeek, ignoreCase: true, out DayOfWeek day)
+            && context.RequestServices.GetService<ICurrentFirstDayOfWeekProvider>() is { } firstDayOfWeekProvider)
+        {
+            firstDayOfWeekProvider.FirstDayOfWeek = day;
+        }
     }
 
     private static bool IsKnownCulture(string name)

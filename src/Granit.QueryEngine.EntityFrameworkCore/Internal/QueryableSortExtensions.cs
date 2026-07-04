@@ -115,11 +115,11 @@ internal static class QueryableSortExtensions
     {
         ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "e");
 
-        Expression? member = ResolveMember<TEntity>(parameter, builder.CursorPropertyName)
-            ?? ResolveMember<TEntity>(parameter, "Id")
+        Expression? member = ResolveMember(parameter, builder.CursorPropertyName)
+            ?? ResolveMember(parameter, "Id")
             ?? builder.Columns
                 .Where(c => c.IsSortable && !c.IsShadowProperty)
-                .Select(c => ResolveMember<TEntity>(parameter, c.PropertyName))
+                .Select(c => ResolveMember(parameter, c.PropertyName))
                 .FirstOrDefault(m => m is not null);
 
         return member is null
@@ -127,8 +127,7 @@ internal static class QueryableSortExtensions
             : ApplyOrderBy(source, parameter, member, descending: false, isFirst: true);
     }
 
-    private static Expression? ResolveMember<TEntity>(ParameterExpression parameter, string? name)
-        where TEntity : class =>
+    private static Expression? ResolveMember(ParameterExpression parameter, string? name) =>
         string.IsNullOrEmpty(name) ? null : MemberPathResolver.Resolve(parameter, name).Member;
 
     private static IQueryable<TEntity> ApplyOrderByShadow<TEntity>(

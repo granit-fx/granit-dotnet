@@ -1,5 +1,6 @@
 using Granit.ArchitectureTests.Abstractions.Rules;
 using Granit.QueryEngine;
+using Shouldly;
 using Xunit;
 
 namespace Granit.ArchitectureTests;
@@ -17,9 +18,10 @@ public sealed class QueryDefinitionCatalogTests
 {
     [Fact]
     public void Every_bespoke_query_definition_should_be_exempt() =>
-        QueryDefinitionCatalogRules.EveryBespokeDefinitionIsExempt(
-            typeof(QueryDefinitionCatalogTests).Assembly,
-            "Granit.*.dll",
-            typeof(QueryDefinition<>),
-            QueryDefinitionCatalogExemptions.Definitions);
+        Should.NotThrow(() =>
+            QueryDefinitionCatalogRules.EveryBespokeDefinitionIsExempt(
+                typeof(QueryDefinitionCatalogTests).Assembly,
+                "Granit.*.dll",
+                typeof(QueryDefinition<>),
+                QueryDefinitionCatalogExemptions.Definitions));
 }

@@ -90,7 +90,7 @@ public static class IdentityEntityFrameworkCoreServiceCollectionExtensions
             return services;
         }
 
-        services.AddSingleton<UserDirectoryLookupMarker>();
+        services.AddSingleton(UserDirectoryLookupMarker.Instance);
         services.AddScoped<ILookupSource>(sp =>
         {
             IUserDirectoryQueryableSource directory = sp.GetRequiredService<IUserDirectoryQueryableSource>();
@@ -107,5 +107,12 @@ public static class IdentityEntityFrameworkCoreServiceCollectionExtensions
     }
 
     /// <summary>Sentinel ensuring the <c>users</c> lookup is registered at most once.</summary>
-    private sealed class UserDirectoryLookupMarker;
+    private sealed class UserDirectoryLookupMarker
+    {
+        public static readonly UserDirectoryLookupMarker Instance = new();
+
+        private UserDirectoryLookupMarker()
+        {
+        }
+    }
 }

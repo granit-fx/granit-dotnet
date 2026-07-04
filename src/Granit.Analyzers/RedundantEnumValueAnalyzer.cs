@@ -224,23 +224,8 @@ public sealed class RedundantEnumValueAnalyzer : SingleRuleAnalyzerBase
         }
     }
 
-    private static bool IsPlainDecimalLiteral(string tokenText)
-    {
-        if (tokenText.Length == 0)
-        {
-            return false;
-        }
-
-        foreach (char character in tokenText)
-        {
-            if (character is < '0' or > '9')
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    private static bool IsPlainDecimalLiteral(string tokenText) =>
+        tokenText.Length > 0 && tokenText.All(static character => character is >= '0' and <= '9');
 
     private static INamedTypeSymbol? UnwrapEnum(ITypeSymbol type)
     {
