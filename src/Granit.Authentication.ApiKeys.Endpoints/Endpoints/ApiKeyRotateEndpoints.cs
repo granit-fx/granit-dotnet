@@ -43,7 +43,7 @@ internal static class ApiKeyRotateEndpoints
         ApiKeyEntry? existing = await adminStore.FindByIdAsync(id, cancellationToken)
             .ConfigureAwait(false);
 
-        if (existing is null || existing.RevokedAt.HasValue)
+        if (existing?.RevokedAt.HasValue != false)
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }

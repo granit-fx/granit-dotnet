@@ -119,8 +119,7 @@ internal sealed class TextExtractionPipeline : ITextExtractionPipeline, IDisposa
                 return result;
             }
             catch (OperationCanceledException) when (
-                linkedCts is not null
-                && linkedCts.IsCancellationRequested
+                linkedCts?.IsCancellationRequested == true
                 && !cancellationToken.IsCancellationRequested)
             {
                 // Our timeout fired (not the caller's token) — re-surface as a structured

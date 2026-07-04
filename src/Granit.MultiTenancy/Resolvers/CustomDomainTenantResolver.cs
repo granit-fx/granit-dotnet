@@ -51,7 +51,7 @@ public sealed class CustomDomainTenantResolver(
             .FindByCustomDomainAsync(host, cancellationToken)
             .ConfigureAwait(false);
 
-        if (tenant is null || !tenant.Activated)
+        if (tenant?.Activated != true)
         {
             return null;
         }

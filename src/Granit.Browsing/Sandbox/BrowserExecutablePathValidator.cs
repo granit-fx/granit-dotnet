@@ -41,7 +41,7 @@ internal static class BrowserExecutablePathValidator
 
         if (string.IsNullOrEmpty(allowedPrefix))
         {
-            if (hostEnvironment is not null && hostEnvironment.IsProduction())
+            if (hostEnvironment?.IsProduction() == true)
             {
                 throw new SandboxViolationException(
                     SandboxViolationKind.ExecutablePathRejected,

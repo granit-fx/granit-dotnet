@@ -65,7 +65,7 @@ public sealed partial class ClientSideAuthorizationHandler(
         ArgumentNullException.ThrowIfNull(context);
 
         // Service-to-service flows carry no user — let them through unchanged.
-        if (context.Request is not null && context.Request.IsClientCredentialsGrantType())
+        if (context.Request?.IsClientCredentialsGrantType() == true)
         {
             return;
         }

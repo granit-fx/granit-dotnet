@@ -17,7 +17,7 @@ internal static class ResourceRoomResponseMapper
         List<ResourcePresenceParticipantResponse> projected = new(room.Participants.Count);
         foreach (ResourcePresenceEntry entry in room.Participants)
         {
-            if (visibleParticipantIds is not null && !visibleParticipantIds.Contains(entry.UserId))
+            if (visibleParticipantIds?.Contains(entry.UserId) == false)
             {
                 continue;
             }

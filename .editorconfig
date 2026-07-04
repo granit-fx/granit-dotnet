@@ -96,6 +96,8 @@ dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 dotnet_diagnostic.RCS1214.severity = warning
 # RCS1192: unnecessary verbatim string literal (@"no-escapes" → "no-escapes")
 dotnet_diagnostic.RCS1192.severity = warning
+# RCS1146: use conditional access (null-check + member access → ?.)
+dotnet_diagnostic.RCS1146.severity = warning
 
 [*.{csproj,props,targets}]
 indent_size = 2

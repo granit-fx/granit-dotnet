@@ -92,8 +92,7 @@ internal sealed partial class LogoutTokenValidator(
         }
 
         // Validate audience (OIDC Back-Channel Logout §2.4 — aud MUST contain client_id)
-        if (claims.Audiences is not null
-            && !claims.Audiences.Contains(expectedClientId, StringComparer.Ordinal))
+        if (claims.Audiences?.Contains(expectedClientId, StringComparer.Ordinal) == false)
         {
             LogAudienceMismatch(logger, expectedClientId);
             return null;

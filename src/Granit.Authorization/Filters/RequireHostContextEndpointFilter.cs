@@ -37,7 +37,7 @@ internal sealed class RequireHostContextEndpointFilter : IEndpointFilter
             .GetService<ICurrentTenant>();
 
         // No multi-tenancy module or tenant is active — pass through.
-        if (currentTenant is null || currentTenant.IsAvailable)
+        if (currentTenant?.IsAvailable != false)
         {
             return next(context);
         }

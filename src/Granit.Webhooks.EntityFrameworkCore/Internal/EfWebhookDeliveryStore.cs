@@ -62,10 +62,7 @@ internal sealed class EfWebhookDeliveryStore(
             WebhookSubscription? subscription = await db.WebhookSubscriptions
                 .FirstOrDefaultAsync(s => s.Id == command.SubscriptionId, cancellationToken).ConfigureAwait(false);
 
-            if (subscription is not null)
-            {
-                subscription.RecordSuccess(clock.Now);
-            }
+            subscription?.RecordSuccess(clock.Now);
         }, cancellationToken);
 
     public Task RecordFailureAsync(
@@ -97,10 +94,7 @@ internal sealed class EfWebhookDeliveryStore(
             WebhookSubscription? subscription = await db.WebhookSubscriptions
                 .FirstOrDefaultAsync(s => s.Id == command.SubscriptionId, cancellationToken).ConfigureAwait(false);
 
-            if (subscription is not null)
-            {
-                subscription.RecordFailure();
-            }
+            subscription?.RecordFailure();
         }, cancellationToken);
 
     public Task SuspendSubscriptionAsync(

@@ -48,10 +48,7 @@ internal sealed class LegalDocumentPublicationService(
             .ConfigureAwait(false);
 
         // Archive the old version (dispatches LegalAgreementObsoleteEto via domain event).
-        if (currentPublished is not null)
-        {
-            currentPublished.Archive(draft.Version.ToString());
-        }
+        currentPublished?.Archive(draft.Version.ToString());
 
         // Publish the new version.
         draft.Publish();

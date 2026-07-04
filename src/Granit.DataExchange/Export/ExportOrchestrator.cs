@@ -418,7 +418,7 @@ public sealed partial class ExportOrchestrator(
             {
                 value = field.ValueSelector(entity);
             }
-            else if (extraPropertyNames is not null && extraPropertyNames.Contains(propertyPath))
+            else if (extraPropertyNames?.Contains(propertyPath) == true)
             {
                 value = extraValueResolver.ResolveExtraValue(entity, propertyPath);
             }

@@ -272,8 +272,7 @@ public sealed class AngleSharpHtmlToPlainTextConverter : IHtmlToPlainTextConvert
         }
 
         string? style = cells[0].GetAttribute("style");
-        return style is not null
-            && style.Contains("border-top", StringComparison.OrdinalIgnoreCase)
+        return style?.Contains("border-top", StringComparison.OrdinalIgnoreCase) == true
             && string.IsNullOrWhiteSpace(cells[0].TextContent);
     }
 

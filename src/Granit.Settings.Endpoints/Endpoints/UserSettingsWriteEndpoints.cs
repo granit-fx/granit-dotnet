@@ -52,7 +52,7 @@ internal static class UserSettingsWriteEndpoints
 
         SettingDefinition? definition = definitionManager.GetOrNull(name);
 
-        if (definition is null || !definition.IsVisibleToClients)
+        if (definition?.IsVisibleToClients != true)
         {
             return SettingsResponseMapper.SettingNotFound(name);
         }
@@ -89,7 +89,7 @@ internal static class UserSettingsWriteEndpoints
 
         SettingDefinition? definition = definitionManager.GetOrNull(name);
 
-        if (definition is null || !definition.IsVisibleToClients)
+        if (definition?.IsVisibleToClients != true)
         {
             return SettingsResponseMapper.SettingNotFound(name);
         }

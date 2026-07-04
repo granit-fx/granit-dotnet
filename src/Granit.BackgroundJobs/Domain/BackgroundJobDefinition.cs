@@ -136,7 +136,7 @@ public sealed class BackgroundJobDefinition : AggregateRoot
     internal void RecordFailure(string? errorMessage)
     {
         ConsecutiveFailureCount++;
-        LastErrorMessage = errorMessage is not null && errorMessage.Length > MaxErrorMessageLength
+        LastErrorMessage = errorMessage?.Length > MaxErrorMessageLength
             ? string.Concat(errorMessage.AsSpan(0, MaxErrorMessageLength), "… [truncated]")
             : errorMessage;
 

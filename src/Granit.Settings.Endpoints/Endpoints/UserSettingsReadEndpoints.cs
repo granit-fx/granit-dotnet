@@ -83,7 +83,7 @@ internal static class UserSettingsReadEndpoints
 
         SettingDefinition? definition = definitionManager.GetOrNull(name);
 
-        if (definition is null || !definition.IsVisibleToClients)
+        if (definition?.IsVisibleToClients != true)
         {
             return SettingsResponseMapper.SettingNotFound(name);
         }

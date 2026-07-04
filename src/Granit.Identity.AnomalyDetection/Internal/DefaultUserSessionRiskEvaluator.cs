@@ -94,7 +94,7 @@ internal sealed class DefaultUserSessionRiskEvaluator(
 
         DeviceTrustVerdict? trust = await deviceTrustStore.GetAsync(userId, deviceId, cancellationToken)
             .ConfigureAwait(false);
-        if (trust is null || !trust.IsActive(timeProvider.GetUtcNow()))
+        if (trust?.IsActive(timeProvider.GetUtcNow()) != true)
         {
             return assessment;
         }

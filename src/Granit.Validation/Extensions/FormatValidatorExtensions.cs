@@ -40,8 +40,7 @@ public static partial class FormatValidatorExtensions
     public static IRuleBuilderOptions<T, string?> Base64String<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
             .Must(value =>
-                value != null
-                && value.Length > 0
+                value?.Length > 0
                 && Convert.TryFromBase64String(value, new byte[value.Length], out _))
             .WithErrorCodeAndMessage("Validation:Format:Base64String");
 
@@ -66,7 +65,7 @@ public static partial class FormatValidatorExtensions
         value is not null && SlugRegex().IsMatch(value);
 
     internal static bool IsValidBase64String(string? value) =>
-        value is not null && value.Length > 0 && Convert.TryFromBase64String(value, new byte[value.Length], out _);
+        value?.Length > 0 && Convert.TryFromBase64String(value, new byte[value.Length], out _);
 
     internal static bool IsValidColorHex(string? value) =>
         value is not null && ColorHexRegex().IsMatch(value.Trim());

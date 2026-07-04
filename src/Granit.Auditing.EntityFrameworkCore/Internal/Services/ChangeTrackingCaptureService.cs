@@ -179,8 +179,7 @@ internal sealed partial class ChangeTrackingCaptureService(
         PropertyEntry? isDeletedProp = entry.Properties
             .FirstOrDefault(p => p.Metadata.Name == nameof(ISoftDeletable.IsDeleted));
 
-        return isDeletedProp is not null
-            && isDeletedProp.OriginalValue is false
+        return isDeletedProp?.OriginalValue is false
             && isDeletedProp.CurrentValue is true;
     }
 

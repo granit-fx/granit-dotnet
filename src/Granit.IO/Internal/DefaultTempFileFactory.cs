@@ -123,7 +123,7 @@ internal sealed partial class DefaultTempFileFactory : ITempFileFactory
 
     private string? ResolveTenantId()
     {
-        if (_currentTenant is null || !_currentTenant.IsAvailable || _currentTenant.Id is null)
+        if (_currentTenant?.IsAvailable != true || _currentTenant.Id is null)
         {
             return null;
         }

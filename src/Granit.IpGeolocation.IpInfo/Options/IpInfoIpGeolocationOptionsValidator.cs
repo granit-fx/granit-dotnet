@@ -14,7 +14,7 @@ internal sealed class IpInfoIpGeolocationOptionsValidator : IValidateOptions<IpI
             return ValidateOptionsResult.Fail($"{nameof(options.ProviderName)} must be non-empty.");
         }
 
-        if (options.BaseAddress is null || !options.BaseAddress.IsAbsoluteUri)
+        if (options.BaseAddress?.IsAbsoluteUri != true)
         {
             return ValidateOptionsResult.Fail($"{nameof(options.BaseAddress)} must be an absolute URI.");
         }

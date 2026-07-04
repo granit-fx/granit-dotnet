@@ -187,7 +187,7 @@ internal sealed partial class EmailNotificationChannel(
     {
         // Resolve ITemplateResolver chain (optional — not all apps have Granit.Templating)
         IEnumerable<ITemplateResolver>? resolvers = serviceProvider.GetService<IEnumerable<ITemplateResolver>>();
-        if (resolvers is null || !resolvers.Any())
+        if (resolvers?.Any() != true)
         {
             return null;
         }

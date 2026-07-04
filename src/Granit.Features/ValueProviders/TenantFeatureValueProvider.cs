@@ -29,7 +29,7 @@ internal sealed class TenantFeatureValueProvider(
     public async Task<string?> GetOrNullAsync(FeatureDefinition definition, CancellationToken cancellationToken = default)
     {
         ICurrentTenant? currentTenant = _serviceProvider.GetService<ICurrentTenant>();
-        if (currentTenant is null || !currentTenant.IsAvailable)
+        if (currentTenant?.IsAvailable != true)
         {
             return null;
         }

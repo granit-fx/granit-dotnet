@@ -46,7 +46,7 @@ internal static class CompositeCursorBuilder
             bool descending = part.StartsWith('-');
             string fieldName = descending ? part[1..] : part;
 
-            if (allowedSortFields is not null && !allowedSortFields.Contains(fieldName))
+            if (allowedSortFields?.Contains(fieldName) == false)
             {
                 continue;
             }

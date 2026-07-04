@@ -77,10 +77,7 @@ public sealed class TenantPartitionedBulkhead(
             ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken)
             : null;
 
-        if (timeoutCts is not null)
-        {
-            timeoutCts.CancelAfter(policy.QueueTimeout);
-        }
+        timeoutCts?.CancelAfter(policy.QueueTimeout);
 
         CancellationToken effectiveToken = timeoutCts?.Token ?? cancellationToken;
 
@@ -90,7 +87,7 @@ public sealed class TenantPartitionedBulkhead(
             innerLease = await registry.AcquireAsync(key, permitLimit, policy.QueueLimit, effectiveToken)
                 .ConfigureAwait(false);
         }
-        catch (OperationCanceledException) when (timeoutCts is not null && timeoutCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+        catch (OperationCanceledException) when (timeoutCts?.IsCancellationRequested == true && !cancellationToken.IsCancellationRequested)
         {
             // Queue timeout expired — treat as rejection.
             activity?.SetStatus(ActivityStatusCode.Error, "queue_timeout");

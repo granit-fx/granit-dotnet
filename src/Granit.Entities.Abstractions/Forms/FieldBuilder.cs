@@ -194,7 +194,7 @@ public sealed class FieldBuilder<TEntity, TProperty>
         bool autoOptions = unwrapped.IsEnum
             && _lookup is null
             && _component is "select" or "multiselect" or "status"
-            && (_config is null || !_config.ContainsKey("options"));
+            && (_config?.ContainsKey("options") != true);
 
         if (!autoOptions)
         {

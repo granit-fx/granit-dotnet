@@ -641,7 +641,7 @@ internal static partial class AccountLoginEndpoints
 
         DeviceTrustVerdict? verdict = await services.GetRequiredService<IDeviceTrustStore>()
             .GetAsync(userId, deviceId, cancellationToken).ConfigureAwait(false);
-        if (verdict is null || !verdict.IsActive(services.GetRequiredService<TimeProvider>().GetUtcNow()))
+        if (verdict?.IsActive(services.GetRequiredService<TimeProvider>().GetUtcNow()) != true)
         {
             return false;
         }

@@ -265,7 +265,7 @@ public static class PersistenceTenantExtensions
         services.TryAddScoped<TContext>(static sp =>
         {
             ICurrentTenant? tenant = sp.GetService<ICurrentTenant>();
-            if (tenant is null || !tenant.IsAvailable)
+            if (tenant?.IsAvailable != true)
             {
                 IDbContextFactory<TContext>? sharedFactory =
                     sp.GetKeyedService<IDbContextFactory<TContext>>(TenantIsolationStrategy.SharedDatabase);

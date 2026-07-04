@@ -47,7 +47,7 @@ public sealed class DomainTenantResolver(
             .FindByIdentifierAsync(identifier, cancellationToken)
             .ConfigureAwait(false);
 
-        if (tenant is null || !tenant.Activated)
+        if (tenant?.Activated != true)
         {
             return null;
         }
