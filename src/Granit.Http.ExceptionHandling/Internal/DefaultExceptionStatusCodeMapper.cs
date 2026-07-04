@@ -28,6 +28,11 @@ internal sealed class DefaultExceptionStatusCodeMapper : IExceptionStatusCodeMap
         NotImplementedException => StatusCodes.Status501NotImplemented,
         OperationCanceledException => 499,
         TimeoutException => StatusCodes.Status408RequestTimeout,
+        // Body binding failures (malformed JSON, payload too large, …) surface as
+        // BadHttpRequestException with a status ASP.NET has already resolved
+        // (400, 413, …). Honour it instead of hardcoding 400 so a too-large body
+        // still maps to 413.
+        BadHttpRequestException badRequest => badRequest.StatusCode,
         _ => null
     };
 }

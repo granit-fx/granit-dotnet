@@ -178,6 +178,34 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     // -------------------------------------------------------------------------
+    // BadHttpRequestException: honours the status ASP.NET already resolved
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void TryGetStatusCode_BadHttpRequestException_Returns400()
+    {
+        DefaultExceptionStatusCodeMapper mapper = Create();
+
+        int? result = mapper.TryGetStatusCode(
+            new BadHttpRequestException("Malformed request body", StatusCodes.Status400BadRequest));
+
+        result.ShouldBe(StatusCodes.Status400BadRequest);
+    }
+
+    [Fact]
+    public void TryGetStatusCode_BadHttpRequestExceptionWithNon400StatusCode_ReturnsThatStatusCode()
+    {
+        // A too-large body surfaces as BadHttpRequestException with StatusCode 413.
+        // The mapper must honour it rather than hardcoding 400.
+        DefaultExceptionStatusCodeMapper mapper = Create();
+
+        int? result = mapper.TryGetStatusCode(
+            new BadHttpRequestException("Request body too large", StatusCodes.Status413PayloadTooLarge));
+
+        result.ShouldBe(StatusCodes.Status413PayloadTooLarge);
+    }
+
+    // -------------------------------------------------------------------------
     // Fallback: unknown exception -> null (delegates to next mapper or handler)
     // -------------------------------------------------------------------------
 

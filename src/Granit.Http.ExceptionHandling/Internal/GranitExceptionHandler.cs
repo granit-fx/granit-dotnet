@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json;
 using Granit.Exceptions;
 using Granit.Http.ExceptionHandling.Options;
 using Microsoft.AspNetCore.Diagnostics;
@@ -47,6 +48,11 @@ internal sealed partial class GranitExceptionHandler(
     private const string FallbackTitle409 = "Conflict.";
     private const string FallbackTitle422 = "Validation failed.";
     private const string FallbackTitle4xx = "Invalid request.";
+
+    // Stable error code surfaced when a request body fails to bind (malformed JSON,
+    // invalid enum, wrong shape). Exposed as-is on the ProblemDetails; it is not an
+    // IHasErrorCode-backed code, so no localization key is required for it.
+    private const string MalformedRequestBodyErrorCode = "Http:MalformedRequestBody";
 
     private readonly ILogger _logger = loggerFactory.CreateLogger<GranitExceptionHandler>();
 
@@ -147,6 +153,20 @@ internal sealed partial class GranitExceptionHandler(
         {
             problemDetails.Extensions["errors"] =
                 validationErrorsSanitizer.Sanitize(hasValidationErrors.ValidationErrors);
+        }
+
+        // Body binding failure (e.g. invalid enum in the JSON payload) arrives as a
+        // BadHttpRequestException wrapping a JsonException. Surface a stable error code
+        // and the JSON path of the faulty member so clients can pinpoint it. Only the
+        // schema path is exposed — never the received value or raw message — so the
+        // ISO 27001 masking of non-IUserFriendlyException 4xx titles stays intact.
+        if (exception is BadHttpRequestException { InnerException: JsonException json })
+        {
+            problemDetails.Extensions["errorCode"] = MalformedRequestBodyErrorCode;
+            if (json.Path is { Length: > 0 } jsonPath)
+            {
+                problemDetails.Extensions["jsonPath"] = jsonPath;
+            }
         }
 
         return problemDetails;

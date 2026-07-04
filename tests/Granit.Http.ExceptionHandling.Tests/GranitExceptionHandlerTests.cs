@@ -644,6 +644,58 @@ public sealed class GranitExceptionHandlerTests
     }
 
     // -------------------------------------------------------------------------
+    // BadHttpRequestException: body binding failure -> 400 with safe metadata
+    // -------------------------------------------------------------------------
+    // A malformed body (e.g. an invalid enum in $.definition.chartType) surfaces
+    // as BadHttpRequestException wrapping a JsonException. It must return the
+    // status ASP.NET already resolved (400), expose a stable errorCode and the
+    // JSON path of the faulty member — but never the raw message in production.
+
+    [Fact]
+    public async Task TryHandleAsync_BadHttpRequestException_ReturnsStatus400()
+    {
+        using ServiceProvider sp = BuildServiceProvider();
+
+        (int statusCode, _, _, _) = await InvokeHandlerAsync(
+            sp, CreateMalformedBodyException("$.definition.chartType"));
+
+        statusCode.ShouldBe(StatusCodes.Status400BadRequest);
+    }
+
+    [Fact]
+    public async Task TryHandleAsync_BadHttpRequestException_ExposesErrorCodeAndJsonPath()
+    {
+        using ServiceProvider sp = BuildServiceProvider();
+
+        (_, IDictionary<string, object?> extensions, _, _) = await InvokeHandlerAsync(
+            sp, CreateMalformedBodyException("$.definition.chartType"));
+
+        extensions.ShouldContainKey("errorCode");
+        extensions["errorCode"]!.ToString().ShouldBe("Http:MalformedRequestBody");
+        extensions.ShouldContainKey("jsonPath");
+        extensions["jsonPath"]!.ToString().ShouldBe("$.definition.chartType");
+    }
+
+    [Fact]
+    public async Task TryHandleAsync_BadHttpRequestException_Production_DoesNotLeakRawMessage()
+    {
+        // ExposeInternalErrorDetails = false (production). The raw JSON parsing
+        // message may echo the offending value — it must never reach the client.
+        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
+
+        BadHttpRequestException exception = CreateMalformedBodyException(
+            "$.definition.chartType",
+            rawMessage: "The JSON value 'Sunburst' could not be converted to ChartType.");
+
+        (_, _, string? title, string? detail) = await InvokeHandlerAsync(sp, exception);
+
+        title.ShouldBe("Invalid request.");
+        title!.ShouldNotContain("Sunburst");
+        title!.ShouldNotContain("ChartType");
+        detail.ShouldBeNull("body binding failures must not leak the raw parsing message in production");
+    }
+
+    // -------------------------------------------------------------------------
     // BusinessRuleViolationException: more specific than BusinessException
     // -------------------------------------------------------------------------
 
@@ -661,6 +713,20 @@ public sealed class GranitExceptionHandlerTests
     // -------------------------------------------------------------------------
     // Test doubles
     // -------------------------------------------------------------------------
+
+    // Mirrors how ASP.NET Core wraps a body-binding failure: a BadHttpRequestException
+    // (StatusCode already set to 400) whose InnerException is the JsonException carrying
+    // the JSON path of the faulty member.
+    private static BadHttpRequestException CreateMalformedBodyException(
+        string jsonPath,
+        string rawMessage = "The JSON value could not be converted.")
+    {
+        System.Text.Json.JsonException inner = new(rawMessage, jsonPath, lineNumber: 1, bytePositionInLine: 20);
+        return new BadHttpRequestException(
+            "Failed to read parameter from the request body as JSON.",
+            StatusCodes.Status400BadRequest,
+            inner);
+    }
 
     private sealed class DomainException(string errorCode) : Exception("fallback"), IHasErrorCode
     {
