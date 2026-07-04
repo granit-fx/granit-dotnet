@@ -67,8 +67,7 @@ public sealed partial class EncryptionIsolationMaterializationInterceptor(
 
         foreach (PropertyInfo property in isolatedProperties)
         {
-            string? cipherText = property.GetValue(entity) as string;
-            if (cipherText is null)
+            if (!(property.GetValue(entity) is string cipherText))
             {
                 continue;
             }

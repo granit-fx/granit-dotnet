@@ -13,6 +13,4 @@ namespace Granit.DataExchange;
 /// export or import pipelines depend on <c>GranitDataExchangeModule</c> instead, which
 /// transitively depends on this module.
 /// </remarks>
-public sealed class GranitDataExchangeAbstractionsModule : GranitModule
-{
-}
+public sealed class GranitDataExchangeAbstractionsModule : GranitModule;

@@ -46,10 +46,7 @@ public static class AIAnthropicHostApplicationBuilderExtensions
         // AllowAutoRedirect = false closes the redirect-to-metadata SSRF path (anthropic.com does
         // not legitimately 3xx).
         builder.Services
-            .AddHttpClient(AnthropicProviderFactory.HttpClientName, client =>
-            {
-                client.Timeout = Timeout.InfiniteTimeSpan;
-            })
+            .AddHttpClient(AnthropicProviderFactory.HttpClientName, client => client.Timeout = Timeout.InfiniteTimeSpan)
             .ConfigurePrimaryHttpMessageHandler(static () => new SocketsHttpHandler
             {
                 AllowAutoRedirect = false,

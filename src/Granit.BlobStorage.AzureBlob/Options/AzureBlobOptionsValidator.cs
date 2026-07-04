@@ -24,14 +24,11 @@ internal sealed class AzureBlobOptionsValidator : IValidateOptions<AzureBlobOpti
                     $"{nameof(options.ServiceUri)} must use HTTPS.");
             }
         }
-        else
+        else if (string.IsNullOrWhiteSpace(options.ConnectionString))
         {
-            if (string.IsNullOrWhiteSpace(options.ConnectionString))
-            {
-                return ValidateOptionsResult.Fail(
-                    $"{nameof(options.ConnectionString)} must be non-empty when {nameof(options.UseManagedIdentity)} is false. " +
-                    "Inject from Granit.Vault.");
-            }
+            return ValidateOptionsResult.Fail(
+                $"{nameof(options.ConnectionString)} must be non-empty when {nameof(options.UseManagedIdentity)} is false. " +
+                "Inject from Granit.Vault.");
         }
 
         if (string.IsNullOrWhiteSpace(options.DefaultContainer))

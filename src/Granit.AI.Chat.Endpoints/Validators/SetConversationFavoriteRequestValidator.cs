@@ -8,6 +8,4 @@ namespace Granit.AI.Chat.Endpoints.Validators;
 /// unconstrained (both states are valid), so the validator carries no rules; it exists to satisfy
 /// the framework's "every <c>*Request</c> has a <see cref="GranitValidator{T}"/>" convention.
 /// </summary>
-internal sealed class SetConversationFavoriteRequestValidator : GranitValidator<SetConversationFavoriteRequest>
-{
-}
+internal sealed class SetConversationFavoriteRequestValidator : GranitValidator<SetConversationFavoriteRequest>;

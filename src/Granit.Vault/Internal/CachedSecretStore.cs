@@ -88,12 +88,7 @@ internal sealed partial class CachedSecretStore(
 
     private bool ShouldCache(SecretDescriptor descriptor)
     {
-        if (descriptor.BinaryValue is { } binary && binary.Length > _options.MaxCachedBinarySizeBytes)
-        {
-            return false;
-        }
-
-        return true;
+        return !(descriptor.BinaryValue is { } binary) || binary.Length <= _options.MaxCachedBinarySizeBytes;
     }
 
     private string BuildCacheKey(SecretRequest request) =>

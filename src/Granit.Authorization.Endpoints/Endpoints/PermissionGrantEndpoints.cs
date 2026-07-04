@@ -77,8 +77,8 @@ internal static partial class PermissionGrantEndpoints
             .ConfigureAwait(false))
         {
             return TypedResults.Problem(
-                statusCode: StatusCodes.Status404NotFound,
-                detail: $"Role '{roleName}' not found.");
+                detail: $"Role '{roleName}' not found.",
+                statusCode: StatusCodes.Status404NotFound);
         }
 
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
@@ -114,8 +114,8 @@ internal static partial class PermissionGrantEndpoints
             .ConfigureAwait(false))
         {
             return TypedResults.Problem(
-                statusCode: StatusCodes.Status404NotFound,
-                detail: $"Role '{roleName}' not found.");
+                detail: $"Role '{roleName}' not found.",
+                statusCode: StatusCodes.Status404NotFound);
         }
 
         if (!definitionManager.Exists(permissionName))
@@ -173,8 +173,8 @@ internal static partial class PermissionGrantEndpoints
             .ConfigureAwait(false))
         {
             return TypedResults.Problem(
-                statusCode: StatusCodes.Status404NotFound,
-                detail: $"Role '{roleName}' not found.");
+                detail: $"Role '{roleName}' not found.",
+                statusCode: StatusCodes.Status404NotFound);
         }
 
         if (!definitionManager.Exists(permissionName))

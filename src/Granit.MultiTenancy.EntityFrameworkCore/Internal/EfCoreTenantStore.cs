@@ -104,10 +104,7 @@ internal sealed partial class EfCoreTenantStore(
     {
         var tenant = Tenant.Create(id, name, identifier, contactEmail, jurisdiction);
 
-        await WriteAsync(async db =>
-        {
-            db.Tenants.Add(tenant);
-        }, cancellationToken).ConfigureAwait(false);
+        await WriteAsync(async db => db.Tenants.Add(tenant), cancellationToken).ConfigureAwait(false);
 
         LogTenantCreated(id, identifier);
     }

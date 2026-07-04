@@ -19,4 +19,4 @@ namespace Granit.Events;
 /// </para>
 /// <para>Naming convention: <c>*Event</c> suffix (e.g., <c>PatientDischargedEvent</c>).</para>
 /// </remarks>
-public interface IDomainEvent { }
+public interface IDomainEvent;

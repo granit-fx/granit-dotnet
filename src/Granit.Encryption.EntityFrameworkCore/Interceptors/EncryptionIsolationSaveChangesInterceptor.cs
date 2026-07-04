@@ -93,8 +93,7 @@ public sealed partial class EncryptionIsolationSaveChangesInterceptor(
     {
         foreach (PropertyInfo property in properties)
         {
-            string? plainText = property.GetValue(entry.Entity) as string;
-            if (plainText is null)
+            if (!(property.GetValue(entry.Entity) is string plainText))
             {
                 continue;
             }

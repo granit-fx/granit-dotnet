@@ -116,7 +116,7 @@ public static partial class ApiDocumentationApplicationBuilderExtensions
     private static void ConfigureOAuth2Flow(AuthorizationCodeFlow flow, Options.OAuth2Options oauth2)
     {
         flow
-            .WithClientId(oauth2.ClientId!)
+            .WithClientId(oauth2.ClientId)
             .WithSelectedScopes(oauth2.Scopes);
 
         if (oauth2.EnablePkce)

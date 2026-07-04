@@ -15,4 +15,4 @@ namespace Granit.Domain;
 /// <see cref="IHasEntityEto{TEto}"/> instead — it extends this interface automatically.
 /// </para>
 /// </remarks>
-public interface IEmitEntityLifecycleEvents { }
+public interface IEmitEntityLifecycleEvents;

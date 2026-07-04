@@ -14,4 +14,4 @@ namespace Granit.Events;
 /// </para>
 /// <para>Naming convention: <c>*Eto</c> suffix — Event Transfer Object (e.g., <c>BedReleasedEto</c>).</para>
 /// </remarks>
-public interface IIntegrationEvent { }
+public interface IIntegrationEvent;

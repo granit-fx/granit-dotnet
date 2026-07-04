@@ -64,9 +64,7 @@ internal sealed partial class LlmTemplateAssistant(
 
             // Strip potentially dangerous HTML elements from LLM output.
             // Full Scriban syntax validation is deferred to the template engine at render time.
-            template = SanitizeHtmlOutput(template);
-
-            return template;
+            return SanitizeHtmlOutput(template);
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {

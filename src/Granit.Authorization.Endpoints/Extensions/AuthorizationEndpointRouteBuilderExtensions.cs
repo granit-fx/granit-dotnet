@@ -62,15 +62,9 @@ public static class AuthorizationEndpointRouteBuilderExtensions
         // sees only the host partition. For ISO 27001 cross-tenant authorization review, mark these
         // groups .AllowHostAccess(); a platform admin holding each group's read permission at global
         // scope then reads across tenants, while the filter stays enforced for tenant-scoped callers.
-        group.MapGranitGroup("grants").MapGranitQuery<PermissionGrant>(configure: opts =>
-        {
-            opts.AuthorizationPolicy = AuthorizationEndpointsPermissions.Grants.Manage;
-        });
+        group.MapGranitGroup("grants").MapGranitQuery<PermissionGrant>(configure: opts => opts.AuthorizationPolicy = AuthorizationEndpointsPermissions.Grants.Manage);
 
-        group.MapGranitGroup("role-metadata").MapGranitQuery<RoleMetadata>(configure: opts =>
-        {
-            opts.AuthorizationPolicy = AuthorizationEndpointsPermissions.Definitions.Read;
-        });
+        group.MapGranitGroup("role-metadata").MapGranitQuery<RoleMetadata>(configure: opts => opts.AuthorizationPolicy = AuthorizationEndpointsPermissions.Definitions.Read);
 
         return group;
     }

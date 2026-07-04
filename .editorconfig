@@ -108,6 +108,35 @@ dotnet_diagnostic.RCS1077.severity = warning
 dotnet_diagnostic.RCS1197.severity = warning
 # RCS1123: add parentheses when necessary (explicit *-in-+ grouping; precedence unchanged)
 dotnet_diagnostic.RCS1123.severity = warning
+# RCS1205: order named arguments to match the parameter declaration order
+dotnet_diagnostic.RCS1205.severity = warning
+# RCS1021: use expression-bodied lambda (block with a single statement → =>)
+dotnet_diagnostic.RCS1021.severity = warning
+# RCS1251: remove unnecessary braces (empty type body → ;)
+dotnet_diagnostic.RCS1251.severity = warning
+# RCS1073: convert redundant if to a return statement
+dotnet_diagnostic.RCS1073.severity = warning
+# RCS1221: use pattern matching instead of 'as' + null check
+dotnet_diagnostic.RCS1221.severity = warning
+# RCS1235: optimize dictionary 'Add' call
+dotnet_diagnostic.RCS1235.severity = warning
+# RCS1249: remove unnecessary null-forgiving operator (!)
+dotnet_diagnostic.RCS1249.severity = warning
+# RCS1212: remove redundant assignment
+dotnet_diagnostic.RCS1212.severity = warning
+# RCS1206: use conditional access instead of conditional expression
+dotnet_diagnostic.RCS1206.severity = warning
+# RCS1084: use coalesce expression (??) instead of conditional expression
+dotnet_diagnostic.RCS1084.severity = warning
+# RCS1173: use coalesce expression instead of 'if'
+dotnet_diagnostic.RCS1173.severity = warning
+# RCS1006: merge 'else' with nested 'if' (→ else if)
+dotnet_diagnostic.RCS1006.severity = warning
+# RCS1196: call extension method as an instance method
+dotnet_diagnostic.RCS1196.severity = warning
+#
+# RCS1243 (duplicate word in comment) deliberately NOT promoted: it corrupts legitimate
+# repeated format placeholders (e.g. "XXX XXX XXX" SIN masks → "XXX XXX") — a silent doc bug.
 #
 # RCS1124 (inline single-use local) was evaluated and deliberately left at the suggestion
 # baseline: its auto-fix removes named `snapshot` locals that document volatile-read

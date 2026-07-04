@@ -80,12 +80,7 @@ public static partial class AIEndpointValidator
 
         string host = uri.Host;
         AIEndpointValidationResult? hostViolation = ValidateHost(uri, host, policy);
-        if (hostViolation is not null)
-        {
-            return hostViolation;
-        }
-
-        return AIEndpointValidationResult.Ok(resolvedHost: host);
+        return hostViolation ?? AIEndpointValidationResult.Ok(resolvedHost: host);
     }
 
     /// <summary>Validates the URI's RFC 3986 shape: userinfo/fragment, scheme, and port allow-lists.</summary>

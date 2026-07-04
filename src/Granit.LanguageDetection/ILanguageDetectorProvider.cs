@@ -24,6 +24,4 @@ namespace Granit.LanguageDetection;
 /// register it with <c>TryAddEnumerable</c>.
 /// </para>
 /// </remarks>
-public interface ILanguageDetectorProvider : ILanguageDetector
-{
-}
+public interface ILanguageDetectorProvider : ILanguageDetector;

@@ -111,9 +111,9 @@ internal static class GranitRoleEndpoints
         if (role is null || !IsVisible(role, currentTenant))
         {
             return TypedResults.Problem(
-                statusCode: StatusCodes.Status404NotFound,
                 detail: AccountEndpointMessages.Localize(
-                    httpContext, "Granit:Identity:Role:NotFound", "Role not found."));
+                    httpContext, "Granit:Identity:Role:NotFound", "Role not found."),
+                statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(Map(role));
@@ -132,10 +132,10 @@ internal static class GranitRoleEndpoints
         if (request.MultiTenancySides == MultiTenancySides.Tenant && !opts.AllowTenantRoles)
         {
             return TypedResults.Problem(
-                statusCode: StatusCodes.Status403Forbidden,
                 detail: AccountEndpointMessages.Localize(
                     httpContext, "Granit:Identity:Role:TenantRolesDisabled",
-                    "Tenant-scoped role creation is disabled."));
+                    "Tenant-scoped role creation is disabled."),
+                statusCode: StatusCodes.Status403Forbidden);
         }
 
         // Tenant admins may only create roles in their own tenant.
@@ -143,20 +143,20 @@ internal static class GranitRoleEndpoints
             && request.TenantId != currentTenant.Id)
         {
             return TypedResults.Problem(
-                statusCode: StatusCodes.Status403Forbidden,
                 detail: AccountEndpointMessages.Localize(
                     httpContext, "Granit:Identity:Role:CrossTenantForbidden",
-                    "Tenant admins can only create roles within their own tenant."));
+                    "Tenant admins can only create roles within their own tenant."),
+                statusCode: StatusCodes.Status403Forbidden);
         }
 
         // Tenant admins cannot create Host or Both roles (platform-level scope).
         if (currentTenant.IsAvailable && request.MultiTenancySides != MultiTenancySides.Tenant)
         {
             return TypedResults.Problem(
-                statusCode: StatusCodes.Status403Forbidden,
                 detail: AccountEndpointMessages.Localize(
                     httpContext, "Granit:Identity:Role:HostManagedElsewhere",
-                    "Host and Both roles are managed from the host admin context."));
+                    "Host and Both roles are managed from the host admin context."),
+                statusCode: StatusCodes.Status403Forbidden);
         }
 
         RoleMetadata created;
@@ -174,11 +174,11 @@ internal static class GranitRoleEndpoints
         }
         catch (ArgumentException ex)
         {
-            return TypedResults.Problem(statusCode: StatusCodes.Status400BadRequest, detail: ex.Message);
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status400BadRequest);
         }
         catch (InvalidOperationException ex)
         {
-            return TypedResults.Problem(statusCode: StatusCodes.Status409Conflict, detail: ex.Message);
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status409Conflict);
         }
 
         string basePath = httpContext.Request.Path.Value!.TrimEnd('/');
@@ -198,18 +198,18 @@ internal static class GranitRoleEndpoints
         if (role is null || !IsVisible(role, currentTenant))
         {
             return TypedResults.Problem(
-                statusCode: StatusCodes.Status404NotFound,
                 detail: AccountEndpointMessages.Localize(
-                    httpContext, "Granit:Identity:Role:NotFound", "Role not found."));
+                    httpContext, "Granit:Identity:Role:NotFound", "Role not found."),
+                statusCode: StatusCodes.Status404NotFound);
         }
 
         if (!CanMutate(role, currentTenant))
         {
             return TypedResults.Problem(
-                statusCode: StatusCodes.Status403Forbidden,
                 detail: AccountEndpointMessages.Localize(
                     httpContext, "Granit:Identity:Role:ModifyForbidden",
-                    "You do not have permission to modify this role."));
+                    "You do not have permission to modify this role."),
+                statusCode: StatusCodes.Status403Forbidden);
         }
 
         try
@@ -221,11 +221,11 @@ internal static class GranitRoleEndpoints
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("system role", StringComparison.OrdinalIgnoreCase))
         {
-            return TypedResults.Problem(statusCode: StatusCodes.Status403Forbidden, detail: ex.Message);
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status403Forbidden);
         }
         catch (InvalidOperationException ex)
         {
-            return TypedResults.Problem(statusCode: StatusCodes.Status409Conflict, detail: ex.Message);
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status409Conflict);
         }
     }
 
@@ -241,18 +241,18 @@ internal static class GranitRoleEndpoints
         if (role is null || !IsVisible(role, currentTenant))
         {
             return TypedResults.Problem(
-                statusCode: StatusCodes.Status404NotFound,
                 detail: AccountEndpointMessages.Localize(
-                    httpContext, "Granit:Identity:Role:NotFound", "Role not found."));
+                    httpContext, "Granit:Identity:Role:NotFound", "Role not found."),
+                statusCode: StatusCodes.Status404NotFound);
         }
 
         if (!CanMutate(role, currentTenant))
         {
             return TypedResults.Problem(
-                statusCode: StatusCodes.Status403Forbidden,
                 detail: AccountEndpointMessages.Localize(
                     httpContext, "Granit:Identity:Role:DeleteForbidden",
-                    "You do not have permission to delete this role."));
+                    "You do not have permission to delete this role."),
+                statusCode: StatusCodes.Status403Forbidden);
         }
 
         try
@@ -262,11 +262,11 @@ internal static class GranitRoleEndpoints
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("system role", StringComparison.OrdinalIgnoreCase))
         {
-            return TypedResults.Problem(statusCode: StatusCodes.Status403Forbidden, detail: ex.Message);
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status403Forbidden);
         }
         catch (InvalidOperationException ex)
         {
-            return TypedResults.Problem(statusCode: StatusCodes.Status409Conflict, detail: ex.Message);
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status409Conflict);
         }
     }
 

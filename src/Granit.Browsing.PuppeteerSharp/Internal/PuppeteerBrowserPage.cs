@@ -274,10 +274,7 @@ internal sealed partial class PuppeteerBrowserPage : IBrowserPage
         ArgumentException.ThrowIfNullOrEmpty(css);
         PublishScriptInjected("style", css);
         return BrowsingTimeout.RunAsync(
-            async ct =>
-            {
-                await _page.AddStyleTagAsync(new AddTagOptions { Content = css }).ConfigureAwait(false);
-            },
+            async ct => await _page.AddStyleTagAsync(new AddTagOptions { Content = css }).ConfigureAwait(false),
             _maxRenderDuration,
             cancellationToken);
     }
@@ -288,10 +285,7 @@ internal sealed partial class PuppeteerBrowserPage : IBrowserPage
         ArgumentException.ThrowIfNullOrEmpty(js);
         PublishScriptInjected("script", js);
         return BrowsingTimeout.RunAsync(
-            async ct =>
-            {
-                await _page.AddScriptTagAsync(new AddTagOptions { Content = js }).ConfigureAwait(false);
-            },
+            async ct => await _page.AddScriptTagAsync(new AddTagOptions { Content = js }).ConfigureAwait(false),
             _maxRenderDuration,
             cancellationToken);
     }

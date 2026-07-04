@@ -65,10 +65,7 @@ public static class PrivacyRegulationsServiceCollectionExtensions
         {
             new BuiltInPrivacyJurisdictionMapProvider(),
         };
-        foreach (IPrivacyJurisdictionMapProvider provider in builder.JurisdictionMapProviders)
-        {
-            jurisdictionMapProviders.Add(provider);
-        }
+        jurisdictionMapProviders.AddRange(builder.JurisdictionMapProviders);
 
         services.TryAddSingleton<IPrivacyJurisdictionResolver>(
             new DefaultPrivacyJurisdictionResolver(jurisdictionMapProviders));

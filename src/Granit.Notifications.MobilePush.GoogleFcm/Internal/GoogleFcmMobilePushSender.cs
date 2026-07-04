@@ -74,9 +74,7 @@ internal sealed partial class GoogleFcmMobilePushSender(
                     Title = message.Title,
                     Body = message.Body,
                 },
-                Data = message.Data.HasValue
-                    ? JsonSerializer.Deserialize<Dictionary<string, string>>(message.Data.Value)
-                    : null,
+                Data = message.Data?.Deserialize<Dictionary<string, string>>(),
             },
         };
 

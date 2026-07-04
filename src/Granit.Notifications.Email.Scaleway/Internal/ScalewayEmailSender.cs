@@ -36,9 +36,7 @@ internal sealed partial class ScalewayEmailSender(
         string fromEmail = message.FromEmailOverride ?? opts.DefaultSenderEmail;
         string fromName = message.FromNameOverride ?? opts.DefaultSenderName;
 
-        object? textField = message.PlainTextBody is not null
-            ? message.PlainTextBody
-            : null;
+        object? textField = message.PlainTextBody;
 
         var to = new { email = message.To, name = message.ToName };
 

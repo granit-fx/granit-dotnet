@@ -41,10 +41,7 @@ public static class AIAzureOpenAIHostApplicationBuilderExtensions
         builder.Services.AddSingleton<IValidateOptions<AzureOpenAIProviderOptions>, AzureOpenAIProviderOptionsValidator>();
 
         builder.Services
-            .AddHttpClient(AzureOpenAIProviderFactory.HttpClientName, client =>
-            {
-                client.Timeout = Timeout.InfiniteTimeSpan;
-            })
+            .AddHttpClient(AzureOpenAIProviderFactory.HttpClientName, client => client.Timeout = Timeout.InfiniteTimeSpan)
             .ConfigurePrimaryHttpMessageHandler(static () => new SocketsHttpHandler
             {
                 AllowAutoRedirect = false,

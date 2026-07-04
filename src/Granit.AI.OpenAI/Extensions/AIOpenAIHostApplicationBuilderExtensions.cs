@@ -46,10 +46,7 @@ public static class AIOpenAIHostApplicationBuilderExtensions
         builder.Services.TryAddSingleton(TimeProvider.System);
 
         builder.Services
-            .AddHttpClient(OpenAIProviderFactory.HttpClientName, client =>
-            {
-                client.Timeout = Timeout.InfiniteTimeSpan;
-            })
+            .AddHttpClient(OpenAIProviderFactory.HttpClientName, client => client.Timeout = Timeout.InfiniteTimeSpan)
             .ConfigurePrimaryHttpMessageHandler(static () => new SocketsHttpHandler
             {
                 AllowAutoRedirect = false,

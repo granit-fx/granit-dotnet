@@ -126,8 +126,8 @@ public static class ObservabilityServiceCollectionExtensions
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(r => r.AddService(
                 serviceName: options.ServiceName,
-                serviceVersion: options.ServiceVersion,
-                serviceNamespace: options.ServiceNamespace))
+                serviceNamespace: options.ServiceNamespace,
+                serviceVersion: options.ServiceVersion))
             .WithTracing(tracing => ConfigureTracing(tracing, options, deferOtlpToHost))
             .WithMetrics(metrics => ConfigureMetrics(metrics, options, deferOtlpToHost));
     }

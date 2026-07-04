@@ -138,10 +138,7 @@ public static class OpenIddictModelBuilderExtensions
                 .WithMany()
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-            b.OwnsOne(p => p.Data, data =>
-            {
-                data.ToJson();
-            });
+            b.OwnsOne(p => p.Data, data => data.ToJson());
         });
 
         // ──── OpenIddict conventions + table remapping ────

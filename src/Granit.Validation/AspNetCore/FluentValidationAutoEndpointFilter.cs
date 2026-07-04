@@ -91,8 +91,8 @@ internal sealed class FluentValidationAutoEndpointFilter : IEndpointFilter
 #pragma warning disable GRAPI001
                 return Results.ValidationProblem(
                     result.ToDictionary(),
-                    title: ResolveTitle(context.HttpContext),
-                    statusCode: StatusCodes.Status422UnprocessableEntity);
+                    statusCode: StatusCodes.Status422UnprocessableEntity,
+                    title: ResolveTitle(context.HttpContext));
 #pragma warning restore GRAPI001
             }
         }

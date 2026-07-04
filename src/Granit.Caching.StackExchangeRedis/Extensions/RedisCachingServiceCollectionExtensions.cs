@@ -147,10 +147,7 @@ public static partial class RedisCachingServiceCollectionExtensions
         // Deferred backplane configuration via options
         services.AddOptions<ZiggyCreatures.Caching.Fusion.Backplane.StackExchangeRedis.RedisBackplaneOptions>()
             .Configure<IConnectionMultiplexer>(
-                (backplane, mux) =>
-                {
-                    backplane.ConnectionMultiplexerFactory = () => Task.FromResult(mux);
-                });
+                (backplane, mux) => backplane.ConnectionMultiplexerFactory = () => Task.FromResult(mux));
 
         return services;
     }

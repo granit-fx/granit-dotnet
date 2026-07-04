@@ -30,6 +30,4 @@ public interface IIdentityProvider :
     IIdentityRoleManager,
     IIdentityGroupManager,
     IIdentityPasswordManager,
-    IIdentityCredentialVerifier
-{
-}
+    IIdentityCredentialVerifier;

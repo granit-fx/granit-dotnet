@@ -48,10 +48,7 @@ public static class SignalRNotificationsServiceCollectionExtensions
         services.AddSingleton<INotificationChannel, SignalRNotificationChannel>();
 
         services.AddSignalR()
-            .AddStackExchangeRedis(redisConnectionString, options =>
-            {
-                options.Configuration.ChannelPrefix = RedisChannel.Literal("granit-notifications");
-            });
+            .AddStackExchangeRedis(redisConnectionString, options => options.Configuration.ChannelPrefix = RedisChannel.Literal("granit-notifications"));
 
         return services;
     }

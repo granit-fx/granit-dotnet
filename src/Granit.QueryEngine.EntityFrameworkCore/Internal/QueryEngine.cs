@@ -236,9 +236,7 @@ internal sealed class QueryEngine<TEntity>(
 
             foreach (GroupEntry<TEntity> group in entityResult.Groups)
             {
-                IReadOnlyList<TItem>? items = itemsByKey is null
-                    ? null
-                    : itemsByKey[group.Value?.ToString() ?? "(null)"].ToList();
+                IReadOnlyList<TItem>? items = itemsByKey?[group.Value?.ToString() ?? "(null)"].ToList();
 
                 groups.Add(new GroupEntry<TItem>
                 {

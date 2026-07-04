@@ -192,11 +192,6 @@ internal sealed class ScribanTemplateEngine(
     private static MemberFilterDelegate MemberFilterDelegate => (member) =>
     {
         // Block regex builtins — user-controlled patterns can cause catastrophic backtracking
-        if (member.DeclaringType?.Name is "RegexFunctions")
-        {
-            return false;
-        }
-
-        return true;
+        return member.DeclaringType?.Name is not "RegexFunctions";
     };
 }
