@@ -9,7 +9,6 @@ public sealed class DetailBuilder<TEntity>
 {
     private readonly string _name;
     private readonly List<Func<DetailSectionDescriptor>> _sectionFactories = [];
-    private readonly SidePanelBuilder _sidePanel = new();
     private int _nextSectionOrder;
 
     internal DetailBuilder(string name)
@@ -45,13 +44,13 @@ public sealed class DetailBuilder<TEntity>
     }
 
     /// <summary>The side-panel rail builder (chain via <c>.Audit().Timeline().Comments()</c>).</summary>
-    public SidePanelBuilder SidePanel => _sidePanel;
+    public SidePanelBuilder SidePanel { get; } = new();
 
     internal DetailDescriptor Build() =>
         new()
         {
             Name = _name,
             Sections = [.. _sectionFactories.Select(f => f())],
-            SidePanels = _sidePanel.Build(),
+            SidePanels = SidePanel.Build(),
         };
 }

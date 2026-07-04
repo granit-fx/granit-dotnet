@@ -100,6 +100,8 @@ dotnet_diagnostic.RCS1192.severity = warning
 dotnet_diagnostic.RCS1146.severity = warning
 # RCS1118: mark local variable as const (never-reassigned, constant initializer)
 dotnet_diagnostic.RCS1118.severity = warning
+# RCS1085: use auto-implemented property (backing field + expression-body getter → { get; })
+dotnet_diagnostic.RCS1085.severity = warning
 
 [*.{csproj,props,targets}]
 indent_size = 2

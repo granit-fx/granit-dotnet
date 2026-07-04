@@ -31,7 +31,6 @@ public sealed class TrigramLanguageDetector : ILanguageDetectorProvider
     private const int DefaultInputTopN = 300;
 
     private readonly LanguageProfileBundle _bundle;
-    private readonly int _maxSampleChars;
     private readonly int _inputTopN;
 
     /// <summary>Builds a detector with the bundled Franc dataset loaded once.</summary>
@@ -46,7 +45,7 @@ public sealed class TrigramLanguageDetector : ILanguageDetectorProvider
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxSampleChars);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(inputTopN);
         _bundle = bundle;
-        _maxSampleChars = maxSampleChars;
+        MaxSampleChars = maxSampleChars;
         _inputTopN = inputTopN;
     }
 
@@ -54,7 +53,7 @@ public sealed class TrigramLanguageDetector : ILanguageDetectorProvider
     public int Priority => 100;
 
     /// <summary>Maximum number of characters sampled from the head of the input.</summary>
-    public int MaxSampleChars => _maxSampleChars;
+    public int MaxSampleChars { get; }
 
     /// <inheritdoc/>
     public Task<string?> DetectAsync(string content, CancellationToken cancellationToken = default)
@@ -67,7 +66,7 @@ public sealed class TrigramLanguageDetector : ILanguageDetectorProvider
             return Task.FromResult<string?>(null);
         }
 
-        ReadOnlySpan<char> head = content.AsSpan(0, Math.Min(content.Length, _maxSampleChars));
+        ReadOnlySpan<char> head = content.AsSpan(0, Math.Min(content.Length, MaxSampleChars));
 
         // 1) Find the dominant Unicode script. Single-language scripts return their
         //    ISO 639-3 directly without any trigram scoring.

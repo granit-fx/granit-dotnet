@@ -14,15 +14,14 @@ namespace Granit.Testing.Endpoints;
 /// </summary>
 public sealed class GranitEndpointTestHost : IAsyncDisposable
 {
-    private readonly WebApplication _app;
 
     private GranitEndpointTestHost(WebApplication app)
     {
-        _app = app;
+        Application = app;
     }
 
     /// <summary>The started application — exposed for advanced scenarios.</summary>
-    public WebApplication Application => _app;
+    public WebApplication Application { get; }
 
     /// <summary>
     /// Builds and starts a host. <paramref name="configureServices"/> registers
@@ -58,7 +57,7 @@ public sealed class GranitEndpointTestHost : IAsyncDisposable
     }
 
     /// <summary>Returns an anonymous client (no auth header).</summary>
-    public HttpClient CreateAnonymousClient() => _app.GetTestClient();
+    public HttpClient CreateAnonymousClient() => Application.GetTestClient();
 
     /// <summary>
     /// Returns a client carrying the <see cref="TestAuthHandler.RolesHeader"/>
@@ -66,7 +65,7 @@ public sealed class GranitEndpointTestHost : IAsyncDisposable
     /// </summary>
     public HttpClient CreateAuthenticatedClient(params string[] roles)
     {
-        HttpClient client = _app.GetTestClient();
+        HttpClient client = Application.GetTestClient();
         client.DefaultRequestHeaders.Add(
             TestAuthHandler.RolesHeader,
             roles.Length == 0 ? "user" : string.Join(',', roles));
@@ -81,12 +80,12 @@ public sealed class GranitEndpointTestHost : IAsyncDisposable
     /// </summary>
     public HttpClient CreateClientWithPermissions(params string[] permissions)
     {
-        HttpClient client = _app.GetTestClient();
+        HttpClient client = Application.GetTestClient();
         client.DefaultRequestHeaders.Add(
             TestAuthHandler.PermissionsHeader,
             string.Join(',', permissions));
         return client;
     }
 
-    public async ValueTask DisposeAsync() => await _app.DisposeAsync().ConfigureAwait(false);
+    public async ValueTask DisposeAsync() => await Application.DisposeAsync().ConfigureAwait(false);
 }

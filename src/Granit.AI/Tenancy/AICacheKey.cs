@@ -19,21 +19,19 @@ namespace Granit.AI.Tenancy;
 public readonly struct AICacheKey : IEquatable<AICacheKey>
 {
     private readonly byte[]? _apiKeyHash;
-    private readonly string? _endpoint;
-    private readonly bool _useManagedIdentity;
     private readonly int _precomputedHash;
 
     /// <summary>True when the key represents a Managed Identity credential (no API key).</summary>
-    public bool UseManagedIdentity => _useManagedIdentity;
+    public bool UseManagedIdentity { get; }
 
     /// <summary>The endpoint component of the key, or <c>null</c> when the provider has none.</summary>
-    public string? Endpoint => _endpoint;
+    public string? Endpoint { get; }
 
     private AICacheKey(byte[]? apiKeyHash, string? endpoint, bool useManagedIdentity)
     {
         _apiKeyHash = apiKeyHash;
-        _endpoint = endpoint;
-        _useManagedIdentity = useManagedIdentity;
+        Endpoint = endpoint;
+        UseManagedIdentity = useManagedIdentity;
         _precomputedHash = ComputeHash(apiKeyHash, endpoint, useManagedIdentity);
     }
 
@@ -52,11 +50,11 @@ public readonly struct AICacheKey : IEquatable<AICacheKey>
     /// <inheritdoc />
     public bool Equals(AICacheKey other)
     {
-        if (_useManagedIdentity != other._useManagedIdentity)
+        if (UseManagedIdentity != other.UseManagedIdentity)
         {
             return false;
         }
-        if (!string.Equals(_endpoint, other._endpoint, StringComparison.Ordinal))
+        if (!string.Equals(Endpoint, other.Endpoint, StringComparison.Ordinal))
         {
             return false;
         }

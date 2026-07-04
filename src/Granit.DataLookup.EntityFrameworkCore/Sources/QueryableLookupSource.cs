@@ -32,7 +32,6 @@ public sealed class QueryableLookupSource<T> : ILookupSource
     private readonly Expression<Func<T, string>> _labelSortExpression;
     private readonly Expression<Func<T, string, bool>>? _searchPredicate;
     private readonly Expression<Func<T, object>> _valueEqualityExpression;
-    private readonly IReadOnlyList<string> _scopeKeys;
 
     /// <summary>Initializes a new <see cref="QueryableLookupSource{T}"/>.</summary>
     /// <param name="name">Unique registry key.</param>
@@ -64,7 +63,7 @@ public sealed class QueryableLookupSource<T> : ILookupSource
         _searchPredicate = searchPredicate;
         _valueEqualityExpression = valueSelector;
         RequiredPermission = requiredPermission;
-        _scopeKeys = scopeKeys ?? [];
+        ScopeKeys = scopeKeys ?? [];
     }
 
     /// <inheritdoc/>
@@ -74,7 +73,7 @@ public sealed class QueryableLookupSource<T> : ILookupSource
     public string? RequiredPermission { get; }
 
     /// <inheritdoc/>
-    public IReadOnlyList<string> ScopeKeys => _scopeKeys;
+    public IReadOnlyList<string> ScopeKeys { get; }
 
     /// <inheritdoc/>
     public async ValueTask<LookupResult> SearchAsync(LookupQuery query, CancellationToken cancellationToken)

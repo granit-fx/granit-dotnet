@@ -10,17 +10,16 @@ namespace Granit.IO.Internal;
 internal sealed class LimitedStream : Stream
 {
     private readonly Stream _inner;
-    private readonly long _maxSizeBytes;
 
     public LimitedStream(Stream inner, long maxSizeBytes)
     {
         ArgumentNullException.ThrowIfNull(inner);
         ArgumentOutOfRangeException.ThrowIfNegative(maxSizeBytes);
         _inner = inner;
-        _maxSizeBytes = maxSizeBytes;
+        MaxSizeBytes = maxSizeBytes;
     }
 
-    public long MaxSizeBytes => _maxSizeBytes;
+    public long MaxSizeBytes { get; }
 
     public override bool CanRead => _inner.CanRead;
 
@@ -106,10 +105,10 @@ internal sealed class LimitedStream : Stream
 
     private void EnsureWithinCap(long projectedSize)
     {
-        if (projectedSize > _maxSizeBytes)
+        if (projectedSize > MaxSizeBytes)
         {
             throw new IOException(
-                $"Temp file exceeded MaxSizeBytes={_maxSizeBytes}.");
+                $"Temp file exceeded MaxSizeBytes={MaxSizeBytes}.");
         }
     }
 }

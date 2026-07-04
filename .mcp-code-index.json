@@ -6309,16 +6309,10 @@
       "line": 19,
       "members": [
         {
-          "name": "UseManagedIdentity",
-          "kind": "property",
-          "signature": "bool UseManagedIdentity",
-          "returnType": "bool"
-        },
-        {
-          "name": "Endpoint",
-          "kind": "property",
-          "signature": "string? Endpoint",
-          "returnType": "string?"
+          "name": "AICacheKey",
+          "kind": "method",
+          "signature": "AICacheKey(byte[]? apiKeyHash, string? endpoint, bool useManagedIdentity)",
+          "returnType": "bool UseManagedIdentity { get; } public string? Endpoint { get; } private"
         },
         {
           "name": "ForEndpoint",
@@ -18504,14 +18498,7 @@
       "project": "Granit.DataLookup.EntityFrameworkCore",
       "file": "src/Granit.DataLookup.EntityFrameworkCore/Sources/QueryableLookupSource.cs",
       "line": 26,
-      "members": [
-        {
-          "name": "SearchAsync",
-          "kind": "method",
-          "signature": "SearchAsync(LookupQuery query, CancellationToken cancellationToken)",
-          "returnType": "ValueTask<LookupResult>"
-        }
-      ]
+      "members": []
     },
     {
       "name": "ServiceCollectionExtensions",
@@ -35147,16 +35134,10 @@
       "line": 28,
       "members": [
         {
-          "name": "MaxSampleChars",
-          "kind": "property",
-          "signature": "int MaxSampleChars",
-          "returnType": "int"
-        },
-        {
           "name": "DetectAsync",
           "kind": "method",
           "signature": "DetectAsync(string content, CancellationToken cancellationToken = default)",
-          "returnType": "Task<string?>"
+          "returnType": "int MaxSampleChars { get; } public Task<string?>"
         }
       ]
     },
@@ -52386,12 +52367,6 @@
       "file": "src/Granit.Testing/Endpoints/GranitEndpointTestHost.cs",
       "line": 15,
       "members": [
-        {
-          "name": "StartAsync",
-          "kind": "method",
-          "signature": "StartAsync(Action<IServiceCollection>? configureServices = null, Action<WebApplication>? configureEndpoints = null, CancellationToken cancellationToken = default)",
-          "returnType": "Task<GranitEndpointTestHost>"
-        },
         {
           "name": "CreateAuthenticatedClient",
           "kind": "method",
