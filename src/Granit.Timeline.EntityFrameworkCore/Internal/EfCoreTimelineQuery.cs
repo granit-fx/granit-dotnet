@@ -65,7 +65,7 @@ internal sealed class EfCoreTimelineQuery(
             return [];
         }
 
-        var entryIds = entries.Select(e => e.Id).ToList();
+        List<Guid> entryIds = entries.ConvertAll(e => e.Id);
 
         List<TimelineAttachment> attachments = await db.TimelineAttachments
             .AsNoTracking()

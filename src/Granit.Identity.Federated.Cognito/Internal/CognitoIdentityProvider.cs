@@ -85,7 +85,7 @@ internal sealed partial class CognitoIdentityProvider(
                 .ListUsersAsync(request, cancellationToken)
                 .ConfigureAwait(false);
 
-            return response.Users.Select(ToIdentityUser).ToList();
+            return response.Users.ConvertAll(ToIdentityUser);
         }
         catch (NotAuthorizedException ex)
         {
@@ -316,7 +316,7 @@ internal sealed partial class CognitoIdentityProvider(
                 .ListUsersInGroupAsync(request, cancellationToken)
                 .ConfigureAwait(false);
 
-            return response.Users.Select(ToIdentityUser).ToList();
+            return response.Users.ConvertAll(ToIdentityUser);
         }
         catch (Exception ex)
         {
@@ -366,8 +366,8 @@ internal sealed partial class CognitoIdentityProvider(
                 .ListGroupsAsync(request, cancellationToken)
                 .ConfigureAwait(false);
 
-            return response.Groups.Select(g => new IdentityGroup(
-                g.GroupName, g.GroupName, null, [])).ToList();
+            return response.Groups.ConvertAll(g => new IdentityGroup(
+                g.GroupName, g.GroupName, null, []));
         }
         catch (Exception ex)
         {
@@ -397,8 +397,8 @@ internal sealed partial class CognitoIdentityProvider(
                 .AdminListGroupsForUserAsync(request, cancellationToken)
                 .ConfigureAwait(false);
 
-            return response.Groups.Select(g => new IdentityGroup(
-                g.GroupName, g.GroupName, null, [])).ToList();
+            return response.Groups.ConvertAll(g => new IdentityGroup(
+                g.GroupName, g.GroupName, null, []));
         }
         catch (Exception ex)
         {

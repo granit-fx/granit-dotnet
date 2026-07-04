@@ -51,9 +51,8 @@ internal static class TimelineStreamMerger
         Task<IReadOnlyList<TimelineStreamEntry>> nativeTask = fetchNativeTopAsync(fetchLimit, cancellationToken);
 
         List<ITimelineSource> sourceList = [.. sources];
-        var sourceTasks = sourceList
-            .Select(s => FetchSourceAsync(s, entityType, entityId, fetchLimit, options, logger, cancellationToken))
-            .ToList();
+        List<Task<SourceFetch>> sourceTasks = sourceList
+            .ConvertAll(s => FetchSourceAsync(s, entityType, entityId, fetchLimit, options, logger, cancellationToken));
 
         IReadOnlyList<TimelineStreamEntry> nativeEntries = await nativeTask.ConfigureAwait(false);
         SourceFetch[] sourceResults = await Task.WhenAll(sourceTasks).ConfigureAwait(false);

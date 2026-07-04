@@ -71,7 +71,7 @@ public sealed class AuditingPrivacyDataProvider(
             ExportedEntries: entries.Count,
             Truncated: entries.Count == AuditExportLimit,
             Limit: AuditExportLimit,
-            Entries: entries.Select(Map).ToList());
+            Entries: entries.ConvertAll(Map));
 
         yield return await fragmentBuilder
             .BuildJsonAsync(context, ProviderName, "auditing.json", dto, cancellationToken)

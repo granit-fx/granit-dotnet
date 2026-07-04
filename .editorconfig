@@ -102,6 +102,8 @@ dotnet_diagnostic.RCS1146.severity = warning
 dotnet_diagnostic.RCS1118.severity = warning
 # RCS1085: use auto-implemented property (backing field + expression-body getter → { get; })
 dotnet_diagnostic.RCS1085.severity = warning
+# RCS1077: optimize LINQ (List<T>.Select(f).ToList() → List<T>.ConvertAll(f))
+dotnet_diagnostic.RCS1077.severity = warning
 
 [*.{csproj,props,targets}]
 indent_size = 2

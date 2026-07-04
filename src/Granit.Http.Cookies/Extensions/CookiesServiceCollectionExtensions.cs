@@ -86,9 +86,8 @@ public static class CookiesServiceCollectionExtensions
             GranitCookiesOptions options = new();
             configuration.GetSection(GranitCookiesOptions.SectionName).Bind(options);
 
-            var definitions = options.ThirdPartyServices
-                .Select(s => new ThirdPartyServiceDefinition(s.Name, s.Category, s.CookiePatterns))
-                .ToList();
+            List<ThirdPartyServiceDefinition> definitions = options.ThirdPartyServices
+                .ConvertAll(s => new ThirdPartyServiceDefinition(s.Name, s.Category, s.CookiePatterns));
 
             return new ThirdPartyServiceRegistry(definitions);
         });

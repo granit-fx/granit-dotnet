@@ -43,8 +43,7 @@ internal sealed class EfTemplateCategoryStore(
             .ConfigureAwait(false);
 
         return entities
-            .Select(e => ToCategory(e, counts.GetValueOrDefault(e.Id)))
-            .ToList();
+            .ConvertAll(e => ToCategory(e, counts.GetValueOrDefault(e.Id)));
     }
 
     /// <inheritdoc/>

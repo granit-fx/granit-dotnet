@@ -161,7 +161,7 @@ internal sealed partial class AspNetIdentityProvider(
     {
         List<GranitRole> roles = await _roleManager.Roles.AsNoTracking()
             .ToListAsync(cancellationToken).ConfigureAwait(false);
-        return roles.Select(r => new GranitIdentityRole(r.Id.ToString(), r.Name ?? string.Empty, r.Description)).ToList();
+        return roles.ConvertAll(r => new GranitIdentityRole(r.Id.ToString(), r.Name ?? string.Empty, r.Description));
     }
 
     /// <inheritdoc/>

@@ -49,7 +49,7 @@ internal sealed class EfExportPresetStore(
             .OrderBy(e => e.PresetName)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        return entities.Select(ToPreset).ToList().AsReadOnly();
+        return entities.ConvertAll(ToPreset).AsReadOnly();
     }
 
     /// <inheritdoc/>

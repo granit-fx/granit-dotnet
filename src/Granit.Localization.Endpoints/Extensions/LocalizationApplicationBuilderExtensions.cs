@@ -59,9 +59,8 @@ public static class LocalizationApplicationBuilderExtensions
         RequestLocalizationOptions options,
         GranitLocalizationOptions granitOptions)
     {
-        var uiCultures = granitOptions.Languages
-            .Select(l => new CultureInfo(l.CultureName))
-            .ToList();
+        List<CultureInfo> uiCultures = granitOptions.Languages
+            .ConvertAll(l => new CultureInfo(l.CultureName));
 
         List<CultureInfo> formattingCultures = granitOptions.FormattingCultures.Count > 0
             ? granitOptions.FormattingCultures

@@ -303,7 +303,7 @@ internal sealed class QueryEngine<TEntity>(
 
         return new()
         {
-            Columns = _builder.Columns.Select(c => new ColumnDefinition(
+            Columns = _builder.Columns.ConvertAll(c => new ColumnDefinition(
                 c.PropertyName,
                 ResolveLabel(c, localizer),
                 c.ClrType.Name,
@@ -314,7 +314,7 @@ internal sealed class QueryEngine<TEntity>(
                 c.Format,
                 c.ValueKind,
                 c.CurrencyCode,
-                c.CurrencyCodeField)).ToList(),
+                c.CurrencyCodeField)),
             FilterableFields = _builder.Columns
                 .Where(c => c.IsFilterable)
                 .Select(c => new FilterableField(
@@ -328,24 +328,24 @@ internal sealed class QueryEngine<TEntity>(
                 .Where(c => c.IsSortable)
                 .Select(c => new SortableField(c.PropertyName))
                 .ToList(),
-            PresetFilterGroups = _builder.FilterGroups.Select(g => new FilterGroupMeta(
+            PresetFilterGroups = _builder.FilterGroups.ConvertAll(g => new FilterGroupMeta(
                 g.Name,
                 g.Label ?? g.Name,
                 g.Presets.Select(p => new PresetMeta(
                     p.Name,
                     p.Label ?? p.Name,
-                    p.IsDefault)).ToList())).ToList(),
-            QuickFilters = _builder.QuickFilters.Select(f => new QuickFilterMeta(
+                    p.IsDefault)).ToList())),
+            QuickFilters = _builder.QuickFilters.ConvertAll(f => new QuickFilterMeta(
                 f.Name,
                 f.Label ?? f.Name,
-                f.IsDefault)).ToList(),
-            DateFilters = _builder.DateFilters.Select(d => new DateFilterMeta(
+                f.IsDefault)),
+            DateFilters = _builder.DateFilters.ConvertAll(d => new DateFilterMeta(
                 d.PropertyName,
                 d.DefaultPeriod,
-                Enum.GetValues<DatePeriod>().ToList())).ToList(),
-            GroupByFields = _builder.GroupByFields.Select(g => new GroupByField(
+                Enum.GetValues<DatePeriod>().ToList())),
+            GroupByFields = _builder.GroupByFields.ConvertAll(g => new GroupByField(
                 g.PropertyName,
-                g.ClrType.Name)).ToList(),
+                g.ClrType.Name)),
             Pagination = new PaginationMeta(
                 _builder.DefaultPageSizeValue,
                 _builder.MaxPageSizeValue,

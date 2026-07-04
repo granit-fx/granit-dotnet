@@ -82,9 +82,8 @@ internal static class AuditingReadEndpoints
         List<AuditEntry> entries = await reader
             .GetByCorrelationIdAsync(correlationId, cancellationToken).ConfigureAwait(false);
 
-        var mapped = entries
-            .Select(AuditingResponseMapper.ToDetailResponse)
-            .ToList();
+        List<AuditEntryDetailResponse> mapped = entries
+            .ConvertAll(AuditingResponseMapper.ToDetailResponse);
 
         return TypedResults.Ok(mapped);
     }

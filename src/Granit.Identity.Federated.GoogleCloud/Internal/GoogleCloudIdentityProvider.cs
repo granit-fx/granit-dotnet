@@ -187,7 +187,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
         {
             UserRecord user = await transport.GetUserAsync(userId, cancellationToken).ConfigureAwait(false);
             List<string> roleNames = ExtractRoleNames(user.CustomClaims);
-            return roleNames.Select(name => new IdentityRole(name, name, null)).ToList();
+            return roleNames.ConvertAll(name => new IdentityRole(name, name, null));
         }
         catch (Exception ex)
         {

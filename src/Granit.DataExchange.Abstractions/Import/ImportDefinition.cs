@@ -87,7 +87,7 @@ public abstract class ImportDefinition<TEntity> : IImportDefinitionDescriptor wh
     /// Gets the field metadata for all declared properties (for the mapping suggestion pipeline).
     /// </summary>
     public IReadOnlyList<ImportFieldMetadata> GetFieldMetadata() =>
-        GetBuilder().Properties.Select(p => p.ToFieldMetadata()).ToList().AsReadOnly();
+        GetBuilder().Properties.ConvertAll(p => p.ToFieldMetadata()).AsReadOnly();
 
     /// <summary>
     /// Gets the business key property names.

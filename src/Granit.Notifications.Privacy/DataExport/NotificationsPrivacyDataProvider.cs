@@ -127,7 +127,7 @@ public sealed class NotificationsPrivacyDataProvider(
             ExportedInboxItems: inbox.Count,
             InboxTruncated: truncated,
             InboxLimit: NotificationsExportLimit,
-            Inbox: inbox.Select(Map).ToList(),
+            Inbox: inbox.ConvertAll(Map),
             Preferences: preferences.Select(p => new NotificationsPreferenceDto(
                 p.NotificationTypeName, p.ChannelName, p.IsEnabled)).ToList(),
             Subscriptions: subscriptions.Select(s => new NotificationsSubscriptionDto(
