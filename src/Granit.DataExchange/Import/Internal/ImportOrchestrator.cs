@@ -85,7 +85,7 @@ internal sealed class ImportOrchestrator(
                 RowErrors =
                 [
                     new ImportRowError(0, ImportRowErrorKind.Persistence, ["Granit:DataExchange:PipelineError"],
-                        ex.Message.Length > 500 ? string.Concat(ex.Message.AsSpan(0, 500), "... [truncated]") : ex.Message),
+                        ex.Message.Length > 500 ? $"{ex.Message.AsSpan(0, 500)}... [truncated]" : ex.Message),
                 ],
             };
 

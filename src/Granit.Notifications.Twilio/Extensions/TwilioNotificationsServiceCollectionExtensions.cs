@@ -36,7 +36,7 @@ public static class TwilioNotificationsServiceCollectionExtensions
         services.AddGranitHttpClient(ProviderKey, (sp, client) =>
         {
             TwilioOptions opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<TwilioOptions>>().Value;
-            client.BaseAddress = new Uri(string.Concat(opts.BaseUrl.TrimEnd('/'), "/"));
+            client.BaseAddress = new Uri($"{opts.BaseUrl.TrimEnd('/')}/");
             string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{opts.AccountSid}:{opts.AuthToken}"));
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
             client.DefaultRequestHeaders.Add("Accept", "application/json");

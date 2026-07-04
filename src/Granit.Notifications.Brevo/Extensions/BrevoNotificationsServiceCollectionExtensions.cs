@@ -35,7 +35,7 @@ public static class BrevoNotificationsServiceCollectionExtensions
         services.AddGranitHttpClient(ProviderKey, (sp, client) =>
         {
             BrevoOptions opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<BrevoOptions>>().Value;
-            client.BaseAddress = new Uri(string.Concat(opts.BaseUrl.TrimEnd('/'), "/"));
+            client.BaseAddress = new Uri($"{opts.BaseUrl.TrimEnd('/')}/");
             client.DefaultRequestHeaders.Add("api-key", opts.ApiKey);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);

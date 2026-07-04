@@ -55,6 +55,10 @@ dotnet_diagnostic.RCS1142.severity = none
 # RCS1181: convert comment to documentation comment
 dotnet_diagnostic.RCS1181.severity = none
 
+# RCS1217 — "convert interpolated string to concatenation": the exact opposite of the
+# promoted RCS1267 (interpolation preferred). Disabled to avoid a contradictory pair.
+dotnet_diagnostic.RCS1217.severity = none
+
 # RCS1090 (add ConfigureAwait) is kept at suggestion: correct for library code but noise
 # in .Endpoints and test projects — do NOT promote globally. Tests silence it below.
 csharp_new_line_before_open_brace = all
@@ -134,6 +138,8 @@ dotnet_diagnostic.RCS1173.severity = warning
 dotnet_diagnostic.RCS1006.severity = warning
 # RCS1196: call extension method as an instance method
 dotnet_diagnostic.RCS1196.severity = warning
+# RCS1267: use string interpolation instead of string.Concat
+dotnet_diagnostic.RCS1267.severity = warning
 #
 # RCS1243 (duplicate word in comment) deliberately NOT promoted: it corrupts legitimate
 # repeated format placeholders (e.g. "XXX XXX XXX" SIN masks → "XXX XXX") — a silent doc bug.

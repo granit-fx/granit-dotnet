@@ -42,7 +42,7 @@ internal sealed class OllamaClientCache(
         ArgumentException.ThrowIfNullOrWhiteSpace(endpoint);
         ArgumentException.ThrowIfNullOrWhiteSpace(model);
 
-        string key = string.Concat(endpoint, "|", model, "|", scope.ToString());
+        string key = $"{endpoint}|{model}|{scope.ToString()}";
         if (_cache.TryGetValue(key, out object? cached) && cached is OllamaApiClient existing)
         {
             return existing;

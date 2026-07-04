@@ -51,7 +51,7 @@ public static class LogRedaction
         }
 
         int prefixKeep = Math.Min(4, phone.Length - 2);
-        return string.Concat(phone.AsSpan(0, prefixKeep), "*****", phone.AsSpan(phone.Length - 2));
+        return $"{phone.AsSpan(0, prefixKeep)}*****{phone.AsSpan(phone.Length - 2)}";
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public static class LogRedaction
             return Mask;
         }
 
-        return string.Concat(token.AsSpan(0, 4), "...", token.AsSpan(token.Length - 3));
+        return $"{token.AsSpan(0, 4)}...{token.AsSpan(token.Length - 3)}";
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public static class LogRedaction
 
             if (colonCount == 4)
             {
-                return string.Concat(ip.AsSpan(0, i), ":***");
+                return $"{ip.AsSpan(0, i)}:***";
             }
         }
 

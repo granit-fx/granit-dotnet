@@ -116,5 +116,5 @@ internal static class MobilePushTokenEndpoints
     private static string MaskDeviceToken(string deviceToken) =>
         deviceToken.Length <= 4
             ? "…"
-            : string.Concat("…", deviceToken.AsSpan(deviceToken.Length - 4));
+            : $"…{deviceToken.AsSpan(deviceToken.Length - 4)}";
 }

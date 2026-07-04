@@ -40,7 +40,7 @@ public static class ZulipNotificationsServiceCollectionExtensions
         services.AddGranitHttpClient(ZulipBotSender.HttpClientName, (sp, client) =>
         {
             ZulipBotOptions opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ZulipBotOptions>>().Value;
-            client.BaseAddress = new Uri(string.Concat(opts.BaseUrl.TrimEnd('/'), "/"));
+            client.BaseAddress = new Uri($"{opts.BaseUrl.TrimEnd('/')}/");
             client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
         });
 

@@ -33,7 +33,7 @@ public static class SendGridEmailServiceCollectionExtensions
         {
             SendGridEmailOptions opts = sp
                 .GetRequiredService<Microsoft.Extensions.Options.IOptions<SendGridEmailOptions>>().Value;
-            client.BaseAddress = new Uri(string.Concat(opts.BaseUrl.TrimEnd('/'), "/"));
+            client.BaseAddress = new Uri($"{opts.BaseUrl.TrimEnd('/')}/");
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {opts.ApiKey}");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);

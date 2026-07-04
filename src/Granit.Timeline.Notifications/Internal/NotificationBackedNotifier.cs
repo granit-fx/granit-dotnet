@@ -132,6 +132,6 @@ internal sealed class NotificationBackedNotifier(
             return body;
         }
 
-        return string.Concat(body.AsSpan(0, MaxBodyPreviewLength), "...");
+        return $"{body.AsSpan(0, MaxBodyPreviewLength)}...";
     }
 }

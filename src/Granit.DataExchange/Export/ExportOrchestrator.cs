@@ -136,7 +136,7 @@ public sealed partial class ExportOrchestrator(
         {
             stopwatch.Stop();
             string sanitizedError = ex.Message.Length > 500
-                ? string.Concat(ex.Message.AsSpan(0, 500), "… [truncated]")
+                ? $"{ex.Message.AsSpan(0, 500)}… [truncated]"
                 : ex.Message;
             job.Fail(sanitizedError, clock.Now);
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
