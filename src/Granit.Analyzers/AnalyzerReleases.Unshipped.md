@@ -22,3 +22,4 @@ GRMOD001 | Architecture | Error | CrossModuleReferenceAnalyzer, IsEnabledByDefau
 GRSEC010 | Security | Error | TagListPiiAnalyzer, IsEnabledByDefault=True
 GRSEC011 | Security | Error | LoggerMessagePiiAnalyzer, IsEnabledByDefault=True
 GRBROWSING001 | Security | Warning | EvaluateAsyncStringInterpolationAnalyzer, IsEnabledByDefault=True (Granit.Browsing IBrowserPage JS-injection guard)
+GRENUM001 | Design | Warning | RedundantEnumValueAnalyzer, IsEnabledByDefault=True (enums persist by name per ADR-059; flags redundant sequential-from-zero explicit values, skips [Flags]/[PersistAsInt])

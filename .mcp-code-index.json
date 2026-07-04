@@ -7505,6 +7505,34 @@
       ]
     },
     {
+      "name": "RedundantEnumValueCodeFixProvider",
+      "fqn": "Granit.Analyzers.CodeFixes.RedundantEnumValueCodeFixProvider",
+      "kind": "class",
+      "project": "Granit.Analyzers.CodeFixes",
+      "file": "src/Granit.Analyzers.CodeFixes/RedundantEnumValueCodeFixProvider.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "FixableDiagnosticIds",
+          "kind": "property",
+          "signature": "ImmutableArray<string> FixableDiagnosticIds",
+          "returnType": "ImmutableArray<string>"
+        },
+        {
+          "name": "GetFixAllProvider",
+          "kind": "method",
+          "signature": "GetFixAllProvider()",
+          "returnType": "FixAllProvider"
+        },
+        {
+          "name": "RegisterCodeFixesAsync",
+          "kind": "method",
+          "signature": "RegisterCodeFixesAsync(CodeFixContext context)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "SynchronousSaveChangesCodeFixProvider",
       "fqn": "Granit.Analyzers.CodeFixes.SynchronousSaveChangesCodeFixProvider",
       "kind": "class",
@@ -7725,6 +7753,15 @@
       "project": "Granit.Analyzers",
       "file": "src/Granit.Analyzers/PrivacyExportSubjectSubstitutionAnalyzer.cs",
       "line": 40,
+      "members": []
+    },
+    {
+      "name": "RedundantEnumValueAnalyzer",
+      "fqn": "Granit.Analyzers.RedundantEnumValueAnalyzer",
+      "kind": "class",
+      "project": "Granit.Analyzers",
+      "file": "src/Granit.Analyzers/RedundantEnumValueAnalyzer.cs",
+      "line": 36,
       "members": []
     },
     {

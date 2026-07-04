@@ -45,6 +45,12 @@ Part of the [granit](https://granit-fx.dev) framework.
 | GRAPI001 | Warning | Yes | Use TypedResults instead of Results for OpenAPI |
 | GRAPI002 | Warning | Yes | Use TypedResults.Problem() instead of BadRequest (RFC 7807) |
 
+### Design
+
+| Rule | Severity | CodeFix | Description |
+| ---- | -------- | ------- | ----------- |
+| GRENUM001 | Warning | Yes | Redundant sequential-from-zero explicit enum value — enums persist by name (ADR-059); skips `[Flags]` and `[PersistAsInt]` |
+
 ## Installation
 
 ```bash
