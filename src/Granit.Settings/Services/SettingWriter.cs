@@ -30,7 +30,7 @@ public sealed class SettingWriter(
     public async Task SetGlobalAsync(string name, string? value, CancellationToken cancellationToken = default)
     {
         SettingDefinition definition = _definitions.Get(name);
-        string providerName = GlobalSettingValueProvider.ProviderName;
+        const string providerName = GlobalSettingValueProvider.ProviderName;
 
         SettingValue? oldValue = await _storeReader
             .GetOrNullAsync(name, providerName, null, cancellationToken).ConfigureAwait(false);
@@ -52,7 +52,7 @@ public sealed class SettingWriter(
     public async Task SetForTenantAsync(Guid tenantId, string name, string? value, CancellationToken cancellationToken = default)
     {
         SettingDefinition definition = _definitions.Get(name);
-        string providerName = TenantSettingValueProvider.ProviderName;
+        const string providerName = TenantSettingValueProvider.ProviderName;
         string tenantKey = tenantId.ToString();
 
         SettingValue? oldValue = await _storeReader
@@ -76,7 +76,7 @@ public sealed class SettingWriter(
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
         SettingDefinition definition = _definitions.Get(name);
-        string providerName = UserSettingValueProvider.ProviderName;
+        const string providerName = UserSettingValueProvider.ProviderName;
 
         SettingValue? oldValue = await _storeReader
             .GetOrNullAsync(name, providerName, userId, cancellationToken).ConfigureAwait(false);

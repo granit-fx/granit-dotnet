@@ -98,6 +98,8 @@ dotnet_diagnostic.RCS1214.severity = warning
 dotnet_diagnostic.RCS1192.severity = warning
 # RCS1146: use conditional access (null-check + member access → ?.)
 dotnet_diagnostic.RCS1146.severity = warning
+# RCS1118: mark local variable as const (never-reassigned, constant initializer)
+dotnet_diagnostic.RCS1118.severity = warning
 
 [*.{csproj,props,targets}]
 indent_size = 2

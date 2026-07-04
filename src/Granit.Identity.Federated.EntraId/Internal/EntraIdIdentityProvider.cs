@@ -964,7 +964,7 @@ internal sealed partial class EntraIdIdentityProvider(
         try
         {
             HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
-            string endpoint = EntraIdAdminOptions.GroupsEndpoint;
+            const string endpoint = EntraIdAdminOptions.GroupsEndpoint;
 
             GraphCollectionResponse<GraphGroupRepresentation>? response = await client
                 .GetFromJsonAsync<GraphCollectionResponse<GraphGroupRepresentation>>(endpoint, cancellationToken)

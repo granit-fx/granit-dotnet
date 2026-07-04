@@ -223,7 +223,7 @@ internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHead
 
             Interlocked.Increment(ref _activePages);
             Interlocked.Increment(ref _totalAcquisitions);
-            string? tenantId = null;
+            const string? tenantId = null;
             _metrics.RecordPageAcquired(Engine, tenantId);
             _metrics.RecordAcquireDuration(Engine, tenantId, stopwatch.Elapsed);
 

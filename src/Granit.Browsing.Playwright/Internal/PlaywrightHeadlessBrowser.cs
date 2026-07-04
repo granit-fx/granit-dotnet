@@ -224,7 +224,7 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
 
             Interlocked.Increment(ref _activePages);
             Interlocked.Increment(ref _totalAcquisitions);
-            string? tenantId = null;
+            const string? tenantId = null;
             _metrics.RecordPageAcquired(EngineName, tenantId);
             _metrics.RecordAcquireDuration(EngineName, tenantId, sw.Elapsed);
 
