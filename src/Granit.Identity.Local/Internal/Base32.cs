@@ -8,7 +8,7 @@ internal static class Base32
 
     public static string Encode(ReadOnlySpan<byte> data)
     {
-        var result = new StringBuilder((data.Length * 8 + 4) / 5);
+        var result = new StringBuilder(((data.Length * 8) + 4) / 5);
         int buffer = 0;
         int bitsLeft = 0;
 

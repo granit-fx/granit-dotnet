@@ -59,7 +59,7 @@ internal static class FrenchVatAlgorithm
             return false;
         }
 
-        int computedKey = (int)((12 + 3 * (siren % 97)) % 97);
+        int computedKey = (int)((12 + (3 * (siren % 97))) % 97);
         return computedKey == providedKey;
     }
 }

@@ -67,7 +67,7 @@ internal static class IbanAlgorithm
 
         foreach (char c in numericString)
         {
-            remainder = (remainder * 10 + (c - '0')) % 97;
+            remainder = ((remainder * 10) + (c - '0')) % 97;
         }
 
         return remainder;

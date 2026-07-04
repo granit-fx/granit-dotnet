@@ -71,7 +71,7 @@ internal static class FrenchRibAlgorithm
         long account = long.Parse(accountDigits);
         int providedKey = int.Parse(keyStr);
 
-        long remainder = (89L * bank + 15L * branch + 3L * account) % 97;
+        long remainder = ((89L * bank) + (15L * branch) + (3L * account)) % 97;
         int expectedKey = remainder == 0 ? 97 : (int)(97 - remainder);
 
         return expectedKey == providedKey;

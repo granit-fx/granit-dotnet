@@ -106,6 +106,8 @@ dotnet_diagnostic.RCS1085.severity = warning
 dotnet_diagnostic.RCS1077.severity = warning
 # RCS1197: optimize StringBuilder.Append/AppendLine (avoids intermediate string.Join alloc)
 dotnet_diagnostic.RCS1197.severity = warning
+# RCS1123: add parentheses when necessary (explicit *-in-+ grouping; precedence unchanged)
+dotnet_diagnostic.RCS1123.severity = warning
 
 [*.{csproj,props,targets}]
 indent_size = 2

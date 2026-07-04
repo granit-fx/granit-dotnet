@@ -32,7 +32,7 @@ internal static partial class ItalianPostalCodeAlgorithm
         }
 
         // First two digits must be in range 00–98.
-        int prefix = (trimmed[0] - '0') * 10 + (trimmed[1] - '0');
+        int prefix = ((trimmed[0] - '0') * 10) + (trimmed[1] - '0');
         return prefix <= 98;
     }
 }

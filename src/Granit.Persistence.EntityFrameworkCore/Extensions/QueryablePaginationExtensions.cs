@@ -41,6 +41,6 @@ public static class QueryablePaginationExtensions
         return new PagedResult<T>(
             items,
             totalCount,
-            HasMore: (page - 1) * pageSize + items.Count < totalCount);
+            HasMore: ((page - 1) * pageSize) + items.Count < totalCount);
     }
 }
