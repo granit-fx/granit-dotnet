@@ -39,6 +39,12 @@
           "Castle.Core": "5.1.1"
         }
       },
+      "Roslynator.Analyzers": {
+        "type": "Direct",
+        "requested": "[4.15.*, )",
+        "resolved": "4.15.0",
+        "contentHash": "E8fu71Y+vzhniJKy1K13Rzwm8Vjcj7CDFBpflqncKUZfc3SzuF0kMBiyMmgXNPkjWTdE3Z+30HlGgYjHONZY/Q=="
+      },
       "Shouldly": {
         "type": "Direct",
         "requested": "[4.*, )",
@@ -587,8 +593,8 @@
       "PuppeteerSharp": {
         "type": "CentralTransitive",
         "requested": "[25.*, )",
-        "resolved": "25.2.1",
-        "contentHash": "szIK25h5QpylmB6ok1xPM/+xyqhxSbP009oJF4DGMHuOF8WbmijXF43hPrQRTQlihwj4JdftFv3M1M6OkDXyxA==",
+        "resolved": "25.3.1",
+        "contentHash": "FVwNxqh5NaP68X7iZSI330AkO64DL75VnwGmXqDcSszgnzo01IJPO/jrniNf61Ocv8s64qiNkSn4oZPZM/MWpQ==",
         "dependencies": {
           "Microsoft.Extensions.Logging": "8.0.0",
           "Microsoft.IO.RecyclableMemoryStream": "3.0.1",

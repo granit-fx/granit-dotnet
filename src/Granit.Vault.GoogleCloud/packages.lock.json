@@ -94,6 +94,12 @@
           "Microsoft.Extensions.Primitives": "10.0.9"
         }
       },
+      "Roslynator.Analyzers": {
+        "type": "Direct",
+        "requested": "[4.15.*, )",
+        "resolved": "4.15.0",
+        "contentHash": "E8fu71Y+vzhniJKy1K13Rzwm8Vjcj7CDFBpflqncKUZfc3SzuF0kMBiyMmgXNPkjWTdE3Z+30HlGgYjHONZY/Q=="
+      },
       "Google.Api.CommonProtos": {
         "type": "Transitive",
         "resolved": "2.17.0",

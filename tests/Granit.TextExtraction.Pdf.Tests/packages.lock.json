@@ -45,6 +45,12 @@
         "resolved": "0.1.15",
         "contentHash": "Bf0NO4o2ZSVnemMyj21KDU1sfSgmamFC0pD4aAv19CDNXQsoO1Z6O99gNqpiK/XWWZ5d5i7JkQoT7PUBxEPz5g=="
       },
+      "Roslynator.Analyzers": {
+        "type": "Direct",
+        "requested": "[4.15.*, )",
+        "resolved": "4.15.0",
+        "contentHash": "E8fu71Y+vzhniJKy1K13Rzwm8Vjcj7CDFBpflqncKUZfc3SzuF0kMBiyMmgXNPkjWTdE3Z+30HlGgYjHONZY/Q=="
+      },
       "Shouldly": {
         "type": "Direct",
         "requested": "[4.*, )",

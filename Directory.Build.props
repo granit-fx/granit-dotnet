@@ -59,6 +59,18 @@
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)BannedSymbols.txt" />
   </ItemGroup>
 
+  <!-- Roslynator.Analyzers: general C# code-quality analyzers (RCS1xxx).
+       Baseline severity is 'suggestion' (see .editorconfig) so it never trips
+       TreatWarningsAsErrors; promote individual rules to warning as the tree is cleaned.
+       Excluded from analyzer/source-generator projects (netstandard2.0, Roslyn-pinned). -->
+  <ItemGroup Condition="!$(MSBuildProjectName.Contains('Analyzers')) And
+                        !$(MSBuildProjectName.Contains('SourceGenerator'))">
+    <PackageReference Include="Roslynator.Analyzers"
+                      PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
   <!-- Granit.Analyzers: enforce Granit conventions at build time (exclude analyzer projects themselves) -->
   <ItemGroup Condition="!$(MSBuildProjectName.Contains('Analyzers'))">
     <ProjectReference Include="$(MSBuildThisFileDirectory)src/Granit.Analyzers/Granit.Analyzers.csproj"

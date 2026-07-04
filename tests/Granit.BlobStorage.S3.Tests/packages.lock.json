@@ -45,6 +45,12 @@
           "Castle.Core": "5.1.1"
         }
       },
+      "Roslynator.Analyzers": {
+        "type": "Direct",
+        "requested": "[4.15.*, )",
+        "resolved": "4.15.0",
+        "contentHash": "E8fu71Y+vzhniJKy1K13Rzwm8Vjcj7CDFBpflqncKUZfc3SzuF0kMBiyMmgXNPkjWTdE3Z+30HlGgYjHONZY/Q=="
+      },
       "Shouldly": {
         "type": "Direct",
         "requested": "[4.*, )",
@@ -72,8 +78,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.100",
-        "contentHash": "7BqWwpzoTYsG5w7H2yuhdu7ZG2cw6GANhkKCzygGv0hoOaCXYy4fQu1satpGJ2wtTErM2aXkdo6qKDHgIeSVkA=="
+        "resolved": "4.0.100.2",
+        "contentHash": "1hz6lB2Meymkv9rdOy30p5pIbGpYLK0H4O8XUMGwEMmXUB4FJhyTNk69dLWIFdDUrY66h0NyKy9maHKXMRTwJA=="
       },
       "AWSSDK.SQS": {
         "type": "Transitive",
@@ -541,10 +547,10 @@
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.100",
-        "contentHash": "Pylnc0rbL7DA0hu7F+jNLK8vfQPK8hvP6adOHM6JXUAOlkZJ+BSUCf7+9Cowtz61ripuAGImF8zcvZHY+X6vMA==",
+        "resolved": "4.0.100.2",
+        "contentHash": "t7kVd4ckiEVE79yu4fnjt9X4Rq+M4Kxg0ghGogzP0rGzgtBQY3es9wD6vJXFjEvYy/b3ef31NbKqL7wvHTN5Pg==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.100, 5.0.0)"
+          "AWSSDK.Core": "[4.0.100.2, 5.0.0)"
         }
       },
       "AWSSDK.SimpleNotificationService": {

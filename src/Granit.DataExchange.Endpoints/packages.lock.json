@@ -8,6 +8,12 @@
         "resolved": "3.3.4",
         "contentHash": "0k2Jwpc8eq0hjOtX6TxRkHm9clkJ2PAQ3heEHgqIJZcsfdFosC/iyz18nsgTVDDWpID80rC7aiYK7ripx+Qndg=="
       },
+      "Roslynator.Analyzers": {
+        "type": "Direct",
+        "requested": "[4.15.*, )",
+        "resolved": "4.15.0",
+        "contentHash": "E8fu71Y+vzhniJKy1K13Rzwm8Vjcj7CDFBpflqncKUZfc3SzuF0kMBiyMmgXNPkjWTdE3Z+30HlGgYjHONZY/Q=="
+      },
       "Asp.Versioning.Abstractions": {
         "type": "Transitive",
         "resolved": "10.0.0",
@@ -231,8 +237,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.16.7",
-        "contentHash": "wpP+7mleQ/jffcV0GlGMcO4T6Dd/LqlYhzTSeq/8EqiJ000onHILNlVyfngOBcyiP1gTwxU4iOGgmso7T60ZPg=="
+        "resolved": "2.16.10",
+        "contentHash": "dJsam1uxJ+h6YzaqDGjja1y3miyBd4VDumMwwow03yJapiRp3OtV5lMaOUvp8w5b16gAflYyvfj7HDL+0X2Rqw=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",

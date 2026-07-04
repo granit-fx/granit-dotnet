@@ -241,6 +241,11 @@
     <!-- Used by Granit.Localization.SourceGenerator (netstandard2.0 target) -->
     <PackageVersion Include="System.Text.Json" Version="9.*" />
     <PackageVersion Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="3.*" />
+    <!-- Roslynator: ~200 code-quality analyzers (RCS1xxx). Patch-only float so a new minor
+         (which ships new rules) never silently changes the baseline. Formatting analyzers
+         (Roslynator.Formatting.Analyzers, RCS0xxx) are deliberately NOT referenced — they
+         conflict with `dotnet format`. Severity governed centrally in .editorconfig. -->
+    <PackageVersion Include="Roslynator.Analyzers" Version="4.15.*" />
   </ItemGroup>
   <ItemGroup Label="Search">
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="9.*" />

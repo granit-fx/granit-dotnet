@@ -18,6 +18,45 @@ dotnet_sort_system_directives_first = true
 # IDE0005 / CS8019: unused using directives — enforce at warning level so EnforceCodeStyleInBuild surfaces them
 dotnet_diagnostic.IDE0005.severity = warning
 dotnet_diagnostic.CS8019.severity = warning
+
+# ── Roslynator.Analyzers (RCS1xxx) ────────────────────────────────────────────
+# Baseline: advisory only. 'suggestion' surfaces in-IDE and in build output but never
+# escalates under TreatWarningsAsErrors. Promote individual rules to 'warning' below
+# once the tree is verified clean for that rule (a warning == a build error here).
+dotnet_analyzer_diagnostic.category-Roslynator.severity = suggestion
+
+# Rules disabled because they fight deliberate Granit patterns (would be permanent noise):
+#   RCS1102 — "make class static": Wolverine handlers MUST be non-static public classes
+#             (same rationale as the SonarQube S1118 Won't-Fix in CLAUDE.md).
+dotnet_diagnostic.RCS1102.severity = none
+#   RCS1170 — "use read-only auto-property": collides with AggregateRoot/Entity
+#             { get; private set; } where EF Core materializes via reflection.
+dotnet_diagnostic.RCS1170.severity = none
+#   RCS1163 — "unused parameter": Wolverine Handle signatures, DI factories, and
+#             method-group endpoint handlers legitimately carry unbound parameters.
+dotnet_diagnostic.RCS1163.severity = none
+#   RCS1213 — "remove unused member": false-positives on EF `private Ctor()`,
+#             DI-resolved and reflection-invoked members (see CLAUDE.md "dead code").
+dotnet_diagnostic.RCS1213.severity = none
+#   RCS1161 — "enum should declare explicit values": directly contradicts the Granit
+#             GRENUM001 analyzer, which BANS redundant sequential explicit enum values.
+dotnet_diagnostic.RCS1161.severity = none
+
+# XML-documentation-comment completeness family — disabled to stay consistent with the
+# existing `NoWarn CS1591` (missing XML comment): the framework does not require full
+# XML docs, so demanding <param>/<typeparam>/<exception> tags is pure noise.
+# (One rule per line, no inline comments — EditorConfig treats trailing text as the value.)
+# RCS1140: add <exception> to documentation comment
+dotnet_diagnostic.RCS1140.severity = none
+# RCS1141: add <param> to documentation comment
+dotnet_diagnostic.RCS1141.severity = none
+# RCS1142: add <typeparam> to documentation comment
+dotnet_diagnostic.RCS1142.severity = none
+# RCS1181: convert comment to documentation comment
+dotnet_diagnostic.RCS1181.severity = none
+
+# RCS1090 (add ConfigureAwait) is kept at suggestion: correct for library code but noise
+# in .Endpoints and test projects — do NOT promote globally. Tests silence it below.
 csharp_new_line_before_open_brace = all
 csharp_new_line_before_else = true
 csharp_new_line_before_catch = true
@@ -58,6 +97,10 @@ trim_trailing_whitespace = false
 
 [Makefile]
 indent_style = tab
+
+# Test projects: ConfigureAwait(false) is a library-code convention, not a test one.
+[tests/**.cs]
+dotnet_diagnostic.RCS1090.severity = none
 
 # S107: Methods should not have too many parameters
 # Suppressed for DTO records — positional parameters are data contracts, not a code smell

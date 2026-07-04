@@ -39,6 +39,12 @@
           "Castle.Core": "5.1.1"
         }
       },
+      "Roslynator.Analyzers": {
+        "type": "Direct",
+        "requested": "[4.15.*, )",
+        "resolved": "4.15.0",
+        "contentHash": "E8fu71Y+vzhniJKy1K13Rzwm8Vjcj7CDFBpflqncKUZfc3SzuF0kMBiyMmgXNPkjWTdE3Z+30HlGgYjHONZY/Q=="
+      },
       "Shouldly": {
         "type": "Direct",
         "requested": "[4.*, )",
@@ -66,8 +72,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.100",
-        "contentHash": "7BqWwpzoTYsG5w7H2yuhdu7ZG2cw6GANhkKCzygGv0hoOaCXYy4fQu1satpGJ2wtTErM2aXkdo6qKDHgIeSVkA=="
+        "resolved": "4.0.100.2",
+        "contentHash": "1hz6lB2Meymkv9rdOy30p5pIbGpYLK0H4O8XUMGwEMmXUB4FJhyTNk69dLWIFdDUrY66h0NyKy9maHKXMRTwJA=="
       },
       "Castle.Core": {
         "type": "Transitive",
@@ -510,10 +516,10 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.100",
-        "contentHash": "8s82hGjCU56k7gappogu1oW/DDw753OliWFuHbup0yq2adRKZhFalbrre5E3yUloU+sPmXpN4cnadxMg7u97+w==",
+        "resolved": "4.0.101",
+        "contentHash": "LHp9PYUWemKNGGTdZNORCWY5ctTxhMGPW5XzhM7/4Izci0BaaJydAA3t6miScRnEHkBNOGELTY/bkIwnMWlYFA==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.100, 5.0.0)"
+          "AWSSDK.Core": "[4.0.100.2, 5.0.0)"
         }
       },
       "Microsoft.EntityFrameworkCore": {

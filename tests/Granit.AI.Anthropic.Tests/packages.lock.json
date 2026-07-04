@@ -39,6 +39,12 @@
           "Castle.Core": "5.1.1"
         }
       },
+      "Roslynator.Analyzers": {
+        "type": "Direct",
+        "requested": "[4.15.*, )",
+        "resolved": "4.15.0",
+        "contentHash": "E8fu71Y+vzhniJKy1K13Rzwm8Vjcj7CDFBpflqncKUZfc3SzuF0kMBiyMmgXNPkjWTdE3Z+30HlGgYjHONZY/Q=="
+      },
       "Shouldly": {
         "type": "Direct",
         "requested": "[4.*, )",
@@ -450,8 +456,8 @@
       "Anthropic": {
         "type": "CentralTransitive",
         "requested": "[12.*, )",
-        "resolved": "12.34.0",
-        "contentHash": "zd8dZPd55Gvn6BsCveEYJ2WpN5l2pWSKtvZTNNJNyte5RjWFkXp+DTP3wZiGWAtZ1xoA2t01n3DEotsv/Bh4Yw==",
+        "resolved": "12.35.1",
+        "contentHash": "Ulh+9p0e2+20LCaYKbz44h7rKI3DBzJ10RrQYlfiODpbALmaABgdRbrniOjRspt9VGCBCW7f6jzt7dAZP3XdgA==",
         "dependencies": {
           "Microsoft.Extensions.AI.Abstractions": "10.5.1"
         }

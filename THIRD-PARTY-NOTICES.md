@@ -8,7 +8,8 @@ Only **direct dependencies** are listed here. Transitive dependencies are
 covered by their own license notices, restored from NuGet by the consumer
 (Granit packages do not redistribute their binaries).
 
-Last updated: 2026-06-30 (global NuGet version refresh via `dotnet restore --force-evaluate`; aligned the OpenTelemetry instrumentation packages on 1.16.*; added three previously unlisted direct dependencies — DnsClient, Microsoft.Extensions.ApiDescription.Server, Npgsql.OpenTelemetry; removed dead central entries (packages referenced by no project, including modules migrated to granit-business); recomputed the license summary; notable bumps: WolverineFx 6.16.0, DocumentFormat.OpenXml 3.5.1, Scalar.AspNetCore 2.16.6, Anthropic 12.32.0, AWSSDK 4.0.100, Microsoft.\* 10.0.9 / 10.7.0, MailKit / MimeKit 4.17.0)
+Last updated: 2026-07-04 (added Roslynator.Analyzers 4.15.0, Apache-2.0 — dev-time
+code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06-30 (global NuGet version refresh via `dotnet restore --force-evaluate`; aligned the OpenTelemetry instrumentation packages on 1.16.*; added three previously unlisted direct dependencies — DnsClient, Microsoft.Extensions.ApiDescription.Server, Npgsql.OpenTelemetry; removed dead central entries (packages referenced by no project, including modules migrated to granit-business); recomputed the license summary; notable bumps: WolverineFx 6.16.0, DocumentFormat.OpenXml 3.5.1, Scalar.AspNetCore 2.16.6, Anthropic 12.32.0, AWSSDK 4.0.100, Microsoft.\* 10.0.9 / 10.7.0, MailKit / MimeKit 4.17.0)
 
 ---
 
@@ -17,7 +18,7 @@ Last updated: 2026-06-30 (global NuGet version refresh via `dotnet restore --for
 | License      | Package count |
 | ------------ | ------------- |
 | MIT          | 102           |
-| Apache-2.0   | 46            |
+| Apache-2.0   | 47            |
 | BSD-3-Clause | 3             |
 | BSD-2-Clause | 2             |
 | PostgreSQL   | 2             |
@@ -153,6 +154,7 @@ Last updated: 2026-06-30 (global NuGet version refresh via `dotnet restore --for
 | OpenTelemetry.Instrumentation.EntityFrameworkCore | 1.16.0-beta.1 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Instrumentation.Http | 1.16.0 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Instrumentation.StackExchangeRedis | 1.16.0-beta.1 | Copyright The OpenTelemetry Authors |
+| Roslynator.Analyzers | 4.15.0 | Copyright (c) Josef Pihrt |
 | Serilog.AspNetCore | 10.0.0 | Serilog Contributors |
 | Serilog.Sinks.OpenTelemetry | 4.2.0 | Serilog Contributors |
 | Tesseract | 5.2.0 | Copyright (c) Charles Weld |

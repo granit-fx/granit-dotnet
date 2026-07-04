@@ -26,6 +26,12 @@
         "resolved": "10.0.9",
         "contentHash": "5Q8Q1+tD5punC+lZTaWqaolLX2bms7dPY2oaxGcXMQbSLwhlTla38qMyRK6G+gFmfKIgRsXWD4redIl0CHD7jA=="
       },
+      "Roslynator.Analyzers": {
+        "type": "Direct",
+        "requested": "[4.15.*, )",
+        "resolved": "4.15.0",
+        "contentHash": "E8fu71Y+vzhniJKy1K13Rzwm8Vjcj7CDFBpflqncKUZfc3SzuF0kMBiyMmgXNPkjWTdE3Z+30HlGgYjHONZY/Q=="
+      },
       "Microsoft.EntityFrameworkCore.Abstractions": {
         "type": "Transitive",
         "resolved": "10.0.9",
