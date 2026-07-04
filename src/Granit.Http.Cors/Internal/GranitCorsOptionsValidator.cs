@@ -62,7 +62,7 @@ internal sealed class GranitCorsOptionsValidator(
             {
                 errors.Add(
                     $"CORS origin '{origin}' is not a valid origin. " +
-                    $"Expected form: 'https://host[:port]' " +
+                    "Expected form: 'https://host[:port]' " +
                     "(scheme must be http/https; no path, query, or fragment). " +
                     "A trailing slash is accepted and normalized automatically.");
             }

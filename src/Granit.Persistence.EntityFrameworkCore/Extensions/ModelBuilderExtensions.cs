@@ -447,12 +447,12 @@ public static class ModelBuilderExtensions
         {
             throw new InvalidOperationException(
                 $"'{ownerEntityType.ClrType.Name}.{clrProperty.Name}' is a ValueObject " +
-                $"subtype configured via OwnsOne(...). Granit reserves ValueObject " +
-                $"persistence to two paths: (1) let ApplyGranitConventions auto-serialize " +
-                $"to JSON (multi-field) or a scalar column (SingleValueObject<T>), or " +
-                $"(2) map explicitly via ComplexProperty(...) for typed flat columns. " +
-                $"Drop the OwnsOne call or switch to ComplexProperty. " +
-                $"See ADR-017 (DDD VO strategy) and ADR-058 (JSON persistence policy).");
+                "subtype configured via OwnsOne(...). Granit reserves ValueObject " +
+                "persistence to two paths: (1) let ApplyGranitConventions auto-serialize " +
+                "to JSON (multi-field) or a scalar column (SingleValueObject<T>), or " +
+                "(2) map explicitly via ComplexProperty(...) for typed flat columns. " +
+                "Drop the OwnsOne call or switch to ComplexProperty. " +
+                "See ADR-017 (DDD VO strategy) and ADR-058 (JSON persistence policy).");
         }
 
         ownerBuilder.Ignore(clrProperty.Name);

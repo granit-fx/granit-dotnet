@@ -24,7 +24,7 @@ internal static class WebhookSsrfConnectCallback
         if (addresses.Length == 0)
         {
             throw new HttpRequestException(
-                $"Webhook delivery blocked: DNS returned no addresses for " +
+                "Webhook delivery blocked: DNS returned no addresses for " +
                 $"'{context.DnsEndPoint.Host}'.");
         }
 

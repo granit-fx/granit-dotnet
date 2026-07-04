@@ -127,9 +127,9 @@ internal sealed class XmlExportWriter : IExportWriter
             throw new InvalidOperationException(
                 $"XmlSerializer cannot serialize type '{serializationType.FullName}' " +
                 $"for complex field '{field.PropertyPath}'. " +
-                $"Ensure the type is a concrete, public class with a parameterless constructor. " +
-                $"Interface types (IList<T>, IDictionary<TKey,TValue>) and abstract types are not supported by XmlSerializer. " +
-                $"Use the JSON writer (format 'json') for polymorphic or dictionary payloads.", ex);
+                "Ensure the type is a concrete, public class with a parameterless constructor. " +
+                "Interface types (IList<T>, IDictionary<TKey,TValue>) and abstract types are not supported by XmlSerializer. " +
+                "Use the JSON writer (format 'json') for polymorphic or dictionary payloads.", ex);
         }
 
         // Write the serialized content inline (skip the root wrapper element)
@@ -175,8 +175,8 @@ internal sealed class XmlExportWriter : IExportWriter
             {
                 throw new InvalidOperationException(
                     $"Cannot create XmlSerializer for type '{t.FullName}'. " +
-                    $"XmlSerializer does not support interface types, abstract types, or types without a public parameterless constructor. " +
-                    $"Use the JSON writer (format 'json') for unsupported types.", ex);
+                    "XmlSerializer does not support interface types, abstract types, or types without a public parameterless constructor. " +
+                    "Use the JSON writer (format 'json') for unsupported types.", ex);
             }
         });
 }

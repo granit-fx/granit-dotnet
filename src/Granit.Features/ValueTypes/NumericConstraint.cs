@@ -24,7 +24,7 @@ public sealed record NumericConstraint(long Min, long Max)
             throw new FeatureValueValidationException(
                 featureName,
                 rawValue,
-                $"value must be a valid integer.");
+                "value must be a valid integer.");
         }
 
         if (parsed < Min || parsed > Max)

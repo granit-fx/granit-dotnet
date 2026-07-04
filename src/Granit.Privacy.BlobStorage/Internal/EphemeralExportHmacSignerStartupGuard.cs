@@ -35,7 +35,7 @@ internal sealed class EphemeralExportHmacSignerStartupGuard(
         if (signer is EphemeralExportHmacSigner)
         {
             throw new InvalidOperationException(
-                $"Granit.Privacy.BlobStorage refuses to start in environment "
+                "Granit.Privacy.BlobStorage refuses to start in environment "
                 + $"'{environment.EnvironmentName}' with the default "
                 + $"{nameof(EphemeralExportHmacSigner)} — its key lives only in the "
                 + "current process, so multi-replica deployments and restarts will "

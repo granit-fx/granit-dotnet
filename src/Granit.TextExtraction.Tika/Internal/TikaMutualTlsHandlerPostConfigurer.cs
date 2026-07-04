@@ -64,7 +64,7 @@ internal sealed class TikaMutualTlsHandlerPostConfigurer
         if (options.HttpMessageHandlerBuilderActions.Count == 0)
         {
             throw new InvalidOperationException(
-                $"TikaSidecarOptions.RequireMutualTls is true but no custom message handler " +
+                "TikaSidecarOptions.RequireMutualTls is true but no custom message handler " +
                 $"is configured for the '{TikaSidecarTextExtractor.HttpClientName}' HttpClient. " +
                 "Call .ConfigurePrimaryHttpMessageHandler(...) on the IHttpClientBuilder " +
                 "returned by AddTikaSidecarExtractor(...) to attach a client certificate or " +

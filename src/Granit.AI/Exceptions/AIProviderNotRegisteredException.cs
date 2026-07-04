@@ -6,7 +6,7 @@ namespace Granit.AI.Exceptions;
 public sealed class AIProviderNotRegisteredException(string providerName)
     : InvalidOperationException(
         $"No AI provider factory is registered for '{providerName}'. " +
-        $"Install the corresponding package (e.g. Granit.AI.OpenAI) and call its registration extension method.")
+        "Install the corresponding package (e.g. Granit.AI.OpenAI) and call its registration extension method.")
 {
     /// <summary>
     /// Provider name that has no registered factory.

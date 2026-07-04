@@ -25,12 +25,12 @@ internal static class WorkflowTransitionEndpoints<TState> where TState : struct,
         group.MapGet("/transitions", GetAvailableTransitionsAsync)
             .RequireAuthorization(WorkflowPermissions.Transitions.Read)
             .WithName($"GetAvailable{stateName}Transitions")
-            .WithSummary($"Returns the transitions available from the given state for the current user.")
+            .WithSummary("Returns the transitions available from the given state for the current user.")
             .WithDescription(
-                $"Returns the list of transitions available from the specified current state " +
-                $"for the current user, considering their permissions. Transitions where the user " +
-                $"lacks the required permission but approval routing is enabled are included " +
-                $"with RequiresApproval = true.")
+                "Returns the list of transitions available from the specified current state " +
+                "for the current user, considering their permissions. Transitions where the user " +
+                "lacks the required permission but approval routing is enabled are included " +
+                "with RequiresApproval = true.")
             .Produces<WorkflowStatusResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest);
 

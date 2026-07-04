@@ -128,7 +128,7 @@ internal sealed class ImportOrchestrator(
             throw new InvalidOperationException(
                 $"No IFileParser registered for MIME type '{job.MimeType}'. " +
                 $"Registered parsers: [{registered}]. " +
-                $"Ensure the corresponding module is added: GranitDataExchangeCsvModule for CSV, GranitDataExchangeExcelModule for Excel.");
+                "Ensure the corresponding module is added: GranitDataExchangeCsvModule for CSV, GranitDataExchangeExcelModule for Excel.");
         }
 
         // Confirmed column mappings — set by ConfirmMappings before the job is queued.

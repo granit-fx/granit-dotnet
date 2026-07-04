@@ -86,6 +86,15 @@ dotnet_naming_rule.types_should_be_pascal_case.style = pascal_case_style
 dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
+# ── Roslynator: rules promoted to warning in framework source only ────────────
+# These have been cleaned across all src/ projects and are now enforced (a warning ==
+# a build error under TreatWarningsAsErrors). Test projects stay at the advisory
+# `suggestion` baseline. Promote a rule here only after `dotnet format analyzers
+# --diagnostics RCSxxxx` reports zero remaining hits on src-only.slnf.
+[src/**.cs]
+# RCS1214: unnecessary interpolated string ($"literal" with no holes → "literal")
+dotnet_diagnostic.RCS1214.severity = warning
+
 [*.{csproj,props,targets}]
 indent_size = 2
 

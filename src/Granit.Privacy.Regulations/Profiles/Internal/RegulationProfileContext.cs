@@ -21,7 +21,7 @@ internal sealed class RegulationProfileContext : IRegulationProfileContext
         {
             throw new InvalidOperationException(
                 $"A regulation profile for '{key}' is already registered. " +
-                $"Each regulation can only have one profile.");
+                "Each regulation can only have one profile.");
         }
     }
 

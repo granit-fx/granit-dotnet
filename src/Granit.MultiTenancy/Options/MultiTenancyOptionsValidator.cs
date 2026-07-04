@@ -16,7 +16,7 @@ internal sealed class MultiTenancyOptionsValidator(IHostEnvironment environment)
             && !string.IsNullOrEmpty(options.QueryStringParamName))
         {
             return ValidateOptionsResult.Fail(
-                $"MultiTenancy:QueryStringParamName must be empty outside the Development "
+                "MultiTenancy:QueryStringParamName must be empty outside the Development "
                 + $"environment (current: '{environment.EnvironmentName}'). The query-string "
                 + "tenant resolver allows any caller to select an arbitrary tenant context "
                 + "and is forbidden in production.");

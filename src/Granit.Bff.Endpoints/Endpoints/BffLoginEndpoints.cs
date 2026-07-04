@@ -473,12 +473,12 @@ internal static partial class BffLoginEndpoints
         string scopes, string state, string codeChallenge) =>
         $"{authorityBase}/connect/authorize"
             + $"?client_id={Uri.EscapeDataString(clientId)}"
-            + $"&response_type=code"
+            + "&response_type=code"
             + $"&redirect_uri={Uri.EscapeDataString(callbackUrl)}"
             + $"&scope={Uri.EscapeDataString(scopes)}"
             + $"&state={Uri.EscapeDataString(state)}"
             + $"&code_challenge={Uri.EscapeDataString(codeChallenge)}"
-            + $"&code_challenge_method=S256";
+            + "&code_challenge_method=S256";
 
 #pragma warning disable GRSEC003 // Method handles client credentials for PAR — server-side only
     private static async Task<string?> PushAuthorizationRequestAsync(

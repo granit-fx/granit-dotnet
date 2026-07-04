@@ -51,6 +51,6 @@ internal static class DbContextResolver
                ?? throw new InvalidOperationException(
                    $"No registered DbContext contains entity type '{entityType.Name}'. " +
                    $"Register an explicit IExportDataSource<{entityType.Name}> or ensure " +
-                   $"the entity is mapped in a DbContext.");
+                   "the entity is mapped in a DbContext.");
     }
 }

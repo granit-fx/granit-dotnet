@@ -80,7 +80,7 @@ internal sealed class TenantBasedRegulationResolver(
         registry.GetProfile(PrivacyRegulation.Create(regulationCode))
             ?? throw new InvalidOperationException(
                 $"Privacy regulation '{regulationCode}' is not registered. " +
-                $"Ensure a matching IRegulationProfileProvider is loaded. " +
+                "Ensure a matching IRegulationProfileProvider is loaded. " +
                 $"Available regulations: {string.Join(", ", registry.GetAll().Select(p => p.Regulation.Value))}.");
 
     /// <summary>

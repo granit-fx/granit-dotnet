@@ -14,10 +14,10 @@ public sealed class ExportProviderIncompatibleException : InvalidOperationExcept
     public ExportProviderIncompatibleException(string format, int complexFieldCount)
         : base(
             $"Export format '{format}' does not support hierarchical fields " +
-            $"(SupportsHierarchy = false). " +
+            "(SupportsHierarchy = false). " +
             $"The export definition declares {complexFieldCount} complex field(s) that require a structured writer. " +
-            $"Use a structured format (e.g. 'json', 'xml') or set OnIncompatibleField = Skip " +
-            $"to export only the scalar fields.")
+            "Use a structured format (e.g. 'json', 'xml') or set OnIncompatibleField = Skip " +
+            "to export only the scalar fields.")
     {
         Format = format;
         ComplexFieldCount = complexFieldCount;

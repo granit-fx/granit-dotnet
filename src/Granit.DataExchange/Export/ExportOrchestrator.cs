@@ -216,7 +216,7 @@ public sealed partial class ExportOrchestrator(
         throw new InvalidOperationException(
             $"No export writer registered for format '{format}'. " +
             $"Registered writers: [{registered}]. " +
-            $"Ensure the corresponding module is added: GranitDataExchangeCsvModule for 'csv', GranitDataExchangeExcelModule for 'xlsx'.");
+            "Ensure the corresponding module is added: GranitDataExchangeCsvModule for 'csv', GranitDataExchangeExcelModule for 'xlsx'.");
     }
 
     private IReadOnlyList<ExportFieldDescriptor> ResolveFields(

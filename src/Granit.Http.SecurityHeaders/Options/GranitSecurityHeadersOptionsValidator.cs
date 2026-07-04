@@ -80,7 +80,7 @@ internal sealed class GranitSecurityHeadersOptionsValidator
         {
             (failures ??= []).Add(
                 $"HstsMaxAgeSeconds must be >= {MinimumHstsMaxAgeSeconds} (6 months, OWASP minimum) " +
-                $"when EnableHsts=true. Set EnableHsts=false to disable HSTS entirely. " +
+                "when EnableHsts=true. Set EnableHsts=false to disable HSTS entirely. " +
                 $"Got {options.HstsMaxAgeSeconds}.");
         }
         else if (!options.EnableHsts && options.HstsMaxAgeSeconds < 0)

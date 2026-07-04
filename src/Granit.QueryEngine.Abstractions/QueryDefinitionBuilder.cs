@@ -180,9 +180,9 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
                 throw new ArgumentException(
                     $"GlobalSearch property '{GetPropertyName(property)}' has CLR type " +
                     $"'{convert.Operand.Type.Name}', not string. Value-object columns " +
-                    $"(SingleValueObject<string>) cannot be substring-searched: EF Core cannot " +
-                    $"translate LIKE over a ValueConverter, so the term would be silently ignored. " +
-                    $"Use a plain string column for global search. See issue #2767.",
+                    "(SingleValueObject<string>) cannot be substring-searched: EF Core cannot " +
+                    "translate LIKE over a ValueConverter, so the term would be silently ignored. " +
+                    "Use a plain string column for global search. See issue #2767.",
                     nameof(properties));
             }
 
@@ -533,8 +533,8 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
             string hint = member?.Expression is MemberExpression inner
                 ? $" Nested access like 'x => x.{inner.Member.Name}.{member.Member.Name}' is not " +
                   $"supported; if '{inner.Member.Name}' is a SingleValueObject, value-object columns " +
-                  $"cannot be substring-searched or filtered (see issue #2767) — select a plain " +
-                  $"string column instead."
+                  "cannot be substring-searched or filtered (see issue #2767) — select a plain " +
+                  "string column instead."
                 : string.Empty;
 
             throw new ArgumentException(
@@ -567,10 +567,10 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
                 throw new ArgumentException(
                     $"Expression '{expression.Body}' drills into the '.Value' of a " +
                     $"SingleValueObject ('{member.Expression!.Type.Name}'), which is mapped as an opaque " +
-                    $"whole-value ValueConverter and cannot be an independently queryable column. To use a " +
-                    $"value-object column, mark it [QueryableValueObject] and select the object itself " +
-                    $"(x => x.Slug); to reach a nested field, select a member of an EF complex type. " +
-                    $"See issue #2767.",
+                    "whole-value ValueConverter and cannot be an independently queryable column. To use a " +
+                    "value-object column, mark it [QueryableValueObject] and select the object itself " +
+                    "(x => x.Slug); to reach a nested field, select a member of an EF complex type. " +
+                    "See issue #2767.",
                     nameof(expression));
             }
 
@@ -583,9 +583,9 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
                 throw new ArgumentException(
                     $"Expression '{expression.Body}' drills into a CLR member of the scalar column " +
                     $"'{container.Member.Name}' ({container.Type.Name}); only a member of an EF Core " +
-                    $"complex type is a queryable nested column (a scalar's sub-members such as " +
-                    $"string.Length are not mapped columns). Select a top-level column or an EF " +
-                    $"complex-type member.",
+                    "complex type is a queryable nested column (a scalar's sub-members such as " +
+                    "string.Length are not mapped columns). Select a top-level column or an EF " +
+                    "complex-type member.",
                     nameof(expression));
             }
 
@@ -667,7 +667,7 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
                 throw new ArgumentException(
                     $"Property '{propertyName}' is a value object ({typeof(TProp).Name}) and cannot be " +
                     $"{operation}: it is mapped as an opaque whole-value ValueConverter (no orderable/" +
-                    $"aggregatable scalar). Use a plain scalar column instead. See issue #2767.",
+                    "aggregatable scalar). Use a plain scalar column instead. See issue #2767.",
                     paramName);
             }
         }
