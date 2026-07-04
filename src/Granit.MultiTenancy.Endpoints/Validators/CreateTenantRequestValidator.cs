@@ -13,7 +13,7 @@ internal sealed class CreateTenantRequestValidator : GranitValidator<CreateTenan
     internal const int MaxIdentifierLength = 64;
     internal const int MaxEmailLength = 256;
     internal const int MaxJurisdictionCodeLength = 16;
-    internal const string IdentifierPattern = @"^[a-z0-9-]+$";
+    internal const string IdentifierPattern = "^[a-z0-9-]+$";
 
     public CreateTenantRequestValidator()
     {

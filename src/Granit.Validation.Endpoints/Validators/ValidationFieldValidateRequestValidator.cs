@@ -14,7 +14,7 @@ internal sealed class ValidationFieldValidateRequestValidator
         RuleFor(x => x.ErrorCode)
             .NotEmpty()
             .MaximumLength(128)
-            .Matches(@"^[A-Za-z0-9:._]+$");
+            .Matches("^[A-Za-z0-9:._]+$");
 
         RuleFor(x => x.Value)
             .MaximumLength(500);

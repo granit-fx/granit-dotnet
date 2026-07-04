@@ -48,7 +48,7 @@ public sealed class TenantSchemaOptions
     /// Defaults to <c>"tenant_"</c>.
     /// </summary>
     [Required]
-    [RegularExpression(@"^[a-z][a-z0-9_]*$", ErrorMessage = "Prefix must be a safe PostgreSQL identifier: lowercase letters, digits, and underscores, starting with a letter.")]
+    [RegularExpression("^[a-z][a-z0-9_]*$", ErrorMessage = "Prefix must be a safe PostgreSQL identifier: lowercase letters, digits, and underscores, starting with a letter.")]
     [StringLength(20, MinimumLength = 1)]
     public string Prefix { get; set; } = "tenant_";
 }
