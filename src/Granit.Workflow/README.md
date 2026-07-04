@@ -36,6 +36,32 @@ services.AddWorkflow<MyState>(definition);
 `WorkflowDefinitionBuilder<TState>` from `Granit.Workflow.Abstractions`. Without
 `AddWorkflow<TState>()`, no concrete state machine is available at runtime.
 
+## Several entities sharing one state enum
+
+When two entities share the same `TState` enum but need distinct,
+permission-gated definitions (e.g. `BlogPost` and `CmsPage` both on
+`WorkflowLifecycleStatus`), register each definition **keyed** by its
+`IWorkflowStateful.WorkflowEntityType`:
+
+```csharp
+services.AddWorkflow("BlogPost", blogDefinition);
+services.AddWorkflow("CmsPage", pageDefinition);
+```
+
+Resolve the right manager per entity through `IWorkflowManagerFactory`:
+
+```csharp
+IWorkflowManager<WorkflowLifecycleStatus> manager =
+    factory.GetManager<WorkflowLifecycleStatus>("BlogPost");
+// or, by entity type:
+IWorkflowManager<WorkflowLifecycleStatus> byEntity =
+    factory.GetManager<BlogPost, WorkflowLifecycleStatus>();
+```
+
+or by injecting `[FromKeyedServices("BlogPost")] IWorkflowManager<TState>`. The
+non-keyed `AddWorkflow<TState>(definition)` overload keeps working unchanged and
+is also reachable via the factory under `typeof(TState).FullName`.
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).

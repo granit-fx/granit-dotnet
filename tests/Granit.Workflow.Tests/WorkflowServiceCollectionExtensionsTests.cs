@@ -135,4 +135,61 @@ public sealed class WorkflowServiceCollectionExtensionsTests
         // Assert
         result.ShouldBeSameAs(services);
     }
+
+    // ========================================================================
+    // AddWorkflow<TState>(key, definition) — keyed
+    // ========================================================================
+
+    [Fact]
+    public void AddWorkflowKeyed_ShouldRegisterKeyedDefinition()
+    {
+        // Arrange
+        ServiceCollection services = new();
+        services.AddGranitWorkflow();
+        var definition =
+            WorkflowDefinition<WorkflowLifecycleStatus>.Create(b => b
+                .InitialState(WorkflowLifecycleStatus.Draft)
+                .Transition(WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Published));
+
+        // Act
+        services.AddWorkflow("BlogPost", definition);
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+
+        // Assert
+        IWorkflowDefinition<WorkflowLifecycleStatus> resolved =
+            sp.GetRequiredKeyedService<IWorkflowDefinition<WorkflowLifecycleStatus>>("BlogPost");
+        resolved.ShouldBeSameAs(definition);
+    }
+
+    [Fact]
+    public void AddWorkflowKeyed_NullOrEmptyKey_ShouldThrow()
+    {
+        // Arrange
+        ServiceCollection services = new();
+        var definition =
+            WorkflowDefinition<WorkflowLifecycleStatus>.Create(b => b
+                .InitialState(WorkflowLifecycleStatus.Draft)
+                .Transition(WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Published));
+
+        // Act / Assert
+        Should.Throw<ArgumentException>(() => services.AddWorkflow(string.Empty, definition));
+    }
+
+    [Fact]
+    public void AddWorkflowKeyed_ShouldReturnSameServiceCollection()
+    {
+        // Arrange
+        ServiceCollection services = new();
+        var definition =
+            WorkflowDefinition<WorkflowLifecycleStatus>.Create(b => b
+                .InitialState(WorkflowLifecycleStatus.Draft)
+                .Transition(WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Published));
+
+        // Act
+        IServiceCollection result = services.AddWorkflow("BlogPost", definition);
+
+        // Assert
+        result.ShouldBeSameAs(services);
+    }
 }

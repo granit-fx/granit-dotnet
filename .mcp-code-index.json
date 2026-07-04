@@ -59249,6 +59249,15 @@
       ]
     },
     {
+      "name": "IWorkflowManagerFactory",
+      "fqn": "Granit.Workflow.IWorkflowManagerFactory",
+      "kind": "interface",
+      "project": "Granit.Workflow",
+      "file": "src/Granit.Workflow/IWorkflowManagerFactory.cs",
+      "line": 23,
+      "members": []
+    },
+    {
       "name": "IWorkflowPermissionChecker",
       "fqn": "Granit.Workflow.IWorkflowPermissionChecker",
       "kind": "interface",
