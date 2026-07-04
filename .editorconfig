@@ -104,6 +104,8 @@ dotnet_diagnostic.RCS1118.severity = warning
 dotnet_diagnostic.RCS1085.severity = warning
 # RCS1077: optimize LINQ (List<T>.Select(f).ToList() → List<T>.ConvertAll(f))
 dotnet_diagnostic.RCS1077.severity = warning
+# RCS1197: optimize StringBuilder.Append/AppendLine (avoids intermediate string.Join alloc)
+dotnet_diagnostic.RCS1197.severity = warning
 
 [*.{csproj,props,targets}]
 indent_size = 2

@@ -87,7 +87,7 @@ internal sealed partial class PrivacyTenantScopedProviderValidator(
             {
                 sb.Append("  - ").Append(name)
                   .Append(" (").Append(type.FullName ?? type.Name).Append(')')
-                  .Append(" → ").AppendLine(string.Join(", ", deps.Select(d => d.Name)));
+                  .Append(" → ").AppendJoin(", ", deps.Select(d => d.Name)).AppendLine();
             }
             sb.AppendLine();
             sb.Append("Call AddGranitMultiTenancy() on the host, or move the provider to a ");

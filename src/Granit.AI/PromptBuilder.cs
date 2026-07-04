@@ -56,7 +56,7 @@ public sealed partial class PromptBuilder
     /// <param name="text">The user-controlled text. Sanitized and truncated.</param>
     public PromptBuilder AppendUserTextBlock(string label, string? text)
     {
-        _sb.AppendLine(label).Append(DataBlockOpen).AppendLine();
+        _sb.AppendLine(label).AppendLine(DataBlockOpen);
         _sb.AppendLine(SanitizeInput(text ?? string.Empty));
         _sb.AppendLine(DataBlockClose);
         return this;
@@ -81,7 +81,7 @@ public sealed partial class PromptBuilder
     public PromptBuilder AppendUserDataMap(string label, IEnumerable<KeyValuePair<string, string?>> pairs)
     {
         _sb.AppendLine(label);
-        _sb.Append(DataBlockOpen).AppendLine();
+        _sb.AppendLine(DataBlockOpen);
 
         foreach (KeyValuePair<string, string?> pair in pairs)
         {

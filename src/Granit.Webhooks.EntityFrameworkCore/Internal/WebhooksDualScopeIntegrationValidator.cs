@@ -66,7 +66,7 @@ internal sealed partial class WebhooksDualScopeIntegrationValidator(
         foreach ((Type type, List<string> entities) in offenders)
         {
             sb.Append("  - ").Append(type.FullName ?? type.Name)
-              .Append(" → ").AppendLine(string.Join(", ", entities));
+              .Append(" → ").AppendJoin(", ", entities).AppendLine();
         }
         sb.AppendLine();
         sb.Append("Move ConfigureWebhooksModule() to a host-scoped DbContext, or open the ");
