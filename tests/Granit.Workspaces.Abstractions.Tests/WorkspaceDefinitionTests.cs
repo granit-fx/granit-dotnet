@@ -55,34 +55,34 @@ public sealed class WorkspaceDefinitionTests
         public int ConfigureCallCount { get; private set; }
         public override string Name => "Counted";
 
-        protected override void Configure(WorkspaceBuilder b)
+        protected override void Configure(WorkspaceBuilder builder)
         {
             ConfigureCallCount++;
-            b.Order(3);
+            builder.Order(3);
         }
     }
 
     private sealed class BareDefinition : WorkspaceDefinition
     {
         public override string Name => "Bare";
-        protected override void Configure(WorkspaceBuilder b) { }
+        protected override void Configure(WorkspaceBuilder builder) { }
     }
 
     private sealed class BlankDisplayKey : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) => b.DisplayKey("  ");
+        protected override void Configure(WorkspaceBuilder builder) => builder.DisplayKey("  ");
     }
 
     private sealed class BlankIcon : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) => b.Icon(" ");
+        protected override void Configure(WorkspaceBuilder builder) => builder.Icon(" ");
     }
 
     private sealed class BlankPermission : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) => b.RequiresPermission("");
+        protected override void Configure(WorkspaceBuilder builder) => builder.RequiresPermission("");
     }
 }

@@ -68,8 +68,8 @@ public sealed class WorkspaceBuilderTests
     {
         public override string Name => "Sample";
 
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.DisplayKey("Workspace:Sample")
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.DisplayKey("Workspace:Sample")
                 .Icon("layout-grid")
                 .Order(10)
                 .RequiresPermission("Workspace.Sample.Read")
@@ -85,30 +85,30 @@ public sealed class WorkspaceBuilderTests
     {
         public override string Name => "Dup";
 
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("a", _ => { }).Section("a", _ => { });
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("a", _ => { }).Section("a", _ => { });
     }
 
     private sealed class ShellDefinition : WorkspaceDefinition
     {
         public override string Name => "Granit.Framework.Data";
-        protected override void Configure(WorkspaceBuilder b) => b.Shell();
+        protected override void Configure(WorkspaceBuilder builder) => builder.Shell();
     }
 
     private sealed class InvalidViewOnLink : WorkspaceDefinition
     {
         public override string Name => "Invalid";
 
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("s", s => s.Link("/x", i => i.View("any")));
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("s", s => s.Link("/x", i => i.View("any")));
     }
 
     private sealed class FeatureDefinition : WorkspaceDefinition
     {
         public override string Name => "Showcase.Erp";
 
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("billing", s => s
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("billing", s => s
                 .Feature("invoicing.invoices.list", i => i
                     .DisplayKey("Showcase:Workspace.Erp.InvoiceList")
                     .Icon("chart-bar")
@@ -119,8 +119,8 @@ public sealed class WorkspaceBuilderTests
     {
         public override string Name => "Invalid";
 
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("s", s => s.Link("/x", i => i.RouteName("any.route")));
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("s", s => s.Link("/x", i => i.RouteName("any.route")));
     }
 }
 

@@ -10,7 +10,7 @@ namespace Granit.DocumentGeneration.Excel.Tests;
 
 public sealed class ClosedXmlTemplateEngineTests
 {
-    private static readonly string ExcelMimeType =
+    private const string ExcelMimeType =
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
     // -------------------------------------------------------------------------

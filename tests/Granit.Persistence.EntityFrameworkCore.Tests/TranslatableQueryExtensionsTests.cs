@@ -197,4 +197,4 @@ internal sealed class TestQueryDbContext(DbContextOptions<TestQueryDbContext> op
         modelBuilder.ApplyGranitConventions();
 }
 
-#endregion
+#endregion Test entities for query extensions

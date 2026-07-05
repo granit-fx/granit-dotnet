@@ -210,8 +210,8 @@ public sealed class NestedComplexGroupByTests : IDisposable
     {
         public DbSet<PartyAddress> Addresses => Set<PartyAddress>();
 
-        protected override void OnModelCreating(ModelBuilder b) =>
-            b.Entity<PartyAddress>(e =>
+        protected override void OnModelCreating(ModelBuilder modelBuilder) =>
+            modelBuilder.Entity<PartyAddress>(e =>
             {
                 e.HasKey(p => p.Id);
                 e.ComplexProperty(p => p.Value, v => v.ComplexProperty(a => a.Region));

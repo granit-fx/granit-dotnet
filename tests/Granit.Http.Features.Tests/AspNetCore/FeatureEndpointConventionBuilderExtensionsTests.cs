@@ -16,7 +16,7 @@ public sealed class FeatureEndpointConventionBuilderExtensionsTests
 
         public void Add(Action<EndpointBuilder> convention) => Conventions.Add(convention);
 
-        public void Finally(Action<EndpointBuilder> convention) { }
+        public void Finally(Action<EndpointBuilder> finallyConvention) { }
     }
 
     [Fact]

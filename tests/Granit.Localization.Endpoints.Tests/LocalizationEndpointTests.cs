@@ -13,7 +13,7 @@ namespace Granit.Localization.Endpoints.Tests;
 
 public sealed class LocalizationEndpointTests : IAsyncDisposable
 {
-    private static readonly string TestResourcePrefix =
+    private const string TestResourcePrefix =
         "Granit.Localization.Endpoints.Tests.TestResources.Localization.Test";
 
     private readonly WebApplication _app;

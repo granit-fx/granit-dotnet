@@ -109,10 +109,10 @@ public sealed class InMemoryAnchorTests
         public string SourceKey { get; } = key;
         public TimelineStreamEntry? Projection { get; set; }
 
-        public Task<IReadOnlyList<TimelineStreamEntry>> GetEntriesAsync(string _, string __, int ___, CancellationToken ____) =>
+        public Task<IReadOnlyList<TimelineStreamEntry>> GetEntriesAsync(string entityType, string entityId, int limit, CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<TimelineStreamEntry>>([]);
 
-        public Task<TimelineStreamEntry?> GetEntryAsync(string _, string __, string ___, CancellationToken ____) =>
+        public Task<TimelineStreamEntry?> GetEntryAsync(string entityType, string entityId, string sourceId, CancellationToken cancellationToken) =>
             Task.FromResult(Projection);
     }
 }

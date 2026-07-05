@@ -38,12 +38,12 @@ internal sealed class InMemoryDataExchangeFileProvider : IDataExchangeFileProvid
         ArgumentNullException.ThrowIfNull(content);
 
         await using MemoryStream buffer = new();
-        content.CopyTo(buffer);
+        await content.CopyToAsync(buffer, cancellationToken).ConfigureAwait(false);
 
         string reference = $"mem-{Interlocked.Increment(ref _counter)}";
         _store[reference] = buffer.ToArray();
 
-        return await Task.FromResult(BlobReference.Create(reference));
+        return BlobReference.Create(reference);
     }
 
     /// <inheritdoc/>

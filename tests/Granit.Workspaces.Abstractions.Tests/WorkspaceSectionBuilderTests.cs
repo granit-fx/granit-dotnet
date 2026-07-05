@@ -50,8 +50,8 @@ public sealed class WorkspaceSectionBuilderTests
     private sealed class ConfiguredSectionDefinition : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("reports", s => s
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("reports", s => s
                 .DisplayKey("Section:Reports")
                 .Order(7)
                 .CollapsedByDefault(true));
@@ -60,32 +60,32 @@ public sealed class WorkspaceSectionBuilderTests
     private sealed class DefaultCollapsedDefinition : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("s", s => s.CollapsedByDefault());
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("s", s => s.CollapsedByDefault());
     }
 
     private sealed class EmptySectionDefinition : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) => b.Section("s", _ => { });
+        protected override void Configure(WorkspaceBuilder builder) => builder.Section("s", _ => { });
     }
 
     private sealed class BlankSectionKey(string key) : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) => b.Section(key, _ => { });
+        protected override void Configure(WorkspaceBuilder builder) => builder.Section(key, _ => { });
     }
 
     private sealed class BlankEntityName(string n) : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("s", s => s.Entity(n));
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("s", s => s.Entity(n));
     }
 
     private sealed class NullConfigureDefinition : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) => b.Section("s", null!);
+        protected override void Configure(WorkspaceBuilder builder) => builder.Section("s", null!);
     }
 }

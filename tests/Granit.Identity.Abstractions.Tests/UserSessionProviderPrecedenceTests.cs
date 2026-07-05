@@ -15,26 +15,26 @@ public sealed class UserSessionProviderPrecedenceTests
     // Fake backends — resolvable with no external dependencies, so we can assert the resolved instance type.
     private sealed class LowProvider : IUserSessionProvider, IUserDeviceProvider
     {
-        public Task<IReadOnlyList<UserSessionDescriptor>> ListAsync(string u, string? c, CancellationToken t = default) => Task.FromResult<IReadOnlyList<UserSessionDescriptor>>([]);
-        public Task<bool> RevokeAsync(string u, string s, CancellationToken t = default) => Task.FromResult(false);
-        public Task<int> RevokeOthersAsync(string u, string c, CancellationToken t = default) => Task.FromResult(0);
-        Task<IReadOnlyList<UserDevice>> IUserDeviceProvider.ListAsync(string u, CancellationToken t) => Task.FromResult<IReadOnlyList<UserDevice>>([]);
+        public Task<IReadOnlyList<UserSessionDescriptor>> ListAsync(string userId, string? currentSessionId, CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<UserSessionDescriptor>>([]);
+        public Task<bool> RevokeAsync(string userId, string sessionId, CancellationToken cancellationToken = default) => Task.FromResult(false);
+        public Task<int> RevokeOthersAsync(string userId, string currentSessionId, CancellationToken cancellationToken = default) => Task.FromResult(0);
+        Task<IReadOnlyList<UserDevice>> IUserDeviceProvider.ListAsync(string userId, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<UserDevice>>([]);
     }
 
     private sealed class HighProvider : IUserSessionProvider, IUserDeviceProvider
     {
-        public Task<IReadOnlyList<UserSessionDescriptor>> ListAsync(string u, string? c, CancellationToken t = default) => Task.FromResult<IReadOnlyList<UserSessionDescriptor>>([]);
-        public Task<bool> RevokeAsync(string u, string s, CancellationToken t = default) => Task.FromResult(false);
-        public Task<int> RevokeOthersAsync(string u, string c, CancellationToken t = default) => Task.FromResult(0);
-        Task<IReadOnlyList<UserDevice>> IUserDeviceProvider.ListAsync(string u, CancellationToken t) => Task.FromResult<IReadOnlyList<UserDevice>>([]);
+        public Task<IReadOnlyList<UserSessionDescriptor>> ListAsync(string userId, string? currentSessionId, CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<UserSessionDescriptor>>([]);
+        public Task<bool> RevokeAsync(string userId, string sessionId, CancellationToken cancellationToken = default) => Task.FromResult(false);
+        public Task<int> RevokeOthersAsync(string userId, string currentSessionId, CancellationToken cancellationToken = default) => Task.FromResult(0);
+        Task<IReadOnlyList<UserDevice>> IUserDeviceProvider.ListAsync(string userId, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<UserDevice>>([]);
     }
 
     // Session-only backend (like BFF): does not implement IUserDeviceProvider.
     private sealed class SessionOnlyProvider : IUserSessionProvider
     {
-        public Task<IReadOnlyList<UserSessionDescriptor>> ListAsync(string u, string? c, CancellationToken t = default) => Task.FromResult<IReadOnlyList<UserSessionDescriptor>>([]);
-        public Task<bool> RevokeAsync(string u, string s, CancellationToken t = default) => Task.FromResult(false);
-        public Task<int> RevokeOthersAsync(string u, string c, CancellationToken t = default) => Task.FromResult(0);
+        public Task<IReadOnlyList<UserSessionDescriptor>> ListAsync(string userId, string? currentSessionId, CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<UserSessionDescriptor>>([]);
+        public Task<bool> RevokeAsync(string userId, string sessionId, CancellationToken cancellationToken = default) => Task.FromResult(false);
+        public Task<int> RevokeOthersAsync(string userId, string currentSessionId, CancellationToken cancellationToken = default) => Task.FromResult(0);
     }
 
     private const UserSessionProviderPrecedence Low = UserSessionProviderPrecedence.Federated;

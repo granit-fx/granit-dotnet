@@ -67,10 +67,10 @@ public sealed class ActivitiesOptionsBuilderTests
     {
         public override string Name => "Test.SampleEntity";
 
-        protected override void Configure(EntityDefinitionBuilder<SampleEntity> b)
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder)
         {
-            b.PermissionGroup("Test.Samples");
-            apply(b);
+            builder.PermissionGroup("Test.Samples");
+            apply(builder);
         }
     }
 }

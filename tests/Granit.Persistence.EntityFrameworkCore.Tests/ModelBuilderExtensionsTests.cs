@@ -1014,4 +1014,4 @@ internal sealed class TestDbContextWithMergeable(DbContextOptions<TestDbContextW
         modelBuilder.ApplyGranitConventions();
 }
 
-#endregion
+#endregion Test entities

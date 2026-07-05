@@ -107,11 +107,11 @@ public sealed class DefaultAIWorkspaceCapabilityResolverTests
     {
         public string ProviderName => "Stub";
 
-        public ValueTask<IChatClient> CreateChatClientAsync(AIWorkspace workspace, CancellationToken ct = default)
+        public ValueTask<IChatClient> CreateChatClientAsync(AIWorkspace workspace, CancellationToken cancellationToken = default)
             => throw new NotImplementedException();
 
         public ValueTask<IEmbeddingGenerator<string, Embedding<float>>?> CreateEmbeddingGeneratorAsync(
-            AIWorkspace workspace, CancellationToken ct = default)
+            AIWorkspace workspace, CancellationToken cancellationToken = default)
             => throw new NotImplementedException();
     }
 
@@ -122,11 +122,11 @@ public sealed class DefaultAIWorkspaceCapabilityResolverTests
     {
         public string ProviderName => providerName;
 
-        public ValueTask<IChatClient> CreateChatClientAsync(AIWorkspace workspace, CancellationToken ct = default)
+        public ValueTask<IChatClient> CreateChatClientAsync(AIWorkspace workspace, CancellationToken cancellationToken = default)
             => throw new NotImplementedException();
 
         public ValueTask<IEmbeddingGenerator<string, Embedding<float>>?> CreateEmbeddingGeneratorAsync(
-            AIWorkspace workspace, CancellationToken ct = default)
+            AIWorkspace workspace, CancellationToken cancellationToken = default)
             => throw new NotImplementedException();
 
         public Task<IReadOnlyList<AIModelInfo>> GetAvailableModelsAsync(CancellationToken cancellationToken = default)

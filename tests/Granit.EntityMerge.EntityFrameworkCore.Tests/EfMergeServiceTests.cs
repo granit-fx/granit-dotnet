@@ -379,22 +379,22 @@ public sealed class EfMergeServiceTests
             return Task.FromResult<FakeAggregate?>(null);
         }
 
-        public Task PersistMergedPairAsync(FakeAggregate s, FakeAggregate l, CancellationToken ct)
+        public Task PersistMergedPairAsync(FakeAggregate survivor, FakeAggregate loser, CancellationToken cancellationToken)
         {
             PersistCalls++;
             return Task.CompletedTask;
         }
 
-        public void ApplyTombstone(FakeAggregate l, Guid survivorId, DateTimeOffset mergedAt)
+        public void ApplyTombstone(FakeAggregate loser, Guid survivorId, DateTimeOffset mergedAt)
         {
             TombstoneCalls++;
             AppliedTombstoneSurvivorId = survivorId;
             AppliedTombstoneAt = mergedAt;
-            l.MergedIntoId = survivorId;
-            l.MergedAt = mergedAt;
+            loser.MergedIntoId = survivorId;
+            loser.MergedAt = mergedAt;
         }
 
-        public Task<int> CollapseChainTombstonesAsync(Guid newSurvivor, Guid oldSurvivor, CancellationToken ct)
+        public Task<int> CollapseChainTombstonesAsync(Guid newSurvivorId, Guid oldSurvivorId, CancellationToken cancellationToken)
         {
             ChainCollapseCalls++;
             return Task.FromResult(0);
@@ -423,16 +423,16 @@ public sealed class EfMergeServiceTests
 
     private sealed class TenantedAdapter(TenantedAggregate? s, TenantedAggregate? l) : IMergeableAggregateAdapter<TenantedAggregate>
     {
-        public Task<TenantedAggregate?> LoadAsync(Guid id, CancellationToken ct)
+        public Task<TenantedAggregate?> LoadAsync(Guid id, CancellationToken cancellationToken)
         {
             if (id == s?.Id) { return Task.FromResult<TenantedAggregate?>(s); }
             if (id == l?.Id) { return Task.FromResult<TenantedAggregate?>(l); }
             return Task.FromResult<TenantedAggregate?>(null);
         }
 
-        public Task PersistMergedPairAsync(TenantedAggregate survivor, TenantedAggregate loser, CancellationToken ct) => Task.CompletedTask;
+        public Task PersistMergedPairAsync(TenantedAggregate survivor, TenantedAggregate loser, CancellationToken cancellationToken) => Task.CompletedTask;
         public void ApplyTombstone(TenantedAggregate loser, Guid survivorId, DateTimeOffset mergedAt) { }
-        public Task<int> CollapseChainTombstonesAsync(Guid newS, Guid oldS, CancellationToken ct) => Task.FromResult(0);
+        public Task<int> CollapseChainTombstonesAsync(Guid newSurvivorId, Guid oldSurvivorId, CancellationToken cancellationToken) => Task.FromResult(0);
     }
 
     private sealed class FakeRewriter(
@@ -445,14 +445,14 @@ public sealed class EfMergeServiceTests
         public int RewriteCalls { get; private set; }
         public int CountCalls { get; private set; }
 
-        public Task<int> RewriteAsync(Guid s, Guid l, CancellationToken ct)
+        public Task<int> RewriteAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken)
         {
             RewriteCalls++;
             executionLog?.Add(Description);
             return Task.FromResult(rewriteCount);
         }
 
-        public Task<int> CountAsync(Guid s, Guid l, CancellationToken ct)
+        public Task<int> CountAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken)
         {
             CountCalls++;
             return Task.FromResult(countCount);

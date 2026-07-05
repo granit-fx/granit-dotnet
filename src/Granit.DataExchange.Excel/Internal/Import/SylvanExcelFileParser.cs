@@ -48,9 +48,8 @@ internal sealed class SylvanExcelFileParser : IFileParser
         int fieldCount = reader.FieldCount;
 
         List<string[]> rows = [];
-        int count = 0;
 
-        while (count < maxRows && await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        for (int count = 0; count < maxRows && await reader.ReadAsync(cancellationToken).ConfigureAwait(false); count++)
         {
             int cellCount = Math.Min(fieldCount, reader.RowFieldCount);
             string[] values = new string[fieldCount];
@@ -66,7 +65,6 @@ internal sealed class SylvanExcelFileParser : IFileParser
             }
 
             rows.Add(values);
-            count++;
         }
 
         return rows.AsReadOnly();

@@ -163,18 +163,18 @@ public sealed class TimelineStreamMergerTests
     private sealed class StubSource(string key, IReadOnlyList<TimelineStreamEntry> entries) : ITimelineSource
     {
         public string SourceKey => key;
-        public Task<IReadOnlyList<TimelineStreamEntry>> GetEntriesAsync(string _, string __, int ___, CancellationToken ____) =>
+        public Task<IReadOnlyList<TimelineStreamEntry>> GetEntriesAsync(string entityType, string entityId, int limit, CancellationToken cancellationToken) =>
             Task.FromResult(entries);
-        public Task<TimelineStreamEntry?> GetEntryAsync(string _, string __, string ___, CancellationToken ____) =>
+        public Task<TimelineStreamEntry?> GetEntryAsync(string entityType, string entityId, string sourceId, CancellationToken cancellationToken) =>
             Task.FromResult<TimelineStreamEntry?>(null);
     }
 
     private sealed class FailingSource(string key) : ITimelineSource
     {
         public string SourceKey => key;
-        public Task<IReadOnlyList<TimelineStreamEntry>> GetEntriesAsync(string _, string __, int ___, CancellationToken ____) =>
+        public Task<IReadOnlyList<TimelineStreamEntry>> GetEntriesAsync(string entityType, string entityId, int limit, CancellationToken cancellationToken) =>
             throw new InvalidOperationException("boom");
-        public Task<TimelineStreamEntry?> GetEntryAsync(string _, string __, string ___, CancellationToken ____) =>
+        public Task<TimelineStreamEntry?> GetEntryAsync(string entityType, string entityId, string sourceId, CancellationToken cancellationToken) =>
             Task.FromResult<TimelineStreamEntry?>(null);
     }
 }

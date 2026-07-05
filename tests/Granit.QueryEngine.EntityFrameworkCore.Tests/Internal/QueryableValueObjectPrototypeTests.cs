@@ -124,9 +124,9 @@ public sealed class QueryableValueObjectPrototypeTests : IDisposable
     {
         public DbSet<Site> Sites => Set<Site>();
 
-        protected override void OnModelCreating(ModelBuilder b)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
             // The [QueryableValueObject] attribute alone drives the ComplexProperty mapping
             // (inner Value as the "Slug" column) — ApplyGranitConventions does it, no manual config.
-            => b.ApplyGranitConventions();
+            => modelBuilder.ApplyGranitConventions();
     }
 }

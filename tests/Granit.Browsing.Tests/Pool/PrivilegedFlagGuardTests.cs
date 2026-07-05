@@ -116,8 +116,15 @@ public sealed class PrivilegedFlagGuardTests
 
     private sealed class FakeProbe(bool optIn, bool container, bool root) : IEnvironmentProbe
     {
-        public string? GetEnvironmentVariable(string name) =>
-            name == PrivilegedFlagGuard.OptInEnvVar ? (optIn ? "1" : null) : null;
+        public string? GetEnvironmentVariable(string name)
+        {
+            if (name != PrivilegedFlagGuard.OptInEnvVar)
+            {
+                return null;
+            }
+
+            return optIn ? "1" : null;
+        }
 
         public bool IsRunningInContainer() => container;
 

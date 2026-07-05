@@ -54,7 +54,7 @@ public sealed class RegistrationTests
     {
         public override string Name => "Granit.Test.TestEntity";
 
-        protected override void Configure(EntityDefinitionBuilder<TestEntity> b) =>
-            b.Form("default", f => f.Section("a", s => s.Field(x => x.Title)));
+        protected override void Configure(EntityDefinitionBuilder<TestEntity> builder) =>
+            builder.Form("default", f => f.Section("a", s => s.Field(x => x.Title)));
     }
 }

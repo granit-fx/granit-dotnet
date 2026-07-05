@@ -71,6 +71,6 @@ internal sealed class SqliteHarness : IAsyncDisposable
 
 internal sealed class NoopLocalEventBus : Granit.Events.ILocalEventBus
 {
-    public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : class =>
+    public Task PublishAsync<TEvent>(TEvent localEvent, CancellationToken cancellationToken = default) where TEvent : class =>
         Task.CompletedTask;
 }

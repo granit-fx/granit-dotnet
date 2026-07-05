@@ -48,8 +48,8 @@ public sealed class FieldValueKindTests
     {
         public override string Name => "Granit.Sample.ValueKindEntity";
 
-        protected override void Configure(EntityDefinitionBuilder<SampleEntity> b) =>
-            b.Form("default", f => f
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder) =>
+            builder.Form("default", f => f
                 .Section("general", s => s
                     .Field(x => x.Title)
                     .Field(x => x.Homepage, fld => fld.Component("url").ValueKind(ValueKind.Url))));

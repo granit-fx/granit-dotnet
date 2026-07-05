@@ -91,8 +91,8 @@ public sealed class WorkspaceItemBuilderTests
     private sealed class EntityItemDefinition : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("s", s => s.Entity("Mod.Customer", i => i
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("s", s => s.Entity("Mod.Customer", i => i
                 .View("open")
                 .DisplayKey("Customer:Label")
                 .Icon("user")
@@ -104,51 +104,51 @@ public sealed class WorkspaceItemBuilderTests
     private sealed class TypedEntityDefinition : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("s", s => s.Entity<SampleEntityMarker>());
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("s", s => s.Entity<SampleEntityMarker>());
     }
 
     private sealed class DashboardItemDefinition : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("s", s => s.Dashboard("Mod.SalesDashboard"));
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("s", s => s.Dashboard("Mod.SalesDashboard"));
     }
 
     private sealed class LinkItemDefinition : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("s", s => s.Link("https://example.test"));
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("s", s => s.Link("https://example.test"));
     }
 
     private sealed class SubWorkspaceItemDefinition : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("s", s => s.SubWorkspace("Mod.Child"));
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("s", s => s.SubWorkspace("Mod.Child"));
     }
 
     private sealed class InvalidPresetOnLink : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("s", s => s.Link("/x", i =>
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("s", s => s.Link("/x", i =>
                 i.Preset(new Dictionary<string, object?> { ["k"] = 1 })));
     }
 
     private sealed class BlankDisplayKey(string key) : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("s", s => s.Entity("E", i => i.DisplayKey(key)));
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("s", s => s.Entity("E", i => i.DisplayKey(key)));
     }
 
     private sealed class OrderingDefinition : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("s", s => s
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("s", s => s
                 .Entity("A", i => i.Order(10))
                 .Entity("B", i => i.Order(1))
                 .Entity("C", i => i.Order(5)));
@@ -157,7 +157,7 @@ public sealed class WorkspaceItemBuilderTests
     private sealed class NullPresetDefinition : WorkspaceDefinition
     {
         public override string Name => "X";
-        protected override void Configure(WorkspaceBuilder b) =>
-            b.Section("s", s => s.Entity("E", i => i.Preset(null!)));
+        protected override void Configure(WorkspaceBuilder builder) =>
+            builder.Section("s", s => s.Entity("E", i => i.Preset(null!)));
     }
 }

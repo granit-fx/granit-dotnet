@@ -22,13 +22,13 @@ public sealed class WorkflowTransitionApplierBaseTests
         protected override Task<FakeEntity?> LoadAsync(Guid entityId, CancellationToken cancellationToken) =>
             Task.FromResult(entity);
 
-        protected override TestState GetCurrentState(FakeEntity e) => e.State;
+        protected override TestState GetCurrentState(FakeEntity entity) => entity.State;
 
-        protected override void SetState(FakeEntity e, TestState target) => e.SetState(target);
+        protected override void SetState(FakeEntity entity, TestState target) => entity.SetState(target);
 
-        protected override Task SaveAsync(FakeEntity e, CancellationToken cancellationToken)
+        protected override Task SaveAsync(FakeEntity entity, CancellationToken cancellationToken)
         {
-            Saved = e;
+            Saved = entity;
             return Task.CompletedTask;
         }
     }

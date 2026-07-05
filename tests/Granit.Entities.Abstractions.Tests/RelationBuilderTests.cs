@@ -28,8 +28,8 @@ public sealed class RelationBuilderTests
     private sealed class PartyDefinition : EntityDefinition<Party>
     {
         public override string Name => "Test.Party";
-        protected override void Configure(EntityDefinitionBuilder<Party> b) =>
-            b
+        protected override void Configure(EntityDefinitionBuilder<Party> builder) =>
+            builder
                 .HasMany<Address>(p => p.Addresses, r => r
                     .DisplayAs(RelationDisplay.Tab)
                     .DisplayKey("Relation:Party.Addresses")
@@ -98,8 +98,8 @@ public sealed class RelationBuilderTests
     private sealed class AggregateDef : EntityDefinition<Party>
     {
         public override string Name => "Test.Party.Aggregates";
-        protected override void Configure(EntityDefinitionBuilder<Party> b) =>
-            b.HasMany<Invoice>(p => p.Invoices,
+        protected override void Configure(EntityDefinitionBuilder<Party> builder) =>
+            builder.HasMany<Invoice>(p => p.Invoices,
                 r => r.DisplayAs(RelationDisplay.SmartButton)
                     .Aggregate(a => a.Count().Sum(i => i.Amount)));
     }
@@ -107,8 +107,8 @@ public sealed class RelationBuilderTests
     private sealed class InvalidNonPropertySelectorDef : EntityDefinition<Party>
     {
         public override string Name => "Test.Party.Bad";
-        protected override void Configure(EntityDefinitionBuilder<Party> b) =>
-            b.HasMany<Address>(p => p.Addresses.Where(a => a.City == "Paris"));
+        protected override void Configure(EntityDefinitionBuilder<Party> builder) =>
+            builder.HasMany<Address>(p => p.Addresses.Where(a => a.City == "Paris"));
     }
 
     [Fact]
@@ -126,8 +126,8 @@ public sealed class RelationBuilderTests
     private sealed class KanbanPinnedDefinition : EntityDefinition<Party>
     {
         public override string Name => "Test.Party.KanbanPinned";
-        protected override void Configure(EntityDefinitionBuilder<Party> b) =>
-            b
+        protected override void Configure(EntityDefinitionBuilder<Party> builder) =>
+            builder
                 .HasMany<Address>(p => p.Addresses, r => r
                     .DisplayAs(RelationDisplay.SmartButton)
                     .OnKanbanCard())

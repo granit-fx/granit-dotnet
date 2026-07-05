@@ -62,8 +62,8 @@ public sealed class FieldLookupTests
     {
         public override string Name => "Granit.Sample.LookupEntity";
 
-        protected override void Configure(EntityDefinitionBuilder<SampleEntity> b) =>
-            b.Form("default", f => f
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder) =>
+            builder.Form("default", f => f
                 .Section("general", s => s
                     .Field(x => x.Title)
                     .Field(x => x.TenantId, fld => fld

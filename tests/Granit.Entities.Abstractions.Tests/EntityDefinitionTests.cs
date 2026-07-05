@@ -242,22 +242,22 @@ public sealed class EntityDefinitionTests
     {
         public override string Name => "Granit.Sample.SampleEntity";
 
-        protected override void Configure(EntityDefinitionBuilder<SampleEntity> b)
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder)
         {
-            b.DisplayKey("Entity:SampleEntity")
+            builder.DisplayKey("Entity:SampleEntity")
              .Icon("box")
              .PermissionGroup("Sample.SampleEntities")
              .DisplayProperty(s => s.Title)
              .SubtitleProperty(s => s.Status);
 
-            b.Query<SampleQueryDefinition>();
-            b.Export<SampleExportDefinition>();
-            b.Workflow<SampleWorkflowDefinition>();
-            b.Metric<SampleMetricA>();
-            b.Metric<SampleMetricB>();
-            b.Dashboard<SampleDashboard>();
+            builder.Query<SampleQueryDefinition>();
+            builder.Export<SampleExportDefinition>();
+            builder.Workflow<SampleWorkflowDefinition>();
+            builder.Metric<SampleMetricA>();
+            builder.Metric<SampleMetricB>();
+            builder.Dashboard<SampleDashboard>();
 
-            b.Form("default", f => f
+            builder.Form("default", f => f
                 .Section("general", s => s
                     .Field(x => x.Title)
                     .Field(x => x.Amount, fld => fld
@@ -270,12 +270,12 @@ public sealed class EntityDefinitionTests
                     .Field(x => x.Notes, fld => fld.VisibleIf("Status", FieldOp.Eq, "Draft")))
                 .Customizable());
 
-            b.Form("quick", f => f
+            builder.Form("quick", f => f
                 .Section("essentials", s => s
                     .Field(x => x.Title)
                     .Field(x => x.Amount)));
 
-            b.Detail("default", d => d
+            builder.Detail("default", d => d
                 .SectionsFromForm()
                 .SidePanel.Audit().Timeline());
         }
@@ -285,18 +285,18 @@ public sealed class EntityDefinitionTests
     {
         public override string Name => "Granit.Sample.Minimal";
 
-        protected override void Configure(EntityDefinitionBuilder<SampleEntity> b) =>
-            b.DisplayProperty(s => s.Title);
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder) =>
+            builder.DisplayProperty(s => s.Title);
     }
 
     private sealed class DuplicateFormDefinition : EntityDefinition<SampleEntity>
     {
         public override string Name => "Granit.Sample.Dup";
 
-        protected override void Configure(EntityDefinitionBuilder<SampleEntity> b)
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder)
         {
-            b.Form("default", f => f.Section("a", s => s.Field(x => x.Title)));
-            b.Form("default", f => f.Section("b", s => s.Field(x => x.Title)));
+            builder.Form("default", f => f.Section("a", s => s.Field(x => x.Title)));
+            builder.Form("default", f => f.Section("b", s => s.Field(x => x.Title)));
         }
     }
 
@@ -304,9 +304,9 @@ public sealed class EntityDefinitionTests
     {
         public override string Name => "Granit.Sample.Mixed";
 
-        protected override void Configure(EntityDefinitionBuilder<SampleEntity> b)
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder)
         {
-            b.Detail("default", d => d.Section("mix", s => s
+            builder.Detail("default", d => d.Section("mix", s => s
                 .InheritsFromForm("default")
                 .Field(x => x.Title)));
         }

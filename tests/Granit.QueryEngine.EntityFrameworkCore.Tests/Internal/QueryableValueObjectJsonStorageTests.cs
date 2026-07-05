@@ -85,6 +85,6 @@ public sealed class QueryableValueObjectJsonStorageTests : IDisposable
     private sealed class PageCtx(DbContextOptions<PageCtx> options) : DbContext(options)
     {
         public DbSet<Page> Pages => Set<Page>();
-        protected override void OnModelCreating(ModelBuilder b) => b.ApplyGranitConventions();
+        protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.ApplyGranitConventions();
     }
 }

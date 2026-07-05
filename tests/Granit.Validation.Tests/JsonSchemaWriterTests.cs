@@ -34,7 +34,7 @@ public sealed class JsonSchemaWriterTests
     [Fact]
     public void Write_NoValidatorRegistered_ReturnsNull()
     {
-        JsonSchemaWriter writer = CreateWriter<NoValidatorRequest>(registerValidator: false);
+        JsonSchemaWriter writer = CreateWriter(registerValidator: false);
 
         JsonObject? schema = writer.Write(typeof(NoValidatorRequest));
 
@@ -238,7 +238,7 @@ public sealed class JsonSchemaWriterTests
     [Fact]
     public void Write_NullType_Throws()
     {
-        JsonSchemaWriter writer = CreateWriter<NoValidatorRequest>(registerValidator: false);
+        JsonSchemaWriter writer = CreateWriter(registerValidator: false);
 
         Should.Throw<ArgumentNullException>(() => writer.Write(null!));
     }
@@ -262,7 +262,7 @@ public sealed class JsonSchemaWriterTests
         return new JsonSchemaWriter(provider.GetRequiredService<IServiceScopeFactory>());
     }
 
-    private static JsonSchemaWriter CreateWriter<TRequest>(bool registerValidator)
+    private static JsonSchemaWriter CreateWriter(bool registerValidator)
     {
         ServiceCollection services = new();
         ServiceProvider provider = services.BuildServiceProvider();

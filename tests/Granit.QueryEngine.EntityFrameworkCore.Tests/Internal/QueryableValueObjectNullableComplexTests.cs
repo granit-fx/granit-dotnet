@@ -71,6 +71,6 @@ public sealed class QueryableValueObjectNullableComplexTests : IDisposable
     private sealed class Ctx(DbContextOptions<Ctx> options) : DbContext(options)
     {
         public DbSet<Thing> Things => Set<Thing>();
-        protected override void OnModelCreating(ModelBuilder b) => b.ApplyGranitConventions();
+        protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.ApplyGranitConventions();
     }
 }

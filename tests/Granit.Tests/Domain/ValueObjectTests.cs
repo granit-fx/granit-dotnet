@@ -42,6 +42,7 @@ public sealed class ValueObjectTests
 
         money.Equals(null).ShouldBeFalse();
         (money == null).ShouldBeFalse();
+        // Reverse operand order exercises the null-on-left path of operator ==(Money, Money).
         (null == money).ShouldBeFalse();
     }
 

@@ -181,16 +181,16 @@ public sealed class ServiceCollectionExtensionsTests
     {
         public int Order => 100;
         public bool CanTransform(Granit.Templating.Keys.DocumentFormat format) => true;
-        public Task<string> TransformAsync(string content, Granit.Templating.Keys.DocumentFormat format, CancellationToken ct) =>
+        public Task<string> TransformAsync(string content, Granit.Templating.Keys.DocumentFormat format, CancellationToken cancellationToken) =>
             Task.FromResult(content);
     }
 
     private sealed class FakeTransitionHook : ITemplateTransitionHook
     {
         public bool IsWorkflowEnabled => true;
-        public Task<bool> CanTransitionAsync(WorkflowLifecycleStatus from, WorkflowLifecycleStatus to, CancellationToken cancellationToken) =>
+        public Task<bool> CanTransitionAsync(WorkflowLifecycleStatus from, WorkflowLifecycleStatus target, CancellationToken cancellationToken) =>
             Task.FromResult(true);
-        public Task OnTransitionedAsync(Guid revisionId, WorkflowLifecycleStatus from, WorkflowLifecycleStatus to, string userId, CancellationToken cancellationToken) =>
+        public Task OnTransitionedAsync(Guid revisionId, WorkflowLifecycleStatus from, WorkflowLifecycleStatus target, string userId, CancellationToken cancellationToken) =>
             Task.CompletedTask;
     }
 }

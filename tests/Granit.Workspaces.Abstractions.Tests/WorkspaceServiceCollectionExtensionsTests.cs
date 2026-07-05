@@ -49,7 +49,7 @@ public sealed class WorkspaceServiceCollectionExtensionsTests
     private sealed class DummyWorkspace : WorkspaceDefinition
     {
         public override string Name => "Dummy";
-        protected override void Configure(WorkspaceBuilder b) { }
+        protected override void Configure(WorkspaceBuilder builder) { }
     }
 
     private sealed class DummyFeatureProvider : IFeatureProvider

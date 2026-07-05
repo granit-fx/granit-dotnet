@@ -43,14 +43,14 @@ public sealed class EntityMergeServiceCollectionExtensionsTests
     private sealed class FakeRewriter : IReferenceRewriter<FakeAggregate>
     {
         public string Description => "fake.RefId";
-        public Task<int> RewriteAsync(Guid s, Guid l, CancellationToken ct) => Task.FromResult(0);
-        public Task<int> CountAsync(Guid s, Guid l, CancellationToken ct) => Task.FromResult(0);
+        public Task<int> RewriteAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken) => Task.FromResult(0);
+        public Task<int> CountAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken) => Task.FromResult(0);
     }
 
     private sealed class AnotherFakeRewriter : IReferenceRewriter<FakeAggregate>
     {
         public string Description => "another.RefId";
-        public Task<int> RewriteAsync(Guid s, Guid l, CancellationToken ct) => Task.FromResult(0);
-        public Task<int> CountAsync(Guid s, Guid l, CancellationToken ct) => Task.FromResult(0);
+        public Task<int> RewriteAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken) => Task.FromResult(0);
+        public Task<int> CountAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken) => Task.FromResult(0);
     }
 }
