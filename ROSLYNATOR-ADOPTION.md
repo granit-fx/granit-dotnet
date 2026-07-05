@@ -2,7 +2,9 @@
 
 Self-contained procedure to bring a Granit .NET repo (business, showcase-dotnet,
 microservice-template, website, iot, …) in line with `granit-dotnet`'s Roslynator setup.
-Source of truth: `granit-dotnet` PRs #2928 (baseline), #2929 + #2930 (promotions).
+Source of truth: `granit-dotnet` PRs #2928 (baseline), #2929 + #2930 + #2932 (promotions).
+**#2932 made promotions repo-wide (tests included) and surfaced the SonarCloud interaction in
+§1e — read it before you look at Sonar after Stage 1.**
 
 This is a maintainer runbook — paste the relevant stage into a session working **inside the
 target repo**.
@@ -71,16 +73,34 @@ dotnet_analyzer_diagnostic.category-Roslynator.severity = suggestion
 #   RCS1163 unused parameter      → Wolverine Handle sigs / DI factories / endpoint handlers
 #   RCS1213 remove unused member  → EF private ctors, DI/reflection-invoked members
 #   RCS1161 enum explicit values  → contradicts the GRENUM001 analyzer
+#   RCS1194 implement exc ctors   → sealed single-shape domain exceptions (CA1032 is legacy)
+#   RCS1201 use method chaining   → readability loss (activity.SetTag().SetTag() chains)
+#   RCS1158 static in generic     → fires on const identifiers; CA1000 moot for consts
+#   RCS1043 remove partial        → source-generator hazard ([LoggerMessage]/[GeneratedRegex])
+#   RCS1124 inline local          → strips self-documenting snapshot locals; ugly casts
+#   RCS1237 deprecated            → superseded by RCS1254
+#   RCS1241 IEqualityComparer     → its fixer mangles ValueObject into an API change
 dotnet_diagnostic.RCS1102.severity = none
 dotnet_diagnostic.RCS1170.severity = none
 dotnet_diagnostic.RCS1163.severity = none
 dotnet_diagnostic.RCS1213.severity = none
 dotnet_diagnostic.RCS1161.severity = none
+dotnet_diagnostic.RCS1194.severity = none
+dotnet_diagnostic.RCS1201.severity = none
+dotnet_diagnostic.RCS1158.severity = none
+dotnet_diagnostic.RCS1043.severity = none
+dotnet_diagnostic.RCS1124.severity = none
+dotnet_diagnostic.RCS1237.severity = none
+dotnet_diagnostic.RCS1241.severity = none
 # XML doc-comment family — off, consistent with NoWarn CS1591 (no full-XML-doc requirement):
 dotnet_diagnostic.RCS1140.severity = none
 dotnet_diagnostic.RCS1141.severity = none
 dotnet_diagnostic.RCS1142.severity = none
 dotnet_diagnostic.RCS1181.severity = none
+dotnet_diagnostic.RCS1139.severity = none
+dotnet_diagnostic.RCS1226.severity = none
+# RCS1243 (duplicate word in comment) — corrupts repeated tokens like the "XXX XXX XXX" SIN mask.
+dotnet_diagnostic.RCS1243.severity = none
 # RCS1217 (interpolation → concatenation) — opposite of the promoted RCS1267; off to avoid a pair.
 dotnet_diagnostic.RCS1217.severity = none
 # RCS1090 (add ConfigureAwait) — kept at suggestion (correct for lib code, noise in Endpoints);
@@ -104,10 +124,50 @@ dotnet build  <shard>.slnf   # or the whole .slnx on small repos — MUST stay 0
 Baseline is `suggestion`, so a green build is expected; if it turns red, a Roslynator rule
 defaulted to warning — set that specific rule to `suggestion` or `none`. Commit, open MR/PR.
 
+### 1e. SonarCloud will show a one-time issue flood — expected, not a regression
+
+The moment the Stage 1 baseline merges, the next SonarCloud analysis adds **hundreds to
+~1000+ new MAINTAINABILITY issues**. This is a scanner artifact, not new debt:
+
+- **SonarCloud imports external Roslyn diagnostics at *Info* severity**, not just warnings, as
+  `external_roslyn:RCS*` issues. The advisory `suggestion` baseline surfaces the *entire*
+  Roslynator RCS catalogue in the build's error log, and Sonar counts all of it.
+- **The issues look pre-existing.** SonarCloud *backdates* issues from a newly-activated
+  analyzer to each line's **last SCM commit date**, so they scatter across the repo's history
+  instead of clustering at the analysis date. Do not conclude "these were already here."
+
+In granit-dotnet this was a jump from ~6 to **1221** issues, **1215 of them `external_roslyn:RCS*`**.
+Confirm the composition against the public API (no token needed for a public project):
+
+```bash
+curl -s "https://sonarcloud.io/api/issues/search?componentKeys=<PROJECT_KEY>\
+&impactSoftwareQualities=MAINTAINABILITY&issueStatuses=OPEN,CONFIRMED&facets=rules&ps=1" \
+  | python3 -c "import sys,json; f=json.load(sys.stdin)['facets'][0]['values']; \
+[print(f'{v[\"count\"]:5}  {v[\"val\"]}') for v in sorted(f, key=lambda x:-x['count'])]"
+```
+
+The flood recedes as Stage 2 promotes-and-fixes rules and the disables above take effect.
+**Two things matter:**
+
+- **Promote Stage 2 rules repo-wide (`[*.{cs,csx}]`, tests included), not src-only.** In
+  granit-dotnet ~81 % of the flood was in test projects precisely because the first promotions
+  were scoped `[src/**.cs]` while the baseline (and Sonar's import) covers the whole repo.
+- If you cannot run Stage 2 promptly, do **not** hide the issues by excluding tests from Sonar —
+  suppress the imported external rules in the scanner config instead, so real Sonar rules on
+  tests still run:
+
+  ```text
+  /d:sonar.issue.ignore.multicriteria=e_ros
+  /d:sonar.issue.ignore.multicriteria.e_ros.ruleKey=external_roslyn:RCS*
+  /d:sonar.issue.ignore.multicriteria.e_ros.resourceKey=**/*
+  ```
+
 ## Stage 2 — Promotions (per repo, after Stage 1 is merged)
 
 For each rule below: auto-fix → verify 0 remaining → add the `.editorconfig` line under a
-`[src/**.cs]` section (framework source enforced, tests stay advisory) → build green → commit.
+`[*.{cs,csx}]` section (enforced **repo-wide, tests included** — scoping to `[src/**.cs]`
+leaves the tests at the `suggestion` baseline and recreates the Sonar test-file flood from
+§1e) → build green on a **test-bearing** shard → commit.
 
 ```bash
 # <TARGET> = a .slnf shard (big repos) or the whole .slnx (small repos).
@@ -118,10 +178,10 @@ dotnet format analyzers <TARGET> --diagnostics RCS1214 --severity info --verify-
 dotnet build <TARGET>    # 0/0 under TreatWarningsAsErrors == rule is clean & enforced
 ```
 
-### The `[src/**.cs]` block to build up (23 rules, exactly as in granit-dotnet)
+### The `[*.{cs,csx}]` block to build up (~32 rules, as in granit-dotnet after #2932)
 
 ```ini
-[src/**.cs]
+[*.{cs,csx}]
 dotnet_diagnostic.RCS1214.severity = warning   # unnecessary interpolated string
 dotnet_diagnostic.RCS1192.severity = warning   # unnecessary verbatim string
 dotnet_diagnostic.RCS1146.severity = warning   # use conditional access ?.
@@ -145,29 +205,63 @@ dotnet_diagnostic.RCS1006.severity = warning   # merge else + nested if → else
 dotnet_diagnostic.RCS1196.severity = warning   # extension method as instance method
 dotnet_diagnostic.RCS1267.severity = warning   # interpolation over string.Concat
 dotnet_diagnostic.RCS1261.severity = warning   # using → await using (async dispose)
+# added in #2932 (RCS1093 in follow-up #2933):
+dotnet_diagnostic.RCS1047.severity = warning   # drop 'Async' suffix on non-async methods
+dotnet_diagnostic.RCS1112.severity = warning   # combine consecutive Enumerable.Where
+dotnet_diagnostic.RCS1135.severity = warning   # declare zero-value member on [Flags] enum
+dotnet_diagnostic.RCS1199.severity = warning   # remove unnecessary null check
+dotnet_diagnostic.RCS1247.severity = warning   # fix malformed doc-comment tag (<c> vs <code>)
+dotnet_diagnostic.RCS1093.severity = warning   # file contains no code (delete dead file first)
+dotnet_diagnostic.RCS1015.severity = warning   # use nameof
+dotnet_diagnostic.RCS1033.severity = warning   # remove redundant '== true'
+dotnet_diagnostic.RCS1049.severity = warning   # simplify boolean comparison ('x == false' → '!x')
+dotnet_diagnostic.RCS1097.severity = warning   # remove redundant ToString
 ```
 
 ### Fixer gotchas (hit these in granit-dotnet — expect them again)
 
-- **RCS1077**: the fixer leaves a `;` alone on its own line (`dotnet format` does NOT reflow it —
-  join it by hand) and produces `var` where `ConvertAll` hides the type → fix IDE0008 with
-  `dotnet format` on the affected files (turns `var` into the explicit `List<T>`).
-- **RCS1084**: can emit an invalid `(object??)` cast → replace by hand (the ternary is usually
-  redundant, e.g. `x is not null ? x : null` → just `x`).
+Some rules have **no Fix-All action** — `dotnet format` reports "didn't return a Fix All action"
+and leaves the hit in place. Collect the stragglers with a repo-wide
+`dotnet format analyzers <shard> --diagnostics <rules> --verify-no-changes` pass and fix them by
+hand before the build will go green. In granit-dotnet #2932: RCS1047 (renames), RCS1135 (add
+`None = 0`), RCS1077 (`.Where(p).Count()`→`.Count(p)`, `.OrderBy(x=>x)`→`.Order()`), RCS1112.
+
+- **RCS1077 / RCS1112**: the fixer leaves a `;` alone on its own line (`dotnet format whitespace`
+  does NOT reflow it — join it by hand) and produces `var` where `ConvertAll` hides the type →
+  fix IDE0008 by turning `var` into the explicit `List<T>`.
+- **RCS1084**: can emit an invalid `(T??)` cast (seen twice — `(object??)`, `(BlobReference??)`) →
+  replace by hand (the ternary is usually redundant, e.g. `x is not null ? x : null` → just `x`;
+  a deliberately-"bad" test lambda needs a differently-shaped non-property expression).
+- **RCS1047**: false-positives when the `Async` suffix disambiguates two overloads that differ
+  only by generic constraint (they cannot share a name → CS0111). Suppress inline with
+  `[SuppressMessage("Roslynator", "RCS1047:…")]`, do NOT rename.
+- **RCS1093**: has no auto-fix — it flags a comment-only/empty file. **Delete the file yourself**
+  (and confirm nothing links it) *before* promoting the rule, else the build cannot go green.
 - **RCS1206**: may leave a non-fixable nullable-value case (`JsonElement?`) → convert by hand
   (`data?.Deserialize<…>()`).
 - **RCS1261**: for any `XmlWriter` conversion, confirm `XmlWriterSettings.Async = true`,
   otherwise `DisposeAsync()` throws at runtime — leave those as plain `using`. Note that
   `await using` disposal carries no `ConfigureAwait(false)` (moot under ASP.NET Core).
 
-### DO NOT promote (evaluated and rejected)
+### DO NOT promote (already disabled in the Stage 1 baseline)
 
-- **RCS1243** (duplicate word in comment) — **corrupts** repeated format placeholders
-  (`XXX XXX XXX` → `XXX XXX`), a silent doc bug. Leave at suggestion.
-- **RCS1124** (inline single-use local) — strips self-documenting `snapshot` locals, emits
-  `(MemoryStream)new()` casts. Net readability loss.
-- **RCS1201** (method chaining), **RCS1194** (exception-ctor boilerplate), **RCS1047** (removes
-  `Async` suffix = API break), **RCS1158** (design), **RCS1247/RCS1139** (doc family).
+Every rule that fights a Granit pattern is set to `none` in the §1c baseline block, so there is
+nothing to re-evaluate at Stage 2: RCS1102/1170/1163/1213/1161, RCS1194/1201/1158/1043/1124/
+1237/1241, the XML-doc family (RCS1140/1141/1142/1181/1139/1226), RCS1243, RCS1217. Rationale is
+inline there. Highlights worth remembering:
+
+- **RCS1241** — its fixer bolts a non-generic `IEqualityComparer` onto `ValueObject` with
+  `new public bool Equals(object, object)` + empty-message throws: an API/semantic change on a
+  core domain type. Same family as the ValueObject/Entity/AggregateRoot interface-impl Won't-Fix.
+- **RCS1243** — corrupts repeated tokens (`XXX XXX XXX` SIN mask → `XXX XXX`), a silent doc bug.
+- **RCS1043** — would strip `partial` the source generators require (`[LoggerMessage]`, `[GeneratedRegex]`).
+
+Two rules that *look* like this rejected batch but ARE promoted (see the block above), with a caveat:
+
+- **RCS1047** (drop `Async` suffix) — promoted; suppress the overload-disambiguation false positive
+  inline (see gotchas), do not rename.
+- **RCS1247** (fix doc-comment tag) — promoted; it only normalizes `<c>`/`<code>`, it does not
+  demand doc completeness (that family stays disabled).
 
 ### Final gates before MR/PR
 
