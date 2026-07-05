@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using FluentValidation;
+using Granit.Validation.Formats;
 
 namespace Granit.Validation.Extensions;
 
@@ -8,10 +9,6 @@ namespace Granit.Validation.Extensions;
 /// </summary>
 public static partial class FormatValidatorExtensions
 {
-    // URL-friendly slug: lowercase letters, digits, and single hyphens (no leading/trailing hyphens).
-    [GeneratedRegex(@"^[a-z0-9]+(-[a-z0-9]+)*$", RegexOptions.None, 100)]
-    private static partial Regex SlugRegex();
-
     // Hex color: # followed by 3, 4, 6, or 8 hex characters.
     // 3 = RGB shorthand, 4 = RGBA shorthand, 6 = RGB, 8 = RGBA.
     [GeneratedRegex(@"^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$", RegexOptions.None, 100)]
@@ -27,7 +24,7 @@ public static partial class FormatValidatorExtensions
     /// </remarks>
     public static IRuleBuilderOptions<T, string?> Slug<T>(this IRuleBuilder<T, string?> ruleBuilder) =>
         ruleBuilder
-            .Must(value => value != null && SlugRegex().IsMatch(value))
+            .Must(SlugFormat.IsValid)
             .WithErrorCodeAndMessage("Validation:Format:Slug");
 
     /// <summary>
@@ -61,8 +58,7 @@ public static partial class FormatValidatorExtensions
     // Server-side single-field validation delegates
     // -------------------------------------------------------------------------
 
-    internal static bool IsValidSlug(string? value) =>
-        value is not null && SlugRegex().IsMatch(value);
+    internal static bool IsValidSlug(string? value) => SlugFormat.IsValid(value);
 
     internal static bool IsValidBase64String(string? value) =>
         value?.Length > 0 && Convert.TryFromBase64String(value, new byte[value.Length], out _);

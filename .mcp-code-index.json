@@ -55543,7 +55543,7 @@
       "kind": "class",
       "project": "Granit.Validation",
       "file": "src/Granit.Validation/Extensions/FormatValidatorExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -55662,6 +55662,22 @@
       "file": "src/Granit.Validation.Finance/ValidationFinanceLocalizationResource.cs",
       "line": 18,
       "members": []
+    },
+    {
+      "name": "SlugFormat",
+      "fqn": "Granit.Validation.Formats.SlugFormat",
+      "kind": "class",
+      "project": "Granit.Validation",
+      "file": "src/Granit.Validation/Formats/SlugFormat.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "IsValid",
+          "kind": "method",
+          "signature": "IsValid([NotNullWhen(true)",
+          "returnType": "bool"
+        }
+      ]
     },
     {
       "name": "GranitValidationModule",
