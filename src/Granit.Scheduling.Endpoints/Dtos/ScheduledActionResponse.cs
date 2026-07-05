@@ -13,6 +13,7 @@ namespace Granit.Scheduling.Endpoints.Dtos;
 /// <param name="ExecutedAt">The UTC timestamp when the action was executed (null if not yet).</param>
 /// <param name="CancelledBy">The user who cancelled the action (null if not cancelled).</param>
 /// <param name="FailureReason">Error message if the action failed.</param>
+/// <param name="AttemptCount">Number of execution attempts recorded at the terminal status (0 while Pending/Processing).</param>
 /// <param name="CreatedAt">The UTC timestamp when the action was created.</param>
 /// <param name="ModifiedAt">The UTC timestamp of the last state change (reschedule, cancellation, execution); <c>null</c> if the action was never modified.</param>
 public sealed record ScheduledActionResponse(
@@ -24,5 +25,6 @@ public sealed record ScheduledActionResponse(
     DateTimeOffset? ExecutedAt,
     string? CancelledBy,
     string? FailureReason,
+    int AttemptCount,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ModifiedAt);

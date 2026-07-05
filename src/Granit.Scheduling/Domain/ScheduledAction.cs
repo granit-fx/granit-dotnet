@@ -85,6 +85,14 @@ public sealed class ScheduledAction : AuditedAggregateRoot, IMultiTenant
     /// <summary>Truncated error message if the action failed (max 500 characters).</summary>
     public string? FailureReason { get; private set; }
 
+    /// <summary>
+    /// Number of execution attempts recorded when the action reached its terminal status
+    /// (<see cref="ScheduledActionStatus.Executed"/> or <see cref="ScheduledActionStatus.Failed"/>).
+    /// <c>0</c> while the action is still Pending / Processing. A value greater than <c>1</c>
+    /// means the payload handler was retried before settling.
+    /// </summary>
+    public int AttemptCount { get; private set; }
+
     /// <inheritdoc />
     public Guid? TenantId { get; private set; }
 
@@ -123,11 +131,13 @@ public sealed class ScheduledAction : AuditedAggregateRoot, IMultiTenant
     /// Marks the action as successfully executed.
     /// </summary>
     /// <param name="executedAt">The UTC timestamp of execution.</param>
-    internal void MarkExecuted(DateTimeOffset executedAt)
+    /// <param name="attempts">The number of execution attempts (1 on first-try success).</param>
+    internal void MarkExecuted(DateTimeOffset executedAt, int attempts = 1)
     {
         EnsureProcessing();
         Status = ScheduledActionStatus.Executed;
         ExecutedAt = executedAt;
+        AttemptCount = attempts;
         AddDistributedEvent(new ScheduledActionExecutedEto(
             Id, PayloadType, CorrelationId, executedAt));
     }
@@ -137,7 +147,8 @@ public sealed class ScheduledAction : AuditedAggregateRoot, IMultiTenant
     /// </summary>
     /// <param name="failureReason">The error message (truncated to 500 characters).</param>
     /// <param name="failedAt">The UTC timestamp of failure.</param>
-    internal void MarkFailed(string failureReason, DateTimeOffset failedAt)
+    /// <param name="attempts">The number of execution attempts made before failing.</param>
+    internal void MarkFailed(string failureReason, DateTimeOffset failedAt, int attempts = 1)
     {
         EnsureProcessing();
         Status = ScheduledActionStatus.Failed;
@@ -145,6 +156,7 @@ public sealed class ScheduledAction : AuditedAggregateRoot, IMultiTenant
             ? failureReason[..MaxFailureReasonLength]
             : failureReason;
         ExecutedAt = failedAt;
+        AttemptCount = attempts;
         AddDistributedEvent(new ScheduledActionFailedEto(
             Id, PayloadType, CorrelationId, FailureReason, failedAt));
     }

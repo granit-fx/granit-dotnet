@@ -44,6 +44,9 @@ internal sealed class ScheduledActionConfiguration
         builder.Property(e => e.FailureReason)
             .HasMaxLength(500);
 
+        builder.Property(e => e.AttemptCount)
+            .IsRequired();
+
         builder.HasIndex(e => new { e.Status, e.ExecuteAt })
             .HasDatabaseName($"ix_{GranitSchedulingDbProperties.DbTablePrefix}scheduled_actions_status_execute_at");
 

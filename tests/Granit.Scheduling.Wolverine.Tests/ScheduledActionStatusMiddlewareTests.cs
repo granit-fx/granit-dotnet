@@ -45,9 +45,9 @@ public sealed class ScheduledActionStatusMiddlewareTests : IDisposable
     private ScheduledActionStatusMiddleware CreateSut() =>
         new(_reader, _writer, _clock, _metrics, _currentTenant);
 
-    private static Envelope CreateEnvelope(Guid? actionId = null)
+    private static Envelope CreateEnvelope(Guid? actionId = null, int attempts = 1)
     {
-        Envelope envelope = new();
+        Envelope envelope = new() { Attempts = attempts };
         if (actionId is not null)
         {
             envelope.Headers[ScheduledActionStatusMiddleware.ActionIdHeader] = actionId.Value.ToString();
@@ -192,10 +192,11 @@ public sealed class ScheduledActionStatusMiddlewareTests : IDisposable
         using MetricCollector<long> collector = new(
             _meterFactory, SchedulingMetrics.MeterName, "granit.scheduling.action.executed");
 
-        await CreateSut().AfterAsync(CreateEnvelope(actionId), TestContext.Current.CancellationToken);
+        await CreateSut().AfterAsync(CreateEnvelope(actionId, attempts: 2), TestContext.Current.CancellationToken);
 
         action.Status.ShouldBe(ScheduledActionStatus.Executed);
         action.ExecutedAt.ShouldBe(NowFixture);
+        action.AttemptCount.ShouldBe(2);
         await _writer.Received(1).UpdateAsync(action, Arg.Any<CancellationToken>());
 
         IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
@@ -279,11 +280,12 @@ public sealed class ScheduledActionStatusMiddlewareTests : IDisposable
 
         var exception = new InvalidOperationException("payload handler exploded");
         await CreateSut().PostProcessAsync(
-            CreateEnvelope(actionId), exception, TestContext.Current.CancellationToken);
+            CreateEnvelope(actionId, attempts: 3), exception, TestContext.Current.CancellationToken);
 
         action.Status.ShouldBe(ScheduledActionStatus.Failed);
         action.FailureReason.ShouldBe("payload handler exploded");
         action.ExecutedAt.ShouldBe(NowFixture);
+        action.AttemptCount.ShouldBe(3);
         await _writer.Received(1).UpdateAsync(action, Arg.Any<CancellationToken>());
 
         IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();

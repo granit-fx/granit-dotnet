@@ -68,7 +68,7 @@ public sealed class ScheduledActionStatusMiddleware(
             return;
         }
 
-        action.MarkExecuted(clock.Now);
+        action.MarkExecuted(clock.Now, envelope.Attempts);
         await actionWriter.UpdateAsync(action, cancellationToken).ConfigureAwait(false);
 
         string? tenantId = currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
@@ -91,7 +91,7 @@ public sealed class ScheduledActionStatusMiddleware(
             return;
         }
 
-        action.MarkFailed(exception.Message, clock.Now);
+        action.MarkFailed(exception.Message, clock.Now, envelope.Attempts);
         await actionWriter.UpdateAsync(action, cancellationToken).ConfigureAwait(false);
 
         string? tenantId = currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
