@@ -194,6 +194,44 @@ public sealed class SendWebhookHandlerTests : IDisposable
     }
 
     // -------------------------------------------------------------------------
+    // Subscription gone at delivery time (resolved just-in-time)
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task HandleAsync_SubscriptionNotFound_RecordsFailureWithoutSending()
+    {
+        _subscriptionReader.FindByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns((WebhookSubscription?)null);
+        SendWebhookHandler handler = BuildHandler(HttpStatusCode.OK);
+        SendWebhookCommand command = BuildCommand();
+
+        await Should.NotThrowAsync(() => handler.HandleAsync(command, TestContext.Current.CancellationToken));
+
+        await _deliveryWriter.Received(1).RecordFailureAsync(
+            command, null, 0, Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
+        await _deliveryWriter.DidNotReceive().RecordSuccessAsync(
+            Arg.Any<SendWebhookCommand>(), Arg.Any<int>(), Arg.Any<long>(),
+            Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_SubscriptionDeactivated_RecordsFailureWithoutSending()
+    {
+        var deactivated = WebhookSubscription.Create(
+            Guid.NewGuid(), "https://example.com/webhook", "test.event",
+            signingKeyId: Guid.NewGuid(), protectedSecret: "test-secret", createdAt: DateTimeOffset.UtcNow);
+        deactivated.Deactivate("test cleanup");
+        _subscriptionReader.FindByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(deactivated);
+        SendWebhookHandler handler = BuildHandler(HttpStatusCode.OK);
+        SendWebhookCommand command = BuildCommand();
+
+        await Should.NotThrowAsync(() => handler.HandleAsync(command, TestContext.Current.CancellationToken));
+
+        await _deliveryWriter.Received(1).RecordFailureAsync(
+            command, null, 0, Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
+    }
+
+    // -------------------------------------------------------------------------
     // StorePayload
     // -------------------------------------------------------------------------
 
