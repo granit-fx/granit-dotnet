@@ -301,11 +301,21 @@ locally: temporarily set `category-Roslynator.severity = warning`, `dotnet build
 edit. Note the src-vs-tests split — Stage 2's `[src/**.cs]` scope leaves the whole test side
 firing.
 
+**The API count can be a stale snapshot.** If the last analysis predates the Stage 2 merge,
+rules already promoted-and-fixed in `src` still show `src` hits — Sonar backdates and won't
+re-drop them until the next run. Don't re-fix `src` from that list; trust the build for what
+actually still fires, and let the stale `src` rows self-clear on re-analysis.
+
 ### 2. Triage each firing `RCS*` rule
 
 - **Promote** (`→ warning`, in `[*.{cs,csx}]` **repo-wide, tests included** — not `[src/**.cs]`;
   see §1e) when it is a genuine auto-fixable improvement. Auto-fix per shard, hand-fix the
-  non-Fix-All stragglers (runbook gotchas apply).
+  non-Fix-All stragglers (runbook gotchas apply). **`dotnet format analyzers` is not `dotnet
+  format`** — the analyzer sweep applies code fixes but skips whitespace/style normalization, so
+  wherever a fixer deletes a block (RCS1128 coalesce, RCS1073 if→return) it leaves orphaned blank
+  lines *and* a now-floating comment. Follow with a full `dotnet format` pass, hand-remove the
+  orphaned comments, and gate on `dotnet format <project> --verify-no-changes` across **every**
+  touched project — those whitespace artifacts pass the build but fail the CI format job.
 - **Disable** (`→ none`, inline justification) when it fights a Granit pattern or is
   subjective. **Reuse the granit-dotnet decisions verbatim** — RCS1194/1201/1158/1043/1124/
   1237/1241/1139/1226/1243 — do not re-debate.
@@ -325,7 +335,10 @@ keep native Sonar rules on tests:
 ```
 
 If every firing rule was promoted or disabled, this step is unnecessary (granit-dotnet and
-granit-showcase-dotnet both reached 0 without it).
+granit-showcase-dotnet both reached 0 without it). granit-business, being much larger, keeps a
+broad advisory tail and **does** use the `e_ros` suppression (backlog **285 → ~0**, MR !209:
+widened Stage 2 `[src/**.cs]`→`[*.{cs,csx}]` since half the flood was test code, +15 promotions,
++14 disables).
 
 ### Repo-specific gotchas (hit in granit-showcase-dotnet — apps ship EF migrations; granit-dotnet does not)
 
