@@ -270,6 +270,84 @@ dotnet format <TARGET> --verify-no-changes    # exit 0
 dotnet build  <a test-bearing shard>          # 0/0 (src + tests)
 ```
 
+## Stage 3 — Sonar closeout (per repo, after Stage 2 is merged)
+
+Goal: drive the repo's Sonar `external_roslyn:RCS*` **MAINTAINABILITY** backlog (the §1e
+flood) to **~0**, without losing the advisory Roslynator baseline in-IDE. The lever is the
+same as Stage 2 — promote or disable each rule — applied to *everything still firing* rather
+than a curated list.
+
+### Pre-check — does the repo run Sonar?
+
+Grep the CI (`sonar` in `.gitlab-ci.yml` / `.github/workflows`). **No Sonar job → Stage 3 is
+moot, stop.** Note the project key (`/k:` in the `sonarscanner begin` command — often
+`${CI_PROJECT_NAME}`) and the host (SonarCloud *or* a self-hosted SonarQube).
+
+### 1. Measure the backlog
+
+Ventilation by rule (SonarCloud public project → no token; self-hosted / private → a **user**
+token with *Browse*, **not** the CI analysis token, which is 401 on the Web API):
+
+```bash
+curl -s -H "Authorization: Bearer <USER_TOKEN>" "<HOST>/api/issues/search?componentKeys=<KEY>\
+&impactSoftwareQualities=MAINTAINABILITY&issueStatuses=OPEN,CONFIRMED&facets=rules&ps=1" \
+  | python3 -c "import sys,json; f=json.load(sys.stdin)['facets'][0]['values']; \
+[print(f'{v[\"count\"]:5}  {v[\"val\"]}') for v in sorted(f, key=lambda x:-x['count'])]"
+```
+
+No API access? §1e says the count **is** Roslynator's Info-level output, so reproduce it
+locally: temporarily set `category-Roslynator.severity = warning`, `dotnet build --no-incremental
+-p:TreatWarningsAsErrors=false`, and `grep -oE "warning RCS[0-9]+" | sort | uniq -c`. Revert the
+edit. Note the src-vs-tests split — Stage 2's `[src/**.cs]` scope leaves the whole test side
+firing.
+
+### 2. Triage each firing `RCS*` rule
+
+- **Promote** (`→ warning`, in `[*.{cs,csx}]` **repo-wide, tests included** — not `[src/**.cs]`;
+  see §1e) when it is a genuine auto-fixable improvement. Auto-fix per shard, hand-fix the
+  non-Fix-All stragglers (runbook gotchas apply).
+- **Disable** (`→ none`, inline justification) when it fights a Granit pattern or is
+  subjective. **Reuse the granit-dotnet decisions verbatim** — RCS1194/1201/1158/1043/1124/
+  1237/1241/1139/1226/1243 — do not re-debate.
+- **Repo-specific rule** (fires here but not in granit-dotnet): decide on merits and flag it in
+  the MR if it touches a convention.
+
+### 3. Deliberate advisory remainder (only if any)
+
+If you *intentionally* leave rules at `suggestion` (advisory in-IDE, not promoted, not hostile),
+suppress the imported external rule scanner-side so Sonar stops gating on advisory diagnostics —
+keep native Sonar rules on tests:
+
+```text
+/d:sonar.issue.ignore.multicriteria=e_ros
+/d:sonar.issue.ignore.multicriteria.e_ros.ruleKey=external_roslyn:RCS*
+/d:sonar.issue.ignore.multicriteria.e_ros.resourceKey=**/*
+```
+
+If every firing rule was promoted or disabled, this step is unnecessary (granit-dotnet and
+granit-showcase-dotnet both reached 0 without it).
+
+### Repo-specific gotchas (hit in granit-showcase-dotnet — apps ship EF migrations; granit-dotnet does not)
+
+- **Generated EF migrations turn the build red.** A `[src/**.cs]` (or `[*.{cs,csx}]`) promotion
+  also enforces `src/**/Migrations/**`, flooding ~hundreds of RCS1205/RCS1021 errors on
+  scaffolded code. Carve them out under `[**/Migrations/**/*.cs]` with a **per-rule** `= none`
+  for every promoted rule — a category-level `category-Roslynator = none` **loses** to the
+  specific-rule promotion and does nothing.
+- **The CI `SONAR_TOKEN` is an analysis token** — it returns 401 (`valid:false`) on the Web
+  API. Use a user token to measure, or the local Roslyn-at-Info proxy above.
+
+### Final gates before MR/PR
+
+```bash
+# re-run the Sonar query (or the local proxy) → external_roslyn:RCS* ≈ 0
+dotnet build  <a test-bearing shard>          # 0/0 under TreatWarningsAsErrors
+dotnet format <TARGET> --verify-no-changes    # exit 0
+```
+
+Ship one **"Stage 3 — Sonar closeout"** MR/PR per repo, green, with the before/after Sonar
+counter in the description.
+
 ## Per-repo notes
 
 All five are `TreatWarningsAsErrors=true`, `src/` layout, no Roslynator yet.
