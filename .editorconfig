@@ -189,6 +189,8 @@ dotnet_diagnostic.RCS1199.severity = warning
 dotnet_diagnostic.RCS1247.severity = warning
 # RCS1135: declare a zero-value member on a [Flags] enum (compatible with GRENUM001)
 dotnet_diagnostic.RCS1135.severity = warning
+# RCS1093: file contains no code (empty/comment-only compilation unit)
+dotnet_diagnostic.RCS1093.severity = warning
 # RCS1015: use the nameof operator
 dotnet_diagnostic.RCS1015.severity = warning
 # RCS1033: remove redundant '== true' in a boolean comparison
