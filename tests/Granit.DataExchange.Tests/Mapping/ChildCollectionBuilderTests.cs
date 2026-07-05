@@ -88,9 +88,11 @@ public sealed class ChildCollectionBuilderTests
         // Arrange
         ChildCollectionBuilder<TestLineEntity> builder = new("Lines");
 
-        // Act & Assert — method call is not a MemberExpression
+        // Act & Assert — method call is not a MemberExpression.
+        // Uses Quantity.ToString() (int -> string), a non-redundant call RCS1097 leaves intact,
+        // so the analyzer can't rewrite it back to a bare member access (see #2932 regression).
         Should.Throw<ArgumentException>(() =>
-            builder.Property(l => l.ProductName));
+            builder.Property(l => l.Quantity.ToString()));
     }
 
     [Fact]
