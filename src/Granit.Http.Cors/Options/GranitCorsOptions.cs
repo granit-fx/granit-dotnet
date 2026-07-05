@@ -20,7 +20,7 @@ public sealed class GranitCorsOptions
     /// Wildcard (<c>*</c>) is forbidden in non-development environments (ISO 27001 compliance).
     /// </summary>
     /// <example>
-    /// <code>["https://app.example.com", "https://admin.example.com"]</code>
+    /// <c>["https://app.example.com", "https://admin.example.com"]</c>
     /// </example>
     [Required]
     [MinLength(1)]

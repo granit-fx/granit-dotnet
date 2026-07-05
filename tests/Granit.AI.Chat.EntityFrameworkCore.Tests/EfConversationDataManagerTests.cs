@@ -50,7 +50,7 @@ public sealed class EfConversationDataStoreTests : IDisposable
         IReadOnlyList<Conversation> result = await _sut.GetAllForOwnerAsync(UserA, TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(2);
-        result.SelectMany(c => c.Messages).Count().ShouldBe(3);
+        result.Sum(c => c.Messages.Count).ShouldBe(3);
     }
 
     [Fact]

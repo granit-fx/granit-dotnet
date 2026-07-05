@@ -58,10 +58,7 @@ public sealed class SseNotificationsServiceCollectionExtensionsAdditionalTests
     {
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-        services.AddGranitNotificationsSse(opts =>
-        {
-            opts.HeartbeatIntervalSeconds = 60;
-        });
+        services.AddGranitNotificationsSse(opts => opts.HeartbeatIntervalSeconds = 60);
 
         using ServiceProvider sp = services.BuildServiceProvider();
         IOptions<SseChannelOptions> options = sp.GetRequiredService<IOptions<SseChannelOptions>>();

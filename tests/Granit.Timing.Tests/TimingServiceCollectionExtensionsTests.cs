@@ -118,10 +118,7 @@ public sealed class TimingServiceCollectionExtensionsTests
         ServiceCollection services = new();
 
         // Act
-        services.AddGranitTiming(opts =>
-        {
-            opts.DefaultTimezone = "America/New_York";
-        });
+        services.AddGranitTiming(opts => opts.DefaultTimezone = "America/New_York");
 
         using ServiceProvider sp = services.BuildServiceProvider();
 

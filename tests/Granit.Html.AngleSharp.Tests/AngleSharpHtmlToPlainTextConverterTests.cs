@@ -243,7 +243,7 @@ public sealed class AngleSharpHtmlToPlainTextConverterTests
     [Fact]
     public async Task FullEmailLayout_ProducesCleanText()
     {
-        string html = """
+        const string html = """
             <html>
             <head><title>Test Email</title></head>
             <body style="margin: 0; padding: 0; background-color: #f4f5f7;">

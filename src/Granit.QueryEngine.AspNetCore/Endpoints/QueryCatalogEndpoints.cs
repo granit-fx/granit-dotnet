@@ -29,7 +29,7 @@ internal static class QueryCatalogEndpoints
     /// </summary>
     public static RouteGroupBuilder MapQueryCatalogEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/catalog", ListCatalogAsync)
+        group.MapGet("/catalog", ListCatalog)
             .WithName("ListQueryCatalog")
             .WithSummary("Lists every registered QueryDefinition.")
             .WithDescription(
@@ -47,7 +47,7 @@ internal static class QueryCatalogEndpoints
         return group;
     }
 
-    private static Ok<IReadOnlyList<QueryCatalogEntryResponse>> ListCatalogAsync(
+    private static Ok<IReadOnlyList<QueryCatalogEntryResponse>> ListCatalog(
         [FromServices] IQueryDefinitionRegistry registry,
         [FromServices] EndpointDataSource endpointDataSource,
         [FromServices] LinkGenerator linkGenerator,

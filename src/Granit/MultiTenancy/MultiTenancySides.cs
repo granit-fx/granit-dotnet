@@ -23,6 +23,9 @@ namespace Granit.MultiTenancy;
 [Flags]
 public enum MultiTenancySides
 {
+    /// <summary>Applicable in no context. Represents the absence of any side (the zero value of the flags set).</summary>
+    None = 0,
+
     /// <summary>Applicable only when no tenant context is active (host-level admin, cross-tenant operations).</summary>
     Host = 1 << 0,
 

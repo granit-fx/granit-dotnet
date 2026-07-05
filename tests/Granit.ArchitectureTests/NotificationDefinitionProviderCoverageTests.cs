@@ -57,9 +57,9 @@ public sealed class NotificationDefinitionProviderCoverageTests
                 failures.Add(
                     $"Assembly '{assembly.GetName().Name}' declares {missing.Length} NotificationType(s) " +
                     $"without a matching NotificationDefinition: [{string.Join(", ", missing)}]. " +
-                    $"Add an INotificationDefinitionProvider in the assembly's Internal/ folder and register it " +
-                    $"via context.Services.AddSingleton<INotificationDefinitionProvider, …>() — pattern: " +
-                    $"IdentityNotificationDefinitionProvider in Granit.Identity.Local.Notifications.");
+                    "Add an INotificationDefinitionProvider in the assembly's Internal/ folder and register it " +
+                    "via context.Services.AddSingleton<INotificationDefinitionProvider, …>() — pattern: " +
+                    "IdentityNotificationDefinitionProvider in Granit.Identity.Local.Notifications.");
             }
         }
 

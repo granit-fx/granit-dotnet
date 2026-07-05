@@ -41,8 +41,8 @@ public sealed class LimitedStreamTests
     public async Task ReadAsync_exceeding_cap_throws_input_too_large()
     {
         byte[] payload = new byte[2048];
-        using MemoryStream source = new(payload);
-        using LimitedStream limited = new(source, maxBytes: 512);
+        await using MemoryStream source = new(payload);
+        await using LimitedStream limited = new(source, maxBytes: 512);
 
         byte[] buffer = new byte[2048];
 

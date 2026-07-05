@@ -25,7 +25,7 @@ public sealed class WebhookSubscriptionExportDefinitionTests
     [Fact]
     public void SigningKeys_field_has_RequiresHierarchy()
     {
-        ExportFieldDescriptor field = ((IExportDefinitionDescriptor)Sut).GetFields()
+        ExportFieldDescriptor field = Sut.GetFields()
             .Single(f => f.PropertyPath == "SigningKeys");
 
         field.RequiresHierarchy.ShouldBeTrue();
@@ -36,7 +36,7 @@ public sealed class WebhookSubscriptionExportDefinitionTests
     [Fact]
     public void SigningKeys_selector_maps_lifecycle_metadata_only()
     {
-        ExportFieldDescriptor field = ((IExportDefinitionDescriptor)Sut).GetFields()
+        ExportFieldDescriptor field = Sut.GetFields()
             .Single(f => f.PropertyPath == "SigningKeys");
 
         WebhookSubscription subscription = BuildSubscriptionWithRotation();
@@ -57,7 +57,7 @@ public sealed class WebhookSubscriptionExportDefinitionTests
     [Fact]
     public void SigningSecretHint_is_exported_as_scalar()
     {
-        IReadOnlyList<ExportFieldDescriptor> fields = ((IExportDefinitionDescriptor)Sut).GetFields();
+        IReadOnlyList<ExportFieldDescriptor> fields = Sut.GetFields();
         ExportFieldDescriptor? hint = fields.FirstOrDefault(f => f.PropertyPath == "SigningSecretHint");
 
         hint.ShouldNotBeNull();
@@ -67,11 +67,11 @@ public sealed class WebhookSubscriptionExportDefinitionTests
     [Fact]
     public void ProtectedSecret_is_not_exported()
     {
-        IReadOnlyList<ExportFieldDescriptor> fields = ((IExportDefinitionDescriptor)Sut).GetFields();
+        IReadOnlyList<ExportFieldDescriptor> fields = Sut.GetFields();
 
         fields.ShouldNotContain(f =>
             f.PropertyPath.Contains("ProtectedSecret", StringComparison.OrdinalIgnoreCase) ||
-            f.PropertyPath.Contains("Secret", StringComparison.OrdinalIgnoreCase) && !f.PropertyPath.Contains("Hint"));
+            (f.PropertyPath.Contains("Secret", StringComparison.OrdinalIgnoreCase) && !f.PropertyPath.Contains("Hint")));
     }
 
     // ---- Helpers -----------------------------------------------------------

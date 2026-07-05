@@ -113,9 +113,9 @@ public sealed class LlmTemplateAssistantTests
         // Verify the prompt sent to the LLM contains property names from the data type
         await _chatClient.Received(1).GetResponseAsync(
             Arg.Is<IEnumerable<ChatMessage>>(msgs =>
-                string.Join("", msgs.Select(m => m.Text)).Contains("Supplier") &&
-                string.Join("", msgs.Select(m => m.Text)).Contains("Amount") &&
-                string.Join("", msgs.Select(m => m.Text)).Contains("InvoiceDate")),
+                string.Concat(msgs.Select(m => m.Text)).Contains("Supplier") &&
+                string.Concat(msgs.Select(m => m.Text)).Contains("Amount") &&
+                string.Concat(msgs.Select(m => m.Text)).Contains("InvoiceDate")),
             Arg.Any<ChatOptions?>(),
             Arg.Any<CancellationToken>());
     }

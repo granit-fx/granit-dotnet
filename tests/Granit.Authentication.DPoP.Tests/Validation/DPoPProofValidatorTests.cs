@@ -80,7 +80,7 @@ public sealed class DPoPProofValidatorTests : IDisposable
     [Fact]
     public async Task ValidateAsync_InvalidHeaderEncoding_ReturnsFailure()
     {
-        string jwt = "!!!invalid-base64!!!.eyJ0ZXN0IjoxfQ.signature";
+        const string jwt = "!!!invalid-base64!!!.eyJ0ZXN0IjoxfQ.signature";
 
         DPoPValidationResult result = await _validator.ValidateAsync(
             jwt, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);

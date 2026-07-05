@@ -47,7 +47,7 @@ public sealed class TotpServiceTests
     public void GetQrCodeUri_FormatsOtpauthUri()
     {
         _identityOptions.Tokens.AuthenticatorIssuer = "TestApp";
-        string key = "JBSWY3DPEHPK3PXP";
+        const string key = "JBSWY3DPEHPK3PXP";
 
         string uri = _sut.GetQrCodeUri("user@example.com", key);
 

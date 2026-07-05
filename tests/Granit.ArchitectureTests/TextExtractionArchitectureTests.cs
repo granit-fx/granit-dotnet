@@ -80,9 +80,8 @@ public sealed partial class TextExtractionArchitectureTests
         {
             bool packageReferencesLimitedStream = Directory
                 .EnumerateFiles(packageDir, "*.cs", SearchOption.AllDirectories)
-                .Where(p => !p.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
-                .Where(p => !p.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
-                .Any(p => File.ReadAllText(p).Contains("LimitedStream", StringComparison.Ordinal));
+                .Any(p => !p.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.Ordinal) && !p.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.Ordinal) && File.ReadAllText(p).Contains("LimitedStream", StringComparison.Ordinal))
+;
 
             if (!packageReferencesLimitedStream)
             {
@@ -193,8 +192,7 @@ public sealed partial class TextExtractionArchitectureTests
 
         foreach (string csFile in Directory
             .EnumerateFiles(officeDir, "*.cs", SearchOption.AllDirectories)
-            .Where(p => !p.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
-            .Where(p => !p.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.Ordinal)))
+            .Where(p => !p.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.Ordinal) && !p.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.Ordinal)))
         {
             string code = StripCommentsAndStrings(File.ReadAllText(csFile));
             string relativePath = Path.GetRelativePath(SrcRoot, csFile);

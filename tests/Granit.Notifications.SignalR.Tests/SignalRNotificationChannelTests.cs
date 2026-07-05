@@ -51,7 +51,7 @@ public sealed class SignalRNotificationChannelTests
         SignalRNotificationMessage? captured = null;
         _clientProxy.SendCoreAsync(
             "ReceiveNotification",
-            Arg.Do<object?[]>(args => { captured = args[0] as SignalRNotificationMessage; }),
+            Arg.Do<object?[]>(args => captured = args[0] as SignalRNotificationMessage),
             Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
@@ -72,7 +72,7 @@ public sealed class SignalRNotificationChannelTests
         SignalRNotificationMessage? captured = null;
         _clientProxy.SendCoreAsync(
             "ReceiveNotification",
-            Arg.Do<object?[]>(args => { captured = args[0] as SignalRNotificationMessage; }),
+            Arg.Do<object?[]>(args => captured = args[0] as SignalRNotificationMessage),
             Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
@@ -90,7 +90,7 @@ public sealed class SignalRNotificationChannelTests
         SignalRNotificationMessage? captured = null;
         _clientProxy.SendCoreAsync(
             "ReceiveNotification",
-            Arg.Do<object?[]>(args => { captured = args[0] as SignalRNotificationMessage; }),
+            Arg.Do<object?[]>(args => captured = args[0] as SignalRNotificationMessage),
             Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 

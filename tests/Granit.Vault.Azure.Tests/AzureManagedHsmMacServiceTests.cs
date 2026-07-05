@@ -72,8 +72,8 @@ public sealed class AzureManagedHsmMacServiceTests : IDisposable
                 Arg.Any<byte[]>(),
                 Arg.Any<CancellationToken>())
             .Returns(CryptographyModelFactory.VerifyResult(
-                isValid: true,
                 keyId: "https://hsm.example.managedhsm.azure.net/keys/granit-mac/abc",
+                isValid: true,
                 algorithm: SignatureAlgorithm.HS256));
         AzureManagedHsmMacService sut = BuildSut(_ => client);
 

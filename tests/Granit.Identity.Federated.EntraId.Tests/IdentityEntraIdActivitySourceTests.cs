@@ -240,10 +240,7 @@ public sealed class IdentityEntraIdActivitySourceTests : IDisposable
             tag.Key.ShouldNotContain("email");
             tag.Key.ShouldNotContain("name");
             string? value = tag.Value;
-            if (value is not null)
-            {
-                value.ShouldNotContain("alice");
-            }
+            value?.ShouldNotContain("alice");
         }
     }
 

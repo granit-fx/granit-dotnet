@@ -43,7 +43,7 @@ public sealed class BackgroundJobEnvelopeTests
     [Fact]
     public void RecordEquality_SameValues_AreEqual()
     {
-        string message = "same-message";
+        const string message = "same-message";
         BackgroundJobEnvelope a = new(message);
         BackgroundJobEnvelope b = new(message);
 

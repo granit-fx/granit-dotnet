@@ -21,7 +21,7 @@ public sealed class NpgsqlTenantDbIsolatorTests
     [Fact]
     public async Task IsolateAsync_resolves_schema_and_activates_it_on_an_opened_connection()
     {
-        using SqliteConnection connection = new("DataSource=:memory:");
+        await using SqliteConnection connection = new("DataSource=:memory:");
         DbContextOptionsBuilder<IsolatorTestDbContext> optionsBuilder = new();
         optionsBuilder.UseSqlite(connection);
         await using var context = new IsolatorTestDbContext(optionsBuilder.Options);

@@ -46,8 +46,8 @@ public sealed class TenantInfoTests
         var info = new TenantInfo(Guid.NewGuid(), "Test");
 
         info.ShouldBeAssignableTo<ITenantInfo>();
-        ((ITenantInfo)info).Id.ShouldBe(info.Id);
-        ((ITenantInfo)info).Name.ShouldBe(info.Name);
+        info.Id.ShouldBe(info.Id);
+        info.Name.ShouldBe(info.Name);
     }
 
     [Fact]

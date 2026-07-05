@@ -84,7 +84,7 @@ public sealed class BusinessRuleViolationExceptionTests
         BusinessRuleViolationException exception = new("Appointment:SlotUnavailable");
 
         exception.ShouldBeAssignableTo<IHasErrorCode>();
-        ((IHasErrorCode)exception).ErrorCode.ShouldBe("Appointment:SlotUnavailable");
+        exception.ErrorCode.ShouldBe("Appointment:SlotUnavailable");
     }
 
     [Fact]

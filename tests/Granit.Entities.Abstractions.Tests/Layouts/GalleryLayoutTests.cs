@@ -128,7 +128,7 @@ public sealed class GalleryLayoutTests
     {
         public override string Name => "Granit.Sample.BadImageLambda";
         protected override void Configure(EntityDefinitionBuilder<SamplePhoto> builder) =>
-            builder.GalleryView(g => g.ImageField(p => p.Thumbnail == null ? null : p.Thumbnail));
+            builder.GalleryView(g => g.ImageField(p => p.CapturedAt == default ? null : p.Thumbnail));
     }
 
     private sealed class BadTitleLambdaDefinition : EntityDefinition<SamplePhoto>

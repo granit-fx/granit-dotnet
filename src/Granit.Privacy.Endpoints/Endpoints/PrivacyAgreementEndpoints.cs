@@ -17,7 +17,7 @@ internal static class PrivacyAgreementEndpoints
 {
     internal static RouteGroupBuilder MapPrivacyAgreementEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/agreements/documents", HandleGetDocumentsAsync)
+        group.MapGet("/agreements/documents", HandleGetDocuments)
              .RequireAuthorization(PrivacyPermissions.Agreements.Read)
              .WithName("ListPrivacyLegalDocuments")
              .WithSummary("Returns all registered legal documents.")
@@ -66,7 +66,7 @@ internal static class PrivacyAgreementEndpoints
         return group;
     }
 
-    private static Ok<IReadOnlyList<PrivacyLegalDocumentResponse>> HandleGetDocumentsAsync(
+    private static Ok<IReadOnlyList<PrivacyLegalDocumentResponse>> HandleGetDocuments(
         [FromServices] ILegalDocumentRegistry registry)
     {
         IReadOnlyList<PrivacyLegalDocumentResponse> result = registry

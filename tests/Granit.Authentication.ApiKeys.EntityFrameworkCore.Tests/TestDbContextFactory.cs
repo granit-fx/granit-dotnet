@@ -16,15 +16,14 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests;
 internal sealed class TestDbContextFactory : IDbContextFactory<AuthenticationApiKeysDbContext>, IDisposable
 {
     private readonly SqliteConnection _connection;
-    private readonly DbContextOptions<AuthenticationApiKeysDbContext> _options;
 
     private TestDbContextFactory(SqliteConnection connection, DbContextOptions<AuthenticationApiKeysDbContext> options)
     {
         _connection = connection;
-        _options = options;
+        Options = options;
     }
 
-    public DbContextOptions<AuthenticationApiKeysDbContext> Options => _options;
+    public DbContextOptions<AuthenticationApiKeysDbContext> Options { get; }
 
     public static TestDbContextFactory Create()
     {
@@ -46,7 +45,7 @@ internal sealed class TestDbContextFactory : IDbContextFactory<AuthenticationApi
         return new TestDbContextFactory(connection, options);
     }
 
-    public AuthenticationApiKeysDbContext CreateDbContext() => new(_options, GranitDesignTime.CurrentTenant);
+    public AuthenticationApiKeysDbContext CreateDbContext() => new(Options, GranitDesignTime.CurrentTenant);
 
     public void Dispose() => _connection.Dispose();
 }

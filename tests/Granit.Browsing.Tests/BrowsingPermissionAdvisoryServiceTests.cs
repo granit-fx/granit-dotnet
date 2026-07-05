@@ -30,7 +30,7 @@ public sealed class BrowsingPermissionAdvisoryServiceTests
         ServiceConfigurationContext context = new(services, configuration, hostBuilder);
         new GranitBrowsingModule().ConfigureServices(context);
 
-        using ServiceProvider provider = services.BuildServiceProvider(
+        await using ServiceProvider provider = services.BuildServiceProvider(
             new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });
 
         IEnumerable<IHostedService> hostedServices = provider.GetServices<IHostedService>();

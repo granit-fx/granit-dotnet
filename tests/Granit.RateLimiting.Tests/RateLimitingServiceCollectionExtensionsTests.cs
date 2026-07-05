@@ -100,10 +100,7 @@ public sealed class RateLimitingServiceCollectionExtensionsTests
         ServiceCollection services = CreateServices();
         services.AddLogging();
 
-        services.AddGranitRateLimiting(opts =>
-        {
-            opts.KeyPrefix = "test";
-        });
+        services.AddGranitRateLimiting(opts => opts.KeyPrefix = "test");
 
         ServiceProvider sp = services.BuildServiceProvider();
 
@@ -124,10 +121,7 @@ public sealed class RateLimitingServiceCollectionExtensionsTests
         services.AddSingleton(NSubstitute.Substitute.For<Granit.MultiTenancy.ICurrentTenant>());
         services.AddSingleton(NSubstitute.Substitute.For<Granit.Users.ICurrentUserService>());
 
-        services.AddGranitRateLimiting(opts =>
-        {
-            opts.KeyPrefix = "test";
-        });
+        services.AddGranitRateLimiting(opts => opts.KeyPrefix = "test");
 
         ServiceProvider sp = services.BuildServiceProvider();
 

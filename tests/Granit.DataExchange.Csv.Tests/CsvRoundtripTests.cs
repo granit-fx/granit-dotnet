@@ -34,7 +34,7 @@ public sealed class CsvRoundtripTests
             new("Company.Name", "String", "Société", null, 2, true),
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act — export
         await Writer.WriteAsync(stream, fields,
@@ -191,7 +191,7 @@ public sealed class CsvRoundtripTests
         List<ExportFieldDescriptor> fields,
         List<IReadOnlyDictionary<string, object?>> rows)
     {
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Export
         await Writer.WriteAsync(stream, fields, ToAsyncEnumerable(rows),

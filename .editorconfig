@@ -41,6 +41,32 @@ dotnet_diagnostic.RCS1213.severity = none
 #   RCS1161 — "enum should declare explicit values": directly contradicts the Granit
 #             GRENUM001 analyzer, which BANS redundant sequential explicit enum values.
 dotnet_diagnostic.RCS1161.severity = none
+#   RCS1194 — "implement exception constructors": Granit domain exceptions are sealed and
+#             single-shape by design (a ConversationNotFoundException without its id is
+#             meaningless). The three-ctor CA1032 pattern is legacy (serialization-era).
+dotnet_diagnostic.RCS1194.severity = none
+#   RCS1201 — "use method chaining": subjective; forces e.g. activity.SetTag().SetTag()
+#             chains that read worse than one call per line. A net readability loss.
+dotnet_diagnostic.RCS1201.severity = none
+#   RCS1158 — "static member in generic type should use a type parameter": fires on internal
+#             `const` backend identifiers (EfIndexer<TKey>.BackendName). The CA1000 rationale
+#             (per-instantiation static state) does not apply to consts — they are inlined.
+dotnet_diagnostic.RCS1158.severity = none
+#   RCS1043 — "remove 'partial' from single-part type": source-generator hazard. [LoggerMessage]
+#             and [GeneratedRegex] (both mandated by CLAUDE.md) require partial; the analyzer
+#             may not see the generated part and would strip a required modifier.
+dotnet_diagnostic.RCS1043.severity = none
+#   RCS1124 — "inline local variable": removes named `snapshot` locals that document
+#             volatile-read semantics and emits `(MemoryStream)new()`-style casts — a net
+#             readability loss for a subjective gain.
+dotnet_diagnostic.RCS1124.severity = none
+#   RCS1237 — deprecated by Roslynator itself ("use RCS1254 instead").
+dotnet_diagnostic.RCS1237.severity = none
+#   RCS1241 — "implement IEqualityComparer alongside IEqualityComparer<T>": its fixer bolts a
+#             non-generic System.Collections.IEqualityComparer onto ValueObject (a core domain
+#             base type) with `new public bool Equals(object, object)` + empty-message throws —
+#             an API/semantic change. Same rationale as the ValueObject interface-impl Won't-Fix.
+dotnet_diagnostic.RCS1241.severity = none
 
 # XML-documentation-comment completeness family — disabled to stay consistent with the
 # existing `NoWarn CS1591` (missing XML comment): the framework does not require full
@@ -54,6 +80,13 @@ dotnet_diagnostic.RCS1141.severity = none
 dotnet_diagnostic.RCS1142.severity = none
 # RCS1181: convert comment to documentation comment
 dotnet_diagnostic.RCS1181.severity = none
+# RCS1139: add summary element to documentation comment
+dotnet_diagnostic.RCS1139.severity = none
+# RCS1226: add paragraph to documentation comment
+dotnet_diagnostic.RCS1226.severity = none
+# RCS1243: duplicate word in a comment — corrupts legitimate repeated tokens, e.g. the
+# "XXX XXX XXX" SIN mask collapses to "XXX XXX". A silent documentation bug, not doc-completeness.
+dotnet_diagnostic.RCS1243.severity = none
 
 # RCS1217 — "convert interpolated string to concatenation": the exact opposite of the
 # promoted RCS1267 (interpolation preferred). Disabled to avoid a contradictory pair.
@@ -90,12 +123,12 @@ dotnet_naming_rule.types_should_be_pascal_case.style = pascal_case_style
 dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
-# ── Roslynator: rules promoted to warning in framework source only ────────────
-# These have been cleaned across all src/ projects and are now enforced (a warning ==
-# a build error under TreatWarningsAsErrors). Test projects stay at the advisory
-# `suggestion` baseline. Promote a rule here only after `dotnet format analyzers
-# --diagnostics RCSxxxx` reports zero remaining hits on src-only.slnf.
-[src/**.cs]
+# ── Roslynator: rules promoted to warning across the whole repository ─────────
+# These have been cleaned across all src/ AND tests/ projects and are now enforced (a
+# warning == a build error under TreatWarningsAsErrors). Promote a rule here only after
+# `dotnet format analyzers <shard>.slnf --diagnostics RCSxxxx` reports zero remaining hits
+# on every shard (unit layers + integration + architecture), tests included.
+[*.{cs,csx}]
 # RCS1214: unnecessary interpolated string ($"literal" with no holes → "literal")
 dotnet_diagnostic.RCS1214.severity = warning
 # RCS1192: unnecessary verbatim string literal (@"no-escapes" → "no-escapes")
@@ -144,14 +177,26 @@ dotnet_diagnostic.RCS1267.severity = warning
 # Note: the implicit DisposeAsync await carries no ConfigureAwait(false), but that is moot
 # under ASP.NET Core (no sync context) and no analyzer flags it.
 dotnet_diagnostic.RCS1261.severity = warning
-#
-# RCS1243 (duplicate word in comment) deliberately NOT promoted: it corrupts legitimate
-# repeated format placeholders (e.g. "XXX XXX XXX" SIN masks → "XXX XXX") — a silent doc bug.
-#
-# RCS1124 (inline single-use local) was evaluated and deliberately left at the suggestion
-# baseline: its auto-fix removes named `snapshot` locals that document volatile-read
-# semantics, emits `(MemoryStream)new()`-style casts, and left non-fixable cases — a
-# net readability loss for a subjective gain. Do not promote without hand-curation.
+# RCS1047: remove suffix 'Async' from a non-asynchronous method (sync handlers/helpers)
+dotnet_diagnostic.RCS1047.severity = warning
+# RCS1151: remove redundant cast
+dotnet_diagnostic.RCS1151.severity = warning
+# RCS1112: combine 'Enumerable.Where' method chain into a single predicate
+dotnet_diagnostic.RCS1112.severity = warning
+# RCS1199: remove unnecessary null check (already guaranteed non-null)
+dotnet_diagnostic.RCS1199.severity = warning
+# RCS1247: fix a malformed documentation-comment tag (distinct from doc-completeness rules)
+dotnet_diagnostic.RCS1247.severity = warning
+# RCS1135: declare a zero-value member on a [Flags] enum (compatible with GRENUM001)
+dotnet_diagnostic.RCS1135.severity = warning
+# RCS1015: use the nameof operator
+dotnet_diagnostic.RCS1015.severity = warning
+# RCS1033: remove redundant '== true' in a boolean comparison
+dotnet_diagnostic.RCS1033.severity = warning
+# RCS1049: simplify a boolean comparison ('x == false' → '!x')
+dotnet_diagnostic.RCS1049.severity = warning
+# RCS1097: remove redundant 'ToString' call
+dotnet_diagnostic.RCS1097.severity = warning
 
 [*.{csproj,props,targets}]
 indent_size = 2

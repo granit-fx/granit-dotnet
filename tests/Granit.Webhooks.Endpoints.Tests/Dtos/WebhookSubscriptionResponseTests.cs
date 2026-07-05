@@ -11,14 +11,14 @@ public sealed class WebhookSubscriptionResponseTests
     public void Constructor_SetsAllProperties()
     {
         var id = Guid.NewGuid();
-        string targetUrl = "https://example.com/webhook";
-        string eventType = "order.created";
-        WebhookSubscriptionStatus status = WebhookSubscriptionStatus.Active;
-        int failureCount = 3;
+        const string targetUrl = "https://example.com/webhook";
+        const string eventType = "order.created";
+        const WebhookSubscriptionStatus status = WebhookSubscriptionStatus.Active;
+        const int failureCount = 3;
         DateTimeOffset lastSuccessAt = DateTimeOffset.UtcNow.AddHours(-1);
         DateTimeOffset createdAt = DateTimeOffset.UtcNow.AddDays(-7);
         DateTimeOffset modifiedAt = DateTimeOffset.UtcNow;
-        string hint = "whsec_b46a****************5182";
+        const string hint = "whsec_b46a****************5182";
 
         var response = new WebhookSubscriptionResponse(
             id,

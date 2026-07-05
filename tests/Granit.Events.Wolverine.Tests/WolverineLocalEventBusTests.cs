@@ -57,7 +57,7 @@ public sealed class WolverineLocalEventBusTests
     {
         IMessageBus bus = Substitute.For<IMessageBus>();
         ServiceCollection services = [];
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         WolverineLocalEventBus sut = new(bus, sp, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineLocalEventBus>.Instance);
         TestEvent evt = new("test");
@@ -74,7 +74,7 @@ public sealed class WolverineLocalEventBusTests
         TestEventHandler handler = new();
         ServiceCollection services = [];
         services.AddSingleton<ILocalEventHandler<TestEvent>>(handler);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         WolverineLocalEventBus sut = new(bus, sp, CreateReadiness(false), CreateMetrics(),
             NullLogger<WolverineLocalEventBus>.Instance);
         TestEvent evt = new("test");
@@ -91,7 +91,7 @@ public sealed class WolverineLocalEventBusTests
         IMessageBus bus = Substitute.For<IMessageBus>();
         ServiceCollection services = [];
         services.AddSingleton<ILocalEventHandler<TestEvent>, FailingTestEventHandler>();
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         WolverineLocalEventBus sut = new(bus, sp, CreateReadiness(false), CreateMetrics(),
             NullLogger<WolverineLocalEventBus>.Instance);
         TestEvent evt = new("test");
@@ -105,7 +105,7 @@ public sealed class WolverineLocalEventBusTests
     {
         IMessageBus bus = Substitute.For<IMessageBus>();
         ServiceCollection services = [];
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         WolverineLocalEventBus sut = new(bus, sp, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineLocalEventBus>.Instance);
 

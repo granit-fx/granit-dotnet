@@ -532,8 +532,8 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task GetCallback_ValidCodeAndState_ExchangesTokensAndRedirects()
     {
-        string testState = "test-state-123";
-        string testCode = "authorization-code-456";
+        const string testState = "test-state-123";
+        const string testCode = "authorization-code-456";
 
         // Pre-populate cache with PkceState
         BffLoginEndpoints.PkceState pkceState = new("test-verifier", testState, BffEndpointsTestServer.TestFrontendName);
@@ -557,7 +557,7 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task GetCallback_TokenExchangeFails_RedirectsToErrorPage()
     {
-        string testState = "test-state-fail";
+        const string testState = "test-state-fail";
 
         BffLoginEndpoints.PkceState pkceState = new("test-verifier", testState, BffEndpointsTestServer.TestFrontendName);
         _server.Cache.TryGetAsync<BffLoginEndpoints.PkceState>(default!, default, CancellationToken.None)
@@ -642,7 +642,7 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task GetCallback_ValidResponse_ConsumesStateFromCache()
     {
-        string testState = "consumed-state";
+        const string testState = "consumed-state";
 
         BffLoginEndpoints.PkceState pkceState = new("verifier", testState, BffEndpointsTestServer.TestFrontendName);
         _server.Cache.TryGetAsync<BffLoginEndpoints.PkceState>(default!, default, CancellationToken.None)

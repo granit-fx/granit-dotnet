@@ -64,7 +64,7 @@ public sealed class IdempotentAttributeTests
     {
         IdempotentAttribute attribute = new() { Required = false, CompletedTtlSeconds = 7200 };
 
-        ((IIdempotencyMetadata)attribute).Required.ShouldBeFalse();
+        attribute.Required.ShouldBeFalse();
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public sealed class IdempotentAttributeTests
     {
         IdempotentAttribute attribute = new() { Required = false, CompletedTtlSeconds = 7200 };
 
-        ((IIdempotencyMetadata)attribute).CompletedTtlSeconds.ShouldBe(7200);
+        attribute.CompletedTtlSeconds.ShouldBe(7200);
     }
 
     // =========================================================================

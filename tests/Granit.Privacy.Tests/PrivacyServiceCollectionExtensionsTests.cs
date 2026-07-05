@@ -79,10 +79,7 @@ public sealed class PrivacyServiceCollectionExtensionsTests
     public void AddGranitPrivacy_WithoutLegalAgreementStore_DoesNotRegisterChecker()
     {
         ServiceCollection services = new();
-        services.AddGranitPrivacy(privacy =>
-        {
-            privacy.RegisterDocument("privacy-policy", "1.0.0", "Privacy Policy");
-        });
+        services.AddGranitPrivacy(privacy => privacy.RegisterDocument("privacy-policy", "1.0.0", "Privacy Policy"));
 
         ServiceProvider provider = services.BuildServiceProvider();
 

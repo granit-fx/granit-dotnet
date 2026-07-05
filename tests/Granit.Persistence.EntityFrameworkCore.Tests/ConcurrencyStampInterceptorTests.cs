@@ -26,7 +26,7 @@ public sealed class ConcurrencyStampInterceptorTests : IDisposable
     public async Task SaveChangesAsync_NewEntity_SetsInitialConcurrencyStamp()
     {
         // Arrange
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestConcurrencyEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -50,7 +50,7 @@ public sealed class ConcurrencyStampInterceptorTests : IDisposable
     public async Task SaveChangesAsync_ModifiedEntity_RegeneratesStamp()
     {
         // Arrange
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestConcurrencyEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -101,7 +101,7 @@ public sealed class ConcurrencyStampInterceptorTests : IDisposable
     public async Task SaveChangesAsync_NonConcurrencyAwareEntity_IsIgnored()
     {
         // Arrange
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestPlainEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -125,7 +125,7 @@ public sealed class ConcurrencyStampInterceptorTests : IDisposable
     {
         // Arrange — create entity via context1
         var entityId = Guid.NewGuid();
-        using TestDbContext context1 = CreateContext();
+        await using TestDbContext context1 = CreateContext();
         TestConcurrencyEntity entity1 = new()
         {
             Id = entityId,
@@ -135,7 +135,7 @@ public sealed class ConcurrencyStampInterceptorTests : IDisposable
         await context1.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Load the same entity in context2 (EF tracks OriginalValue automatically)
-        using TestDbContext context2 = CreateContext(ensureCreated: false);
+        await using TestDbContext context2 = CreateContext(ensureCreated: false);
         TestConcurrencyEntity entity2 = (await context2.Entities.FindAsync([entityId], TestContext.Current.CancellationToken))!;
         entity2.ShouldNotBeNull();
 
@@ -160,7 +160,7 @@ public sealed class ConcurrencyStampInterceptorTests : IDisposable
     {
         // Arrange — create entity and capture its initial stamp
         var entityId = Guid.NewGuid();
-        using TestDbContext context1 = CreateContext();
+        await using TestDbContext context1 = CreateContext();
         TestConcurrencyEntity entity = new()
         {
             Id = entityId,
@@ -177,7 +177,7 @@ public sealed class ConcurrencyStampInterceptorTests : IDisposable
         entity.ConcurrencyStamp.ShouldNotBe(staleStamp, "stamp must have rotated");
 
         // Simulate a disconnected update: load entity in context2, set stale OriginalValue
-        using TestDbContext context2 = CreateContext(ensureCreated: false);
+        await using TestDbContext context2 = CreateContext(ensureCreated: false);
         TestConcurrencyEntity disconnected = (await context2.Entities.FindAsync([entityId], TestContext.Current.CancellationToken))!;
 
         // Force the OriginalValue to the stale stamp (simulating a frontend sending an old stamp)
@@ -200,7 +200,7 @@ public sealed class ConcurrencyStampInterceptorTests : IDisposable
     {
         // Arrange — create entity, rotate its stamp so the captured one is stale
         var entityId = Guid.NewGuid();
-        using TestDbContext context1 = CreateContext();
+        await using TestDbContext context1 = CreateContext();
         TestConcurrencyEntity entity = new()
         {
             Id = entityId,
@@ -216,7 +216,7 @@ public sealed class ConcurrencyStampInterceptorTests : IDisposable
         entity.ConcurrencyStamp.ShouldNotBe(staleStamp, "stamp must have rotated");
 
         // Disconnected update via the helper instead of the raw Entry(...).OriginalValue expression
-        using TestDbContext context2 = CreateContext(ensureCreated: false);
+        await using TestDbContext context2 = CreateContext(ensureCreated: false);
         TestConcurrencyEntity disconnected = (await context2.Entities.FindAsync([entityId], TestContext.Current.CancellationToken))!;
 
         context2.SetConcurrencyStampOriginalValue(disconnected, staleStamp);
@@ -234,7 +234,7 @@ public sealed class ConcurrencyStampInterceptorTests : IDisposable
     {
         // Arrange
         var entityId = Guid.NewGuid();
-        using TestDbContext context1 = CreateContext();
+        await using TestDbContext context1 = CreateContext();
         TestConcurrencyEntity entity = new()
         {
             Id = entityId,
@@ -246,7 +246,7 @@ public sealed class ConcurrencyStampInterceptorTests : IDisposable
         string currentStamp = entity.ConcurrencyStamp;
 
         // Disconnected update carrying the up-to-date stamp
-        using TestDbContext context2 = CreateContext(ensureCreated: false);
+        await using TestDbContext context2 = CreateContext(ensureCreated: false);
         TestConcurrencyEntity disconnected = (await context2.Entities.FindAsync([entityId], TestContext.Current.CancellationToken))!;
 
         context2.SetConcurrencyStampOriginalValue(disconnected, currentStamp);

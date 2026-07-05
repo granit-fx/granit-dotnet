@@ -270,9 +270,8 @@ public sealed class SequentialGuidGeneratorTests
         }
 
         // Assert — last 6 bytes should be non-decreasing (timestamp at end)
-        var lastSixBytesList = guids
-            .Select(g => g.ToByteArray()[10..16])
-            .ToList();
+        List<byte[]> lastSixBytesList = guids
+            .ConvertAll(g => g.ToByteArray()[10..16]);
 
         for (int i = 1; i < lastSixBytesList.Count; i++)
         {

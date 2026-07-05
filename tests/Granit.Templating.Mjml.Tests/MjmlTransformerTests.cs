@@ -30,7 +30,7 @@ public sealed class MjmlTransformerTests
     [Fact]
     public async Task PlainHtml_PassesThrough()
     {
-        string html = "<p>Hello world</p>";
+        const string html = "<p>Hello world</p>";
 
         string result = await _sut.TransformAsync(html, DocumentFormat.Html, CancellationToken);
 
@@ -40,7 +40,7 @@ public sealed class MjmlTransformerTests
     [Fact]
     public async Task PlainHtml_WithWhitespace_PassesThrough()
     {
-        string html = "  \n  <html><body><p>Hello</p></body></html>";
+        const string html = "  \n  <html><body><p>Hello</p></body></html>";
 
         string result = await _sut.TransformAsync(html, DocumentFormat.Html, CancellationToken);
 
@@ -50,7 +50,7 @@ public sealed class MjmlTransformerTests
     [Fact]
     public async Task Mjml_ProducesTableBasedHtml()
     {
-        string mjml = """
+        const string mjml = """
             <mjml>
               <mj-body>
                 <mj-section>
@@ -74,7 +74,7 @@ public sealed class MjmlTransformerTests
     [Fact]
     public async Task Mjml_ProducesInlineCss()
     {
-        string mjml = """
+        const string mjml = """
             <mjml>
               <mj-body>
                 <mj-section background-color="#ff0000">
@@ -95,7 +95,7 @@ public sealed class MjmlTransformerTests
     [Fact]
     public async Task Mjml_ProducesMsoConditionals()
     {
-        string mjml = """
+        const string mjml = """
             <mjml>
               <mj-body>
                 <mj-section>
@@ -115,7 +115,7 @@ public sealed class MjmlTransformerTests
     [Fact]
     public async Task Mjml_PreservesScribanVariables()
     {
-        string mjml = """
+        const string mjml = """
             <mjml>
               <mj-body>
                 <mj-section>
@@ -135,7 +135,7 @@ public sealed class MjmlTransformerTests
     [Fact]
     public async Task Mjml_WithButton_ProducesAccessibleLink()
     {
-        string mjml = """
+        const string mjml = """
             <mjml>
               <mj-body>
                 <mj-section>
@@ -156,7 +156,7 @@ public sealed class MjmlTransformerTests
     [Fact]
     public async Task Mjml_WithTable_RendersRows()
     {
-        string mjml = """
+        const string mjml = """
             <mjml>
               <mj-body>
                 <mj-section>
@@ -181,7 +181,7 @@ public sealed class MjmlTransformerTests
     [Fact]
     public async Task Mjml_CaseInsensitive_DetectsMjmlTag()
     {
-        string mjml = """
+        const string mjml = """
             <MJML>
               <mj-body>
                 <mj-section>

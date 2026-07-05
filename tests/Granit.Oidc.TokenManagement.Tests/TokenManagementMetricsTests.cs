@@ -58,10 +58,7 @@ public sealed class TokenManagementMetricsTests : IDisposable
             }
         };
 
-        collector.SetMeasurementEventCallback<long>((instrument, measurement, tags, state) =>
-        {
-            count += measurement;
-        });
+        collector.SetMeasurementEventCallback<long>((instrument, measurement, tags, state) => count += measurement);
 
         collector.Start();
 

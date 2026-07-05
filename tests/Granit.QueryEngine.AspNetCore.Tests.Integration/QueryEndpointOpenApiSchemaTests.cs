@@ -134,7 +134,7 @@ public sealed class QueryEndpointOpenApiSchemaTests
                     if (prop.NameEquals("$ref") && prop.Value.ValueKind == JsonValueKind.String)
                     {
                         string? value = prop.Value.GetString();
-                        if (value is not null && value.StartsWith("#/components/schemas/", StringComparison.Ordinal))
+                        if (value?.StartsWith("#/components/schemas/", StringComparison.Ordinal) == true)
                         {
                             string id = value["#/components/schemas/".Length..];
                             if (!declared.Contains(id) && !orphans.Contains(id))

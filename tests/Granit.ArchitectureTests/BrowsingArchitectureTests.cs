@@ -144,7 +144,7 @@ public sealed class BrowsingArchitectureTests
 
         violators.ShouldBeEmpty(
             $"Only {string.Join(" / ", allowedProjects)} may reference the {packageId} NuGet directly. " +
-            $"Other consumers must route through Granit.Browsing's IHeadlessBrowser + capability interfaces. " +
+            "Other consumers must route through Granit.Browsing's IHeadlessBrowser + capability interfaces. " +
             $"Violators: {string.Join(", ", violators)}");
     }
 

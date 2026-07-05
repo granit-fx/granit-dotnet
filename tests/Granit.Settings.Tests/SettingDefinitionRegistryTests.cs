@@ -97,10 +97,7 @@ public sealed class SettingDefinitionRegistryTests
 
         // On utilise un provider qui consulte le contexte pendant Define()
         SettingDefinitionRegistry manager = new([
-            new InspectingProvider(added, ctx =>
-            {
-                capturedFromContext = ctx.GetOrNull("App.Theme");
-            })
+            new InspectingProvider(added, ctx => capturedFromContext = ctx.GetOrNull("App.Theme"))
         ]);
 
         capturedFromContext.ShouldBeSameAs(added,

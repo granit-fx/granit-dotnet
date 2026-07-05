@@ -50,7 +50,7 @@ public sealed class OutboundHttpSafetyTests
 
         referenced.ShouldBeTrue(
             $"{projectName} emits outbound user-controlled URLs and must reference Granit.Http.Security " +
-            $"so it can use IUrlSafetyValidator / PrivateNetworkClassifier instead of inventing local rules.");
+            "so it can use IUrlSafetyValidator / PrivateNetworkClassifier instead of inventing local rules.");
     }
 
     /// <summary>

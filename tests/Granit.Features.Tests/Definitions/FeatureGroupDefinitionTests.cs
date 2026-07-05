@@ -12,10 +12,7 @@ public sealed class FeatureGroupDefinitionTests
         // FeatureGroupDefinition constructor is internal — use IFeatureDefinitionContext
         // AddGroup returns the group directly, so capture it via a closure.
         FeatureGroupDefinition? group = null;
-        FakeContextProvider provider = new(ctx =>
-        {
-            group = ctx.AddGroup(name, displayName);
-        });
+        FakeContextProvider provider = new(ctx => group = ctx.AddGroup(name, displayName));
         FeatureDefinitionContext context = new();
         provider.Define(context);
         return group!;

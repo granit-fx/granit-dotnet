@@ -74,6 +74,6 @@ public sealed class GranitAuditingEntityFrameworkCoreModuleTests
             .OfType<DependsOnAttribute>()
             .ToArray();
 
-        attributes.SelectMany(a => a.DependedTypes).Count().ShouldBe(3);
+        attributes.Sum(a => a.DependedTypes.Length).ShouldBe(3);
     }
 }

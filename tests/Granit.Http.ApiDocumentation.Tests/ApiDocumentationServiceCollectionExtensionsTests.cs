@@ -138,7 +138,7 @@ public sealed class ApiDocumentationServiceCollectionExtensionsTests
 
         builder.AddGranitApiDocumentation();
 
-        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+        await using ServiceProvider sp = builder.Services.BuildServiceProvider();
 
         // IOptionsMonitor.Get("v1") triggers the outer openApiOptions => lambda,
         // which registers the document transformers on the OpenApiOptions instance.
@@ -174,7 +174,7 @@ public sealed class ApiDocumentationServiceCollectionExtensionsTests
 
         builder.AddGranitApiDocumentation();
 
-        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+        await using ServiceProvider sp = builder.Services.BuildServiceProvider();
         IOptionsMonitor<OpenApiOptions> monitor = sp.GetRequiredService<IOptionsMonitor<OpenApiOptions>>();
         OpenApiOptions openApiOpts = monitor.Get("v2");
 

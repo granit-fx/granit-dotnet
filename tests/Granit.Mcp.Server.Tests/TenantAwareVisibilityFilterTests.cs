@@ -47,7 +47,7 @@ public sealed class TenantAwareVisibilityFilterTests
 
         ServiceCollection services = new();
         services.AddSingleton(tenant);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         bool result = await sut.IsVisibleAsync("tool", typeof(TenantScopedClass), sp, TestContext.Current.CancellationToken);
 
@@ -62,7 +62,7 @@ public sealed class TenantAwareVisibilityFilterTests
 
         // No ICurrentTenant registered
         ServiceCollection services = new();
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         bool result = await sut.IsVisibleAsync("tool", typeof(TenantScopedClass), sp, TestContext.Current.CancellationToken);
 

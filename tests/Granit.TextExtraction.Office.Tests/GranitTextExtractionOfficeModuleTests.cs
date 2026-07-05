@@ -42,11 +42,11 @@ public sealed class GranitTextExtractionOfficeModuleTests
         services.AddLogging();
         services.AddGranitTextExtractionOffice();
 
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         ITextExtractionPipeline pipeline = sp.GetRequiredService<ITextExtractionPipeline>();
 
         byte[] docx = OfficeFixtures.Docx("DI smoke");
-        using MemoryStream stream = new(docx);
+        await using MemoryStream stream = new(docx);
 
         TextExtractionResult result =
             await pipeline.ExtractAsync(stream, Docx, TestContext.Current.CancellationToken);

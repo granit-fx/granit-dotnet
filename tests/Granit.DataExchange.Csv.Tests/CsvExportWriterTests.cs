@@ -54,7 +54,7 @@ public sealed class CsvExportWriterTests
             new Dictionary<string, object?> { ["Name"] = "Bob", ["Email"] = "bob@test.com" },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -77,7 +77,7 @@ public sealed class CsvExportWriterTests
             new("Name", "String", "Nom", null, 0, false),
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields,
@@ -105,7 +105,7 @@ public sealed class CsvExportWriterTests
             new Dictionary<string, object?> { ["Name"] = "Smith; John" },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -129,7 +129,7 @@ public sealed class CsvExportWriterTests
             new Dictionary<string, object?> { ["Name"] = "John \"Jack\" Doe" },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -154,7 +154,7 @@ public sealed class CsvExportWriterTests
             new Dictionary<string, object?> { ["Name"] = "Alice", ["Email"] = null },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -179,7 +179,7 @@ public sealed class CsvExportWriterTests
             new Dictionary<string, object?> { ["Date"] = new DateOnly(2026, 3, 3) },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -198,7 +198,7 @@ public sealed class CsvExportWriterTests
             new("Name", "String", null, null, 0, false),
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields,
@@ -221,7 +221,7 @@ public sealed class CsvExportWriterTests
             new("Company.Name", "String", null, null, 0, true),
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields,

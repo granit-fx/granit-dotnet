@@ -17,7 +17,7 @@ public static class ExtractTextFromImageToolRegistrationExtensions
     /// <param name="tools">The AI tool registration builder.</param>
     /// <returns>The builder, for chaining.</returns>
     /// <example>
-    /// <code>services.AddGranitAITools(tools => tools.AddImageTextExtractionTool());</code>
+    /// <c>services.AddGranitAITools(tools => tools.AddImageTextExtractionTool());</c>
     /// </example>
     public static AIToolRegistrationBuilder AddImageTextExtractionTool(this AIToolRegistrationBuilder tools)
     {

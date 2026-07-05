@@ -16,7 +16,7 @@ public sealed class MigrationStatusTests
     [Fact]
     public void Pending_IsDefaultValue()
     {
-        MigrationStatus defaultValue = default;
+        const MigrationStatus defaultValue = default;
 
         defaultValue.ShouldBe(MigrationStatus.Pending);
     }

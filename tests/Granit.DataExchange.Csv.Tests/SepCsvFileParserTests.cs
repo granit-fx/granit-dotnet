@@ -35,7 +35,7 @@ public sealed class SepCsvFileParserTests
     public async Task ExtractHeadersAsync_returns_column_names()
     {
         // Arrange
-        using FileStream stream = OpenTestFile("simple.csv");
+        await using FileStream stream = OpenTestFile("simple.csv");
 
         // Act
         IReadOnlyList<string> headers = await Sut.ExtractHeadersAsync(
@@ -49,7 +49,7 @@ public sealed class SepCsvFileParserTests
     public async Task ExtractHeadersAsync_with_semicolon_separator()
     {
         // Arrange
-        using FileStream stream = OpenTestFile("semicolon.csv");
+        await using FileStream stream = OpenTestFile("semicolon.csv");
         FileParsingOptions options = new() { Separator = ";" };
 
         // Act
@@ -66,7 +66,7 @@ public sealed class SepCsvFileParserTests
     public async Task ReadPreviewAsync_returns_limited_rows()
     {
         // Arrange
-        using FileStream stream = OpenTestFile("simple.csv");
+        await using FileStream stream = OpenTestFile("simple.csv");
 
         // Act
         IReadOnlyList<string[]> rows = await Sut.ReadPreviewAsync(
@@ -82,7 +82,7 @@ public sealed class SepCsvFileParserTests
     public async Task ReadPreviewAsync_returns_all_when_fewer_than_max()
     {
         // Arrange
-        using FileStream stream = OpenTestFile("semicolon.csv");
+        await using FileStream stream = OpenTestFile("semicolon.csv");
         FileParsingOptions options = new() { Separator = ";" };
 
         // Act
@@ -99,7 +99,7 @@ public sealed class SepCsvFileParserTests
     public async Task ParseAsync_streams_all_rows()
     {
         // Arrange
-        using FileStream stream = OpenTestFile("simple.csv");
+        await using FileStream stream = OpenTestFile("simple.csv");
         List<RawImportRow> rows = [];
 
         // Act
@@ -121,7 +121,7 @@ public sealed class SepCsvFileParserTests
     public async Task ParseAsync_row_numbers_are_one_based()
     {
         // Arrange
-        using FileStream stream = OpenTestFile("simple.csv");
+        await using FileStream stream = OpenTestFile("simple.csv");
         List<RawImportRow> rows = [];
 
         // Act
@@ -141,7 +141,7 @@ public sealed class SepCsvFileParserTests
     public async Task ParseAsync_handles_quoted_values()
     {
         // Arrange
-        using FileStream stream = OpenTestFile("quoted.csv");
+        await using FileStream stream = OpenTestFile("quoted.csv");
         List<RawImportRow> rows = [];
 
         // Act
@@ -161,7 +161,7 @@ public sealed class SepCsvFileParserTests
     public async Task ParseAsync_empty_values_are_null()
     {
         // Arrange
-        using FileStream stream = OpenTestFile("empty-values.csv");
+        await using FileStream stream = OpenTestFile("empty-values.csv");
         List<RawImportRow> rows = [];
 
         // Act
@@ -180,7 +180,7 @@ public sealed class SepCsvFileParserTests
     public async Task ParseAsync_utf8_bom_is_handled()
     {
         // Arrange
-        using FileStream stream = OpenTestFile("utf8-bom.csv");
+        await using FileStream stream = OpenTestFile("utf8-bom.csv");
         List<RawImportRow> rows = [];
 
         // Act
@@ -201,7 +201,7 @@ public sealed class SepCsvFileParserTests
     public async Task ParseAsync_with_semicolon_separator()
     {
         // Arrange
-        using FileStream stream = OpenTestFile("semicolon.csv");
+        await using FileStream stream = OpenTestFile("semicolon.csv");
         FileParsingOptions options = new() { Separator = ";" };
         List<RawImportRow> rows = [];
 

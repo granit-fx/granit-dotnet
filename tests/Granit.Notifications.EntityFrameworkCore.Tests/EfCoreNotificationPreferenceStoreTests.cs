@@ -29,7 +29,7 @@ public sealed class EfCoreNotificationPreferenceStoreTests : IDisposable
     [Fact]
     public async Task GetListAsync_ReturnsUserPreferences()
     {
-        string userId = "user-prefs";
+        const string userId = "user-prefs";
         var tenantId = Guid.NewGuid();
 
         NotificationPreference pref1 = BuildPreference(userId: userId, tenantId: tenantId, notificationTypeName: "type-a", channelName: "email");
@@ -49,7 +49,7 @@ public sealed class EfCoreNotificationPreferenceStoreTests : IDisposable
     [Fact]
     public async Task SetAsync_InsertsNewPreference()
     {
-        string userId = "user-insert";
+        const string userId = "user-insert";
         var tenantId = Guid.NewGuid();
         NotificationPreference preference = BuildPreference(userId: userId, tenantId: tenantId, isEnabled: false);
 
@@ -64,10 +64,10 @@ public sealed class EfCoreNotificationPreferenceStoreTests : IDisposable
     [Fact]
     public async Task SetAsync_UpdatesExistingPreference()
     {
-        string userId = "user-update";
+        const string userId = "user-update";
         var tenantId = Guid.NewGuid();
-        string typeName = "order.created";
-        string channelName = "email";
+        const string typeName = "order.created";
+        const string channelName = "email";
 
         // Insert initial preference (enabled)
         NotificationPreference initial = BuildPreference(userId: userId, tenantId: tenantId, notificationTypeName: typeName, channelName: channelName, isEnabled: true);
@@ -95,10 +95,10 @@ public sealed class EfCoreNotificationPreferenceStoreTests : IDisposable
     [Fact]
     public async Task IsChannelEnabledAsync_WithPreference_ReturnsStoredValue()
     {
-        string userId = "user-channel-check";
+        const string userId = "user-channel-check";
         var tenantId = Guid.NewGuid();
-        string typeName = "alert.critical";
-        string channelName = "sms";
+        const string typeName = "alert.critical";
+        const string channelName = "sms";
 
         NotificationPreference preference = BuildPreference(userId: userId, tenantId: tenantId, notificationTypeName: typeName, channelName: channelName, isEnabled: false);
         await _store.SetAsync(preference, TestContext.Current.CancellationToken);

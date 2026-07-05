@@ -9,7 +9,7 @@ namespace Granit.Features.Plans;
 /// (e.g., via Stripe or your billing service).
 /// <para>
 /// Registration:
-/// <code>services.AddScoped&lt;IPlanIdProvider, YourPlanIdProvider&gt;();</code>
+/// <c>services.AddScoped&lt;IPlanIdProvider, YourPlanIdProvider&gt;();</c>
 /// </para>
 /// </remarks>
 public interface IPlanIdProvider

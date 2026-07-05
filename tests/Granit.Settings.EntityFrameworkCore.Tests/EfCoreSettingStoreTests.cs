@@ -203,7 +203,7 @@ public sealed class EfCoreSettingStoreTests
         IReadOnlyList<SettingValue> all = await store.GetListAsync(
             "G", null, TestContext.Current.CancellationToken);
 
-        all.Where(v => v.Name == "App.Theme").Count().ShouldBe(1,
+        all.Count(v => v.Name == "App.Theme").ShouldBe(1,
             "upsert must not create duplicate records");
     }
 

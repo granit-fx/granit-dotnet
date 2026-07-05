@@ -38,7 +38,7 @@ public sealed class SharedDatabaseDbContextFactoryTests
     public async Task CreateDbContextAsync_ReturnsNonNullContext()
     {
         ServiceCollection services = [];
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         SharedDatabaseDbContextOptions<StubSharedDbContext> opts = new()
         {

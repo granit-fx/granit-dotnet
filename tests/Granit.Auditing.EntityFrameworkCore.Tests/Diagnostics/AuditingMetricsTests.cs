@@ -22,10 +22,7 @@ public sealed class AuditingMetricsTests : IDisposable
                 listener.EnableMeasurementEvents(instrument);
             }
         };
-        _listener.SetMeasurementEventCallback<long>((instrument, measurement, tags, _) =>
-        {
-            _recordings.Add((instrument.Name, measurement, tags.ToArray()));
-        });
+        _listener.SetMeasurementEventCallback<long>((instrument, measurement, tags, _) => _recordings.Add((instrument.Name, measurement, tags.ToArray())));
         _listener.Start();
     }
 

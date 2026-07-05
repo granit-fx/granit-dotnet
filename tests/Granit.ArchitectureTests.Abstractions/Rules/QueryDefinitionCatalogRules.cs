@@ -98,8 +98,7 @@ public static class QueryDefinitionCatalogRules
         List<string> violations =
         [
             .. candidateTypes
-                .Where(t => IsConcreteDefinition(t, queryDefinitionOpenType))
-                .Where(t => !HasPublicParameterlessConstructor(t))
+                .Where(t => IsConcreteDefinition(t, queryDefinitionOpenType) && !HasPublicParameterlessConstructor(t))
                 .Select(t => t.FullName!)
                 .Where(name => !exemptDefinitions.Contains(name)),
         ];

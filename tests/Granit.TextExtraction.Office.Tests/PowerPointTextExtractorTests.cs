@@ -27,7 +27,7 @@ public sealed class PowerPointTextExtractorTests
     public async Task Extracts_text_from_each_slide()
     {
         byte[] pptx = OfficeFixtures.Pptx("First slide", "Second slide", "Third slide");
-        using MemoryStream stream = new(pptx);
+        await using MemoryStream stream = new(pptx);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, Pptx, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -43,7 +43,7 @@ public sealed class PowerPointTextExtractorTests
     public async Task Truncates_when_slides_exceed_cap()
     {
         byte[] pptx = OfficeFixtures.Pptx(Enumerable.Range(1, 50).Select(i => $"Slide {i}").ToArray());
-        using MemoryStream stream = new(pptx);
+        await using MemoryStream stream = new(pptx);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, Pptx, maxCharLength: 50, cancellationToken: TestContext.Current.CancellationToken);
@@ -57,7 +57,7 @@ public sealed class PowerPointTextExtractorTests
     {
         ExtractionOptions options = new() { MaxDecompressedBytes = 1024 };
         byte[] adversarial = OfficeFixtures.ZipWithAdvertisedSize(advertisedBytes: 64 * 1024);
-        using MemoryStream stream = new(adversarial);
+        await using MemoryStream stream = new(adversarial);
 
         TextExtractionResult result = await CreateExtractor(options).ExtractAsync(
             stream, Pptx, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);

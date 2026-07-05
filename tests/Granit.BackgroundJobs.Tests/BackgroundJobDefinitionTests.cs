@@ -173,7 +173,7 @@ public sealed class BackgroundJobDefinitionTests
     public void RecordFailure_ShortErrorMessage_ShouldNotTruncate()
     {
         BackgroundJobDefinition job = BuildJob();
-        string shortMessage = "timeout";
+        const string shortMessage = "timeout";
 
         job.RecordFailure(shortMessage);
 

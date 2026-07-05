@@ -159,7 +159,7 @@ public sealed class BlobBackedPrivacyExportDownloadResolverTests : IDisposable
             id: ManifestBlobId,
             tenantId: null,
             containerName: "gdpr-exports",
-            objectKey: $"personal-data-export/abc-manifest.json",
+            objectKey: "personal-data-export/abc-manifest.json",
             request: new BlobUploadRequest(
                 FileName: $"personal-data-export-{RequestId}-manifest.json",
                 ContentType: "application/json",

@@ -74,7 +74,7 @@ public sealed class NestedComplexColumnTests : IDisposable
 
         // Brussels, Ghent, New York contain 'e' (case-sensitive LIKE on SQLite collation-dependent —
         // seed values chosen so the ASCII 'e' is unambiguous).
-        result.Items.Select(a => a.Value.City).OrderBy(c => c)
+        result.Items.Select(a => a.Value.City).Order()
             .ShouldBe(["Brussels", "Ghent", "New York"]);
     }
 

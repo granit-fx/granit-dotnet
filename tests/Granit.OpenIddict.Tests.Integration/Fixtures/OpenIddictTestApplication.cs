@@ -140,7 +140,7 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
 
         // OIDC protocol handler — OpenIddict validates requests via UseAuthentication(),
         // then passes through to ASP.NET Core for token issuance (client_credentials).
-        _app.MapPost("/connect/token", HandleTokenAsync);
+        _app.MapPost("/connect/token", HandleToken);
 
         _app.MapGranitOpenIddict();
         _app.MapGranitAccount();
@@ -183,7 +183,7 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
     /// builds a ClaimsPrincipal and signs in to issue the access token.
     /// </summary>
 #pragma warning disable GRAPI001 // Test code — SignIn/Forbid have no TypedResults equivalent
-    private static IResult HandleTokenAsync(HttpContext context)
+    private static IResult HandleToken(HttpContext context)
     {
         OpenIddictRequest request = context.GetOpenIddictServerRequest()
             ?? throw new InvalidOperationException("OpenIddict server request not available.");

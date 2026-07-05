@@ -151,7 +151,7 @@ public sealed class WebPushNotificationChannelTests
         MockHttpMessageHandler handler = new() { ResponseStatusCode = HttpStatusCode.Gone };
         WebPushNotificationChannel channel = BuildChannel(handler);
         NotificationDeliveryContext context = BuildContext();
-        string expiredEndpoint = "https://push.example.com/expired";
+        const string expiredEndpoint = "https://push.example.com/expired";
         SetupSubscriptions(context.RecipientUserId, context.TenantId,
             [BuildSubscription(expiredEndpoint)]);
 
@@ -178,7 +178,7 @@ public sealed class WebPushNotificationChannelTests
             OccurredAt = DateTimeOffset.UtcNow,
             TenantId = tenantId,
         };
-        string expiredEndpoint = "https://push.example.com/expired-tenant";
+        const string expiredEndpoint = "https://push.example.com/expired-tenant";
         SetupSubscriptions(context.RecipientUserId, tenantId,
             [BuildSubscription(expiredEndpoint)]);
 

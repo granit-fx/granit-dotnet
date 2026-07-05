@@ -21,10 +21,7 @@ public sealed class TestProjectConventionTests
         // (IsPackable=false) — not shipped packages; covered by dedicated tests elsewhere.
         IEnumerable<string> srcPackages = Directory.GetDirectories(srcDir)
             .Select(Path.GetFileName)
-            .Where(name => name!.StartsWith("Granit.", StringComparison.Ordinal))
-            .Where(name => File.Exists(Path.Join(srcDir, name!, $"{name}.csproj")))
-            .Where(name => !TargetsNetStandard(Path.Join(srcDir, name!, $"{name}.csproj")))
-            .Where(name => !IsBuildOnly(Path.Join(srcDir, name!, $"{name}.csproj")))
+            .Where(name => name!.StartsWith("Granit.", StringComparison.Ordinal) && File.Exists(Path.Join(srcDir, name, $"{name}.csproj")) && !TargetsNetStandard(Path.Join(srcDir, name, $"{name}.csproj")) && !IsBuildOnly(Path.Join(srcDir, name, $"{name}.csproj")))
             .Cast<string>();
 
         List<string> missing = [];
@@ -51,8 +48,7 @@ public sealed class TestProjectConventionTests
 
         IEnumerable<string> srcPackages = Directory.GetDirectories(srcDir)
             .Select(Path.GetFileName)
-            .Where(name => name!.StartsWith("Granit.", StringComparison.Ordinal))
-            .Where(name => File.Exists(Path.Join(srcDir, name!, $"{name}.csproj")))
+            .Where(name => name!.StartsWith("Granit.", StringComparison.Ordinal) && File.Exists(Path.Join(srcDir, name, $"{name}.csproj")))
             .Cast<string>();
 
         List<string> missing = [];

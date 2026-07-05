@@ -88,8 +88,8 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
         byte[] shardBytes = _blobStoreProvider.SavedBlobs.First(kvp => kvp.Key.EndsWith(".zip", StringComparison.Ordinal)).Value;
 
         // Shard contains the two fragments at their declared entry paths.
-        using MemoryStream zipStream = new(shardBytes);
-        using ZipArchive zip = new(zipStream, ZipArchiveMode.Read);
+        await using MemoryStream zipStream = new(shardBytes);
+        await using ZipArchive zip = new(zipStream, ZipArchiveMode.Read);
         zip.Entries.Select(e => e.FullName).ShouldBe(["identity.json", "audit.json"], ignoreOrder: true);
 
         await _tracker.Received(1).MarkCompletedAsync(
@@ -319,8 +319,8 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
 
         // Exactly one shard with the non-empty fragment.
         byte[] shardBytes = _blobStoreProvider.SavedBlobs.First(kvp => kvp.Key.EndsWith(".zip", StringComparison.Ordinal)).Value;
-        using MemoryStream zipStream = new(shardBytes);
-        using ZipArchive zip = new(zipStream, ZipArchiveMode.Read);
+        await using MemoryStream zipStream = new(shardBytes);
+        await using ZipArchive zip = new(zipStream, ZipArchiveMode.Read);
         zip.Entries.Select(e => e.FullName).ShouldBe(["identity.json"]);
 
         // Empty provider name surfaces in the manifest blob upload's payload — best
@@ -463,8 +463,8 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
 
         // The new shard contains only the third fragment.
         byte[] shardBytes = _blobStoreProvider.SavedBlobs[$"personal-data-export/{requestId}-001.zip"];
-        using MemoryStream zipStream = new(shardBytes);
-        using ZipArchive zip = new(zipStream, ZipArchiveMode.Read);
+        await using MemoryStream zipStream = new(shardBytes);
+        await using ZipArchive zip = new(zipStream, ZipArchiveMode.Read);
         zip.Entries.Select(e => e.FullName).ShouldBe(["p2.json"]);
 
         // Fragments 0 and 1 were re-fetched only for descriptor lookup, NOT for
@@ -601,7 +601,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
 
         public async Task SaveAsync(string bucket, string objectKey, Stream content, string contentType, CancellationToken cancellationToken)
         {
-            using MemoryStream ms = new();
+            await using MemoryStream ms = new();
             await content.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
             SavedBlobs[objectKey] = ms.ToArray();
         }

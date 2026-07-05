@@ -221,7 +221,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
             }
             """;
 
-        IReadOnlyList<UserDevice> result = await ((IUserDeviceProvider)_provider).ListAsync(
+        IReadOnlyList<UserDevice> result = await _provider.ListAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(2);
@@ -294,7 +294,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
     [Fact]
     public async Task GetUserRolesAsync_CrossReferencesAssignmentsWithRoleDefinitions()
     {
-        string assignmentsResponse = """
+        const string assignmentsResponse = """
             {
                 "value": [
                     { "id": "a1", "appRoleId": "role-id-1", "principalId": "user-1", "resourceId": "sp-object-id" },
@@ -303,7 +303,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
             }
             """;
 
-        string servicePrincipalResponse = """
+        const string servicePrincipalResponse = """
             {
                 "id": "sp-object-id",
                 "appRoles": [
@@ -358,7 +358,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
     [Fact]
     public async Task RevokeOthersAsync_SendsPostToRevokeEndpoint_AndCountsOthers()
     {
-        string signInsResponse = """
+        const string signInsResponse = """
             {
                 "value": [
                     { "id": "s1", "ipAddress": "10.0.0.1", "createdDateTime": "2026-01-01T10:00:00Z", "status": { "errorCode": 0 } },

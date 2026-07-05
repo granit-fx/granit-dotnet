@@ -196,7 +196,7 @@ public sealed class MagickNetImagePipelineTests
     {
         // Arrange
         await using MagickNetImagePipeline pipeline = CreatePipeline();
-        using MemoryStream output = new();
+        await using MemoryStream output = new();
 
         // Act
         await pipeline.SaveToStreamAsync(output, TestContext.Current.CancellationToken);

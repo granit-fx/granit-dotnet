@@ -70,10 +70,10 @@ public sealed class CacheEncryptionResolutionTests
 
     // Types de test
     [CacheEncrypted]
-    private sealed class AlwaysEncryptedItem { }
+    private sealed class AlwaysEncryptedItem;
 
     [CacheEncrypted(false)]
-    private sealed class NeverEncryptedItem { }
+    private sealed class NeverEncryptedItem;
 
-    private sealed class UnattributedItem { }
+    private sealed class UnattributedItem;
 }

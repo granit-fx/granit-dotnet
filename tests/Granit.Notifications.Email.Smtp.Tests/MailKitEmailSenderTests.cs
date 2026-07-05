@@ -274,7 +274,7 @@ public sealed class MailKitEmailSenderTests
         await sender.SendAsync(SimpleMessage(), TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
-        ((MailboxAddress)captured.From[0]).Name.ShouldBe("noreply@localhost");
+        captured.From[0].Name.ShouldBe("noreply@localhost");
         ((MailboxAddress)captured.From[0]).Address.ShouldBe("noreply@localhost");
     }
 
@@ -376,7 +376,7 @@ public sealed class MailKitEmailSenderTests
         await sender.SendAsync(message, TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
-        ((MailboxAddress)captured.To[0]).Name.ShouldBe("John Doe");
+        captured.To[0].Name.ShouldBe("John Doe");
     }
 
     // -------------------------------------------------------------------------
@@ -402,7 +402,7 @@ public sealed class MailKitEmailSenderTests
         await sender.SendAsync(SimpleMessage(), TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
-        ((MailboxAddress)captured.From[0]).Name.ShouldBe("My App");
+        captured.From[0].Name.ShouldBe("My App");
     }
 
     // -------------------------------------------------------------------------

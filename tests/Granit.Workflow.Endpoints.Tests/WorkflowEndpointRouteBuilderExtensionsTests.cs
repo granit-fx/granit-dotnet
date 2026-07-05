@@ -28,10 +28,7 @@ public sealed class WorkflowEndpointRouteBuilderExtensionsTests
         historyQuery.GetHistoryAsync("Order", "1", Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new PagedResult<WorkflowTransitionHistoryResponse>([], 0, HasMore: false));
 
-        await using WebApplication app = BuildApp(historyQuery, opts =>
-        {
-            opts.RoutePrefix = "admin/wf";
-        });
+        await using WebApplication app = BuildApp(historyQuery, opts => opts.RoutePrefix = "admin/wf");
 
         HttpClient client = BuildAuthorizedClient(app);
 

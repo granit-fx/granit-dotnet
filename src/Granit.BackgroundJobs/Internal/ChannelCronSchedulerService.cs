@@ -53,7 +53,7 @@ internal sealed partial class ChannelCronSchedulerService(
 
         foreach (BackgroundJobDefinition job in jobs)
         {
-            if (job.NextExecutionAt.HasValue && job.NextExecutionAt.Value > clock.Now)
+            if (job.NextExecutionAt > clock.Now)
             {
                 LogJobAlreadyScheduled(job.JobName, job.NextExecutionAt.Value);
                 continue;

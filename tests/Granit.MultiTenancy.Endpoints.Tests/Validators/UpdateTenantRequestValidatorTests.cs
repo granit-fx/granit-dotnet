@@ -14,7 +14,7 @@ public sealed class UpdateTenantRequestValidatorTests
     [Fact]
     public void ValidRequest_Succeeds()
     {
-        UpdateTenantRequest request = new(Name: "Updated Name", ContactEmail: "admin@acme.com", Jurisdiction: null, ConcurrencyStamp: AnyStamp);
+        UpdateTenantRequest request = new(Name: "Updated Name", ConcurrencyStamp: AnyStamp, ContactEmail: "admin@acme.com", Jurisdiction: null);
 
         ValidationResult result = _validator.Validate(request);
 
@@ -24,7 +24,7 @@ public sealed class UpdateTenantRequestValidatorTests
     [Fact]
     public void EmptyName_Fails()
     {
-        UpdateTenantRequest request = new(Name: "", ContactEmail: "admin@acme.com", Jurisdiction: null, ConcurrencyStamp: AnyStamp);
+        UpdateTenantRequest request = new(Name: "", ConcurrencyStamp: AnyStamp, ContactEmail: "admin@acme.com", Jurisdiction: null);
 
         ValidationResult result = _validator.Validate(request);
 
@@ -35,7 +35,7 @@ public sealed class UpdateTenantRequestValidatorTests
     [Fact]
     public void NameTooLong_Fails()
     {
-        UpdateTenantRequest request = new(Name: new string('A', 257), ContactEmail: null, Jurisdiction: null, ConcurrencyStamp: AnyStamp);
+        UpdateTenantRequest request = new(Name: new string('A', 257), ConcurrencyStamp: AnyStamp, ContactEmail: null, Jurisdiction: null);
 
         ValidationResult result = _validator.Validate(request);
 
@@ -46,7 +46,7 @@ public sealed class UpdateTenantRequestValidatorTests
     [Fact]
     public void InvalidEmail_Fails()
     {
-        UpdateTenantRequest request = new(Name: "Acme", ContactEmail: "not-an-email", Jurisdiction: null, ConcurrencyStamp: AnyStamp);
+        UpdateTenantRequest request = new(Name: "Acme", ConcurrencyStamp: AnyStamp, ContactEmail: "not-an-email", Jurisdiction: null);
 
         ValidationResult result = _validator.Validate(request);
 
@@ -57,7 +57,7 @@ public sealed class UpdateTenantRequestValidatorTests
     [Fact]
     public void NullEmail_Succeeds()
     {
-        UpdateTenantRequest request = new(Name: "Acme", ContactEmail: null, Jurisdiction: null, ConcurrencyStamp: AnyStamp);
+        UpdateTenantRequest request = new(Name: "Acme", ConcurrencyStamp: AnyStamp, ContactEmail: null, Jurisdiction: null);
 
         ValidationResult result = _validator.Validate(request);
 
@@ -67,7 +67,7 @@ public sealed class UpdateTenantRequestValidatorTests
     [Fact]
     public void JurisdictionTooLong_Fails()
     {
-        UpdateTenantRequest request = new(Name: "Acme", ContactEmail: null, Jurisdiction: new string('A', 17), ConcurrencyStamp: AnyStamp);
+        UpdateTenantRequest request = new(Name: "Acme", ConcurrencyStamp: AnyStamp, ContactEmail: null, Jurisdiction: new string('A', 17));
 
         ValidationResult result = _validator.Validate(request);
 

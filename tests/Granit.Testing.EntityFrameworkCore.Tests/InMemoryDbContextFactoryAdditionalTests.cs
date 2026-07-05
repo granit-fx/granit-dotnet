@@ -47,7 +47,7 @@ public sealed class InMemoryDbContextFactoryAdditionalTests
 
         InMemoryDbContextFactory<TestDbContext> factory = new(guidGenerator: guidGenerator);
 
-        using TestDbContext context = factory.CreateContext();
+        await using TestDbContext context = factory.CreateContext();
         TestAuditedEntity entity = new() { Name = "GuidTest" };
         context.AuditedEntities.Add(entity);
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -64,7 +64,7 @@ public sealed class InMemoryDbContextFactoryAdditionalTests
 
         InMemoryDbContextFactory<TestDbContext> factory = new(tenant: tenant);
 
-        using TestDbContext context = factory.CreateContext();
+        await using TestDbContext context = factory.CreateContext();
         context.ShouldNotBeNull();
 
         // Verify we can still add entities (proves the context is functional)
@@ -91,11 +91,11 @@ public sealed class InMemoryDbContextFactoryAdditionalTests
         InMemoryDbContextFactory<TestDbContext> factory1 = new();
         InMemoryDbContextFactory<TestDbContext> factory2 = new();
 
-        using TestDbContext ctx1 = factory1.CreateContext();
+        await using TestDbContext ctx1 = factory1.CreateContext();
         ctx1.AuditedEntities.Add(new TestAuditedEntity { Name = "Factory1" });
         await ctx1.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        using TestDbContext ctx2 = factory2.CreateContext();
+        await using TestDbContext ctx2 = factory2.CreateContext();
         int count = await ctx2.AuditedEntities.CountAsync(TestContext.Current.CancellationToken);
 
         count.ShouldBe(0); // different database

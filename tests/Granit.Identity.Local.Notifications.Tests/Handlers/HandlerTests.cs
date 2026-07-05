@@ -266,7 +266,7 @@ public sealed class HandlerTests
 
         await _publisher.Received(1).PublishAsync(
             TwoFactorChangedNotificationType.Instance,
-            Arg.Is<TwoFactorChangedNotificationData>(d => d.Enabled == true),
+            Arg.Is<TwoFactorChangedNotificationData>(d => d.Enabled),
             Arg.Is<IReadOnlyList<string>>(r => r.Count == 1),
             Arg.Any<CancellationToken>());
     }

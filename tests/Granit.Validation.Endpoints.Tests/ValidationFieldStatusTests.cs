@@ -9,7 +9,7 @@ public sealed class ValidationFieldStatusTests
     [Fact]
     public void Valid_HasExpectedValue()
     {
-        ValidationFieldStatus status = ValidationFieldStatus.Valid;
+        const ValidationFieldStatus status = ValidationFieldStatus.Valid;
 
         ((int)status).ShouldBe(0);
     }
@@ -17,7 +17,7 @@ public sealed class ValidationFieldStatusTests
     [Fact]
     public void Invalid_HasExpectedValue()
     {
-        ValidationFieldStatus status = ValidationFieldStatus.Invalid;
+        const ValidationFieldStatus status = ValidationFieldStatus.Invalid;
 
         ((int)status).ShouldBe(1);
     }
@@ -25,7 +25,7 @@ public sealed class ValidationFieldStatusTests
     [Fact]
     public void ValidatorNotFound_HasExpectedValue()
     {
-        ValidationFieldStatus status = ValidationFieldStatus.ValidatorNotFound;
+        const ValidationFieldStatus status = ValidationFieldStatus.ValidatorNotFound;
 
         ((int)status).ShouldBe(2);
     }

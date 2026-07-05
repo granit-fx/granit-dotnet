@@ -145,7 +145,7 @@ public sealed class GcsResumableMultipartWriteStreamTests
         await sut.WriteAsync(new byte[500], TestContext.Current.CancellationToken);
         await sut.CompleteAsync(TestContext.Current.CancellationToken);
 
-        totalSizes.ShouldBe([null, null, 2L * ChunkSize + 500]);
+        totalSizes.ShouldBe([null, null, (2L * ChunkSize) + 500]);
     }
 
     [Fact]

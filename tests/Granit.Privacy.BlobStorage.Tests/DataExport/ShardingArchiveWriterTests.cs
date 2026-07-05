@@ -33,13 +33,13 @@ public sealed class ShardingArchiveWriterTests
         provider.SavedBlobs.Count.ShouldBe(1);
         byte[] zipBytes = provider.SavedBlobs[$"{KeyPrefix}-000.zip"];
 
-        using MemoryStream zipStream = new(zipBytes);
-        using ZipArchive zip = new(zipStream, ZipArchiveMode.Read);
+        await using MemoryStream zipStream = new(zipBytes);
+        await using ZipArchive zip = new(zipStream, ZipArchiveMode.Read);
         zip.Entries.Count.ShouldBe(1);
         zip.Entries[0].FullName.ShouldBe("identity-local.json");
 
-        using Stream entry = zip.Entries[0].Open();
-        using MemoryStream copied = new();
+        await using Stream entry = zip.Entries[0].Open();
+        await using MemoryStream copied = new();
         entry.CopyTo(copied);
         copied.ToArray().ShouldBe(payload);
     }
@@ -192,7 +192,7 @@ public sealed class ShardingArchiveWriterTests
 
         public async Task SaveAsync(string bucket, string objectKey, Stream content, string contentType, CancellationToken cancellationToken)
         {
-            using MemoryStream ms = new();
+            await using MemoryStream ms = new();
             await content.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
             SavedBlobs[objectKey] = ms.ToArray();
         }

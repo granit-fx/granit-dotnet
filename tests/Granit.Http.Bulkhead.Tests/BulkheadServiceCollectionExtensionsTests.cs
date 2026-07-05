@@ -70,10 +70,7 @@ public sealed class BulkheadServiceCollectionExtensionsTests
         services.AddSingleton(configuration);
         services.AddSingleton<IConfiguration>(configuration);
 
-        services.AddGranitBulkhead(opts =>
-        {
-            opts.Enabled = false;
-        });
+        services.AddGranitBulkhead(opts => opts.Enabled = false);
 
         ServiceProvider provider = services.BuildServiceProvider();
         provider.GetService<ConcurrencyLimiterRegistry>().ShouldNotBeNull();

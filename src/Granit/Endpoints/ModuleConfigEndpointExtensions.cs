@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.Modularity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -72,6 +73,10 @@ public static class ModuleConfigEndpointExtensions
     /// (e.g., <c>.AllowAnonymous()</c>, cache headers).
     /// </param>
     /// <returns>The endpoint route builder for chaining.</returns>
+    [SuppressMessage("Roslynator", "RCS1047:Non-asynchronous method name should not end with 'Async'",
+        Justification = "The 'Async' suffix disambiguates this IAsyncModuleConfigProvider overload from the "
+            + "synchronous MapGranitModuleConfig above; the two differ only by generic constraint (not part of "
+            + "the signature), so they cannot share a name.")]
     public static IEndpointRouteBuilder MapGranitModuleConfigAsync<TProvider, TResponse>(
         this IEndpointRouteBuilder endpoints,
         string routePrefix,

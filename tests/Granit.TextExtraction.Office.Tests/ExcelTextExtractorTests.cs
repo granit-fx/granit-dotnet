@@ -33,7 +33,7 @@ public sealed class ExcelTextExtractorTests
             { "Gamma", "Delta" },
         };
         byte[] xlsx = OfficeFixtures.Xlsx(("Sheet1", sheet1));
-        using MemoryStream stream = new(xlsx);
+        await using MemoryStream stream = new(xlsx);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, Xlsx, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -50,7 +50,7 @@ public sealed class ExcelTextExtractorTests
         byte[] xlsx = OfficeFixtures.Xlsx(
             ("Sheet1", new[,] { { "First sheet content" } }),
             ("Sheet2", new[,] { { "Second sheet content" } }));
-        using MemoryStream stream = new(xlsx);
+        await using MemoryStream stream = new(xlsx);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, Xlsx, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -66,7 +66,7 @@ public sealed class ExcelTextExtractorTests
         // content into one position.
         string[,] big = { { new string('x', 5_000) } };
         byte[] xlsx = OfficeFixtures.Xlsx(("Sheet1", big));
-        using MemoryStream stream = new(xlsx);
+        await using MemoryStream stream = new(xlsx);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, Xlsx, maxCharLength: 100, cancellationToken: TestContext.Current.CancellationToken);
@@ -80,7 +80,7 @@ public sealed class ExcelTextExtractorTests
     {
         ExtractionOptions options = new() { MaxZipEntries = 5 };
         byte[] adversarial = OfficeFixtures.ZipWithEntryCount(entries: 10);
-        using MemoryStream stream = new(adversarial);
+        await using MemoryStream stream = new(adversarial);
 
         TextExtractionResult result = await CreateExtractor(options).ExtractAsync(
             stream, Xlsx, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);

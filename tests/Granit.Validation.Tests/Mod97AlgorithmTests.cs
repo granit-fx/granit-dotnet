@@ -38,7 +38,7 @@ public sealed class Mod97AlgorithmTests
     public void Compute_LargeNumber_DoesNotOverflow()
     {
         // A very large number that would overflow long arithmetic
-        string largeNumber = "111111111111111111111111111111111111111111111";
+        const string largeNumber = "111111111111111111111111111111111111111111111";
 
         int result = Mod97Algorithm.Compute(largeNumber);
 

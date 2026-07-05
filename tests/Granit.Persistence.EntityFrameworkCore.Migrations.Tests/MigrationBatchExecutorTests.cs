@@ -95,7 +95,7 @@ public sealed class MigrationBatchExecutorTests : IDisposable
     [Fact]
     public async Task ExecuteBatchAsync_AlreadyCompleted_ReturnsNull()
     {
-        string cycleId = "completed-cycle";
+        const string cycleId = "completed-cycle";
         StubDbContext stubContext = CreateStubContext();
         IMigrationCycleRegistry registry = RegistryWith(
             cycleId, typeof(StubDbContext),
@@ -126,7 +126,7 @@ public sealed class MigrationBatchExecutorTests : IDisposable
     [Fact]
     public async Task ExecuteBatchAsync_LastBatch_ReturnsNullAndMarksCompleted()
     {
-        string cycleId = "last-batch";
+        const string cycleId = "last-batch";
         StubDbContext stubContext = CreateStubContext();
         DateTimeOffset completedAt = DateTimeOffset.UtcNow;
         _clock.Now.Returns(completedAt);
@@ -157,7 +157,7 @@ public sealed class MigrationBatchExecutorTests : IDisposable
     [Fact]
     public async Task ExecuteBatchAsync_MidBatch_ReturnsNextCommand()
     {
-        string cycleId = "mid-batch";
+        const string cycleId = "mid-batch";
         StubDbContext stubContext = CreateStubContext();
         IMigrationCycleRegistry registry = RegistryWith(
             cycleId, typeof(StubDbContext),
@@ -182,7 +182,7 @@ public sealed class MigrationBatchExecutorTests : IDisposable
     [Fact]
     public async Task ExecuteBatchAsync_AccumulatesProcessedRows_AcrossBatches()
     {
-        string cycleId = "accumulate";
+        const string cycleId = "accumulate";
         StubDbContext stubContext = CreateStubContext();
         int callCount = 0;
 
@@ -219,7 +219,7 @@ public sealed class MigrationBatchExecutorTests : IDisposable
     [Fact]
     public async Task ExecuteBatchAsync_NonEmptyTenantId_CallsIsolator()
     {
-        string cycleId = "tenant-isolation";
+        const string cycleId = "tenant-isolation";
         var tenantId = Guid.NewGuid();
         StubDbContext stubContext = CreateStubContext();
         IMigrationCycleRegistry registry = RegistryWith(
@@ -238,7 +238,7 @@ public sealed class MigrationBatchExecutorTests : IDisposable
     [Fact]
     public async Task ExecuteBatchAsync_EmptyTenantId_DoesNotCallIsolator()
     {
-        string cycleId = "no-tenant";
+        const string cycleId = "no-tenant";
         StubDbContext stubContext = CreateStubContext();
         IMigrationCycleRegistry registry = RegistryWith(
             cycleId, typeof(StubDbContext),
@@ -260,7 +260,7 @@ public sealed class MigrationBatchExecutorTests : IDisposable
     [Fact]
     public async Task ExecuteBatchAsync_EmptyTenantId_StoresNullTenantIdInProgress()
     {
-        string cycleId = "null-tenant";
+        const string cycleId = "null-tenant";
         StubDbContext stubContext = CreateStubContext();
         IMigrationCycleRegistry registry = RegistryWith(
             cycleId, typeof(StubDbContext),
@@ -284,7 +284,7 @@ public sealed class MigrationBatchExecutorTests : IDisposable
     [Fact]
     public async Task ExecuteBatchAsync_BatchThrows_MarksFailedAndRethrows()
     {
-        string cycleId = "failing-batch";
+        const string cycleId = "failing-batch";
         StubDbContext stubContext = CreateStubContext();
         IMigrationCycleRegistry registry = RegistryWith(
             cycleId, typeof(StubDbContext),
@@ -307,7 +307,7 @@ public sealed class MigrationBatchExecutorTests : IDisposable
     [Fact]
     public async Task ExecuteBatchAsync_BatchThrowsOperationCanceled_PropagatesWithoutMarkingFailed()
     {
-        string cycleId = "cancel-batch";
+        const string cycleId = "cancel-batch";
         StubDbContext stubContext = CreateStubContext();
         using CancellationTokenSource cts = new();
         await cts.CancelAsync();
@@ -340,7 +340,7 @@ public sealed class MigrationBatchExecutorTests : IDisposable
     [Fact]
     public async Task ExecuteBatchAsync_LongErrorMessage_TruncatesTo4000Chars()
     {
-        string cycleId = "long-error";
+        const string cycleId = "long-error";
         StubDbContext stubContext = CreateStubContext();
         string longMessage = new('x', 5000);
         IMigrationCycleRegistry registry = RegistryWith(

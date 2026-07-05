@@ -76,10 +76,7 @@ public sealed class CachingServiceCollectionExtensionsTests
     [Fact]
     public void AddGranitCaching_FusionCacheOptions_UsesCustomDuration()
     {
-        using ServiceProvider sp = BuildServiceProvider(builder =>
-        {
-            builder.Configuration["Cache:DefaultAbsoluteExpirationRelativeToNow"] = "00:30:00";
-        });
+        using ServiceProvider sp = BuildServiceProvider(builder => builder.Configuration["Cache:DefaultAbsoluteExpirationRelativeToNow"] = "00:30:00");
 
         FusionCacheOptions fcOptions = sp.GetRequiredService<IOptions<FusionCacheOptions>>().Value;
 
@@ -132,10 +129,7 @@ public sealed class CachingServiceCollectionExtensionsTests
     [Fact]
     public void AddGranitCaching_FusionCacheOptions_SetsCustomKeyPrefix()
     {
-        using ServiceProvider sp = BuildServiceProvider(builder =>
-        {
-            builder.Configuration["Cache:KeyPrefix"] = "myapp";
-        });
+        using ServiceProvider sp = BuildServiceProvider(builder => builder.Configuration["Cache:KeyPrefix"] = "myapp");
 
         FusionCacheOptions fcOptions = sp.GetRequiredService<IOptions<FusionCacheOptions>>().Value;
 

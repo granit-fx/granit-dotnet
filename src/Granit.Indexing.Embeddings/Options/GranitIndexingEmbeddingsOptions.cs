@@ -71,8 +71,8 @@ public sealed class GranitIndexingEmbeddingsOptions
 
     /// <summary>
     /// Informational hint emitted at startup to remind operators that HNSW indices
-    /// retain stale vector pointers after <c>DELETE</c> until a <c>REINDEX
-    /// CONCURRENTLY</c> (Postgres) or <c>forcemerge</c> (Elasticsearch) runs.
+    /// retain stale vector pointers after <c>DELETE</c> until a <code>REINDEX
+    /// CONCURRENTLY</code> (Postgres) or <c>forcemerge</c> (Elasticsearch) runs.
     /// Default <c>7</c> days — a reasonable cadence for typical GDPR Art. 17
     /// audit windows. The framework does NOT schedule the reindex itself.
     /// </summary>

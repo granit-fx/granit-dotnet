@@ -159,7 +159,7 @@ public sealed class JsonSchemaWriterTests
 
         JsonObject schema = writer.Write(typeof(PatternRequest))!;
 
-        schema["properties"]!["code"]!["pattern"]!.GetValue<string>().ShouldBe(@"^[A-Z]{3}$");
+        schema["properties"]!["code"]!["pattern"]!.GetValue<string>().ShouldBe("^[A-Z]{3}$");
     }
 
     [Fact]
@@ -180,7 +180,7 @@ public sealed class JsonSchemaWriterTests
         JsonObject schema = writer.Write(typeof(PatternHintRequest))!;
 
         JsonNode prop = schema["properties"]!["code"]!;
-        prop["pattern"]!.GetValue<string>().ShouldBe(@"^[A-Z]{2}$");
+        prop["pattern"]!.GetValue<string>().ShouldBe("^[A-Z]{2}$");
         prop["x-granit-pattern-hint"]!.GetValue<string>().ShouldBe("Validation:Hint:Alpha2Code");
     }
 
@@ -217,7 +217,7 @@ public sealed class JsonSchemaWriterTests
         JsonNode prop = schema["properties"]!["code"]!;
         prop["minLength"]!.GetValue<int>().ShouldBe(2);
         prop["maxLength"]!.GetValue<int>().ShouldBe(8);
-        prop["pattern"]!.GetValue<string>().ShouldBe(@"^[A-Z]+$");
+        prop["pattern"]!.GetValue<string>().ShouldBe("^[A-Z]+$");
         schema["required"]!.AsArray().Select(n => n!.GetValue<string>()).ShouldContain("code");
     }
 
@@ -353,7 +353,7 @@ public sealed class JsonSchemaWriterTests
 
     private sealed class PatternRequestValidator : GranitValidator<PatternRequest>
     {
-        public PatternRequestValidator() => RuleFor(x => x.Code).Matches(@"^[A-Z]{3}$");
+        public PatternRequestValidator() => RuleFor(x => x.Code).Matches("^[A-Z]{3}$");
     }
 
     private sealed record EmailRequest(string Email);
@@ -369,7 +369,7 @@ public sealed class JsonSchemaWriterTests
     {
         public PatternHintRequestValidator() =>
             RuleFor(x => x.Code)
-                .Matches(@"^[A-Z]{2}$")
+                .Matches("^[A-Z]{2}$")
                 .WithPatternHint("Validation:Hint:Alpha2Code");
     }
 
@@ -391,7 +391,7 @@ public sealed class JsonSchemaWriterTests
             RuleFor(x => x.Code)
                 .NotEmpty()
                 .Length(2, 8)
-                .Matches(@"^[A-Z]+$");
+                .Matches("^[A-Z]+$");
     }
 
     private sealed record TwoFieldsRequest(string Name, int Age);

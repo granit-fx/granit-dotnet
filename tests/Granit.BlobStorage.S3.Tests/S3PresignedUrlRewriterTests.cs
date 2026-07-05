@@ -14,7 +14,7 @@ public sealed class S3PresignedUrlRewriterTests
     [Fact]
     public void ForceScheme_HttpsServiceUrl_ReturnsInputUnchanged()
     {
-        string presigned = "https://s3.eu-west-1.amazonaws.com/bucket/key?X-Amz-Signature=abc";
+        const string presigned = "https://s3.eu-west-1.amazonaws.com/bucket/key?X-Amz-Signature=abc";
 
         string result = S3PresignedUrlRewriter.ForceScheme(presigned, httpServiceUrl: null);
 
@@ -24,7 +24,7 @@ public sealed class S3PresignedUrlRewriterTests
     [Fact]
     public void ForceScheme_HttpServiceUrl_RewritesHttpsToHttpAndPreservesPort()
     {
-        string presigned = "https://localhost/showcase/2026/05/blob?X-Amz-Signature=abc";
+        const string presigned = "https://localhost/showcase/2026/05/blob?X-Amz-Signature=abc";
         Uri serviceUrl = new("http://localhost:9000");
 
         string result = S3PresignedUrlRewriter.ForceScheme(presigned, serviceUrl);
@@ -41,7 +41,7 @@ public sealed class S3PresignedUrlRewriterTests
     public void ForceScheme_HttpServiceUrlAlreadyHttp_PreservesPortFromServiceUrl()
     {
         // AWSSDK could emit either scheme; this case proves the rewriter is idempotent on http.
-        string presigned = "http://localhost:9000/bucket/key?X-Amz-Signature=abc";
+        const string presigned = "http://localhost:9000/bucket/key?X-Amz-Signature=abc";
         Uri serviceUrl = new("http://localhost:9000");
 
         string result = S3PresignedUrlRewriter.ForceScheme(presigned, serviceUrl);
@@ -56,7 +56,7 @@ public sealed class S3PresignedUrlRewriterTests
     {
         // AWS SDK may emit port 443 with https; rewriting to http must restore the service port,
         // not fall back to 80 (UriBuilder's default for the http scheme).
-        string presigned = "https://localhost:443/bucket/key?X-Amz-Signature=abc";
+        const string presigned = "https://localhost:443/bucket/key?X-Amz-Signature=abc";
         Uri serviceUrl = new("http://localhost:9123");
 
         string result = S3PresignedUrlRewriter.ForceScheme(presigned, serviceUrl);
@@ -71,7 +71,7 @@ public sealed class S3PresignedUrlRewriterTests
     {
         // Signature must remain bit-identical — host (not scheme) is in SignedHeaders, but the
         // signed query parameters (X-Amz-Signature, X-Amz-SignedHeaders, ...) must not be touched.
-        string query =
+        const string query =
             "?X-Amz-Expires=900&X-Amz-Algorithm=AWS4-HMAC-SHA256" +
             "&X-Amz-Credential=minioadmin%2F20260523%2Fus-east-1%2Fs3%2Faws4_request" +
             "&X-Amz-Date=20260523T175245Z&X-Amz-SignedHeaders=content-type%3Bhost" +

@@ -10,8 +10,8 @@ namespace Granit.ArchitectureTests;
 /// </summary>
 /// <remarks>
 /// ASP.NET Core 10 rejects an inferred body parameter on these verbs at endpoint construction
-/// (<c>InvalidOperationException: Body was inferred but the method does not allow inferred body
-/// parameters</c>), so a missing <c>[FromBody]</c> is a deployment-time regression that escapes
+/// (<code>InvalidOperationException: Body was inferred but the method does not allow inferred body
+/// parameters</code>), so a missing <c>[FromBody]</c> is a deployment-time regression that escapes
 /// compile-time checks. The scan logic lives in
 /// <see cref="ApiConventionRules.BodylessVerbHandlersShouldAnnotateRequestDtoParameters"/>
 /// (Granit.ArchitectureTests.Abstractions) so downstream repos can reuse it.

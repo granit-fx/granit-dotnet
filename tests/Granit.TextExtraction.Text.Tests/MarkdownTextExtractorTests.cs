@@ -27,7 +27,7 @@ public sealed class MarkdownTextExtractorTests
     public async Task Strips_inline_formatting()
     {
         MarkdownTextExtractor extractor = CreateExtractor();
-        using MemoryStream stream = Utf8("This is **bold** and _italic_ text.");
+        await using MemoryStream stream = Utf8("This is **bold** and _italic_ text.");
 
         TextExtractionResult result = await extractor.ExtractAsync(
             stream, "text/markdown", maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -43,7 +43,7 @@ public sealed class MarkdownTextExtractorTests
     public async Task Strips_link_syntax()
     {
         MarkdownTextExtractor extractor = CreateExtractor();
-        using MemoryStream stream = Utf8("See [the docs](https://example.com) for details.");
+        await using MemoryStream stream = Utf8("See [the docs](https://example.com) for details.");
 
         TextExtractionResult result = await extractor.ExtractAsync(
             stream, "text/markdown", maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -63,7 +63,7 @@ public sealed class MarkdownTextExtractorTests
             | ----- | ----- |
             | Alpha | Beta  |
             """;
-        using MemoryStream stream = Utf8(md);
+        await using MemoryStream stream = Utf8(md);
 
         TextExtractionResult result = await extractor.ExtractAsync(
             stream, "text/markdown", maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -79,7 +79,7 @@ public sealed class MarkdownTextExtractorTests
     {
         MarkdownTextExtractor extractor = CreateExtractor();
         string body = new('x', 5_000);
-        using MemoryStream stream = Utf8(body);
+        await using MemoryStream stream = Utf8(body);
 
         TextExtractionResult result = await extractor.ExtractAsync(
             stream, "text/markdown", maxCharLength: 100, cancellationToken: TestContext.Current.CancellationToken);
@@ -94,7 +94,7 @@ public sealed class MarkdownTextExtractorTests
     {
         ExtractionOptions options = new() { MaxBodySizeBytes = 16 };
         MarkdownTextExtractor extractor = CreateExtractor(options);
-        using MemoryStream stream = Utf8(new string('a', 4096));
+        await using MemoryStream stream = Utf8(new string('a', 4096));
 
         TextExtractionException tex = await Should.ThrowAsync<TextExtractionException>(
             async () => await extractor.ExtractAsync(

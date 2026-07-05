@@ -13,7 +13,7 @@ public sealed class Sha256ComputingStreamTests
         byte[] payload = [.. Enumerable.Range(0, 1024).Select(i => (byte)(i % 256))];
         byte[] expected = SHA256.HashData(payload);
 
-        using MemoryStream inner = new();
+        await using MemoryStream inner = new();
         await using (Sha256ComputingStream sut = new(inner, leaveOpen: true))
         {
             // Write in three uneven chunks to exercise the memory + span + offset overloads.
@@ -33,7 +33,7 @@ public sealed class Sha256ComputingStreamTests
     {
         byte[] expected = SHA256.HashData([0xAB]);
 
-        using MemoryStream inner = new();
+        await using MemoryStream inner = new();
         await using Sha256ComputingStream sut = new(inner, leaveOpen: true);
         sut.WriteByte(0xAB);
 

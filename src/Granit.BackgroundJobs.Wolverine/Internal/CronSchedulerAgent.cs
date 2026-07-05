@@ -38,7 +38,7 @@ internal sealed partial class CronSchedulerAgent(
 
         foreach (BackgroundJobDefinition job in jobs)
         {
-            if (job.NextExecutionAt.HasValue && job.NextExecutionAt.Value > clock.Now)
+            if (job.NextExecutionAt > clock.Now)
             {
                 LogJobAlreadyScheduled(logger, job.JobName, job.NextExecutionAt.Value);
                 continue;

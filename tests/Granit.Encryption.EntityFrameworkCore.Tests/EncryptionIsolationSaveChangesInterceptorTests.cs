@@ -50,7 +50,7 @@ public sealed class EncryptionIsolationSaveChangesInterceptorTests : IDisposable
             "PatientEntity", Arg.Any<string>(), Arg.Any<CancellationToken>());
 
         // Verify raw DB value is encrypted (not plaintext)
-        using SqliteCommand cmd = _connection.CreateCommand();
+        await using SqliteCommand cmd = _connection.CreateCommand();
         cmd.CommandText = "SELECT Ssn FROM Patients WHERE Name = 'Alice'";
         string? rawValue = cmd.ExecuteScalar() as string;
 
@@ -74,7 +74,7 @@ public sealed class EncryptionIsolationSaveChangesInterceptorTests : IDisposable
         await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Name is not annotated with [Encrypted] — should be stored as-is
-        using SqliteCommand cmd = _connection.CreateCommand();
+        await using SqliteCommand cmd = _connection.CreateCommand();
         cmd.CommandText = "SELECT Name FROM Patients WHERE Name = 'Bob'";
         string? rawName = cmd.ExecuteScalar() as string;
 
@@ -96,7 +96,7 @@ public sealed class EncryptionIsolationSaveChangesInterceptorTests : IDisposable
 
         await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        using SqliteCommand cmd = _connection.CreateCommand();
+        await using SqliteCommand cmd = _connection.CreateCommand();
         cmd.CommandText = "SELECT Ssn FROM Patients WHERE Name = 'Charlie'";
         object? rawValue = cmd.ExecuteScalar();
 

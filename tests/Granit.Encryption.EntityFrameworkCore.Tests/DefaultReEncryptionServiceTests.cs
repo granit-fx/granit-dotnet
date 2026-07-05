@@ -25,7 +25,7 @@ public sealed class DefaultReEncryptionServiceTests
     [Fact]
     public async Task ReEncryptAsync_MarksEncryptedProperties_AsModified_AndSaves()
     {
-        using SqliteConnection connection = new("DataSource=:memory:");
+        await using SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
         DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
@@ -33,7 +33,7 @@ public sealed class DefaultReEncryptionServiceTests
             .Options;
 
         // Seed one row
-        using (TestDbContext ctx = new(options, _encryption))
+        await using (TestDbContext ctx = new(options, _encryption))
         {
             ctx.Database.EnsureCreated();
             ctx.Patients.Add(new PatientEntity { Id = 1, Ssn = "123-45-6789", Name = "Alice" });
@@ -41,7 +41,7 @@ public sealed class DefaultReEncryptionServiceTests
         }
 
         // Verify the raw value is encrypted after initial save
-        using SqliteCommand cmd = connection.CreateCommand();
+        await using SqliteCommand cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT Ssn FROM Patients WHERE Id = 1";
         string? initialRaw = cmd.ExecuteScalar() as string;
         initialRaw.ShouldBe("ENC:123-45-6789");
@@ -61,14 +61,14 @@ public sealed class DefaultReEncryptionServiceTests
     [Fact]
     public async Task ReEncryptAsync_DoesNotTouch_NonAnnotatedProperties()
     {
-        using SqliteConnection connection = new("DataSource=:memory:");
+        await using SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
         DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
             .UseSqlite(connection)
             .Options;
 
-        using (TestDbContext ctx = new(options, _encryption))
+        await using (TestDbContext ctx = new(options, _encryption))
         {
             ctx.Database.EnsureCreated();
             ctx.Patients.Add(new PatientEntity { Id = 1, Ssn = "123-45-6789", Name = "Alice" });
@@ -89,14 +89,14 @@ public sealed class DefaultReEncryptionServiceTests
     [Fact]
     public async Task ReEncryptAsync_SkipsEntities_WhenNoEncryptedProperties()
     {
-        using SqliteConnection connection = new("DataSource=:memory:");
+        await using SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
         DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
             .UseSqlite(connection)
             .Options;
 
-        using (TestDbContext ctx = new(options, _encryption))
+        await using (TestDbContext ctx = new(options, _encryption))
         {
             ctx.Database.EnsureCreated();
         }
@@ -115,14 +115,14 @@ public sealed class DefaultReEncryptionServiceTests
     [Fact]
     public async Task ReEncryptAsync_ProcessesMultipleBatches_AllEntitiesReadable()
     {
-        using SqliteConnection connection = new("DataSource=:memory:");
+        await using SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
         DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
             .UseSqlite(connection)
             .Options;
 
-        using (TestDbContext ctx = new(options, _encryption))
+        await using (TestDbContext ctx = new(options, _encryption))
         {
             ctx.Database.EnsureCreated();
             for (int i = 1; i <= 5; i++)
@@ -140,7 +140,7 @@ public sealed class DefaultReEncryptionServiceTests
         await sut.ReEncryptAsync<PatientEntity>(batchSize: 2, cancellationToken: TestContext.Current.CancellationToken);
 
         // After re-encryption, all entities must still be readable with their original SSNs
-        using TestDbContext verify = new(options, _encryption);
+        await using TestDbContext verify = new(options, _encryption);
         var all = verify.Patients.OrderBy(p => p.Id).ToList();
 
         all.Count.ShouldBe(5);
@@ -153,14 +153,14 @@ public sealed class DefaultReEncryptionServiceTests
     [Fact]
     public async Task ReEncryptAsync_EmptyTable_CompletesWithoutError()
     {
-        using SqliteConnection connection = new("DataSource=:memory:");
+        await using SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
         DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
             .UseSqlite(connection)
             .Options;
 
-        using (TestDbContext ctx = new(options, _encryption))
+        await using (TestDbContext ctx = new(options, _encryption))
         {
             ctx.Database.EnsureCreated();
         }
@@ -179,14 +179,14 @@ public sealed class DefaultReEncryptionServiceTests
     [Fact]
     public async Task ReEncryptAsync_SingleBatch_ProcessesAllEntities()
     {
-        using SqliteConnection connection = new("DataSource=:memory:");
+        await using SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
         DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
             .UseSqlite(connection)
             .Options;
 
-        using (TestDbContext ctx = new(options, _encryption))
+        await using (TestDbContext ctx = new(options, _encryption))
         {
             ctx.Database.EnsureCreated();
             for (int i = 1; i <= 3; i++)
@@ -203,7 +203,7 @@ public sealed class DefaultReEncryptionServiceTests
         // batchSize=500 (default) > 3 rows — single batch
         await sut.ReEncryptAsync<PatientEntity>(cancellationToken: TestContext.Current.CancellationToken);
 
-        using TestDbContext verify = new(options, _encryption);
+        await using TestDbContext verify = new(options, _encryption);
         var all = verify.Patients.OrderBy(p => p.Id).ToList();
         all.Count.ShouldBe(3);
         all[0].Ssn.ShouldBe("SSN-1");
@@ -214,14 +214,14 @@ public sealed class DefaultReEncryptionServiceTests
     [Fact]
     public async Task ReEncryptAsync_ExactBatchSize_ProcessesCorrectly()
     {
-        using SqliteConnection connection = new("DataSource=:memory:");
+        await using SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
         DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
             .UseSqlite(connection)
             .Options;
 
-        using (TestDbContext ctx = new(options, _encryption))
+        await using (TestDbContext ctx = new(options, _encryption))
         {
             ctx.Database.EnsureCreated();
             // Exactly 3 entities with batchSize=3 — boundary case
@@ -239,7 +239,7 @@ public sealed class DefaultReEncryptionServiceTests
         // batchSize == row count — triggers the do-while boundary condition
         await sut.ReEncryptAsync<PatientEntity>(batchSize: 3, cancellationToken: TestContext.Current.CancellationToken);
 
-        using TestDbContext verify = new(options, _encryption);
+        await using TestDbContext verify = new(options, _encryption);
         var all = verify.Patients.OrderBy(p => p.Id).ToList();
         all.Count.ShouldBe(3);
     }

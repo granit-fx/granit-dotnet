@@ -29,7 +29,7 @@ public sealed class PdfOcrTextExtractorTests
         (PdfOcrTextExtractor extractor, IPdfRasterizer rasterizer, ITextExtractor ocr) = BuildExtractor();
 
         byte[] pdf = PdfFixtures.TextPage("hello native text extraction this should easily exceed the threshold");
-        using MemoryStream src = new(pdf);
+        await using MemoryStream src = new(pdf);
 
         TextExtractionResult result = await extractor.ExtractAsync(src, Pdf, 4096, TestContext.Current.CancellationToken);
 
@@ -62,7 +62,7 @@ public sealed class PdfOcrTextExtractorTests
                 Confidence: ExtractionConfidence.Heuristic));
 
         byte[] pdf = PdfFixtures.EmptyPage();
-        using MemoryStream src = new(pdf);
+        await using MemoryStream src = new(pdf);
 
         TextExtractionResult result = await extractor.ExtractAsync(src, Pdf, 4096, TestContext.Current.CancellationToken);
 
@@ -93,7 +93,7 @@ public sealed class PdfOcrTextExtractorTests
 
         byte[] pdf = PdfFixtures.MixedTextThenScanned(
             "page one with enough native text to clear the threshold here");
-        using MemoryStream src = new(pdf);
+        await using MemoryStream src = new(pdf);
 
         TextExtractionResult result = await extractor.ExtractAsync(src, Pdf, 4096, TestContext.Current.CancellationToken);
 
@@ -117,7 +117,7 @@ public sealed class PdfOcrTextExtractorTests
         (PdfOcrTextExtractor extractor, IPdfRasterizer rasterizer, _) = BuildExtractor(includeOcr: false);
 
         byte[] pdf = PdfFixtures.EmptyPage();
-        using MemoryStream src = new(pdf);
+        await using MemoryStream src = new(pdf);
 
         TextExtractionResult result = await extractor.ExtractAsync(src, Pdf, 4096, TestContext.Current.CancellationToken);
 
@@ -136,7 +136,7 @@ public sealed class PdfOcrTextExtractorTests
         ocr.CanHandle(ImagePng).Returns(true);
 
         byte[] pdf = PdfFixtures.EmptyPage();
-        using MemoryStream src = new(pdf);
+        await using MemoryStream src = new(pdf);
 
         TextExtractionResult result = await extractor.ExtractAsync(src, Pdf, 4096, TestContext.Current.CancellationToken);
 
@@ -165,7 +165,7 @@ public sealed class PdfOcrTextExtractorTests
             .ReturnsForAnyArgs(new TextExtractionResult("page", null, false, 4, "fake.ocr", ExtractionConfidence.Heuristic));
 
         byte[] pdf = PdfFixtures.EmptyPages(5);
-        using MemoryStream src = new(pdf);
+        await using MemoryStream src = new(pdf);
 
         TextExtractionResult result = await extractor.ExtractAsync(src, Pdf, 4096, TestContext.Current.CancellationToken);
 
@@ -179,7 +179,7 @@ public sealed class PdfOcrTextExtractorTests
     {
         (PdfOcrTextExtractor extractor, _, _) = BuildExtractor();
 
-        using MemoryStream src = new(PdfFixtures.Malformed());
+        await using MemoryStream src = new(PdfFixtures.Malformed());
 
         TextExtractionResult result = await extractor.ExtractAsync(src, Pdf, 4096, TestContext.Current.CancellationToken);
 
@@ -199,7 +199,7 @@ public sealed class PdfOcrTextExtractorTests
         ocr.CanHandle(ImagePng).Returns(true);
 
         byte[] pdf = PdfFixtures.EmptyPage();
-        using MemoryStream src = new(pdf);
+        await using MemoryStream src = new(pdf);
 
         TextExtractionResult result = await extractor.ExtractAsync(src, Pdf, 4096, TestContext.Current.CancellationToken);
 

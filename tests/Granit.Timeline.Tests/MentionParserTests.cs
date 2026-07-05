@@ -15,7 +15,7 @@ public sealed class MentionParserTests
     [Fact]
     public void ExtractMentionedUserIds_WithValidMention_ReturnsUserId()
     {
-        string body = "Hello @[Dr. Martin](user:550e8400-e29b-41d4-a716-446655440000), please review.";
+        const string body = "Hello @[Dr. Martin](user:550e8400-e29b-41d4-a716-446655440000), please review.";
 
         IReadOnlyList<string> result = MentionParser.ExtractMentionedUserIds(body);
 
@@ -26,7 +26,7 @@ public sealed class MentionParserTests
     [Fact]
     public void ExtractMentionedUserIds_WithMultipleMentions_ReturnsDistinctUserIds()
     {
-        string body = "@[Alice](user:aaaaaaaa-0000-0000-0000-000000000001) and @[Bob](user:bbbbbbbb-0000-0000-0000-000000000002) are assigned.";
+        const string body = "@[Alice](user:aaaaaaaa-0000-0000-0000-000000000001) and @[Bob](user:bbbbbbbb-0000-0000-0000-000000000002) are assigned.";
 
         IReadOnlyList<string> result = MentionParser.ExtractMentionedUserIds(body);
 
@@ -38,7 +38,7 @@ public sealed class MentionParserTests
     [Fact]
     public void ExtractMentionedUserIds_WithDuplicateMention_ReturnsDistinct()
     {
-        string body = "@[Dr. Martin](user:550e8400-e29b-41d4-a716-446655440000) said hi. @[Dr. Martin](user:550e8400-e29b-41d4-a716-446655440000) confirmed.";
+        const string body = "@[Dr. Martin](user:550e8400-e29b-41d4-a716-446655440000) said hi. @[Dr. Martin](user:550e8400-e29b-41d4-a716-446655440000) confirmed.";
 
         IReadOnlyList<string> result = MentionParser.ExtractMentionedUserIds(body);
 
@@ -48,7 +48,7 @@ public sealed class MentionParserTests
     [Fact]
     public void ExtractMentionedUserIds_WithInvalidFormat_ReturnsEmpty()
     {
-        string body = "Hello @invalid and @[Name](wrong:123) are not valid mentions.";
+        const string body = "Hello @invalid and @[Name](wrong:123) are not valid mentions.";
 
         IReadOnlyList<string> result = MentionParser.ExtractMentionedUserIds(body);
 
@@ -74,7 +74,7 @@ public sealed class MentionParserTests
     [Fact]
     public void ExtractMentionedUserIds_WithMixedValidAndInvalid_ReturnsOnlyValid()
     {
-        string body = "@[Valid](user:12345678-1234-1234-1234-123456789012) and @[Invalid](user:not-a-guid) and @plain.";
+        const string body = "@[Valid](user:12345678-1234-1234-1234-123456789012) and @[Invalid](user:not-a-guid) and @plain.";
 
         IReadOnlyList<string> result = MentionParser.ExtractMentionedUserIds(body);
 

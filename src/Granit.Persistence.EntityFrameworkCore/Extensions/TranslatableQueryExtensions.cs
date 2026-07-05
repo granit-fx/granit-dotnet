@@ -104,8 +104,8 @@ public static class TranslatableQueryExtensions
     /// Entities without a translation in the requested culture sort last.
     /// </summary>
     /// <remarks>
-    /// Translates to SQL: <c>ORDER BY (SELECT t.Column FROM Translations t
-    /// WHERE t.ParentId = e.Id AND t.Culture = @c LIMIT 1)</c>
+    /// Translates to SQL: <code>ORDER BY (SELECT t.Column FROM Translations t
+    /// WHERE t.ParentId = e.Id AND t.Culture = @c LIMIT 1)</code>
     /// </remarks>
     /// <example>
     /// <code>

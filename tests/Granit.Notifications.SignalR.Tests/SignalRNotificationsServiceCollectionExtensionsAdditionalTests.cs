@@ -40,10 +40,7 @@ public sealed class SignalRNotificationsServiceCollectionExtensionsAdditionalTes
     {
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-        services.AddGranitNotificationsSignalR(opts =>
-        {
-            opts.RedisConnectionString = "localhost:6379";
-        });
+        services.AddGranitNotificationsSignalR(opts => opts.RedisConnectionString = "localhost:6379");
 
         using ServiceProvider sp = services.BuildServiceProvider();
         IOptions<SignalRChannelOptions> options = sp.GetRequiredService<IOptions<SignalRChannelOptions>>();

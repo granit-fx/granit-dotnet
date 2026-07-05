@@ -88,7 +88,7 @@ public sealed class MagickNetImagePipelineWatermarkTests
     public async Task Watermark_FromStream_ProducesValidOutput()
     {
         await using MagickNetImagePipeline pipeline = CreatePipeline();
-        using MemoryStream watermarkStream = CreateWatermarkStream();
+        await using MemoryStream watermarkStream = CreateWatermarkStream();
 
         ImageResult result = await pipeline
             .Watermark(watermarkStream, WatermarkPosition.BottomRight, 0.5f)

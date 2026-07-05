@@ -21,7 +21,7 @@ public sealed class PlainTextExtractorTests
     public async Task Extracts_full_text_when_under_cap()
     {
         PlainTextExtractor extractor = CreateExtractor();
-        using MemoryStream stream = Utf8("hello world");
+        await using MemoryStream stream = Utf8("hello world");
 
         TextExtractionResult result = await extractor.ExtractAsync(
             stream,
@@ -42,7 +42,7 @@ public sealed class PlainTextExtractorTests
         byte[] bom = [0xEF, 0xBB, 0xBF];
         byte[] payload = Encoding.UTF8.GetBytes("café");
         byte[] full = [.. bom, .. payload];
-        using MemoryStream stream = new(full);
+        await using MemoryStream stream = new(full);
 
         PlainTextExtractor extractor = CreateExtractor();
         TextExtractionResult result = await extractor.ExtractAsync(
@@ -60,7 +60,7 @@ public sealed class PlainTextExtractorTests
     {
         PlainTextExtractor extractor = CreateExtractor();
         string payload = new('x', 1024);
-        using MemoryStream stream = Utf8(payload);
+        await using MemoryStream stream = Utf8(payload);
 
         TextExtractionResult result = await extractor.ExtractAsync(
             stream,
@@ -78,7 +78,7 @@ public sealed class PlainTextExtractorTests
     {
         ExtractionOptions options = new() { MaxBodySizeBytes = 8 };
         PlainTextExtractor extractor = CreateExtractor(options);
-        using MemoryStream stream = Utf8(new string('a', 1024));
+        await using MemoryStream stream = Utf8(new string('a', 1024));
 
         TextExtractionException tex = await Should.ThrowAsync<TextExtractionException>(
             async () => await extractor.ExtractAsync(

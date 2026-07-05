@@ -19,15 +19,14 @@ namespace Granit.Identity.EntityFrameworkCore.Tests;
 internal sealed class TestDbContextFactory : IDbContextFactory<IdentityDbContext>, IDisposable
 {
     private readonly SqliteConnection _connection;
-    private readonly DbContextOptions<IdentityDbContext> _options;
 
     private TestDbContextFactory(SqliteConnection connection, DbContextOptions<IdentityDbContext> options)
     {
         _connection = connection;
-        _options = options;
+        Options = options;
     }
 
-    public DbContextOptions<IdentityDbContext> Options => _options;
+    public DbContextOptions<IdentityDbContext> Options { get; }
 
     public static TestDbContextFactory Create()
     {
@@ -49,7 +48,7 @@ internal sealed class TestDbContextFactory : IDbContextFactory<IdentityDbContext
         return new TestDbContextFactory(connection, options);
     }
 
-    public IdentityDbContext CreateDbContext() => new(_options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant);
+    public IdentityDbContext CreateDbContext() => new(Options, new PassthroughEncryption(), GranitDesignTime.CurrentTenant);
 
     public void Dispose() => _connection.Dispose();
 

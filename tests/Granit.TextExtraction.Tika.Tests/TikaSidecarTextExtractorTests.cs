@@ -66,7 +66,7 @@ public sealed class TikaSidecarTextExtractorTests
     {
         (TikaSidecarTextExtractor extractor, StubHttpMessageHandler handler) = CreateExtractor(
             StubHttpMessageHandler.RespondWith(HttpStatusCode.OK, "Hello from Tika."));
-        using MemoryStream input = Utf8("{rtf body}");
+        await using MemoryStream input = Utf8("{rtf body}");
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Rtf, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -91,7 +91,7 @@ public sealed class TikaSidecarTextExtractorTests
         string payload = new('x', 5_000);
         (TikaSidecarTextExtractor extractor, _) = CreateExtractor(
             StubHttpMessageHandler.RespondWith(HttpStatusCode.OK, payload));
-        using MemoryStream input = Utf8("any");
+        await using MemoryStream input = Utf8("any");
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Rtf, maxCharLength: 100, cancellationToken: TestContext.Current.CancellationToken);
@@ -105,7 +105,7 @@ public sealed class TikaSidecarTextExtractorTests
     {
         ExtractionOptions extraction = new() { MaxBodySizeBytes = 16 };
         (TikaSidecarTextExtractor extractor, _) = CreateExtractor(extractionOptions: extraction);
-        using MemoryStream input = Utf8(new string('a', 4096));
+        await using MemoryStream input = Utf8(new string('a', 4096));
 
         TextExtraction.Exceptions.TextExtractionException tex =
             await Should.ThrowAsync<TextExtraction.Exceptions.TextExtractionException>(
@@ -123,7 +123,7 @@ public sealed class TikaSidecarTextExtractorTests
     {
         (TikaSidecarTextExtractor extractor, _) = CreateExtractor(
             StubHttpMessageHandler.RespondWith(status, "ignored body"));
-        using MemoryStream input = Utf8("body");
+        await using MemoryStream input = Utf8("body");
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Rtf, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -137,7 +137,7 @@ public sealed class TikaSidecarTextExtractorTests
     {
         (TikaSidecarTextExtractor extractor, _) = CreateExtractor(
             StubHttpMessageHandler.Throws(new HttpRequestException("DNS down")));
-        using MemoryStream input = Utf8("body");
+        await using MemoryStream input = Utf8("body");
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Rtf, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -151,7 +151,7 @@ public sealed class TikaSidecarTextExtractorTests
     {
         // Defence against Tika SSRF/fetch-recursion CVEs via embedded parsing.
         (TikaSidecarTextExtractor extractor, StubHttpMessageHandler handler) = CreateExtractor();
-        using MemoryStream input = Utf8("body");
+        await using MemoryStream input = Utf8("body");
 
         _ = await extractor.ExtractAsync(input, Rtf, 1024, TestContext.Current.CancellationToken);
 
@@ -170,7 +170,7 @@ public sealed class TikaSidecarTextExtractorTests
             SkipEmbeddedResources = false,
         };
         (TikaSidecarTextExtractor extractor, StubHttpMessageHandler handler) = CreateExtractor(tikaOptions: opts);
-        using MemoryStream input = Utf8("body");
+        await using MemoryStream input = Utf8("body");
 
         _ = await extractor.ExtractAsync(input, Rtf, 1024, TestContext.Current.CancellationToken);
 

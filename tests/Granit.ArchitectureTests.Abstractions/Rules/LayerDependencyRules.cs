@@ -92,8 +92,8 @@ public static class LayerDependencyRules
             .Where(c => (c.Namespace.FullName.EndsWith(".Endpoints", StringComparison.Ordinal) ||
                          c.Namespace.FullName.Contains(".Endpoints.", StringComparison.Ordinal))
                 && c.Dependencies
-                    .Where(d => d is ArchUnitNET.Domain.Dependencies.InheritsBaseClassDependency)
-                    .Any(d => domainBaseClasses.Contains(d.Target.FullName)));
+                    .Any(d => d is ArchUnitNET.Domain.Dependencies.InheritsBaseClassDependency && domainBaseClasses.Contains(d.Target.FullName))
+);
 
         violations.ShouldBeEmpty(
             "Endpoint types must not inherit from domain entity base classes — use standalone Request/Response DTOs. " +
@@ -157,12 +157,7 @@ public static class LayerDependencyRules
 
         IEnumerable<IType> violators = architecture.Types
             .Where(t => !allowedNamespaceFragments.Any(ns =>
-                t.Namespace.FullName.Contains(ns, StringComparison.Ordinal)))
-            .Where(t => !t.Name.EndsWith("QueryableSource", StringComparison.Ordinal))
-            .Where(t => !t.Name.EndsWith("EndpointRouteBuilderExtensions", StringComparison.Ordinal))
-            .Where(t => !t.Name.EndsWith("DataSource", StringComparison.Ordinal))
-            .Where(t => !t.Name.EndsWith("MetricDefinition", StringComparison.Ordinal))
-            .Where(t => t.Dependencies
+                t.Namespace.FullName.Contains(ns, StringComparison.Ordinal)) && !t.Name.EndsWith("QueryableSource", StringComparison.Ordinal) && !t.Name.EndsWith("EndpointRouteBuilderExtensions", StringComparison.Ordinal) && !t.Name.EndsWith("DataSource", StringComparison.Ordinal) && !t.Name.EndsWith("MetricDefinition", StringComparison.Ordinal) && t.Dependencies
                 .Any(d => d.Target.FullName.StartsWith("System.Linq.IQueryable", StringComparison.Ordinal)));
 
         violators.ShouldBeEmpty(
@@ -189,8 +184,7 @@ public static class LayerDependencyRules
         ];
 
         IEnumerable<IType> nonEndpointTypes = architecture.Types
-            .Where(t => t.Namespace.FullName.StartsWith(namespacePrefix, StringComparison.Ordinal))
-            .Where(t => !t.Namespace.FullName.EndsWith(".Endpoints", StringComparison.Ordinal)
+            .Where(t => t.Namespace.FullName.StartsWith(namespacePrefix, StringComparison.Ordinal) && !t.Namespace.FullName.EndsWith(".Endpoints", StringComparison.Ordinal)
                 && !t.Namespace.FullName.Contains(".Endpoints.", StringComparison.Ordinal));
 
         IEnumerable<IType> violators = nonEndpointTypes

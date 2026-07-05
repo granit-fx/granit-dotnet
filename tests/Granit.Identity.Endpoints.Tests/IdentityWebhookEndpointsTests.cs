@@ -64,10 +64,7 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
         builder.Services.Replace(ServiceDescriptor.Singleton<TimeProvider>(_clock));
 
         // Configure webhook with a secret
-        builder.Services.Configure<IdentityWebhookOptions>(o =>
-        {
-            o.Secret = WebhookSecret;
-        });
+        builder.Services.Configure<IdentityWebhookOptions>(o => o.Secret = WebhookSecret);
 
         _app = builder.Build();
         _app.MapGranitIdentityUserCache();
@@ -197,7 +194,7 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
     [Fact]
     public async Task Webhook_invalid_json_returns_400()
     {
-        string invalidJson = "{ not valid json }}}";
+        const string invalidJson = "{ not valid json }}}";
         byte[] body = Encoding.UTF8.GetBytes(invalidJson);
         string signature = ComputeSignature(body, _clock.GetUtcNow());
 

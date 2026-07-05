@@ -58,7 +58,7 @@ public sealed class SqliteDbContextFactoryAdditionalTests
         clock.Now = customTime;
 
         using SqliteDbContextFactory<TestDbContext> factory = new(clock: clock);
-        using TestDbContext context = factory.CreateContext();
+        await using TestDbContext context = factory.CreateContext();
 
         TestAuditedEntity entity = new() { Name = "ClockTest" };
         context.AuditedEntities.Add(entity);
@@ -74,7 +74,7 @@ public sealed class SqliteDbContextFactoryAdditionalTests
         user.UserId = "custom-user-id";
 
         using SqliteDbContextFactory<TestDbContext> factory = new(user: user);
-        using TestDbContext context = factory.CreateContext();
+        await using TestDbContext context = factory.CreateContext();
 
         TestAuditedEntity entity = new() { Name = "UserTest" };
         context.AuditedEntities.Add(entity);
@@ -99,7 +99,7 @@ public sealed class SqliteDbContextFactoryAdditionalTests
         FakeGuidGenerator guidGenerator = new(expectedId);
 
         using SqliteDbContextFactory<TestDbContext> factory = new(guidGenerator: guidGenerator);
-        using TestDbContext context = factory.CreateContext();
+        await using TestDbContext context = factory.CreateContext();
 
         TestAuditedEntity entity = new() { Name = "GuidTest" };
         context.AuditedEntities.Add(entity);

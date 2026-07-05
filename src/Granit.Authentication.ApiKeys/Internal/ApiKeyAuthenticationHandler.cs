@@ -89,7 +89,7 @@ internal sealed partial class ApiKeyAuthenticationHandler(
             return AuthenticateResult.Fail("API key has been revoked.");
         }
 
-        if (apiKey.ExpiresAt.HasValue && apiKey.ExpiresAt.Value <= now)
+        if (apiKey.ExpiresAt <= now)
         {
             LogApiKeyExpired(Logger, apiKey.Id);
             await TryWriteFailureAuditAsync("api_key_expired", apiKey.Id, apiKey.Name, apiKey.TenantId)

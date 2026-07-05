@@ -107,7 +107,7 @@ public sealed class PermissionDefinitionRegistryTests
         PermissionDefinitionRegistry manager = new(providers);
 
         // Assert — le groupe "Administration" n'est présent qu'une fois
-        manager.GetGroups().Where(g => g.Name == "Administration").Count().ShouldBe(1);
+        manager.GetGroups().Count(g => g.Name == "Administration").ShouldBe(1);
     }
 
     // =========================================================================
@@ -224,7 +224,7 @@ public sealed class PermissionDefinitionRegistryTests
         manager.Exists("Administration.Users.Read").ShouldBeTrue();
         manager.Exists("Administration.Reports.Export").ShouldBeTrue();
         manager.Exists("Administration.Settings.Manage").ShouldBeTrue();
-        manager.GetGroups().Where(g => g.Name == "Administration").Count().ShouldBe(1);
+        manager.GetGroups().Count(g => g.Name == "Administration").ShouldBe(1);
     }
 
     // --- Test doubles ---

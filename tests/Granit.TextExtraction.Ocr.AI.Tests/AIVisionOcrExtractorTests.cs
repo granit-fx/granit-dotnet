@@ -76,7 +76,7 @@ public sealed class AIVisionOcrExtractorTests
             });
 
         byte[] imageBytes = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]; // PNG magic
-        using MemoryStream input = new(imageBytes);
+        await using MemoryStream input = new(imageBytes);
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -102,7 +102,7 @@ public sealed class AIVisionOcrExtractorTests
             Messages = [new ChatMessage(ChatRole.Assistant, new string('x', 5_000))],
         };
         (AIVisionOcrExtractor extractor, _, _) = CreateExtractor(big);
-        using MemoryStream input = Bytes(8);
+        await using MemoryStream input = Bytes(8);
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 100, cancellationToken: TestContext.Current.CancellationToken);
@@ -116,7 +116,7 @@ public sealed class AIVisionOcrExtractorTests
     {
         ExtractionOptions extraction = new() { MaxBodySizeBytes = 16 };
         (AIVisionOcrExtractor extractor, _, _) = CreateExtractor(extractionOptions: extraction);
-        using MemoryStream input = Bytes(4096);
+        await using MemoryStream input = Bytes(4096);
 
         TextExtraction.Exceptions.TextExtractionException tex =
             await Should.ThrowAsync<TextExtraction.Exceptions.TextExtractionException>(
@@ -140,7 +140,7 @@ public sealed class AIVisionOcrExtractorTests
             MEOptions.Create(new ExtractionOptions()),
             MEOptions.Create(new AIVisionOcrOptions()),
             NullLogger<AIVisionOcrExtractor>.Instance);
-        using MemoryStream input = Bytes(8);
+        await using MemoryStream input = Bytes(8);
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -171,7 +171,7 @@ public sealed class AIVisionOcrExtractorTests
             MEOptions.Create(new ExtractionOptions()),
             MEOptions.Create(new AIVisionOcrOptions()),
             NullLogger<AIVisionOcrExtractor>.Instance);
-        using MemoryStream input = Bytes(8);
+        await using MemoryStream input = Bytes(8);
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -185,7 +185,7 @@ public sealed class AIVisionOcrExtractorTests
     {
         AIVisionOcrOptions opts = new() { WorkspaceName = "vision-ocr-fr" };
         (AIVisionOcrExtractor extractor, _, IAIChatClientFactory factory) = CreateExtractor(ocrOptions: opts);
-        using MemoryStream input = Bytes(8);
+        await using MemoryStream input = Bytes(8);
 
         await extractor.ExtractAsync(
             input, Png, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -201,7 +201,7 @@ public sealed class AIVisionOcrExtractorTests
 
         (AIVisionOcrExtractor extractor, IChatClient chatClient, _) =
             CreateExtractor(promptBuilder: customPrompt);
-        using MemoryStream input = Bytes(8);
+        await using MemoryStream input = Bytes(8);
 
         await extractor.ExtractAsync(
             input, Png, maxCharLength: 512, cancellationToken: TestContext.Current.CancellationToken);
@@ -226,7 +226,7 @@ public sealed class AIVisionOcrExtractorTests
         {
             Messages = [new ChatMessage(ChatRole.Assistant, modelEcho)],
         });
-        using MemoryStream input = Bytes(8);
+        await using MemoryStream input = Bytes(8);
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -243,7 +243,7 @@ public sealed class AIVisionOcrExtractorTests
         {
             Messages = [new ChatMessage(ChatRole.Assistant, "<granit-vlm-ocr>body</granit-vlm-ocr>")],
         });
-        using MemoryStream input = Bytes(8);
+        await using MemoryStream input = Bytes(8);
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -261,7 +261,7 @@ public sealed class AIVisionOcrExtractorTests
         {
             Messages = [new ChatMessage(ChatRole.Assistant, "   plain transcription   ")],
         });
-        using MemoryStream input = Bytes(8);
+        await using MemoryStream input = Bytes(8);
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);

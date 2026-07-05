@@ -82,7 +82,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_OperationCanceled_ReturnsTrueWithoutWritingResponse()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
         var handler = (GranitExceptionHandler)sp
             .GetRequiredService<Microsoft.AspNetCore.Diagnostics.IExceptionHandler>();
 
@@ -99,7 +99,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_TaskCanceledException_ReturnsTrueWithoutWritingResponse()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
         var handler = (GranitExceptionHandler)sp
             .GetRequiredService<Microsoft.AspNetCore.Diagnostics.IExceptionHandler>();
 
@@ -121,7 +121,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_EntityNotFoundException_ReturnsStatus404()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
             sp, new EntityNotFoundException(typeof(object), 1));
@@ -132,7 +132,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_NotFoundException_ReturnsStatus404()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
             sp, new NotFoundException("Resource not found"));
@@ -143,7 +143,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_BusinessException_ReturnsStatus400()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
             sp, new BusinessException("Test:Error", "Business rule violated."));
@@ -154,7 +154,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_ValidationException_ReturnsStatus422()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
         Dictionary<string, string[]> errors = new() { ["Email"] = ["Required"] };
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
@@ -166,7 +166,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_ForbiddenException_ReturnsStatus403()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
             sp, new ForbiddenException("Access denied"));
@@ -177,7 +177,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_UnauthorizedAccessException_ReturnsStatus403()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
             sp, new UnauthorizedAccessException("Not authorized"));
@@ -188,7 +188,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_ConflictException_ReturnsStatus409()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
             sp, new ConflictException("Test:Conflict"));
@@ -199,7 +199,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_NotImplementedException_ReturnsStatus501()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
             sp, new NotImplementedException("Feature not implemented"));
@@ -210,7 +210,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_TimeoutException_ReturnsStatus408()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
             sp, new TimeoutException("Request timed out"));
@@ -221,7 +221,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_UnknownException_ReturnsStatus500()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
             sp, new InvalidOperationException("Something went wrong"));
@@ -242,7 +242,7 @@ public sealed class GranitExceptionHandlerTests
         // so it's tried first in the chain
         services.AddSingleton<IExceptionStatusCodeMapper, ArgumentExceptionMapper>();
         services.AddGranitExceptionHandling();
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
             sp, new ArgumentException("Bad argument"));
@@ -258,7 +258,7 @@ public sealed class GranitExceptionHandlerTests
         services.AddLogging();
         services.AddSingleton<IExceptionStatusCodeMapper, NullReturningMapper>();
         services.AddGranitExceptionHandling();
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
             sp, new InvalidOperationException("generic error"));
@@ -274,7 +274,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_AnyException_TraceIdPresentInExtensions()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (_, IDictionary<string, object?> extensions, _, _) = await InvokeHandlerAsync(
             sp, new BusinessException("Test:Error"));
@@ -286,7 +286,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_WithActivityCurrent_UsesActivityTraceId()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
         using ActivitySource source = new("TestSource");
         using ActivityListener listener = new()
         {
@@ -310,7 +310,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_WithoutActivityCurrent_UsesHttpContextTraceIdentifier()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
         var handler = (GranitExceptionHandler)sp
             .GetRequiredService<Microsoft.AspNetCore.Diagnostics.IExceptionHandler>();
 
@@ -338,7 +338,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_BusinessException_ErrorCodeInExtensions()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (_, IDictionary<string, object?> extensions, _, _) = await InvokeHandlerAsync(
             sp, new BusinessException("Appointment:SlotUnavailable", "Slot unavailable."));
@@ -349,7 +349,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_EntityNotFoundException_NoErrorCodeInExtensions()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (_, IDictionary<string, object?> extensions, _, _) = await InvokeHandlerAsync(
             sp, new EntityNotFoundException(typeof(object), 99));
@@ -364,7 +364,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_ValidationException_ErrorsInExtensions()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
         Dictionary<string, string[]> errors = new()
         {
             ["Email"] = ["Email is required."],
@@ -381,7 +381,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_NonValidationException_NoErrorsInExtensions()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (_, IDictionary<string, object?> extensions, _, _) = await InvokeHandlerAsync(
             sp, new BusinessException("Test:Error", "Some error"));
@@ -397,7 +397,7 @@ public sealed class GranitExceptionHandlerTests
     public async Task TryHandleAsync_InternalException_Production_TitleIsMasked()
     {
         // ExposeInternalErrorDetails = false (default = production behaviour)
-        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
+        await using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
 
         (_, _, string? title, _) = await InvokeHandlerAsync(
             sp, new InvalidOperationException("Patient#12345 caused NullRef"));
@@ -411,7 +411,7 @@ public sealed class GranitExceptionHandlerTests
     public async Task TryHandleAsync_InternalException_Development_TitleExposesMessage()
     {
         // ExposeInternalErrorDetails = true (development/staging)
-        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = true);
+        await using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = true);
 
         (_, _, string? title, _) = await InvokeHandlerAsync(
             sp, new InvalidOperationException("Detailed dev error"));
@@ -422,7 +422,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_InternalException_Production_DetailIsNull()
     {
-        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
+        await using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
 
         (_, _, _, string? detail) = await InvokeHandlerAsync(
             sp, new InvalidOperationException("Sensitive SQL query here"));
@@ -433,7 +433,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_InternalException_Development_DetailExposesStackTrace()
     {
-        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = true);
+        await using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = true);
 
         (_, _, _, string? detail) = await InvokeHandlerAsync(
             sp, new InvalidOperationException("Dev mode exception"));
@@ -449,7 +449,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_BusinessException_TitleEqualsMessage()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (_, _, string? title, _) = await InvokeHandlerAsync(
             sp, new BusinessException("Test:Error", "The business rule was violated."));
@@ -460,7 +460,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_UserFriendlyException_DetailIsNull()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (_, _, _, string? detail) = await InvokeHandlerAsync(
             sp, new BusinessException("Test:Error", "User-friendly message"));
@@ -481,7 +481,7 @@ public sealed class GranitExceptionHandlerTests
     public async Task TryHandleAsync_4xxNonUserFriendly_Production_TitleIsGeneric()
     {
         // UnauthorizedAccessException is not IUserFriendlyException but maps to 403
-        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
+        await using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
 
         (_, _, string? title, _) = await InvokeHandlerAsync(
             sp, new UnauthorizedAccessException("User 'alice@x.com' denied tenant 'acme'"));
@@ -497,7 +497,7 @@ public sealed class GranitExceptionHandlerTests
         // TimeoutException (.NET built-in) is NOT IUserFriendlyException — its
         // message may reference internal service URLs, SQL fragments, etc.
         // Maps to 408 via DefaultExceptionStatusCodeMapper.
-        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
+        await using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
 
         (_, _, string? title, _) = await InvokeHandlerAsync(
             sp, new TimeoutException("SQL query to 'internal-db-01' timed out after 30s"));
@@ -509,7 +509,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_4xxNonUserFriendly_Development_TitleExposesMessage()
     {
-        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = true);
+        await using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = true);
 
         (_, _, string? title, _) = await InvokeHandlerAsync(
             sp, new UnauthorizedAccessException("Access denied to resource X"));
@@ -520,7 +520,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_4xxNonUserFriendly_DetailIsNull()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (_, _, _, string? detail) = await InvokeHandlerAsync(
             sp, new UnauthorizedAccessException("Access denied"));
@@ -533,7 +533,7 @@ public sealed class GranitExceptionHandlerTests
     {
         // IUserFriendlyException is deliberately exposed even in production — the
         // opt-in contract for messages that are safe to show to the client.
-        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
+        await using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
 
         (_, _, string? title, _) = await InvokeHandlerAsync(
             sp, new BusinessException("Appointment:SlotUnavailable", "Slot already booked."));
@@ -558,7 +558,7 @@ public sealed class GranitExceptionHandlerTests
         services.AddLogging();
         services.AddSingleton(mockLocalizerFactory);
         services.AddGranitExceptionHandling();
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         (_, _, string? title, _) = await InvokeHandlerAsync(sp, new DomainException("Domain:ErrorCode"));
 
@@ -578,7 +578,7 @@ public sealed class GranitExceptionHandlerTests
         services.AddLogging();
         services.AddSingleton(mockLocalizerFactory);
         services.AddGranitExceptionHandling();
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         (_, _, string? title, _) = await InvokeHandlerAsync(
             sp, new UserFriendlyDomainException("Domain:MissingCode", "Friendly fallback message"));
@@ -591,7 +591,7 @@ public sealed class GranitExceptionHandlerTests
     public async Task TryHandleAsync_IHasErrorCode_NoLocalizerFactory_FallsBackToExceptionMessage()
     {
         // No IStringLocalizerFactory registered
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (_, _, string? title, _) = await InvokeHandlerAsync(
             sp, new UserFriendlyDomainException("Test:Code", "User-friendly message"));
@@ -613,7 +613,7 @@ public sealed class GranitExceptionHandlerTests
         services.AddLogging();
         services.AddSingleton(mockLocalizerFactory);
         services.AddGranitExceptionHandling();
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         (_, _, string? title, _) = await InvokeHandlerAsync(
             sp, new DomainException("SimpleErrorCode"));
@@ -635,7 +635,7 @@ public sealed class GranitExceptionHandlerTests
         services.AddLogging();
         services.AddSingleton(mockLocalizerFactory);
         services.AddGranitExceptionHandling();
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         (_, _, string? title, _) = await InvokeHandlerAsync(
             sp, new DomainException("Module:Sub:Detail"));
@@ -654,7 +654,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_BadHttpRequestException_ReturnsStatus400()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
             sp, CreateMalformedBodyException("$.definition.chartType"));
@@ -665,7 +665,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_BadHttpRequestException_ExposesErrorCodeAndJsonPath()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (_, IDictionary<string, object?> extensions, _, _) = await InvokeHandlerAsync(
             sp, CreateMalformedBodyException("$.definition.chartType"));
@@ -681,7 +681,7 @@ public sealed class GranitExceptionHandlerTests
     {
         // ExposeInternalErrorDetails = false (production). The raw JSON parsing
         // message may echo the offending value — it must never reach the client.
-        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
+        await using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
 
         BadHttpRequestException exception = CreateMalformedBodyException(
             "$.definition.chartType",
@@ -702,7 +702,7 @@ public sealed class GranitExceptionHandlerTests
     [Fact]
     public async Task TryHandleAsync_BusinessRuleViolationException_ReturnsStatus422()
     {
-        using ServiceProvider sp = BuildServiceProvider();
+        await using ServiceProvider sp = BuildServiceProvider();
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
             sp, new BusinessRuleViolationException("Rule:Violated"));

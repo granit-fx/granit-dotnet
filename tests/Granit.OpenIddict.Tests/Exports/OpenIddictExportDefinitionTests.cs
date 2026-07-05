@@ -12,7 +12,7 @@ public sealed class OpenIddictExportDefinitionTests
 
     private static readonly OpenIddictApplicationExportDefinition AppSut = new();
     private static IReadOnlyList<ExportFieldDescriptor> AppFields =>
-        ((IExportDefinitionDescriptor)AppSut).GetFields();
+        AppSut.GetFields();
 
     [Fact]
     public void Application_Name_is_stable() =>
@@ -82,7 +82,7 @@ public sealed class OpenIddictExportDefinitionTests
 
     private static readonly OpenIddictScopeExportDefinition ScopeSut = new();
     private static IReadOnlyList<ExportFieldDescriptor> ScopeFields =>
-        ((IExportDefinitionDescriptor)ScopeSut).GetFields();
+        ScopeSut.GetFields();
 
     [Fact]
     public void Scope_Name_is_stable() =>

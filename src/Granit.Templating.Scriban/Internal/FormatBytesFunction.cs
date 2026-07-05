@@ -11,8 +11,8 @@ namespace Granit.Templating.Scriban.Internal;
 /// </summary>
 /// <remarks>
 /// <para>Usage in templates:</para>
-/// <code>{{ model.usage_bytes | format_bytes }}</code>
-/// <code>Storage: {{ model.usage_bytes | format_bytes }} of {{ model.limit_bytes | format_bytes }}</code>
+/// <c>{{ model.usage_bytes | format_bytes }}</c>
+/// <c>Storage: {{ model.usage_bytes | format_bytes }} of {{ model.limit_bytes | format_bytes }}</c>
 /// <para>
 /// Uses 1024-based ("binary") units so 1 KB = 1024 bytes, matching the convention
 /// used elsewhere in Granit (<c>BlobUploadRequest.MaxAllowedBytes</c>,

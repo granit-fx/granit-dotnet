@@ -17,7 +17,7 @@ public static class TranslateToolRegistrationExtensions
     /// <param name="tools">The AI tool registration builder.</param>
     /// <returns>The builder, for chaining.</returns>
     /// <example>
-    /// <code>services.AddGranitAITools(tools => tools.AddTranslateTool());</code>
+    /// <c>services.AddGranitAITools(tools => tools.AddTranslateTool());</c>
     /// </example>
     public static AIToolRegistrationBuilder AddTranslateTool(this AIToolRegistrationBuilder tools)
     {

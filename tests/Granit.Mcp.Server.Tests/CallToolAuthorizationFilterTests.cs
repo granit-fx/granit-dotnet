@@ -25,7 +25,7 @@ public sealed class CallToolAuthorizationFilterTests
     [Fact]
     public async Task EvaluateAsync_UnresolvedTool_IsDenied()
     {
-        using ServiceProvider sp = BuildServices();
+        await using ServiceProvider sp = BuildServices();
 
         CallToolResult? result = await CallToolAuthorizationFilter.EvaluateAsync(
             sp, "ghost-tool", matchedPrimitiveMetadata: null, TestContext.Current.CancellationToken);
@@ -41,7 +41,7 @@ public sealed class CallToolAuthorizationFilterTests
         checker.IsGrantedAsync(McpPermissions.Tools.Execute, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        using ServiceProvider sp = BuildServices(permissionChecker: checker);
+        await using ServiceProvider sp = BuildServices(permissionChecker: checker);
 
         CallToolResult? result = await CallToolAuthorizationFilter.EvaluateAsync(
             sp, PlainToolName, matchedPrimitiveMetadata: null, TestContext.Current.CancellationToken);
@@ -53,7 +53,7 @@ public sealed class CallToolAuthorizationFilterTests
     [Fact]
     public async Task EvaluateAsync_UnannotatedTool_WithNoPermissionChecker_IsDenied()
     {
-        using ServiceProvider sp = BuildServices(permissionChecker: null);
+        await using ServiceProvider sp = BuildServices(permissionChecker: null);
 
         CallToolResult? result = await CallToolAuthorizationFilter.EvaluateAsync(
             sp, PlainToolName, matchedPrimitiveMetadata: null, TestContext.Current.CancellationToken);
@@ -69,7 +69,7 @@ public sealed class CallToolAuthorizationFilterTests
         checker.IsGrantedAsync(McpPermissions.Tools.Execute, Arg.Any<CancellationToken>())
             .Returns(true);
 
-        using ServiceProvider sp = BuildServices(permissionChecker: checker);
+        await using ServiceProvider sp = BuildServices(permissionChecker: checker);
 
         CallToolResult? result = await CallToolAuthorizationFilter.EvaluateAsync(
             sp, PlainToolName, matchedPrimitiveMetadata: null, TestContext.Current.CancellationToken);
@@ -82,7 +82,7 @@ public sealed class CallToolAuthorizationFilterTests
     {
         // No IPermissionChecker registered: the tool must pass through purely because it
         // carries explicit authorization metadata (enforced downstream by the SDK filter).
-        using ServiceProvider sp = BuildServices(permissionChecker: null);
+        await using ServiceProvider sp = BuildServices(permissionChecker: null);
 
         object[] metadata = [new PermissionAttribute("Some.Resource.Action")];
 
@@ -102,7 +102,7 @@ public sealed class CallToolAuthorizationFilterTests
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(false);
 
-        using ServiceProvider sp = BuildServices(permissionChecker: checker, currentTenant: tenant);
+        await using ServiceProvider sp = BuildServices(permissionChecker: checker, currentTenant: tenant);
 
         CallToolResult? result = await CallToolAuthorizationFilter.EvaluateAsync(
             sp, TenantScopedToolName, matchedPrimitiveMetadata: null, TestContext.Current.CancellationToken);
@@ -121,7 +121,7 @@ public sealed class CallToolAuthorizationFilterTests
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(true);
 
-        using ServiceProvider sp = BuildServices(permissionChecker: checker, currentTenant: tenant);
+        await using ServiceProvider sp = BuildServices(permissionChecker: checker, currentTenant: tenant);
 
         CallToolResult? result = await CallToolAuthorizationFilter.EvaluateAsync(
             sp, TenantScopedToolName, matchedPrimitiveMetadata: null, TestContext.Current.CancellationToken);

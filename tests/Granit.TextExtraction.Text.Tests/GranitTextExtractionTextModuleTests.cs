@@ -39,15 +39,15 @@ public sealed class GranitTextExtractionTextModuleTests
         services.AddSingleton(MEOptions.Create(new ExtractionOptions()));
         services.AddGranitTextExtractionText();
 
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         ITextExtractionPipeline pipeline = sp.GetRequiredService<ITextExtractionPipeline>();
 
-        using MemoryStream html = new(Encoding.UTF8.GetBytes("<p>Hello</p>"));
+        await using MemoryStream html = new(Encoding.UTF8.GetBytes("<p>Hello</p>"));
         TextExtractionResult htmlResult =
             await pipeline.ExtractAsync(html, "text/html", TestContext.Current.CancellationToken);
         htmlResult.ExtractorName.ShouldBe(HtmlTextExtractor.ExtractorName);
 
-        using MemoryStream md = new(Encoding.UTF8.GetBytes("**Bold**"));
+        await using MemoryStream md = new(Encoding.UTF8.GetBytes("**Bold**"));
         TextExtractionResult mdResult =
             await pipeline.ExtractAsync(md, "text/markdown", TestContext.Current.CancellationToken);
         mdResult.ExtractorName.ShouldBe(MarkdownTextExtractor.ExtractorName);

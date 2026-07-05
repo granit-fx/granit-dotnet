@@ -26,10 +26,7 @@ public sealed class CookieDefinitionContributorTests
     {
         ServiceCollection services = new();
         services.AddSingleton<ICookieDefinitionContributor, TestContributor>();
-        services.AddGranitCookies(cookies =>
-        {
-            cookies.RegisterCookie(new("builder_cookie", CookieCategory.Analytics, 365, false, "From builder"));
-        });
+        services.AddGranitCookies(cookies => cookies.RegisterCookie(new("builder_cookie", CookieCategory.Analytics, 365, false, "From builder")));
 
         ServiceProvider provider = services.BuildServiceProvider();
         ICookieRegistry registry = provider.GetRequiredService<ICookieRegistry>();
@@ -58,14 +55,8 @@ public sealed class CookieDefinitionContributorTests
     public void AddGranitCookies_MultipleCalls_AccumulateDefinitions()
     {
         ServiceCollection services = new();
-        services.AddGranitCookies(cookies =>
-        {
-            cookies.RegisterCookie(new("first", CookieCategory.StrictlyNecessary, 1, true, "First"));
-        });
-        services.AddGranitCookies(cookies =>
-        {
-            cookies.RegisterCookie(new("second", CookieCategory.Analytics, 365, false, "Second"));
-        });
+        services.AddGranitCookies(cookies => cookies.RegisterCookie(new("first", CookieCategory.StrictlyNecessary, 1, true, "First")));
+        services.AddGranitCookies(cookies => cookies.RegisterCookie(new("second", CookieCategory.Analytics, 365, false, "Second")));
 
         ServiceProvider provider = services.BuildServiceProvider();
         ICookieRegistry registry = provider.GetRequiredService<ICookieRegistry>();
@@ -94,10 +85,7 @@ public sealed class CookieDefinitionContributorTests
 
         ServiceCollection services = new();
         services.AddSingleton<ICookieDefinitionContributor>(new StaticContributor(shared));
-        services.AddGranitCookies(cookies =>
-        {
-            cookies.RegisterCookie(shared);
-        });
+        services.AddGranitCookies(cookies => cookies.RegisterCookie(shared));
 
         ServiceProvider provider = services.BuildServiceProvider();
         ICookieRegistry registry = provider.GetRequiredService<ICookieRegistry>();

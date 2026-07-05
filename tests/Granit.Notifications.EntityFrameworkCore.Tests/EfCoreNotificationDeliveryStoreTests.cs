@@ -95,8 +95,8 @@ public sealed class EfCoreNotificationDeliveryStoreTests : IDisposable
             .ToListAsync(TestContext.Current.CancellationToken);
 
         all.Count.ShouldBe(3);
-        all.Where(a => a.ChannelName == "email").Count().ShouldBe(2);
-        all.Where(a => a.IsSuccess == true).Count().ShouldBe(2);
+        all.Count(a => a.ChannelName == "email").ShouldBe(2);
+        all.Count(a => a.IsSuccess == true).ShouldBe(2);
         all.Single(a => a.IsSuccess == false).ErrorMessage.ShouldBe("SMTP timeout");
     }
 
@@ -114,9 +114,9 @@ public sealed class EfCoreNotificationDeliveryStoreTests : IDisposable
             TestContext.Current.CancellationToken);
 
         NotificationDeliveryAttempt second = BuildClaim(
-            deliveryId: first.DeliveryId,
             notificationId: first.NotificationId,
             channelName: first.ChannelName,
+            deliveryId: first.DeliveryId,
             isSuccess: null);
 
         (await _store.TryAcquireDeliveryAttemptAsync(second, TestContext.Current.CancellationToken)).ShouldBeTrue();

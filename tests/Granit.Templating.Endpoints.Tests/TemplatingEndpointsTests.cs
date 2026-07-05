@@ -257,7 +257,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             Prefix,
-            new SaveTemplateRequest(Name: "Billing.Invoice", Culture: null, Content: "<h1>Hello</h1>"),
+            new SaveTemplateRequest(Content: "<h1>Hello</h1>", Name: "Billing.Invoice", Culture: null),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotImplemented);
@@ -284,7 +284,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         HttpResponseMessage response = await _adminClient.PostAsJsonAsync(
             Prefix,
-            new SaveTemplateRequest(Name: "Billing.Invoice", Culture: "fr", Content: "<h1>Hello</h1>"),
+            new SaveTemplateRequest(Content: "<h1>Hello</h1>", Name: "Billing.Invoice", Culture: "fr"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -309,7 +309,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         HttpResponseMessage response = await _adminClient.PostAsJsonAsync(
             Prefix,
-            new SaveTemplateRequest(Name: null, Culture: null, Content: "<h1>Hello</h1>"),
+            new SaveTemplateRequest(Content: "<h1>Hello</h1>", Name: null, Culture: null),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -320,7 +320,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         HttpResponseMessage response = await _adminClient.PostAsJsonAsync(
             Prefix,
-            new SaveTemplateRequest(Name: "invalid", Culture: null, Content: "<h1>Hello</h1>"),
+            new SaveTemplateRequest(Content: "<h1>Hello</h1>", Name: "invalid", Culture: null),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
@@ -331,7 +331,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         HttpResponseMessage response = await _adminClient.PostAsJsonAsync(
             Prefix,
-            new SaveTemplateRequest(Name: "Billing.Invoice", Culture: null, Content: ""),
+            new SaveTemplateRequest(Content: "", Name: "Billing.Invoice", Culture: null),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
@@ -349,7 +349,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         HttpResponseMessage response = await client.PutAsJsonAsync(
             $"{Prefix}/Billing.Invoice",
-            new SaveTemplateRequest(Name: null, Culture: null, Content: "<h1>Updated</h1>"),
+            new SaveTemplateRequest(Content: "<h1>Updated</h1>", Name: null, Culture: null),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotImplemented);
@@ -376,7 +376,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         HttpResponseMessage response = await _adminClient.PutAsJsonAsync(
             $"{Prefix}/Billing.Invoice",
-            new SaveTemplateRequest(Name: null, Culture: "fr", Content: "<h1>Updated</h1>"),
+            new SaveTemplateRequest(Content: "<h1>Updated</h1>", Name: null, Culture: "fr"),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -401,7 +401,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         HttpResponseMessage response = await _adminClient.PutAsJsonAsync(
             $"{Prefix}/bad",
-            new SaveTemplateRequest(Name: null, Culture: null, Content: "<h1>Updated</h1>"),
+            new SaveTemplateRequest(Content: "<h1>Updated</h1>", Name: null, Culture: null),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -953,7 +953,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         HttpResponseMessage response = await _anonClient.PostAsJsonAsync(
             Prefix,
-            new SaveTemplateRequest(Name: "Billing.Invoice", Culture: null, Content: "<h1>Hello</h1>"),
+            new SaveTemplateRequest(Content: "<h1>Hello</h1>", Name: "Billing.Invoice", Culture: null),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -997,10 +997,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(CreateTestUserService());
 
         await using WebApplication app = builder.Build();
-        app.MapGranitTemplating(opts =>
-        {
-            opts.RoutePrefix = "custom-templates";
-        });
+        app.MapGranitTemplating(opts => opts.RoutePrefix = "custom-templates");
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = BuildClient(app, AllPermissions);

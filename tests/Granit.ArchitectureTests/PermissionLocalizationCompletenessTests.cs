@@ -76,7 +76,7 @@ public sealed partial class PermissionLocalizationCompletenessTests
         }
 
         missing.ShouldBeEmpty(
-            $"Every permission constant must have a 'Permission:{{Value}}' key in all 15 base cultures " +
+            "Every permission constant must have a 'Permission:{Value}' key in all 15 base cultures " +
             $"of its owning module. {missing.Count} key(s) missing:" + Environment.NewLine +
             string.Join(Environment.NewLine, missing.Order(StringComparer.Ordinal)));
     }

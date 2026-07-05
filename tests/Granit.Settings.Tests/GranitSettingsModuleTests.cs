@@ -156,7 +156,7 @@ public sealed class GranitSettingsModuleTests
     [Fact]
     public async Task SetGlobal_Then_GetOrNull_Returns_StoredValue()
     {
-        using WebApplication app = BuildApp();
+        await using WebApplication app = BuildApp();
         using IServiceScope scope = app.Services.CreateScope();
 
         // Déclarer le paramètre via un provider enregistré dans le DI

@@ -48,7 +48,7 @@ public sealed class ClosedXmlTemplateEngineAdditionalTests
             TestContext.Current.CancellationToken);
 
         BinaryRenderedContent binary = result.ShouldBeOfType<BinaryRenderedContent>();
-        using MemoryStream ms = new(binary.Bytes.ToArray());
+        await using MemoryStream ms = new(binary.Bytes.ToArray());
         using XLWorkbook wb = new(ms);
         IXLWorksheet ws = wb.Worksheet(1);
         ws.Cell("A1").GetValue<string>().ShouldBe("Item: Alpha");
@@ -78,7 +78,7 @@ public sealed class ClosedXmlTemplateEngineAdditionalTests
             TestContext.Current.CancellationToken);
 
         BinaryRenderedContent binary = result.ShouldBeOfType<BinaryRenderedContent>();
-        using MemoryStream ms = new(binary.Bytes.ToArray());
+        await using MemoryStream ms = new(binary.Bytes.ToArray());
         using XLWorkbook wb = new(ms);
         IXLWorksheet ws = wb.Worksheet(1);
         ws.Cell("A1").GetValue<int>().ShouldBe(42);
@@ -101,7 +101,7 @@ public sealed class ClosedXmlTemplateEngineAdditionalTests
         IXLWorksheet ws2 = templateWb.AddWorksheet("Sheet2");
         ws2.Cell("A1").SetValue("Goodbye {{model.name}}");
 
-        using MemoryStream templateMs = new();
+        await using MemoryStream templateMs = new();
         templateWb.SaveAs(templateMs);
         string base64 = Convert.ToBase64String(templateMs.ToArray());
 
@@ -115,7 +115,7 @@ public sealed class ClosedXmlTemplateEngineAdditionalTests
             TestContext.Current.CancellationToken);
 
         BinaryRenderedContent binary = result.ShouldBeOfType<BinaryRenderedContent>();
-        using MemoryStream ms = new(binary.Bytes.ToArray());
+        await using MemoryStream ms = new(binary.Bytes.ToArray());
         using XLWorkbook wb = new(ms);
         wb.Worksheet("Sheet1").Cell("A1").GetValue<string>().ShouldBe("Hello World");
         wb.Worksheet("Sheet2").Cell("A1").GetValue<string>().ShouldBe("Goodbye World");
@@ -129,10 +129,7 @@ public sealed class ClosedXmlTemplateEngineAdditionalTests
     public async Task RenderAsync_NoPlaceholders_ReturnsCellsUnchanged()
     {
         ClosedXmlTemplateEngine sut = CreateSut();
-        string base64 = CreateBase64Template(ws =>
-        {
-            ws.Cell("A1").SetValue("Static text");
-        });
+        string base64 = CreateBase64Template(ws => ws.Cell("A1").SetValue("Static text"));
         TemplateDescriptor descriptor = new() { Content = base64, MimeType = ExcelMimeType };
 
         RenderedContent result = await sut.RenderAsync(
@@ -143,7 +140,7 @@ public sealed class ClosedXmlTemplateEngineAdditionalTests
             TestContext.Current.CancellationToken);
 
         BinaryRenderedContent binary = result.ShouldBeOfType<BinaryRenderedContent>();
-        using MemoryStream ms = new(binary.Bytes.ToArray());
+        await using MemoryStream ms = new(binary.Bytes.ToArray());
         using XLWorkbook wb = new(ms);
         wb.Worksheet(1).Cell("A1").GetValue<string>().ShouldBe("Static text");
     }
@@ -172,10 +169,7 @@ public sealed class ClosedXmlTemplateEngineAdditionalTests
     public async Task RenderAsync_MultiplePlaceholdersInSameCell_ReplacesAll()
     {
         ClosedXmlTemplateEngine sut = CreateSut();
-        string base64 = CreateBase64Template(ws =>
-        {
-            ws.Cell("A1").SetValue("{{model.first_name}} {{model.last_name}} ({{model.age}})");
-        });
+        string base64 = CreateBase64Template(ws => ws.Cell("A1").SetValue("{{model.first_name}} {{model.last_name}} ({{model.age}})"));
         TemplateDescriptor descriptor = new() { Content = base64, MimeType = ExcelMimeType };
 
         RenderedContent result = await sut.RenderAsync(
@@ -186,7 +180,7 @@ public sealed class ClosedXmlTemplateEngineAdditionalTests
             TestContext.Current.CancellationToken);
 
         BinaryRenderedContent binary = result.ShouldBeOfType<BinaryRenderedContent>();
-        using MemoryStream ms = new(binary.Bytes.ToArray());
+        await using MemoryStream ms = new(binary.Bytes.ToArray());
         using XLWorkbook wb = new(ms);
         wb.Worksheet(1).Cell("A1").GetValue<string>().ShouldBe("Jean Dupont (42)");
     }
@@ -199,10 +193,7 @@ public sealed class ClosedXmlTemplateEngineAdditionalTests
     public async Task RenderAsync_BooleanValue_ReplacesCorrectly()
     {
         ClosedXmlTemplateEngine sut = CreateSut();
-        string base64 = CreateBase64Template(ws =>
-        {
-            ws.Cell("A1").SetValue("Active: {{model.is_active}}");
-        });
+        string base64 = CreateBase64Template(ws => ws.Cell("A1").SetValue("Active: {{model.is_active}}"));
         TemplateDescriptor descriptor = new() { Content = base64, MimeType = ExcelMimeType };
 
         RenderedContent result = await sut.RenderAsync(
@@ -213,7 +204,7 @@ public sealed class ClosedXmlTemplateEngineAdditionalTests
             TestContext.Current.CancellationToken);
 
         BinaryRenderedContent binary = result.ShouldBeOfType<BinaryRenderedContent>();
-        using MemoryStream ms = new(binary.Bytes.ToArray());
+        await using MemoryStream ms = new(binary.Bytes.ToArray());
         using XLWorkbook wb = new(ms);
         string cellValue = wb.Worksheet(1).Cell("A1").GetValue<string>();
         cellValue.ShouldBe("Active: True");

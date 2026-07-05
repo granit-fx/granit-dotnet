@@ -115,7 +115,7 @@ public sealed class GoogleCloudIdentityProviderTests
             Arg.Is<UserRecordArgs>(a =>
                 a.Email == "new@example.com" &&
                 a.DisplayName == "New User" &&
-                a.Disabled == false &&
+                !a.Disabled &&
                 a.Password == "TempPass123!"),
             Arg.Any<CancellationToken>());
         await _distributedEventBus.Received(1).PublishAsync(

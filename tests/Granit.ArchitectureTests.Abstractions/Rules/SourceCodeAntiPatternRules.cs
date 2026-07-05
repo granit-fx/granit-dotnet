@@ -241,8 +241,7 @@ public static partial class SourceCodeAntiPatternRules
         List<string> violations = [];
 
         foreach (string validatorFile in Directory.GetFiles(srcDir, "*.cs", SearchOption.AllDirectories)
-            .Where(f => !IsInBuildOutput(f))
-            .Where(f => f.Contains(Path.DirectorySeparatorChar + "Validators" + Path.DirectorySeparatorChar,
+            .Where(f => !IsInBuildOutput(f) && f.Contains(Path.DirectorySeparatorChar + "Validators" + Path.DirectorySeparatorChar,
                 StringComparison.OrdinalIgnoreCase)))
         {
             string content = File.ReadAllText(validatorFile);

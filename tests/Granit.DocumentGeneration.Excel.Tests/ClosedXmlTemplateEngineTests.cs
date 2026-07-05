@@ -92,7 +92,7 @@ public sealed class ClosedXmlTemplateEngineTests
         binary.Bytes.IsEmpty.ShouldBeFalse("must produce non-empty bytes");
 
         // Verify the output is a valid XLSX (readable by ClosedXML)
-        using MemoryStream ms = new(binary.Bytes.ToArray());
+        await using MemoryStream ms = new(binary.Bytes.ToArray());
         using XLWorkbook wb = new(ms);
         wb.Worksheets.Count.ShouldBe(1);
     }
@@ -101,10 +101,7 @@ public sealed class ClosedXmlTemplateEngineTests
     public async Task RenderAsync_ReplacesPlaceholders()
     {
         ClosedXmlTemplateEngine sut = CreateSut();
-        string base64 = CreateBase64Template(ws =>
-        {
-            ws.Cell("A1").SetValue("Hello {{model.first_name}} {{model.last_name}}");
-        });
+        string base64 = CreateBase64Template(ws => ws.Cell("A1").SetValue("Hello {{model.first_name}} {{model.last_name}}"));
         TemplateDescriptor descriptor = new() { Content = base64, MimeType = ExcelMimeType };
 
         RenderedContent result = await sut.RenderAsync(
@@ -115,7 +112,7 @@ public sealed class ClosedXmlTemplateEngineTests
             TestContext.Current.CancellationToken);
 
         var binary = (BinaryRenderedContent)result;
-        using MemoryStream ms = new(binary.Bytes.ToArray());
+        await using MemoryStream ms = new(binary.Bytes.ToArray());
         using XLWorkbook wb = new(ms);
         string cellValue = wb.Worksheet(1).Cell("A1").GetValue<string>();
         cellValue.ShouldBe("Hello Jean Dupont");
@@ -125,10 +122,7 @@ public sealed class ClosedXmlTemplateEngineTests
     public async Task RenderAsync_NestedProperty_ReplacesPlaceholder()
     {
         ClosedXmlTemplateEngine sut = CreateSut();
-        string base64 = CreateBase64Template(ws =>
-        {
-            ws.Cell("A1").SetValue("City: {{model.address.city}}");
-        });
+        string base64 = CreateBase64Template(ws => ws.Cell("A1").SetValue("City: {{model.address.city}}"));
         TemplateDescriptor descriptor = new() { Content = base64, MimeType = ExcelMimeType };
 
         RenderedContent result = await sut.RenderAsync(
@@ -139,7 +133,7 @@ public sealed class ClosedXmlTemplateEngineTests
             TestContext.Current.CancellationToken);
 
         var binary = (BinaryRenderedContent)result;
-        using MemoryStream ms = new(binary.Bytes.ToArray());
+        await using MemoryStream ms = new(binary.Bytes.ToArray());
         using XLWorkbook wb = new(ms);
         string cellValue = wb.Worksheet(1).Cell("A1").GetValue<string>();
         cellValue.ShouldBe("City: Bruxelles");

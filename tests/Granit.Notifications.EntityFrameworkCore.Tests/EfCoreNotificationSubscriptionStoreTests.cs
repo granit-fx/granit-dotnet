@@ -30,8 +30,8 @@ public sealed class EfCoreNotificationSubscriptionStoreTests : IDisposable
     [Fact]
     public async Task SubscribeAsync_InsertsSubscription()
     {
-        string userId = "user-sub";
-        string typeName = "order.created";
+        const string userId = "user-sub";
+        const string typeName = "order.created";
         var tenantId = Guid.NewGuid();
 
         await _store.SubscribeAsync(userId, typeName, tenantId, TestContext.Current.CancellationToken);
@@ -43,22 +43,22 @@ public sealed class EfCoreNotificationSubscriptionStoreTests : IDisposable
     [Fact]
     public async Task SubscribeAsync_DuplicateSubscription_DoesNotInsertTwice()
     {
-        string userId = "user-dup";
-        string typeName = "order.created";
+        const string userId = "user-dup";
+        const string typeName = "order.created";
         var tenantId = Guid.NewGuid();
 
         await _store.SubscribeAsync(userId, typeName, tenantId, TestContext.Current.CancellationToken);
         await _store.SubscribeAsync(userId, typeName, tenantId, TestContext.Current.CancellationToken);
 
         IReadOnlyList<NotificationSubscription> subscriptions = await _store.GetUserSubscriptionsAsync(userId, tenantId, TestContext.Current.CancellationToken);
-        subscriptions.Where(s => s.NotificationTypeName == typeName && s.EntityType == null).Count().ShouldBe(1);
+        subscriptions.Count(s => s.NotificationTypeName == typeName && s.EntityType == null).ShouldBe(1);
     }
 
     [Fact]
     public async Task UnsubscribeAsync_RemovesSubscription()
     {
-        string userId = "user-unsub";
-        string typeName = "order.created";
+        const string userId = "user-unsub";
+        const string typeName = "order.created";
         var tenantId = Guid.NewGuid();
 
         await _store.SubscribeAsync(userId, typeName, tenantId, TestContext.Current.CancellationToken);
@@ -71,7 +71,7 @@ public sealed class EfCoreNotificationSubscriptionStoreTests : IDisposable
     [Fact]
     public async Task GetSubscriberIdsAsync_ReturnsSubscribers()
     {
-        string typeName = "invoice.paid";
+        const string typeName = "invoice.paid";
         var tenantId = Guid.NewGuid();
 
         await _store.SubscribeAsync("user-a", typeName, tenantId, TestContext.Current.CancellationToken);
@@ -88,9 +88,9 @@ public sealed class EfCoreNotificationSubscriptionStoreTests : IDisposable
     [Fact]
     public async Task FollowEntityAsync_InsertsEntitySubscription()
     {
-        string userId = "user-follow";
-        string entityType = "Order";
-        string entityId = "order-42";
+        const string userId = "user-follow";
+        const string entityType = "Order";
+        const string entityId = "order-42";
         var tenantId = Guid.NewGuid();
 
         await _store.FollowEntityAsync(userId, entityType, entityId, tenantId, TestContext.Current.CancellationToken);
@@ -102,24 +102,24 @@ public sealed class EfCoreNotificationSubscriptionStoreTests : IDisposable
     [Fact]
     public async Task FollowEntityAsync_DuplicateFollow_DoesNotInsertTwice()
     {
-        string userId = "user-dup-follow";
-        string entityType = "Order";
-        string entityId = "order-42";
+        const string userId = "user-dup-follow";
+        const string entityType = "Order";
+        const string entityId = "order-42";
         var tenantId = Guid.NewGuid();
 
         await _store.FollowEntityAsync(userId, entityType, entityId, tenantId, TestContext.Current.CancellationToken);
         await _store.FollowEntityAsync(userId, entityType, entityId, tenantId, TestContext.Current.CancellationToken);
 
         IReadOnlyList<NotificationSubscription> followers = await _store.GetEntityFollowersAsync(entityType, entityId, tenantId, TestContext.Current.CancellationToken);
-        followers.Where(s => s.UserId == userId).Count().ShouldBe(1);
+        followers.Count(s => s.UserId == userId).ShouldBe(1);
     }
 
     [Fact]
     public async Task UnfollowEntityAsync_RemovesEntitySubscription()
     {
-        string userId = "user-unfollow";
-        string entityType = "Order";
-        string entityId = "order-42";
+        const string userId = "user-unfollow";
+        const string entityType = "Order";
+        const string entityId = "order-42";
         var tenantId = Guid.NewGuid();
 
         await _store.FollowEntityAsync(userId, entityType, entityId, tenantId, TestContext.Current.CancellationToken);
@@ -132,8 +132,8 @@ public sealed class EfCoreNotificationSubscriptionStoreTests : IDisposable
     [Fact]
     public async Task GetEntityFollowerIdsAsync_ReturnsFollowers()
     {
-        string entityType = "Project";
-        string entityId = "proj-10";
+        const string entityType = "Project";
+        const string entityId = "proj-10";
         var tenantId = Guid.NewGuid();
 
         await _store.FollowEntityAsync("user-x", entityType, entityId, tenantId, TestContext.Current.CancellationToken);
@@ -150,8 +150,8 @@ public sealed class EfCoreNotificationSubscriptionStoreTests : IDisposable
     [Fact]
     public async Task GetEntityFollowersAsync_FiltersByEntityTypeAndId()
     {
-        string entityType = "Task";
-        string entityId = "task-5";
+        const string entityType = "Task";
+        const string entityId = "task-5";
         var tenantId = Guid.NewGuid();
 
         await _store.FollowEntityAsync("user-1", entityType, entityId, tenantId, TestContext.Current.CancellationToken);

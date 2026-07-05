@@ -39,11 +39,11 @@ public sealed class GranitTextExtractionEmailModuleTests
         services.AddLogging();
         services.AddGranitTextExtractionEmail();
 
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         ITextExtractionPipeline pipeline = sp.GetRequiredService<ITextExtractionPipeline>();
 
         byte[] eml = EmlFixtures.PlainTextOnly(subject: "DI smoke", body: "DI smoke body");
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result =
             await pipeline.ExtractAsync(stream, "message/rfc822", TestContext.Current.CancellationToken);

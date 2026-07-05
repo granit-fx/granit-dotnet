@@ -46,9 +46,9 @@ public sealed class HashiCorpTransitEncryptionServiceTests : IDisposable
     [Fact]
     public async Task EncryptAsync_CallsVaultTransitWithBase64Plaintext()
     {
-        string plaintext = "donnée de santé sensible";
+        const string plaintext = "donnée de santé sensible";
         string expectedBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(plaintext));
-        string ciphertext = "vault:v1:abc123encrypted";
+        const string ciphertext = "vault:v1:abc123encrypted";
 
         ITransitSecretsEngine transitEngine = Substitute.For<ITransitSecretsEngine>();
         ISecretsEngine secretsEngine = Substitute.For<ISecretsEngine>();
@@ -73,9 +73,9 @@ public sealed class HashiCorpTransitEncryptionServiceTests : IDisposable
     [Fact]
     public async Task DecryptAsync_ReturnsDecodedPlaintext()
     {
-        string originalText = "donnée personnelle sensible";
+        const string originalText = "donnée personnelle sensible";
         string base64Plaintext = Convert.ToBase64String(Encoding.UTF8.GetBytes(originalText));
-        string ciphertext = "vault:v1:abc123encrypted";
+        const string ciphertext = "vault:v1:abc123encrypted";
 
         ITransitSecretsEngine transitEngine = Substitute.For<ITransitSecretsEngine>();
         ISecretsEngine secretsEngine = Substitute.For<ISecretsEngine>();
@@ -100,8 +100,8 @@ public sealed class HashiCorpTransitEncryptionServiceTests : IDisposable
     [Fact]
     public async Task RewrapAsync_CallsVaultTransitRewrap_AndReturnsNewCiphertext()
     {
-        string oldCiphertext = "vault:v1:abc123encrypted";
-        string newCiphertext = "vault:v3:xyz789rewrapped";
+        const string oldCiphertext = "vault:v1:abc123encrypted";
+        const string newCiphertext = "vault:v3:xyz789rewrapped";
 
         ITransitSecretsEngine transitEngine = Substitute.For<ITransitSecretsEngine>();
         ISecretsEngine secretsEngine = Substitute.For<ISecretsEngine>();

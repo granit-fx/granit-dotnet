@@ -125,7 +125,7 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
 
         store.All.Count.ShouldBe(3, "the isEnabled=false role must be filtered out");
         store.All.ShouldAllBe(r => r.ClientId == EntraIdWireMockFixture.TrackedAppId);
-        store.All.Select(r => r.Name).OrderBy(x => x).ShouldBe(["Admin", "Editor", "Viewer"]);
+        store.All.Select(r => r.Name).Order().ShouldBe(["Admin", "Editor", "Viewer"]);
     }
 
     [Fact]
@@ -140,11 +140,11 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
         (EntraIdClientRoleSyncService sync, _, InMemoryRoleMetadataStore store) = BuildSut(EntraIdWireMockFixture.TrackedAppId);
 
         await sync.SyncAsync(TestContext.Current.CancellationToken);
-        IReadOnlyList<Guid> firstRun = store.All.Select(r => r.Id).OrderBy(g => g).ToList();
+        IReadOnlyList<Guid> firstRun = store.All.Select(r => r.Id).Order().ToList();
 
         await sync.SyncAsync(TestContext.Current.CancellationToken);
 
-        store.All.Select(r => r.Id).OrderBy(g => g).ShouldBe(firstRun);
+        store.All.Select(r => r.Id).Order().ShouldBe(firstRun);
         store.All.Count.ShouldBe(3);
     }
 
@@ -231,6 +231,6 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
 
         roles.Count.ShouldBe(2);
         roles.ShouldAllBe(r => r.ClientId == EntraIdWireMockFixture.TrackedAppId);
-        roles.Select(r => r.Name).OrderBy(x => x).ShouldBe(["Admin", "Editor"]);
+        roles.Select(r => r.Name).Order().ShouldBe(["Admin", "Editor"]);
     }
 }

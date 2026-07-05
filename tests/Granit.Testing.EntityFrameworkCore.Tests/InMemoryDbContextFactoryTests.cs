@@ -23,9 +23,9 @@ public sealed class InMemoryDbContextFactoryTests
     {
         FakeClock clock = new();
         FakeCurrentUser user = new();
-        InMemoryDbContextFactory<TestDbContext> factory = new(clock: clock, user: user);
+        InMemoryDbContextFactory<TestDbContext> factory = new(user: user, clock: clock);
 
-        using TestDbContext context = factory.CreateContext();
+        await using TestDbContext context = factory.CreateContext();
         TestAuditedEntity entity = new() { Name = "Test" };
         context.AuditedEntities.Add(entity);
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -40,9 +40,9 @@ public sealed class InMemoryDbContextFactoryTests
     {
         FakeClock clock = new();
         FakeCurrentUser user = new();
-        InMemoryDbContextFactory<TestDbContext> factory = new(clock: clock, user: user);
+        InMemoryDbContextFactory<TestDbContext> factory = new(user: user, clock: clock);
 
-        using TestDbContext context = factory.CreateContext();
+        await using TestDbContext context = factory.CreateContext();
         TestFullAuditedEntity entity = new() { Name = "ToDelete" };
         context.FullAuditedEntities.Add(entity);
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -60,11 +60,11 @@ public sealed class InMemoryDbContextFactoryTests
     {
         InMemoryDbContextFactory<TestDbContext> factory = new();
 
-        using TestDbContext ctx1 = factory.CreateContext();
+        await using TestDbContext ctx1 = factory.CreateContext();
         ctx1.AuditedEntities.Add(new TestAuditedEntity { Name = "Shared" });
         await ctx1.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        using TestDbContext ctx2 = factory.CreateContext();
+        await using TestDbContext ctx2 = factory.CreateContext();
         (await ctx2.AuditedEntities.CountAsync(TestContext.Current.CancellationToken)).ShouldBe(1);
     }
 }

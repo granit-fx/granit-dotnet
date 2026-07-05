@@ -67,7 +67,7 @@ public sealed class AesStringEncryptionProviderTests
     {
         // CWE-329 : chaque chiffrement doit produire un IV différent.
         AesStringEncryptionProvider provider = CreateProvider();
-        string plainText = "texte identique";
+        const string plainText = "texte identique";
 
         string cipher1 = provider.Encrypt(plainText);
         string cipher2 = provider.Encrypt(plainText);

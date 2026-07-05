@@ -37,7 +37,7 @@ public sealed class CreateManagedHostnameRequestValidatorTests
     [Fact]
     public void HostExceedingMaxLength_Fails()
     {
-        string tooLong = string.Concat(new string('a', 127), ".", new string('b', 126));
+        string tooLong = $"{new string('a', 127)}.{new string('b', 126)}";
         tooLong.Length.ShouldBeGreaterThan(CreateManagedHostnameRequestValidator.MaxHostLength);
 
         ValidationResult result = Validate(new(tooLong, "cms.site", OwnerId));

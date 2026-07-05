@@ -49,7 +49,7 @@ public sealed class RuleBuilderExtensionsTests
     {
         InlineValidator<TestModel> validator = [];
         validator.RuleFor(x => x.Value)
-            .Matches(@"^[A-Z]{2}$")
+            .Matches("^[A-Z]{2}$")
             .WithPatternHint("Validation:Hint:Alpha2Code");
 
         ValidationResult validResult = validator.Validate(new TestModel("BE"));

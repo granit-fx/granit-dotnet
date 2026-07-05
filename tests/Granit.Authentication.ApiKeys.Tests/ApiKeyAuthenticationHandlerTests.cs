@@ -335,7 +335,7 @@ public sealed class ApiKeyAuthenticationHandlerTests
         // ApiKey-specific claims
         principal.FindFirstValue(ApiKeyClaimTypes.ActorKind).ShouldBe(nameof(Users.ActorKind.ExternalSystem));
         principal.FindFirstValue(ApiKeyClaimTypes.ApiKeyId).ShouldBe(apiKey.Id.ToString());
-        principal.FindFirstValue(ApiKeyClaimTypes.ApiKeyType).ShouldBe(ApiKeyType.Secret.ToString());
+        principal.FindFirstValue(ApiKeyClaimTypes.ApiKeyType).ShouldBe(nameof(ApiKeyType.Secret));
         principal.FindFirstValue(ApiKeyClaimTypes.Environment).ShouldBe("live");
 
         // Permissions

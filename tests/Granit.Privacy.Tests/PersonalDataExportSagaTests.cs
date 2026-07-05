@@ -310,8 +310,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         await context.Received(1).PublishAsync(
             Arg.Any<ExportTimedOutEvent>(),
             Arg.Is<DeliveryOptions>(o =>
-                o.ScheduleDelay.HasValue &&
-                o.ScheduleDelay.Value == TimeSpan.FromMinutes(10)));
+                o.ScheduleDelay == TimeSpan.FromMinutes(10)));
     }
 
     // -------------------------------------------------------------------------

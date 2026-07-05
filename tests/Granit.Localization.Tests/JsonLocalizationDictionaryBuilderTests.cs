@@ -11,7 +11,7 @@ public sealed class JsonLocalizationDictionaryBuilderTests
     {
         // Arrange — les fichiers Test/fr.json et Test/en.json sont embarqués dans l'assembly de test
         System.Reflection.Assembly assembly = typeof(JsonLocalizationDictionaryBuilderTests).Assembly;
-        string prefix = "Granit.Localization.Tests.TestResources.Localization.Test";
+        const string prefix = "Granit.Localization.Tests.TestResources.Localization.Test";
 
         // Act
         Dictionary<string, Dictionary<string, string>> result =
@@ -44,7 +44,7 @@ public sealed class JsonLocalizationDictionaryBuilderTests
     {
         // Arrange
         System.Reflection.Assembly assembly = typeof(JsonLocalizationDictionaryBuilderTests).Assembly;
-        string prefix = "Granit.Localization.Tests.TestResources.Localization.Test";
+        const string prefix = "Granit.Localization.Tests.TestResources.Localization.Test";
 
         // Act
         Dictionary<string, Dictionary<string, string>> result =
@@ -60,7 +60,7 @@ public sealed class JsonLocalizationDictionaryBuilderTests
     {
         // Arrange
         System.Reflection.Assembly assembly = typeof(JsonLocalizationDictionaryBuilderTests).Assembly;
-        string prefix = "Granit.Localization.Tests.TestResources.Localization.Parent";
+        const string prefix = "Granit.Localization.Tests.TestResources.Localization.Parent";
 
         // Act
         Dictionary<string, Dictionary<string, string>> result =

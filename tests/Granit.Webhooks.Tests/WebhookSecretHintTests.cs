@@ -10,7 +10,7 @@ public sealed class WebhookSecretHintTests
     public void From_PreservesKnownPrefix_AndMasksBody()
     {
         // 64 hex chars after the prefix → standard whsec_ output.
-        string plaintext = "whsec_b46a0123456789abcdef0123456789abcdef0123456789abcdef0123455182";
+        const string plaintext = "whsec_b46a0123456789abcdef0123456789abcdef0123456789abcdef0123455182";
 
         string hint = WebhookSecretHint.From(plaintext);
 
@@ -34,7 +34,7 @@ public sealed class WebhookSecretHintTests
     [Fact]
     public void From_WithoutKnownPrefix_DoesNotInventOne()
     {
-        string plaintext = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        const string plaintext = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
         string hint = WebhookSecretHint.From(plaintext);
 

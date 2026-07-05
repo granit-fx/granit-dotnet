@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
     /// </para>
     /// <para>
     /// To declare features, register a <see cref="IFeatureDefinitionProvider"/>:
-    /// <code>services.AddFeatureDefinitions&lt;MyFeatureDefinitionProvider&gt;();</code>
+    /// <c>services.AddFeatureDefinitions&lt;MyFeatureDefinitionProvider&gt;();</c>
     /// </para>
     /// </remarks>
     /// <param name="services">The service collection.</param>

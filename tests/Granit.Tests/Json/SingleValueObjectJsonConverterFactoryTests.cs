@@ -94,7 +94,7 @@ public sealed class SingleValueObjectJsonConverterFactoryTests
     public void Deserialize_ContentType_ReadsFromRawString()
     {
         JsonSerializerOptions options = CreateOptions();
-        string json = "\"text/html\"";
+        const string json = "\"text/html\"";
 
         ContentType? result = JsonSerializer.Deserialize<ContentType>(json, options);
 
@@ -106,7 +106,7 @@ public sealed class SingleValueObjectJsonConverterFactoryTests
     public void Deserialize_FileName_ReadsFromRawString()
     {
         JsonSerializerOptions options = CreateOptions();
-        string json = "\"image.png\"";
+        const string json = "\"image.png\"";
 
         FileName? result = JsonSerializer.Deserialize<FileName>(json, options);
 
@@ -118,7 +118,7 @@ public sealed class SingleValueObjectJsonConverterFactoryTests
     public void Deserialize_Null_ReturnsNull()
     {
         JsonSerializerOptions options = CreateOptions();
-        string json = "null";
+        const string json = "null";
 
         ContentType? result = JsonSerializer.Deserialize<ContentType>(json, options);
 

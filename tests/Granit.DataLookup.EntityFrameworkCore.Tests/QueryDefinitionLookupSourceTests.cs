@@ -80,7 +80,7 @@ public sealed class QueryDefinitionLookupSourceTests : IDisposable
             .Returns(Task.FromResult(new PagedResult<Tenant>([], TotalCount: null, HasMore: true, NextCursor: "next-cursor")));
 
         LookupResult result = await source.SearchAsync(
-            new LookupQuery(ContinuationToken: "cur-1", Page: 5),
+            new LookupQuery(Page: 5, ContinuationToken: "cur-1"),
             TestContext.Current.CancellationToken);
 
         captured!.Cursor.ShouldBe("cur-1");

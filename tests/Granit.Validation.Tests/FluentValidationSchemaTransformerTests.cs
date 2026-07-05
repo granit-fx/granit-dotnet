@@ -108,7 +108,7 @@ public sealed class FluentValidationSchemaTransformerTests
         OpenApiSchema schema = await TransformAsync<PatternRequest, PatternRequestValidator>();
 
         OpenApiSchema codeSchema = GetProperty(schema, "code");
-        codeSchema.Pattern.ShouldBe(@"^[A-Z]{3}$");
+        codeSchema.Pattern.ShouldBe("^[A-Z]{3}$");
     }
 
     // -------------------------------------------------------------------------
@@ -121,7 +121,7 @@ public sealed class FluentValidationSchemaTransformerTests
         OpenApiSchema schema = await TransformAsync<PatternHintRequest, PatternHintRequestValidator>();
 
         OpenApiSchema codeSchema = GetProperty(schema, "code");
-        codeSchema.Pattern.ShouldBe(@"^[A-Z]{2}$");
+        codeSchema.Pattern.ShouldBe("^[A-Z]{2}$");
         codeSchema.Extensions.ShouldNotBeNull();
         codeSchema.Extensions.ShouldContainKey("x-granit-pattern-hint");
     }
@@ -132,11 +132,8 @@ public sealed class FluentValidationSchemaTransformerTests
         OpenApiSchema schema = await TransformAsync<PatternRequest, PatternRequestValidator>();
 
         OpenApiSchema codeSchema = GetProperty(schema, "code");
-        codeSchema.Pattern.ShouldBe(@"^[A-Z]{3}$");
-        if (codeSchema.Extensions is not null)
-        {
-            codeSchema.Extensions.ShouldNotContainKey("x-granit-pattern-hint");
-        }
+        codeSchema.Pattern.ShouldBe("^[A-Z]{3}$");
+        codeSchema.Extensions?.ShouldNotContainKey("x-granit-pattern-hint");
     }
 
     // -------------------------------------------------------------------------
@@ -286,7 +283,7 @@ public sealed class FluentValidationSchemaTransformerTests
 
     private sealed class PatternRequestValidator : GranitValidator<PatternRequest>
     {
-        public PatternRequestValidator() => RuleFor(x => x.Code).Matches(@"^[A-Z]{3}$");
+        public PatternRequestValidator() => RuleFor(x => x.Code).Matches("^[A-Z]{3}$");
     }
 
     private sealed record PatternHintRequest(string Code);
@@ -295,7 +292,7 @@ public sealed class FluentValidationSchemaTransformerTests
     {
         public PatternHintRequestValidator() =>
             RuleFor(x => x.Code)
-                .Matches(@"^[A-Z]{2}$")
+                .Matches("^[A-Z]{2}$")
                 .WithPatternHint("Validation:Hint:Alpha2Code");
     }
 

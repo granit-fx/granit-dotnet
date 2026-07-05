@@ -60,10 +60,7 @@ public sealed class RateLimitingMetricsTests : IDisposable
             }
         };
 
-        listener.SetMeasurementEventCallback<long>((instrument, measurement, tags, state) =>
-        {
-            count += measurement;
-        });
+        listener.SetMeasurementEventCallback<long>((instrument, measurement, tags, state) => count += measurement);
 
         listener.Start();
 
@@ -96,10 +93,7 @@ public sealed class RateLimitingMetricsTests : IDisposable
             }
         };
 
-        listener.SetMeasurementEventCallback<long>((instrument, measurement, tags, state) =>
-        {
-            count += measurement;
-        });
+        listener.SetMeasurementEventCallback<long>((instrument, measurement, tags, state) => count += measurement);
 
         listener.Start();
 

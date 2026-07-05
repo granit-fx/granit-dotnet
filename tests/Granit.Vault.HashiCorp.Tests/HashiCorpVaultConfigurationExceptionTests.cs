@@ -44,6 +44,6 @@ public sealed class HashiCorpVaultConfigurationExceptionTests
     {
         HashiCorpVaultConfigurationException exception = new("Vault:Test", "test");
 
-        ((IHasErrorCode)exception).ErrorCode.ShouldBe("Vault:Test");
+        exception.ErrorCode.ShouldBe("Vault:Test");
     }
 }

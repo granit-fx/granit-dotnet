@@ -17,7 +17,7 @@ public sealed class NoOpWebhookSecretProtectorTests
     [Fact]
     public async Task ProtectAsync_ReturnsPlainSecretUnchanged()
     {
-        string secret = "test-webhook-value-256";
+        const string secret = "test-webhook-value-256";
 
         string result = await _protector.ProtectAsync(secret, TestContext.Current.CancellationToken);
 
@@ -27,7 +27,7 @@ public sealed class NoOpWebhookSecretProtectorTests
     [Fact]
     public async Task UnprotectAsync_ReturnsProtectedSecretUnchanged()
     {
-        string secret = "my-protected-secret";
+        const string secret = "my-protected-secret";
 
         string result = await _protector.UnprotectAsync(secret, TestContext.Current.CancellationToken);
 
@@ -53,7 +53,7 @@ public sealed class NoOpWebhookSecretProtectorTests
     [Fact]
     public async Task RoundTrip_ProtectThenUnprotect_ReturnsSameValue()
     {
-        string original = "round-trip-secret";
+        const string original = "round-trip-secret";
 
         string protectedValue = await _protector.ProtectAsync(original, TestContext.Current.CancellationToken);
         string unprotected = await _protector.UnprotectAsync(protectedValue, TestContext.Current.CancellationToken);

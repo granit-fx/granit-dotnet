@@ -101,8 +101,7 @@ public sealed class EndpointModuleLocalizationRegistrationTests
         foreach (Assembly assembly in assemblies)
         {
             string? name = assembly.GetName().Name;
-            if (name is null
-                || !name.StartsWith("Granit.", StringComparison.Ordinal)
+            if (name?.StartsWith("Granit.", StringComparison.Ordinal) != true
                 || !name.EndsWith(".Endpoints", StringComparison.Ordinal))
             {
                 continue;

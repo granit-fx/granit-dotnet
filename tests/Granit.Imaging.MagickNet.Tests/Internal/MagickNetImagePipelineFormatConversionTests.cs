@@ -86,7 +86,7 @@ public sealed class MagickNetImagePipelineFormatConversionTests
         using CancellationTokenSource cts = new();
         cts.Cancel();
         MagickNetImagePipeline pipeline = CreatePipeline();
-        using MemoryStream output = new();
+        await using MemoryStream output = new();
 
         Func<Task> act = () => pipeline.SaveToStreamAsync(output, cts.Token);
         await Should.ThrowAsync<OperationCanceledException>(act);
@@ -103,7 +103,7 @@ public sealed class MagickNetImagePipelineFormatConversionTests
             .Compress(80)
             .ToResultAsync(TestContext.Current.CancellationToken);
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
         await pipeline2
             .ConvertTo(ImageFormat.Jpeg)
             .Compress(80)

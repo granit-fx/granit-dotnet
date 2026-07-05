@@ -197,6 +197,6 @@ public sealed class MappingSuggestionServiceTests
             headers, TestContext.Current.CancellationToken);
 
         // Assert — only one mapping to "Email" target
-        result.Where(m => m.TargetProperty == "Email").Count().ShouldBe(1);
+        result.Count(m => m.TargetProperty == "Email").ShouldBe(1);
     }
 }

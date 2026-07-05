@@ -17,10 +17,7 @@ public sealed class CookiesServiceCollectionExtensionsTests
         IHostEnvironment environment = Substitute.For<IHostEnvironment>();
         environment.EnvironmentName.Returns(Environments.Production);
         services.AddSingleton(environment);
-        services.AddGranitCookies(cookies =>
-        {
-            cookies.UseConsentResolver<FakeConsentResolver>();
-        });
+        services.AddGranitCookies(cookies => cookies.UseConsentResolver<FakeConsentResolver>());
 
         ServiceProvider provider = services.BuildServiceProvider();
 
@@ -52,10 +49,7 @@ public sealed class CookiesServiceCollectionExtensionsTests
     public void AddGranitCookies_WithConsentResolver_RegistersResolver()
     {
         ServiceCollection services = new();
-        services.AddGranitCookies(cookies =>
-        {
-            cookies.UseConsentResolver<FakeConsentResolver>();
-        });
+        services.AddGranitCookies(cookies => cookies.UseConsentResolver<FakeConsentResolver>());
 
         ServiceProvider provider = services.BuildServiceProvider();
         IConsentResolver? resolver = provider.GetService<IConsentResolver>();

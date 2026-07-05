@@ -170,13 +170,13 @@ public sealed class BufferedMultipartWriteStreamTests
         CapturedBytes captured = new();
         provider.SaveAsync(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(callInfo =>
+            .Returns(async callInfo =>
             {
                 Stream s = callInfo.Arg<Stream>();
-                using MemoryStream ms = new();
+                await using MemoryStream ms = new();
                 s.CopyTo(ms);
                 captured.Value = ms.ToArray();
-                return Task.CompletedTask;
+                await Task.CompletedTask;
             });
         return captured;
     }

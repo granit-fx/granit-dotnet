@@ -201,7 +201,7 @@ public static partial class ApiConventionRules
         }
 
         violations.ShouldBeEmpty(
-            $"Public Map* extension methods on IEndpointRouteBuilder must follow " +
+            "Public Map* extension methods on IEndpointRouteBuilder must follow " +
             $"the Map{requiredPrefix}{{Feature}}() naming convention. " +
             $"Violators: {string.Join("; ", violations)}");
     }
@@ -254,8 +254,8 @@ public static partial class ApiConventionRules
     /// Minimal API handlers bound to bodyless HTTP verbs (<c>DELETE</c>, <c>GET</c>, <c>HEAD</c>)
     /// must carry an explicit <c>[FromBody]</c> (or another explicit <c>[From*]</c>) on any complex
     /// <c>*Request</c> DTO parameter. ASP.NET Core 10 rejects an inferred body parameter on these
-    /// verbs at endpoint construction (<c>InvalidOperationException: Body was inferred but the
-    /// method does not allow inferred body parameters</c>), failing app startup — a regression that
+    /// verbs at endpoint construction (<code>InvalidOperationException: Body was inferred but the
+    /// method does not allow inferred body parameters</code>), failing app startup — a regression that
     /// escapes compile-time checks.
     /// </summary>
     /// <param name="srcDir">Path to the <c>src/</c> directory.</param>

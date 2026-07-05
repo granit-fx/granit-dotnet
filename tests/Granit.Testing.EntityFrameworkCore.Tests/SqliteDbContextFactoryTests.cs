@@ -24,7 +24,7 @@ public sealed class SqliteDbContextFactoryTests : IDisposable
     [Fact]
     public async Task Schema_Is_Created_By_Default()
     {
-        using TestDbContext context = _factory.CreateContext();
+        await using TestDbContext context = _factory.CreateContext();
 
         (await context.AuditedEntities.CountAsync(TestContext.Current.CancellationToken)).ShouldBe(0);
     }
@@ -34,9 +34,9 @@ public sealed class SqliteDbContextFactoryTests : IDisposable
     {
         FakeClock clock = new();
         FakeCurrentUser user = new();
-        using SqliteDbContextFactory<TestDbContext> factory = new(clock: clock, user: user);
+        using SqliteDbContextFactory<TestDbContext> factory = new(user: user, clock: clock);
 
-        using TestDbContext context = factory.CreateContext();
+        await using TestDbContext context = factory.CreateContext();
         TestAuditedEntity entity = new() { Name = "SqliteTest" };
         context.AuditedEntities.Add(entity);
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -51,9 +51,9 @@ public sealed class SqliteDbContextFactoryTests : IDisposable
     {
         FakeClock clock = new();
         FakeCurrentUser user = new();
-        using SqliteDbContextFactory<TestDbContext> factory = new(clock: clock, user: user);
+        using SqliteDbContextFactory<TestDbContext> factory = new(user: user, clock: clock);
 
-        using TestDbContext context = factory.CreateContext();
+        await using TestDbContext context = factory.CreateContext();
         TestFullAuditedEntity entity = new() { Name = "ToDelete" };
         context.FullAuditedEntities.Add(entity);
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -69,11 +69,11 @@ public sealed class SqliteDbContextFactoryTests : IDisposable
     [Fact]
     public async Task Contexts_Share_Same_Database()
     {
-        using TestDbContext ctx1 = _factory.CreateContext();
+        await using TestDbContext ctx1 = _factory.CreateContext();
         ctx1.AuditedEntities.Add(new TestAuditedEntity { Name = "Shared" });
         await ctx1.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        using TestDbContext ctx2 = _factory.CreateContext(ensureCreated: false);
+        await using TestDbContext ctx2 = _factory.CreateContext(ensureCreated: false);
         (await ctx2.AuditedEntities.CountAsync(TestContext.Current.CancellationToken)).ShouldBe(1);
     }
 

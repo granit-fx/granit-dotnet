@@ -109,10 +109,7 @@ public sealed class LocalizationServiceCollectionExtensionsTests
         ServiceCollection services = CreateServices();
         services.AddGranitLocalization();
 
-        services.ConfigureLocalizationOverridesCache(options =>
-        {
-            options.CacheTtl = TimeSpan.FromMinutes(10);
-        });
+        services.ConfigureLocalizationOverridesCache(options => options.CacheTtl = TimeSpan.FromMinutes(10));
 
         using ServiceProvider sp = services.BuildServiceProvider();
         LocalizationOverridesCacheOptions cacheOptions =
@@ -126,10 +123,7 @@ public sealed class LocalizationServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
 
-        IServiceCollection result = services.ConfigureLocalizationOverridesCache(options =>
-        {
-            options.CacheTtl = TimeSpan.FromMinutes(1);
-        });
+        IServiceCollection result = services.ConfigureLocalizationOverridesCache(options => options.CacheTtl = TimeSpan.FromMinutes(1));
 
         result.ShouldBeSameAs(services);
     }

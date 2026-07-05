@@ -27,7 +27,7 @@ public sealed class MobilePushNotificationsServiceCollectionExtensionsTests
     [Fact]
     public async Task AddGranitNotificationsMobilePush_TokenWrittenViaWriter_IsVisibleViaReader()
     {
-        using ServiceProvider sp = BuildProvider();
+        await using ServiceProvider sp = BuildProvider();
 
         IMobilePushTokenReader reader = sp.GetRequiredService<IMobilePushTokenReader>();
         IMobilePushTokenWriter writer = sp.GetRequiredService<IMobilePushTokenWriter>();

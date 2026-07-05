@@ -96,7 +96,7 @@ public sealed class FrenchRibAlgorithmTests
     public void IsValid_LowercaseInput_NormalizedCorrectly()
     {
         // Same as uppercase variant — Normalize converts to upper
-        string lower = "30004 00001 00000004045 29";
+        const string lower = "30004 00001 00000004045 29";
         FrenchRibAlgorithm.IsValid(lower).ShouldBeTrue();
     }
 }

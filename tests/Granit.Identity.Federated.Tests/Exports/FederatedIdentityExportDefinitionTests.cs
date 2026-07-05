@@ -9,7 +9,7 @@ public sealed class FederatedIdentityExportDefinitionTests
 {
     private static readonly FederatedIdentityExportDefinition Sut = new();
     private static IReadOnlyList<ExportFieldDescriptor> Fields =>
-        ((IExportDefinitionDescriptor)Sut).GetFields();
+        Sut.GetFields();
 
     [Fact]
     public void Name_is_stable() =>

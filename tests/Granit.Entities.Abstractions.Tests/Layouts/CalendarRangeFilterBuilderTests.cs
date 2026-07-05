@@ -136,7 +136,7 @@ public sealed class CalendarRangeFilterBuilderTests
             .BuildOverlapFilter<Meeting>(layout, new CalendarFilterRange(Anchor, Anchor.AddDays(7)))
             .Compile();
 
-        meetings.Where(filter).Count().ShouldBe(1);
+        meetings.Count(filter).ShouldBe(1);
     }
 
     private sealed class PointInTimeEvent

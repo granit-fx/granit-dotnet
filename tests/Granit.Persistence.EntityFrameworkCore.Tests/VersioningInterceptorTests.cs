@@ -33,7 +33,7 @@ public sealed class VersioningInterceptorTests
     public async Task SaveChanges_WhenVersionIdIsEmpty_ShouldAssignNewVersionId()
     {
         // Arrange
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestVersionedEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -53,7 +53,7 @@ public sealed class VersioningInterceptorTests
     {
         // Arrange
         var existingVersionId = Guid.NewGuid();
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestVersionedEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -77,7 +77,7 @@ public sealed class VersioningInterceptorTests
     public async Task SaveChanges_FirstVersion_ShouldSetVersionTo1()
     {
         // Arrange
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestVersionedEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -97,7 +97,7 @@ public sealed class VersioningInterceptorTests
     {
         // Arrange
         var businessId = Guid.NewGuid();
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
 
         // Add first version
         TestVersionedEntity v1 = new()
@@ -131,7 +131,7 @@ public sealed class VersioningInterceptorTests
     {
         // Arrange — two entities added in the same SaveChanges batch
         var businessId = Guid.NewGuid();
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
 
         TestVersionedEntity v1 = new()
         {
@@ -165,7 +165,7 @@ public sealed class VersioningInterceptorTests
     public async Task SaveChanges_WhenModified_ShouldNotChangeVersion()
     {
         // Arrange
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestVersionedEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -192,7 +192,7 @@ public sealed class VersioningInterceptorTests
     public async Task SaveChanges_NonVersionedEntity_ShouldBeIgnored()
     {
         // Arrange
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestPlainEntity entity = new()
         {
             Id = Guid.NewGuid(),

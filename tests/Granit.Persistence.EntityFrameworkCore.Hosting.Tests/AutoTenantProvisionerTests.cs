@@ -36,7 +36,7 @@ public sealed class AutoTenantProvisionerTests : IDisposable
         services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
         services.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
         services.AddSingleton<ITenantDbIsolator>(Substitute.For<ITenantDbIsolator>());
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         AutoTenantProvisioner sut = CreateProvisioner(sp);
 
@@ -50,7 +50,7 @@ public sealed class AutoTenantProvisionerTests : IDisposable
     {
         // Arrange
         ServiceCollection services = BuildServicesWithTestContext();
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         AutoTenantProvisioner sut = CreateProvisioner(sp);
 
@@ -72,7 +72,7 @@ public sealed class AutoTenantProvisionerTests : IDisposable
         ServiceCollection services = BuildServicesWithTestContext();
         IDataSeeder seeder = Substitute.For<IDataSeeder>();
         services.AddSingleton(seeder);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         AutoTenantProvisioner sut = CreateProvisioner(sp);
 
@@ -88,7 +88,7 @@ public sealed class AutoTenantProvisionerTests : IDisposable
     {
         // Arrange — no IDataSeeder registered
         ServiceCollection services = BuildServicesWithTestContext();
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         AutoTenantProvisioner sut = CreateProvisioner(sp);
 
@@ -111,7 +111,7 @@ public sealed class AutoTenantProvisionerTests : IDisposable
                 return Substitute.For<IDisposable>();
             });
         services.AddScoped(_ => currentTenant);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         AutoTenantProvisioner sut = CreateProvisioner(sp);
 
@@ -134,7 +134,7 @@ public sealed class AutoTenantProvisionerTests : IDisposable
 #pragma warning restore CA2012
         services.AddSingleton(schemaProvider);
 
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         AutoTenantProvisioner sut = CreateProvisioner(sp);
 
@@ -155,7 +155,7 @@ public sealed class AutoTenantProvisionerTests : IDisposable
     {
         // Arrange — no ITenantSchemaProvider registered
         ServiceCollection services = BuildServicesWithTestContext();
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
 
         AutoTenantProvisioner sut = CreateProvisioner(sp);
 

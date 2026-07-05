@@ -184,7 +184,7 @@ public sealed class DocumentGeneratorTests
     {
         // Arrange — verifies the rendered HTML is forwarded as-is to the document renderer
         InvoiceData data = new("Dupont", 999m);
-        string expectedHtml = "<h1>Invoice</h1><p>Total: 999</p>";
+        const string expectedHtml = "<h1>Invoice</h1><p>Total: 999</p>";
         string? capturedHtml = null;
 
         ITextTemplateRenderer textRenderer = Substitute.For<ITextTemplateRenderer>();

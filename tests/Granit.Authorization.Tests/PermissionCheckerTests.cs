@@ -43,8 +43,8 @@ public sealed class PermissionCheckerTests
         PermissionChecker checker = BuildChecker(
             alwaysAllow: true,
             isAuthenticated: true,
-            cache: cache,
-            store: store);
+            store: store,
+            cache: cache);
 
         // Act
         bool result = await checker.IsGrantedAsync(DefinedPermission, TestContext.Current.CancellationToken);
@@ -81,8 +81,8 @@ public sealed class PermissionCheckerTests
         PermissionChecker checker = BuildChecker(
             isAuthenticated: true,
             roles: [AdminRoleName],
-            cache: cache,
-            store: store);
+            store: store,
+            cache: cache);
 
         // Act
         bool result = await checker.IsGrantedAsync(DefinedPermission, TestContext.Current.CancellationToken);
@@ -244,8 +244,8 @@ public sealed class PermissionCheckerTests
         PermissionChecker checker = BuildChecker(
             isAuthenticated: true,
             roles: [roleCasing],
-            cache: cache,
-            store: store);
+            store: store,
+            cache: cache);
 
         // Act
         bool result = await checker.IsGrantedAsync(DefinedPermission, TestContext.Current.CancellationToken);

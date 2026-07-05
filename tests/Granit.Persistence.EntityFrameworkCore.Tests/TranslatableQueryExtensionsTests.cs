@@ -29,7 +29,7 @@ public sealed class TranslatableQueryExtensionsTests
             .ToListAsync(TestContext.Current.CancellationToken);
 
         results.Count.ShouldBe(2);
-        results.SelectMany(d => d.Translations).Count().ShouldBe(4,
+        results.Sum(d => d.Translations.Count).ShouldBe(4,
             "all translations for all documents must be loaded");
     }
 

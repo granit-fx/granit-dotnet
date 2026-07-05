@@ -94,7 +94,7 @@ public sealed class ModuleLoaderTests
         modules.Count.ShouldBe(4);
 
         // Shared must appear exactly once
-        modules.Where(m => m.ModuleType == typeof(SharedModule)).Count().ShouldBe(1);
+        modules.Count(m => m.ModuleType == typeof(SharedModule)).ShouldBe(1);
 
         // Shared must come before Left and Right
         var types = modules.Select(m => m.ModuleType).ToList();
@@ -128,7 +128,7 @@ public sealed class ModuleLoaderTests
         IReadOnlyList<ModuleDescriptor> modules = ModuleLoader.LoadModules<DuplicateDepsModule>();
 
         modules.Count.ShouldBe(2);
-        modules.Where(m => m.ModuleType == typeof(StandaloneModule)).Count().ShouldBe(1);
+        modules.Count(m => m.ModuleType == typeof(StandaloneModule)).ShouldBe(1);
     }
 
     [Fact]

@@ -50,7 +50,7 @@ public sealed class ImportUploadServiceTests
     public async Task UploadAsync_WithValidFile_ReturnsSuccess()
     {
         // Arrange
-        using var stream = new MemoryStream("Name,Email\nAlice,alice@test.com"u8.ToArray());
+        await using var stream = new MemoryStream("Name,Email\nAlice,alice@test.com"u8.ToArray());
 
         // Act
         ImportUploadResult result = await _sut.UploadAsync(
@@ -71,7 +71,7 @@ public sealed class ImportUploadServiceTests
     public async Task UploadAsync_UnknownDefinition_ReturnsFailure()
     {
         // Arrange
-        using var stream = new MemoryStream([1, 2, 3]);
+        await using var stream = new MemoryStream([1, 2, 3]);
 
         // Act
         ImportUploadResult result = await _sut.UploadAsync(
@@ -88,7 +88,7 @@ public sealed class ImportUploadServiceTests
     public async Task UploadAsync_EmptyFile_ReturnsFailure()
     {
         // Arrange
-        using var stream = new MemoryStream();
+        await using var stream = new MemoryStream();
 
         // Act
         ImportUploadResult result = await _sut.UploadAsync(
@@ -104,8 +104,8 @@ public sealed class ImportUploadServiceTests
     public async Task UploadAsync_FileTooLarge_ReturnsFailure()
     {
         // Arrange
-        long size = 11 * 1024 * 1024; // 11 MB, limit is 10
-        using var stream = new MemoryStream([1]);
+        const long size = 11 * 1024 * 1024; // 11 MB, limit is 10
+        await using var stream = new MemoryStream([1]);
 
         // Act
         ImportUploadResult result = await _sut.UploadAsync(
@@ -121,8 +121,8 @@ public sealed class ImportUploadServiceTests
     public async Task UploadAsync_ExactlyAtMaxSize_Succeeds()
     {
         // Arrange — exactly 10 MB
-        long size = 10 * 1024 * 1024;
-        using var stream = new MemoryStream([1]);
+        const long size = 10 * 1024 * 1024;
+        await using var stream = new MemoryStream([1]);
 
         // Act
         ImportUploadResult result = await _sut.UploadAsync(
@@ -137,7 +137,7 @@ public sealed class ImportUploadServiceTests
     public async Task UploadAsync_DisallowedMimeType_ReturnsFailure()
     {
         // Arrange
-        using var stream = new MemoryStream([1, 2, 3]);
+        await using var stream = new MemoryStream([1, 2, 3]);
 
         // Act
         ImportUploadResult result = await _sut.UploadAsync(
@@ -154,7 +154,7 @@ public sealed class ImportUploadServiceTests
     public async Task UploadAsync_StripsPathFromFileName()
     {
         // Arrange — simulate a path traversal attempt
-        using var stream = new MemoryStream("data"u8.ToArray());
+        await using var stream = new MemoryStream("data"u8.ToArray());
 
         // Act
         ImportUploadResult result = await _sut.UploadAsync(
@@ -173,7 +173,7 @@ public sealed class ImportUploadServiceTests
         // Arrange
         var expectedTime = new DateTimeOffset(2026, 1, 15, 8, 30, 0, TimeSpan.Zero);
         _clock.Now.Returns(expectedTime);
-        using var stream = new MemoryStream("data"u8.ToArray());
+        await using var stream = new MemoryStream("data"u8.ToArray());
 
         // Act
         ImportUploadResult result = await _sut.UploadAsync(
@@ -188,7 +188,7 @@ public sealed class ImportUploadServiceTests
     public async Task UploadAsync_CaseInsensitiveDefinitionName()
     {
         // Arrange
-        using var stream = new MemoryStream("data"u8.ToArray());
+        await using var stream = new MemoryStream("data"u8.ToArray());
 
         // Act
         ImportUploadResult result = await _sut.UploadAsync(

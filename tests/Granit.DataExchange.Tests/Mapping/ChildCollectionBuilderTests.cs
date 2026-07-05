@@ -90,7 +90,7 @@ public sealed class ChildCollectionBuilderTests
 
         // Act & Assert — method call is not a MemberExpression
         Should.Throw<ArgumentException>(() =>
-            builder.Property(l => l.ProductName.ToString()));
+            builder.Property(l => l.ProductName));
     }
 
     [Fact]

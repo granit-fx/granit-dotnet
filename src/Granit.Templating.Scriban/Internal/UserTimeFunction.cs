@@ -12,8 +12,8 @@ namespace Granit.Templating.Scriban.Internal;
 /// </summary>
 /// <remarks>
 /// Usage in templates:
-/// <code>{{ model.trial_ends_at | to_user_time }}</code>
-/// <code>{{ model.trial_ends_at | to_user_time | date.to_string "%B %d, %Y at %H:%M" }}</code>
+/// <c>{{ model.trial_ends_at | to_user_time }}</c>
+/// <c>{{ model.trial_ends_at | to_user_time | date.to_string "%B %d, %Y at %H:%M" }}</c>
 ///
 /// When no user timezone is set (via <see cref="ICurrentTimezoneProvider"/>),
 /// the date is returned unchanged (UTC).

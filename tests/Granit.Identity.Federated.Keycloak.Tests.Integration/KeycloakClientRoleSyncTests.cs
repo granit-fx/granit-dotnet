@@ -75,7 +75,7 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
 
         store.All.Count.ShouldBe(3);
         store.All.ShouldAllBe(r => r.ClientId == KeycloakFixture.TrackedClientId);
-        store.All.Select(r => r.Name).OrderBy(x => x).ShouldBe(["admin", "editor", "viewer"]);
+        store.All.Select(r => r.Name).Order().ShouldBe(["admin", "editor", "viewer"]);
         store.All.First(r => r.Name == "editor").Description.ShouldBe("Edit showcase documents");
     }
 
@@ -88,12 +88,12 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
 
         await sut.SyncAsync(TestContext.Current.CancellationToken);
         int firstRunCount = store.All.Count;
-        IReadOnlyList<Guid> firstRunIds = store.All.Select(r => r.Id).OrderBy(x => x).ToList();
+        IReadOnlyList<Guid> firstRunIds = store.All.Select(r => r.Id).Order().ToList();
 
         await sut.SyncAsync(TestContext.Current.CancellationToken);
 
         store.All.Count.ShouldBe(firstRunCount);
-        store.All.Select(r => r.Id).OrderBy(x => x).ShouldBe(firstRunIds);
+        store.All.Select(r => r.Id).Order().ShouldBe(firstRunIds);
     }
 
     [Fact]
@@ -180,7 +180,7 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
 
         roles.Count.ShouldBe(2);
         roles.ShouldAllBe(r => r.ClientId == KeycloakFixture.TrackedClientId);
-        roles.Select(r => r.Name).OrderBy(x => x).ShouldBe(["admin", "editor"]);
+        roles.Select(r => r.Name).Order().ShouldBe(["admin", "editor"]);
     }
 
     [Fact]
@@ -205,7 +205,7 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
             // from Keycloak, but 'viewer' stays in the store until an explicit cleanup job
             // (tracked separately in Phase 3, #1118).
             store.All.Count.ShouldBe(3);
-            store.All.Select(r => r.Name).OrderBy(x => x).ShouldBe(["admin", "editor", "viewer"]);
+            store.All.Select(r => r.Name).Order().ShouldBe(["admin", "editor", "viewer"]);
         }
         finally
         {

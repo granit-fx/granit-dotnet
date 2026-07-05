@@ -47,7 +47,7 @@ public static partial class FileOrganizationRules
         }
 
         violations.ShouldBeEmpty(
-            $"Module classes (*Module.cs) must be at the module root directory. " +
+            "Module classes (*Module.cs) must be at the module root directory. " +
             $"Violators: {string.Join(", ", violations)}");
     }
 
@@ -384,12 +384,9 @@ public static partial class FileOrganizationRules
                     violations.Add($"[EfCore] {Path.GetRelativePath(srcDir, csFile)} → must be in Entities/ or Internal/");
                 }
             }
-            else
+            else if (!IsInFolder(csFile, "Domain") && InheritsFromDomainBaseClass(csFile))
             {
-                if (!IsInFolder(csFile, "Domain") && InheritsFromDomainBaseClass(csFile))
-                {
-                    violations.Add($"[Base] {Path.GetRelativePath(srcDir, csFile)} → must be in Domain/");
-                }
+                violations.Add($"[Base] {Path.GetRelativePath(srcDir, csFile)} → must be in Domain/");
             }
         }
 

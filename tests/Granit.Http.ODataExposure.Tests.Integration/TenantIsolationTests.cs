@@ -110,7 +110,7 @@ public sealed class TenantIsolationTests(PostgresFixture postgres)
         // EF Core's translator emits the model's HasQueryFilter clauses first
         // (compose-FIRST guarantee); we confirm the actual SQL.
         _app.SqlCapture.Clear();
-        await GetAsync(TenantA, $"Invoices?$filter=Amount gt 100");
+        await GetAsync(TenantA, "Invoices?$filter=Amount gt 100");
 
         string? selectCommand = _app.SqlCapture.Commands
             .FirstOrDefault(c => c.Contains(@"FROM ""Invoices""", StringComparison.Ordinal));

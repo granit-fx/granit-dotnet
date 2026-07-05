@@ -74,7 +74,7 @@ public sealed class WorkflowManagerFactoryTests
         services.AddWorkflow(BlogPostType, BlogDefinition);
         services.AddWorkflow(CmsPageType, PageDefinition);
 
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         using IServiceScope scope = sp.CreateScope();
         IWorkflowManagerFactory factory =
             scope.ServiceProvider.GetRequiredService<IWorkflowManagerFactory>();

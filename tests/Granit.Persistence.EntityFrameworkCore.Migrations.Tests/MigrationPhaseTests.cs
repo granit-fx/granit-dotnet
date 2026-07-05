@@ -16,7 +16,7 @@ public sealed class MigrationPhaseTests
     [Fact]
     public void Expand_IsDefaultValue()
     {
-        MigrationPhase defaultValue = default;
+        const MigrationPhase defaultValue = default;
 
         defaultValue.ShouldBe(MigrationPhase.Expand);
     }

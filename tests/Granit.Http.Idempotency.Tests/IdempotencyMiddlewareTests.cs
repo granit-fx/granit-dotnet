@@ -216,10 +216,7 @@ public sealed class IdempotencyMiddlewareTests
              .Returns(Task.CompletedTask);
 
         // Endpoint that blocks until the token is cancelled (simulates a hung operation)
-        RequestDelegate slowHandler = async ctx =>
-        {
-            await Task.Delay(Timeout.InfiniteTimeSpan, ctx.RequestAborted);
-        };
+        RequestDelegate slowHandler = async ctx => await Task.Delay(Timeout.InfiniteTimeSpan, ctx.RequestAborted);
 
         (HttpClient client, IHost host) = await BuildTestHostAsync(
             store,

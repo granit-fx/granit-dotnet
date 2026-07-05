@@ -52,7 +52,7 @@ public sealed class TestDbContextServiceCollectionExtensionsTests
         services.AddGranitTestDbContext<TestDbContext>();
 
         ServiceProvider provider = services.BuildServiceProvider();
-        using TestDbContext context = provider.GetRequiredService<TestDbContext>();
+        await using TestDbContext context = provider.GetRequiredService<TestDbContext>();
 
         TestAuditedEntity entity = new() { Name = "ExtensionTest" };
         context.AuditedEntities.Add(entity);

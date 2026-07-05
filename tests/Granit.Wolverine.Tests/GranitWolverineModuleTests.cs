@@ -123,7 +123,7 @@ public sealed class GranitWolverineModuleTests
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         bool callbackInvoked = false;
 
-        builder.AddGranitWolverine(configure: opts => { callbackInvoked = true; });
+        builder.AddGranitWolverine(configure: opts => callbackInvoked = true);
 
         callbackInvoked.ShouldBeTrue();
     }

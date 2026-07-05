@@ -160,7 +160,7 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
             "https://example.com/hook", "test.event", null, TestContext.Current.CancellationToken);
         string initialHint = created.Subscription.SigningSecretHint!;
 
-        WebhookSigningKeyRotatedResult rotated = await ((IWebhookSigningKeyWriter)_store)
+        WebhookSigningKeyRotatedResult rotated = await _store
             .RotateSigningKeyAsync(created.Subscription.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
 
         WebhookSubscription? updated = await _store.FindByIdAsync(created.Subscription.Id, TestContext.Current.CancellationToken);
@@ -322,10 +322,10 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
         WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
         _store.Add(sub);
 
-        WebhookSigningKeyRotatedResult first = await ((IWebhookSigningKeyWriter)_store)
+        WebhookSigningKeyRotatedResult first = await _store
             .RotateSigningKeyAsync(sub.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
 
-        await ((IWebhookSigningKeyWriter)_store)
+        await _store
             .RotateSigningKeyAsync(sub.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
 
         // Initial seeded key + 2 rotation keys = 3 total. Exactly one is Active;
@@ -344,10 +344,10 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
         WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
         _store.Add(sub);
 
-        WebhookSigningKeyRotatedResult result = await ((IWebhookSigningKeyWriter)_store)
+        WebhookSigningKeyRotatedResult result = await _store
             .RotateSigningKeyAsync(sub.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
 
-        Func<Task> act = () => ((IWebhookSigningKeyWriter)_store)
+        Func<Task> act = () => _store
             .RevokeSigningKeyAsync(sub.Id, result.KeyId, TestContext.Current.CancellationToken);
 
         await Should.ThrowAsync<InvalidOperationException>(act);
@@ -359,12 +359,12 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
         WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
         _store.Add(sub);
 
-        await ((IWebhookSigningKeyWriter)_store)
+        await _store
             .RotateSigningKeyAsync(sub.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
-        await ((IWebhookSigningKeyWriter)_store)
+        await _store
             .RotateSigningKeyAsync(sub.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
 
-        IReadOnlyList<WebhookSigningKey> keys = await ((IWebhookSigningKeyReader)_store)
+        IReadOnlyList<WebhookSigningKey> keys = await _store
             .GetForSubscriptionAsync(sub.Id, TestContext.Current.CancellationToken);
 
         // Initial seeded key + 2 rotation keys.

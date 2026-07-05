@@ -55,7 +55,7 @@ public sealed class LiveTesseractRecognizerTests
             .OfType<TesseractOcrExtractor>()
             .Single();
 
-        using MemoryStream stream = new(png);
+        await using MemoryStream stream = new(png);
         TextExtractionResult result = await extractor.ExtractAsync(
             stream,
             contentType: "image/png",

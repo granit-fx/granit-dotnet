@@ -74,7 +74,7 @@ public sealed class EntityTests
         var tenantId = Guid.NewGuid();
         LocalIdentity user = new() { TenantId = tenantId };
 
-        ((IMultiTenant)user).TenantId.ShouldBe(tenantId);
+        user.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]

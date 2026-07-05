@@ -71,7 +71,7 @@ public sealed class TesseractOcrExtractorTests
             CreateExtractor("Hello, OCR!");
 
         byte[] imageBytes = SampleImageBytes();
-        using MemoryStream input = new(imageBytes);
+        await using MemoryStream input = new(imageBytes);
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 1024,
@@ -90,7 +90,7 @@ public sealed class TesseractOcrExtractorTests
     public async Task Truncates_when_recognition_exceeds_max_char_length()
     {
         (TesseractOcrExtractor extractor, _) = CreateExtractor(new string('x', 5_000));
-        using MemoryStream input = new(SampleImageBytes());
+        await using MemoryStream input = new(SampleImageBytes());
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 100,
@@ -112,7 +112,7 @@ public sealed class TesseractOcrExtractorTests
         (TesseractOcrExtractor extractor, ITesseractRecognizer recognizer) =
             CreateExtractor(ocrOptions: tight, imageProcessor: ImageProcessorReturning(32, 32));
 
-        using MemoryStream input = new(SampleImageBytes());
+        await using MemoryStream input = new(SampleImageBytes());
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 1024,
@@ -137,7 +137,7 @@ public sealed class TesseractOcrExtractorTests
 
         // No PNG/JPEG/etc header → the imaging provider rejects it as an unsupported format.
         byte[] junk = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09];
-        using MemoryStream input = new(junk);
+        await using MemoryStream input = new(junk);
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 1024,
@@ -163,7 +163,7 @@ public sealed class TesseractOcrExtractorTests
             MEOptions.Create(new TesseractOcrOptions { DataPath = "/tmp/tessdata" }),
             NullLogger<TesseractOcrExtractor>.Instance);
 
-        using MemoryStream input = new(SampleImageBytes());
+        await using MemoryStream input = new(SampleImageBytes());
 
         TextExtractionResult result = await extractor.ExtractAsync(
             input, Png, maxCharLength: 1024,
@@ -180,7 +180,7 @@ public sealed class TesseractOcrExtractorTests
         (TesseractOcrExtractor extractor, _) = CreateExtractor(extractionOptions: extraction);
 
         // 64-byte payload exceeds the 16-byte body cap, which trips before the image is identified.
-        using MemoryStream input = new(SampleImageBytes());
+        await using MemoryStream input = new(SampleImageBytes());
 
         TextExtraction.Exceptions.TextExtractionException tex =
             await Should.ThrowAsync<TextExtraction.Exceptions.TextExtractionException>(

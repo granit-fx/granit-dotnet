@@ -89,7 +89,7 @@ public sealed partial class OpenApiGeneratorCompletenessTests
         int expected = EndpointsProjectNames.Count + NonEndpointsDocumentSlugs.Count;
 
         entries.ShouldBe(expected,
-            $"GeneratorEndpoints.All must declare one document per endpoints module plus the " +
+            "GeneratorEndpoints.All must declare one document per endpoints module plus the " +
             $"{NonEndpointsDocumentSlugs.Count} non-.Endpoints surface(s) [{string.Join(", ", NonEndpointsDocumentSlugs)}] " +
             $"({expected} expected, found {entries}). Every module's routes must be mounted.");
 

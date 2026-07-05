@@ -214,7 +214,7 @@ public sealed class ChannelCronSchedulerServiceTests
     public async Task StopAsync_DoesNotThrow()
     {
         Func<Task> act = () =>
-            ((IHostedService)CreateService())
+            CreateService()
                 .StopAsync(TestContext.Current.CancellationToken);
 
         await Should.NotThrowAsync(act);

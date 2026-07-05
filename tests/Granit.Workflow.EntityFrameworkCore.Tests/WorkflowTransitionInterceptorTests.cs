@@ -41,7 +41,7 @@ public sealed class WorkflowTransitionInterceptorTests
     public async Task SaveChanges_WhenStatusChanges_ShouldCreateTransitionRecord()
     {
         // Arrange
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestWorkflowEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -82,7 +82,7 @@ public sealed class WorkflowTransitionInterceptorTests
     public async Task SaveChanges_WhenStatusUnchanged_ShouldNotCreateRecord()
     {
         // Arrange
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestWorkflowEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -108,7 +108,7 @@ public sealed class WorkflowTransitionInterceptorTests
         // Arrange
         _currentTenant.IsAvailable.Returns(false);
 
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestWorkflowEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -134,7 +134,7 @@ public sealed class WorkflowTransitionInterceptorTests
         // Arrange
         _currentUserService.UserId.Returns((string?)null);
 
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestWorkflowEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -164,7 +164,7 @@ public sealed class WorkflowTransitionInterceptorTests
         // Arrange
         using IDisposable scope = WorkflowTransitionContext.SetComment("Validated by Dr. Martin");
 
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestWorkflowEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -192,7 +192,7 @@ public sealed class WorkflowTransitionInterceptorTests
     public async Task SaveChanges_WhenPublished_ShouldSyncIsPublishedToTrue()
     {
         // Arrange
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestVersionedEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -214,7 +214,7 @@ public sealed class WorkflowTransitionInterceptorTests
     public async Task SaveChanges_WhenDraft_ShouldSyncIsPublishedToFalse()
     {
         // Arrange
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestVersionedEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -240,7 +240,7 @@ public sealed class WorkflowTransitionInterceptorTests
     public async Task SaveChanges_ExplicitInterfaceImpl_ShouldSyncIsPublished()
     {
         // Arrange — entity uses explicit IWorkflowStateful implementation (like VersionedWorkflowEntity)
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestExplicitEntity entity = new()
         {
             Id = Guid.NewGuid(),
@@ -260,7 +260,7 @@ public sealed class WorkflowTransitionInterceptorTests
     public async Task SaveChanges_ExplicitInterfaceImpl_ShouldCreateTransitionRecord()
     {
         // Arrange
-        using TestDbContext context = CreateContext();
+        await using TestDbContext context = CreateContext();
         TestExplicitEntity entity = new()
         {
             Id = Guid.NewGuid(),

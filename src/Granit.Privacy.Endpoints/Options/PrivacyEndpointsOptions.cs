@@ -32,8 +32,8 @@ public sealed class PrivacyEndpointsOptions
     /// Whether the privacy-export download endpoints require a recent re-authentication
     /// (step-up auth). When <see langword="true"/> (default), the OIDC <c>auth_time</c>
     /// claim must be within <see cref="DownloadStepUpMaxAge"/> of the current time;
-    /// otherwise the endpoint returns <c>401</c> with a <c>WWW-Authenticate: Bearer
-    /// error="step_up"</c> header so an OIDC-aware BFF can refresh the session
+    /// otherwise the endpoint returns <c>401</c> with a <code>WWW-Authenticate: Bearer
+    /// error="step_up"</code> header so an OIDC-aware BFF can refresh the session
     /// transparently before retrying.
     /// </summary>
     /// <remarks>

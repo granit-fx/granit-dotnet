@@ -46,7 +46,7 @@ public sealed class EfCoreUserNotificationStoreTests : IDisposable
     [Fact]
     public async Task GetListAsync_ReturnsPaginatedResults_SortedByDate()
     {
-        string userId = "user-paginated";
+        const string userId = "user-paginated";
         var tenantId = Guid.NewGuid();
         DateTimeOffset baseTime = DateTimeOffset.UtcNow;
 
@@ -87,7 +87,7 @@ public sealed class EfCoreUserNotificationStoreTests : IDisposable
     [Fact]
     public async Task GetUnreadCountAsync_ReturnsCorrectCount()
     {
-        string userId = "user-unread-count";
+        const string userId = "user-unread-count";
         var tenantId = Guid.NewGuid();
 
         // Insert 3 unread notifications
@@ -124,7 +124,7 @@ public sealed class EfCoreUserNotificationStoreTests : IDisposable
     [Fact]
     public async Task MarkAllAsReadAsync_MarksAllUnreadAsRead()
     {
-        string userId = "user-mark-all";
+        const string userId = "user-mark-all";
         var tenantId = Guid.NewGuid();
 
         // Insert 3 unread notifications
@@ -147,8 +147,8 @@ public sealed class EfCoreUserNotificationStoreTests : IDisposable
     public async Task GetByEntityAsync_FiltersCorrectly()
     {
         var tenantId = Guid.NewGuid();
-        string entityType = "Order";
-        string entityId = "order-42";
+        const string entityType = "Order";
+        const string entityId = "order-42";
 
         await _store.InsertAsync(BuildNotification(tenantId: tenantId, relatedEntityType: entityType, relatedEntityId: entityId), TestContext.Current.CancellationToken);
         await _store.InsertAsync(BuildNotification(tenantId: tenantId, relatedEntityType: entityType, relatedEntityId: entityId), TestContext.Current.CancellationToken);

@@ -129,7 +129,7 @@ public sealed class EmojiValidatorTests
     public void IsValid_rejects_tag_sequence_without_cancel_tag()
     {
         // 🏴 + 'g' 'b' 'e' 'n' 'g' tag chars, no U+E007F terminator.
-        string truncated = "🏴\U000E0067\U000E0062\U000E0065\U000E006E\U000E0067";
+        const string truncated = "🏴\U000E0067\U000E0062\U000E0065\U000E006E\U000E0067";
         EmojiValidator.IsValid(truncated).ShouldBeFalse();
     }
 
@@ -137,7 +137,7 @@ public sealed class EmojiValidatorTests
     public void IsValid_rejects_cancel_tag_with_no_tag_chars_between()
     {
         // 🏴 immediately followed by U+E007F, no tag chars in between.
-        string immediateCancel = "🏴\U000E007F";
+        const string immediateCancel = "🏴\U000E007F";
         EmojiValidator.IsValid(immediateCancel).ShouldBeFalse();
     }
 
@@ -149,7 +149,7 @@ public sealed class EmojiValidatorTests
     public void IsValid_rejects_tag_char_after_zwj()
     {
         // 👨 ZWJ tag char — not a defined sequence.
-        string bad = "👨‍\U000E0067";
+        const string bad = "👨‍\U000E0067";
         EmojiValidator.IsValid(bad).ShouldBeFalse();
     }
 

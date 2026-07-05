@@ -32,7 +32,7 @@ public sealed class PresenceScopeValidationTests
 
         storeDescriptor.Lifetime.ShouldBe(
             ServiceLifetime.Scoped,
-            $"IPresenceStore must be Scoped because EfPresenceStore consumes the Scoped " +
+            "IPresenceStore must be Scoped because EfPresenceStore consumes the Scoped " +
             $"IDbContextFactory<PresenceDbContext>. Got {storeDescriptor.Lifetime}.");
 
         ServiceDescriptor concreteDescriptor = builder.Services

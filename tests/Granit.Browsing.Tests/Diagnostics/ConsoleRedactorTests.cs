@@ -18,7 +18,7 @@ public sealed class ConsoleRedactorTests
     [Fact]
     public void JWT_shape_should_be_redacted_under_bearer_prefix()
     {
-        string jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NSJ9.SflKxwRJSMeKKF2Q";
+        const string jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NSJ9.SflKxwRJSMeKKF2Q";
         string output = ConsoleRedactor.Redact($"Bearer {jwt}");
 
         output.ShouldNotContain(jwt);

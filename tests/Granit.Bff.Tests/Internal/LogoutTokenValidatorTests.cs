@@ -93,7 +93,7 @@ public sealed class LogoutTokenValidatorTests : IDisposable
     [Fact]
     public async Task ValidateAsync_InvalidBase64Header_ReturnsNull()
     {
-        string token = "!!!invalid-base64!!!.payload.signature";
+        const string token = "!!!invalid-base64!!!.payload.signature";
 
         ValidatedLogoutToken? result = await _validator.ValidateAsync(
             token, ClientId, TestContext.Current.CancellationToken);

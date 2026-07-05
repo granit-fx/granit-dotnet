@@ -198,7 +198,7 @@ public sealed class EfManagedHostnameStoreTests
     [Fact]
     public async Task ListDueForVerificationAsync_returns_due_hostnames_across_tenants()
     {
-        string db = nameof(ListDueForVerificationAsync_returns_due_hostnames_across_tenants);
+        const string db = nameof(ListDueForVerificationAsync_returns_due_hostnames_across_tenants);
         EfManagedHostnameStore store = CreateStore(db, TenantA);
 
         // Errored with NextCheckAt in the past → due. Owned by TenantB: the poller is system-wide.
@@ -219,7 +219,7 @@ public sealed class EfManagedHostnameStoreTests
     [Fact]
     public async Task ListDueForVerificationAsync_excludes_hostnames_not_yet_due()
     {
-        string db = nameof(ListDueForVerificationAsync_excludes_hostnames_not_yet_due);
+        const string db = nameof(ListDueForVerificationAsync_excludes_hostnames_not_yet_due);
         EfManagedHostnameStore store = CreateStore(db);
 
         ManagedHostname errored = MakeHostname("future.com");

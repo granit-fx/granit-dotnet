@@ -63,7 +63,7 @@ public sealed class BusinessExceptionTests
         BusinessException exception = new("Vault:CredentialsFailed");
 
         exception.ShouldBeAssignableTo<IHasErrorCode>();
-        ((IHasErrorCode)exception).ErrorCode.ShouldBe("Vault:CredentialsFailed");
+        exception.ErrorCode.ShouldBe("Vault:CredentialsFailed");
     }
 
     [Fact]

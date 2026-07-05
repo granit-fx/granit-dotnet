@@ -5,7 +5,7 @@ namespace Granit.Features.Definitions;
 /// </summary>
 /// <remarks>
 /// Implement this interface and register the implementation with:
-/// <code>services.AddFeatureDefinitions&lt;MyFeatureDefinitionProvider&gt;();</code>
+/// <c>services.AddFeatureDefinitions&lt;MyFeatureDefinitionProvider&gt;();</c>
 /// </remarks>
 /// <example>
 /// <code>

@@ -51,7 +51,7 @@ public sealed class BlobStorageFileProviderTests
         _guidGenerator.Create().Returns(blobId);
         _keyStrategy.BuildObjectKey("test-container", blobId).Returns("tenant/test-container/2026/04/blob-id");
 
-        using var content = new MemoryStream([4, 5, 6]);
+        await using var content = new MemoryStream([4, 5, 6]);
         string reference = await _sut.SaveAsync("report.csv", content, TestContext.Current.CancellationToken);
 
         reference.ShouldBe("tenant/test-container/2026/04/blob-id");

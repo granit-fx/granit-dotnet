@@ -39,7 +39,7 @@ public sealed class WolverineDomainEventDispatcherTests
     public async Task DispatchAsync_WhenReady_PublishesEachEventViaMessageBus()
     {
         ServiceCollection services = [];
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineDomainEventDispatcher>.Instance);
         TestDomainEvent evt1 = new();
@@ -55,7 +55,7 @@ public sealed class WolverineDomainEventDispatcherTests
     public async Task DispatchAsync_WhenReady_EmptyList_DoesNotCallPublish()
     {
         ServiceCollection services = [];
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineDomainEventDispatcher>.Instance);
 
@@ -68,7 +68,7 @@ public sealed class WolverineDomainEventDispatcherTests
     public async Task DispatchAsync_WhenReady_PublishesExpectedCount()
     {
         ServiceCollection services = [];
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineDomainEventDispatcher>.Instance);
         IReadOnlyList<IDomainEvent> events = [new TestDomainEvent(), new TestDomainEvent(), new TestDomainEvent()];
@@ -84,7 +84,7 @@ public sealed class WolverineDomainEventDispatcherTests
         TestDomainEventHandler handler = new();
         ServiceCollection services = [];
         services.AddSingleton<ILocalEventHandler<TestDomainEvent>>(handler);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(false), CreateMetrics(),
             NullLogger<WolverineDomainEventDispatcher>.Instance);
         TestDomainEvent evt = new();
@@ -99,7 +99,7 @@ public sealed class WolverineDomainEventDispatcherTests
     public async Task DispatchAsync_WhenNotReady_NoHandlers_CompletesSuccessfully()
     {
         ServiceCollection services = [];
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(false), CreateMetrics(),
             NullLogger<WolverineDomainEventDispatcher>.Instance);
 

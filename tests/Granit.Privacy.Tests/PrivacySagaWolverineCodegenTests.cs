@@ -105,10 +105,7 @@ public sealed class PrivacySagaWolverineCodegenTests
                 services.AddSingleton<PrivacyMetrics>();
                 services.Configure<GranitPrivacyOptions>(_ => { });
             })
-            .UseWolverine(opts =>
-            {
-                opts.ApplicationAssembly = typeof(PersonalDataExportSaga).Assembly;
-            })
+            .UseWolverine(opts => opts.ApplicationAssembly = typeof(PersonalDataExportSaga).Assembly)
             .StartAsync();
 
     private static SagaChain GetSagaChain(IHost host, Type messageType)

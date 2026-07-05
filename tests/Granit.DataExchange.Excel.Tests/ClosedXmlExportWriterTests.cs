@@ -55,7 +55,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["Name"] = "Bob", ["Email"] = "bob@test.com", ["Age"] = 25 },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -88,7 +88,7 @@ public sealed class ClosedXmlExportWriterTests
             new("Name", "String", "Nom", null, 0, false),
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields,
@@ -118,7 +118,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["Company.Name"] = "Acme" },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -143,7 +143,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["Name"] = null },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -168,7 +168,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["BirthDate"] = new DateOnly(1990, 6, 15) },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -197,7 +197,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["CreatedAt"] = dt },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -225,7 +225,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["CreatedAt"] = dt },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -254,7 +254,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["Timestamp"] = dto },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -282,7 +282,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["Timestamp"] = dto },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -310,7 +310,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["BirthDate"] = new DateOnly(1990, 6, 15) },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -339,7 +339,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["Amount"] = 123.45m },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -365,7 +365,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["Amount"] = 1234.56m },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -394,7 +394,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["Rate"] = 3.14 },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -420,7 +420,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["Rate"] = 3.14159 },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -449,7 +449,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["BigId"] = 9_876_543_210L },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -479,7 +479,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["Activated"] = value },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -508,7 +508,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["Id"] = guid },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -537,7 +537,7 @@ public sealed class ClosedXmlExportWriterTests
             new Dictionary<string, object?> { ["Name"] = "Alice" },
         ];
 
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
 
         // Act
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);

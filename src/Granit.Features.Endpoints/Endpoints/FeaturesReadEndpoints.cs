@@ -18,7 +18,7 @@ internal static class FeaturesReadEndpoints
     /// <summary>Maps all feature read endpoints to the given route group.</summary>
     public static RouteGroupBuilder MapFeaturesReadEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/definitions", HandleGetDefinitionsAsync)
+        group.MapGet("/definitions", HandleGetDefinitions)
              .RequireAuthorization(FeaturesPermissions.Flags.Read)
              .WithName("GetFeatureDefinitions")
              .WithSummary("Returns all feature definitions grouped by name prefix.")
@@ -41,7 +41,7 @@ internal static class FeaturesReadEndpoints
         return group;
     }
 
-    private static Ok<IReadOnlyList<FeatureGroupResponse>> HandleGetDefinitionsAsync(
+    private static Ok<IReadOnlyList<FeatureGroupResponse>> HandleGetDefinitions(
         [FromServices] IFeatureDefinitionStore definitionStore)
     {
         IReadOnlyList<FeatureDefinition> all = definitionStore.GetAll();

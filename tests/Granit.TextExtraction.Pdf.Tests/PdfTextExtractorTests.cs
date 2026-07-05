@@ -26,7 +26,7 @@ public sealed class PdfTextExtractorTests
     public async Task Extracts_text_from_single_page()
     {
         byte[] pdf = PdfFixtures.TextOnly("Hello world", "Second line");
-        using MemoryStream stream = new(pdf);
+        await using MemoryStream stream = new(pdf);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "application/pdf", maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -41,7 +41,7 @@ public sealed class PdfTextExtractorTests
     public async Task Joins_pages_with_blank_lines()
     {
         byte[] pdf = PdfFixtures.MultiPage(3);
-        using MemoryStream stream = new(pdf);
+        await using MemoryStream stream = new(pdf);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "application/pdf", maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -59,7 +59,7 @@ public sealed class PdfTextExtractorTests
         // Each page contains a long string — capping at a small char count should
         // truncate after the first or second page, not walk all 20.
         byte[] pdf = PdfFixtures.MultiPage(20, textPrefix: new string('x', 200));
-        using MemoryStream stream = new(pdf);
+        await using MemoryStream stream = new(pdf);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "application/pdf", maxCharLength: 100, cancellationToken: TestContext.Current.CancellationToken);
@@ -73,7 +73,7 @@ public sealed class PdfTextExtractorTests
     public async Task Empty_pdf_returns_empty_content()
     {
         byte[] pdf = PdfFixtures.Empty();
-        using MemoryStream stream = new(pdf);
+        await using MemoryStream stream = new(pdf);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "application/pdf", maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -86,7 +86,7 @@ public sealed class PdfTextExtractorTests
     public async Task Malformed_pdf_is_soft_skipped()
     {
         byte[] pdf = PdfFixtures.Malformed();
-        using MemoryStream stream = new(pdf);
+        await using MemoryStream stream = new(pdf);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "application/pdf", maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -103,7 +103,7 @@ public sealed class PdfTextExtractorTests
         // Generate a real PDF that exceeds the configured cap (Empty PDF is ~700 bytes).
         ExtractionOptions options = new() { MaxBodySizeBytes = 32 };
         byte[] pdf = PdfFixtures.TextOnly("Some text");
-        using MemoryStream stream = new(pdf);
+        await using MemoryStream stream = new(pdf);
 
         TextExtractionException tex = await Should.ThrowAsync<TextExtractionException>(
             async () => await CreateExtractor(options).ExtractAsync(

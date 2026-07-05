@@ -12,7 +12,7 @@ public sealed class EfManagedHostnameQueryableSourceTests
     [Fact]
     public async Task GetQueryable_scopes_to_the_active_tenant()
     {
-        string db = nameof(GetQueryable_scopes_to_the_active_tenant);
+        const string db = nameof(GetQueryable_scopes_to_the_active_tenant);
         await SeedBothTenants(db);
         ICurrentTenant tenant = HostnamesEf.Tenant(HostnamesEf.TenantA);
         await using var source = new EfManagedHostnameQueryableSource(
@@ -28,7 +28,7 @@ public sealed class EfManagedHostnameQueryableSourceTests
     public async Task GetQueryable_bypasses_the_tenant_filter_for_signaled_host_access()
     {
         // VULN-001: cross-tenant visibility requires a signaled .AllowHostAccess() request.
-        string db = nameof(GetQueryable_bypasses_the_tenant_filter_for_signaled_host_access);
+        const string db = nameof(GetQueryable_bypasses_the_tenant_filter_for_signaled_host_access);
         await SeedBothTenants(db);
         await using var source = new EfManagedHostnameQueryableSource(
             HostnamesEf.Factory(db, HostnamesEf.NoTenant()),
@@ -45,7 +45,7 @@ public sealed class EfManagedHostnameQueryableSourceTests
     {
         // VULN-001: an unsignaled absent tenant must NOT leak foreign-tenant rows — only the host
         // partition (TenantId == null) is visible. Both seeded rows carry a tenant, so none show.
-        string db = nameof(GetQueryable_fails_closed_to_host_partition_without_host_signal);
+        const string db = nameof(GetQueryable_fails_closed_to_host_partition_without_host_signal);
         await SeedBothTenants(db);
         await using var source = new EfManagedHostnameQueryableSource(
             HostnamesEf.Factory(db, HostnamesEf.NoTenant()),
@@ -59,7 +59,7 @@ public sealed class EfManagedHostnameQueryableSourceTests
     [Fact]
     public async Task GetQueryable_reuses_a_single_context_across_calls()
     {
-        string db = nameof(GetQueryable_reuses_a_single_context_across_calls);
+        const string db = nameof(GetQueryable_reuses_a_single_context_across_calls);
         await SeedBothTenants(db);
         await using var source = new EfManagedHostnameQueryableSource(
             HostnamesEf.Factory(db, HostnamesEf.NoTenant()), HostnamesEf.Scope(HostnamesEf.NoTenant()));
@@ -82,7 +82,7 @@ public sealed class EfManagedHostnameQueryableSourceTests
     [Fact]
     public async Task DisposeAsync_disposes_the_materialised_context()
     {
-        string db = nameof(DisposeAsync_disposes_the_materialised_context);
+        const string db = nameof(DisposeAsync_disposes_the_materialised_context);
         await SeedBothTenants(db);
         var source = new EfManagedHostnameQueryableSource(
             HostnamesEf.Factory(db, HostnamesEf.NoTenant()), HostnamesEf.Scope(HostnamesEf.NoTenant()));

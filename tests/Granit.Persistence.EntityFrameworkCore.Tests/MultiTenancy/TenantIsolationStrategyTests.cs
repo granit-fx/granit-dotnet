@@ -17,7 +17,7 @@ public sealed class TenantIsolationStrategyTests
     [Fact]
     public void SharedDatabase_IsDefaultValue()
     {
-        TenantIsolationStrategy defaultValue = default;
+        const TenantIsolationStrategy defaultValue = default;
 
         defaultValue.ShouldBe(TenantIsolationStrategy.SharedDatabase);
     }

@@ -163,7 +163,7 @@ public sealed class XmlExportWriterTests
         List<ExportFieldDescriptor> fields,
         List<IReadOnlyDictionary<string, object?>> rows)
     {
-        using MemoryStream stream = new();
+        await using MemoryStream stream = new();
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
         stream.Position = 0;
         return XDocument.Load(stream);

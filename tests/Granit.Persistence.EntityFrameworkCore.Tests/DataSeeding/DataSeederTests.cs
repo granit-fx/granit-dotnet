@@ -35,7 +35,7 @@ public sealed class DataSeederTests
     {
         // Arrange
         ServiceCollection services = new();
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
         DataSeedContext context = new();
 
@@ -54,7 +54,7 @@ public sealed class DataSeederTests
         IDataSeedContributor contributor = Substitute.For<IDataSeedContributor>();
         ServiceCollection services = new();
         services.AddTransient(_ => contributor);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
         DataSeedContext context = new();
 
@@ -74,7 +74,7 @@ public sealed class DataSeederTests
         ServiceCollection services = new();
         services.AddTransient(_ => hostContributor);
         services.AddTransient(_ => tenantContributor);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
         DataSeedContext context = new();
 
@@ -99,7 +99,7 @@ public sealed class DataSeederTests
         ServiceCollection services = new();
         services.AddTransient(_ => contributor1);
         services.AddTransient(_ => contributor2);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
 
         // Act
@@ -126,7 +126,7 @@ public sealed class DataSeederTests
 
         ServiceCollection services = new();
         services.AddTransient(_ => legacy);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
 
         // Act
@@ -152,7 +152,7 @@ public sealed class DataSeederTests
         ServiceCollection services = new();
         services.AddTransient(_ => failing);
         services.AddTransient(_ => success);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
 
         // Act
@@ -173,7 +173,7 @@ public sealed class DataSeederTests
 
         ServiceCollection services = new();
         services.AddTransient(_ => contributor);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
 
         // Act & Assert
@@ -202,7 +202,7 @@ public sealed class DataSeederTests
 
         ServiceCollection services = new();
         services.AddTransient(_ => legacy);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
 
         // Act
@@ -221,7 +221,7 @@ public sealed class DataSeederTests
         ITenantDataSeedContributor contributor = Substitute.For<ITenantDataSeedContributor>();
         ServiceCollection services = new();
         services.AddTransient(_ => contributor);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
 
         // Act
@@ -251,7 +251,7 @@ public sealed class DataSeederTests
         services.AddTransient(_ => contributor);
         services.AddSingleton(tenantProvider);
         services.AddScoped(_ => currentTenant);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
 
         // Act
@@ -290,7 +290,7 @@ public sealed class DataSeederTests
         services.AddTransient(_ => contributor);
         services.AddSingleton(tenantProvider);
         services.AddScoped(_ => currentTenant);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
 
         // Act
@@ -314,7 +314,7 @@ public sealed class DataSeederTests
         ServiceCollection services = new();
         services.AddTransient(_ => failing);
         services.AddTransient(_ => success);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
 
         // Act
@@ -335,7 +335,7 @@ public sealed class DataSeederTests
 
         ServiceCollection services = new();
         services.AddTransient(_ => contributor);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
 
         // Act & Assert
@@ -371,7 +371,7 @@ public sealed class DataSeederTests
         services.AddTransient(_ => contributor);
         services.AddSingleton(tenantProvider);
         services.AddScoped(_ => currentTenant);
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         DataSeeder seeder = new(sp.GetRequiredService<IServiceScopeFactory>(), _logger);
 
         DataSeedContext context = new();

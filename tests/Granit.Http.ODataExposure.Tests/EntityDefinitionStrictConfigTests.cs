@@ -53,10 +53,10 @@ public sealed class EntityDefinitionStrictConfigTests
             CallMap(
                 registerEntityDefinitions: true,
                 registerExports: true,
-                useExportlessEntityDefinition: true,
                 configure: opts => opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
                     .RequirePermission("OData.Test.Invoices.Read")
-                    .DisableExpand()));
+                    .DisableExpand(),
+                useExportlessEntityDefinition: true));
 
         ex.Message.ShouldContain("Invoices");
         ex.Message.ShouldContain("does not declare a b.Export<T>() reference");

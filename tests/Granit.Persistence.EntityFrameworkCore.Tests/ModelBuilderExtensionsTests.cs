@@ -639,7 +639,7 @@ public sealed class ModelBuilderExtensionsTests
     [Fact]
     public async Task ApplyGranitConventions_Mergeable_FiltersTombstonedEntities()
     {
-        using TestDbContextWithMergeable context = CreateMergeableContext();
+        await using TestDbContextWithMergeable context = CreateMergeableContext();
 
         var alive = new TestMergeableEntity { Name = "alive" };
         var tombstoned = new TestMergeableEntity

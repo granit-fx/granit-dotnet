@@ -75,7 +75,7 @@ public sealed class TenantQueryScopeTests
         // The core VULN-001 guard: an unsignaled tenant-context loss must NOT widen the query to
         // every tenant. Pre-fix, each IQueryableSource called IgnoreQueryFilters and leaked all rows.
         (ITenantQueryScope scope, _, ServiceProvider sp) = BuildScope(tenantAvailable: false);
-        using ServiceProvider provider = sp;
+        await using ServiceProvider provider = sp;
         var foreignTenant = Guid.NewGuid();
         FilteredTenantDbContextFactory factory = new();
         await SeedAsync(factory, ("host-row", null), ("tenant-row", foreignTenant));
@@ -93,7 +93,7 @@ public sealed class TenantQueryScopeTests
     public async Task Restrict_HostSignalled_BypassesFilter_ReturnsAllTenants()
     {
         (ITenantQueryScope scope, _, ServiceProvider sp) = BuildScope(tenantAvailable: false, hostAccess: true);
-        using ServiceProvider provider = sp;
+        await using ServiceProvider provider = sp;
         var foreignTenant = Guid.NewGuid();
         FilteredTenantDbContextFactory factory = new();
         await SeedAsync(factory, ("host-row", null), ("tenant-row", foreignTenant));

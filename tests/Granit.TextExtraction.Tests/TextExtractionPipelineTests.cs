@@ -33,9 +33,9 @@ public sealed class TextExtractionPipelineTests
     public async Task Falls_back_to_plain_text_when_no_extractor_claims_content_type()
     {
         (ITextExtractionPipeline pipeline, ServiceProvider sp) = BuildPipeline();
-        using ServiceProvider _ = sp;
+        await using ServiceProvider _ = sp;
 
-        using MemoryStream stream = Utf8("plain body");
+        await using MemoryStream stream = Utf8("plain body");
         TextExtractionResult result = await pipeline.ExtractAsync(
             stream,
             "application/x-unknown",
@@ -53,16 +53,16 @@ public sealed class TextExtractionPipelineTests
             s.AddTextExtractor<FakeHtmlExtractor>();
             s.AddTextExtractor<FakeMarkdownExtractor>();
         });
-        using ServiceProvider _ = sp;
+        await using ServiceProvider _ = sp;
 
-        using MemoryStream stream = Utf8("ignored");
+        await using MemoryStream stream = Utf8("ignored");
         TextExtractionResult htmlResult = await pipeline.ExtractAsync(
             stream,
             "text/html",
             TestContext.Current.CancellationToken);
         htmlResult.ExtractorName.ShouldBe(FakeHtmlExtractor.Id);
 
-        using MemoryStream stream2 = Utf8("ignored");
+        await using MemoryStream stream2 = Utf8("ignored");
         TextExtractionResult mdResult = await pipeline.ExtractAsync(
             stream2,
             "text/markdown",
@@ -79,9 +79,9 @@ public sealed class TextExtractionPipelineTests
             s.AddTextExtractor<FakeHtmlExtractor>();
             s.AddTextExtractor<FakeCatchAllExtractor>();
         });
-        using ServiceProvider _ = sp;
+        await using ServiceProvider _ = sp;
 
-        using MemoryStream stream = Utf8("body");
+        await using MemoryStream stream = Utf8("body");
         TextExtractionResult result = await pipeline.ExtractAsync(
             stream,
             "text/html",
@@ -95,9 +95,9 @@ public sealed class TextExtractionPipelineTests
     {
         ExtractionOptions options = new() { MaxExtractedCharLength = 5 };
         (ITextExtractionPipeline pipeline, ServiceProvider sp) = BuildPipeline(options: options);
-        using ServiceProvider _ = sp;
+        await using ServiceProvider _ = sp;
 
-        using MemoryStream stream = Utf8("hello world");
+        await using MemoryStream stream = Utf8("hello world");
         TextExtractionResult result = await pipeline.ExtractAsync(
             stream,
             "text/plain",
@@ -110,13 +110,10 @@ public sealed class TextExtractionPipelineTests
     [Fact]
     public async Task Propagates_text_extraction_exception_from_extractor()
     {
-        (ITextExtractionPipeline pipeline, ServiceProvider sp) = BuildPipeline(s =>
-        {
-            s.AddTextExtractor<ThrowingExtractor>();
-        });
-        using ServiceProvider _ = sp;
+        (ITextExtractionPipeline pipeline, ServiceProvider sp) = BuildPipeline(s => s.AddTextExtractor<ThrowingExtractor>());
+        await using ServiceProvider _ = sp;
 
-        using MemoryStream stream = Utf8("anything");
+        await using MemoryStream stream = Utf8("anything");
         TextExtractionException tex = await Should.ThrowAsync<TextExtractionException>(
             async () => await pipeline.ExtractAsync(
                 stream,
@@ -134,9 +131,9 @@ public sealed class TextExtractionPipelineTests
         (ITextExtractionPipeline pipeline, ServiceProvider sp) = BuildPipeline(
             s => s.AddTextExtractor<SlowExtractor>(),
             options);
-        using ServiceProvider _ = sp;
+        await using ServiceProvider _ = sp;
 
-        using MemoryStream stream = Utf8("ignored");
+        await using MemoryStream stream = Utf8("ignored");
 
         TextExtractionException tex = await Should.ThrowAsync<TextExtractionException>(
             async () => await pipeline.ExtractAsync(
@@ -155,9 +152,9 @@ public sealed class TextExtractionPipelineTests
         (ITextExtractionPipeline pipeline, ServiceProvider sp) = BuildPipeline(
             s => s.AddTextExtractor<FakeHtmlExtractor>(),
             options);
-        using ServiceProvider _ = sp;
+        await using ServiceProvider _ = sp;
 
-        using MemoryStream stream = Utf8("ignored");
+        await using MemoryStream stream = Utf8("ignored");
         TextExtractionResult result = await pipeline.ExtractAsync(
             stream, "text/html", TestContext.Current.CancellationToken);
 
@@ -176,7 +173,7 @@ public sealed class TextExtractionPipelineTests
         (ITextExtractionPipeline pipeline, ServiceProvider sp) = BuildPipeline(
             s => s.AddTextExtractor<GateableExtractor>(),
             options);
-        using ServiceProvider _ = sp;
+        await using ServiceProvider _ = sp;
 
         // 3 concurrent calls; only 2 should be in-flight at any moment.
         Task<TextExtractionResult>[] inFlight =

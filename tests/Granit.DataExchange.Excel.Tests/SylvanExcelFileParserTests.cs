@@ -39,7 +39,7 @@ public sealed class SylvanExcelFileParserTests
     public async Task ExtractHeadersAsync_returns_column_names()
     {
         // Arrange
-        using MemoryStream stream = TestExcelHelper.CreateSimpleXlsx();
+        await using MemoryStream stream = TestExcelHelper.CreateSimpleXlsx();
 
         // Act
         IReadOnlyList<string> headers = await Sut.ExtractHeadersAsync(
@@ -55,7 +55,7 @@ public sealed class SylvanExcelFileParserTests
     public async Task ReadPreviewAsync_returns_limited_rows()
     {
         // Arrange
-        using MemoryStream stream = TestExcelHelper.CreateSimpleXlsx();
+        await using MemoryStream stream = TestExcelHelper.CreateSimpleXlsx();
 
         // Act
         IReadOnlyList<string[]> rows = await Sut.ReadPreviewAsync(
@@ -71,7 +71,7 @@ public sealed class SylvanExcelFileParserTests
     public async Task ReadPreviewAsync_returns_all_when_fewer_than_max()
     {
         // Arrange
-        using MemoryStream stream = TestExcelHelper.CreateSimpleXlsx();
+        await using MemoryStream stream = TestExcelHelper.CreateSimpleXlsx();
 
         // Act
         IReadOnlyList<string[]> rows = await Sut.ReadPreviewAsync(
@@ -87,7 +87,7 @@ public sealed class SylvanExcelFileParserTests
     public async Task ParseAsync_streams_all_rows()
     {
         // Arrange
-        using MemoryStream stream = TestExcelHelper.CreateSimpleXlsx();
+        await using MemoryStream stream = TestExcelHelper.CreateSimpleXlsx();
         List<RawImportRow> rows = [];
 
         // Act
@@ -109,7 +109,7 @@ public sealed class SylvanExcelFileParserTests
     public async Task ParseAsync_row_numbers_are_one_based()
     {
         // Arrange
-        using MemoryStream stream = TestExcelHelper.CreateSimpleXlsx();
+        await using MemoryStream stream = TestExcelHelper.CreateSimpleXlsx();
         List<RawImportRow> rows = [];
 
         // Act
@@ -129,7 +129,7 @@ public sealed class SylvanExcelFileParserTests
     public async Task ParseAsync_empty_cells_are_null()
     {
         // Arrange
-        using MemoryStream stream = TestExcelHelper.CreateXlsxWithEmptyCells();
+        await using MemoryStream stream = TestExcelHelper.CreateXlsxWithEmptyCells();
         List<RawImportRow> rows = [];
 
         // Act
@@ -148,7 +148,7 @@ public sealed class SylvanExcelFileParserTests
     public async Task ParseAsync_with_sheet_name_selects_correct_sheet()
     {
         // Arrange
-        using MemoryStream stream = TestExcelHelper.CreateMultiSheetXlsx();
+        await using MemoryStream stream = TestExcelHelper.CreateMultiSheetXlsx();
         FileParsingOptions options = new() { MimeType = XlsxOptions.MimeType, SheetName = "Lookup" };
         List<RawImportRow> rows = [];
 
@@ -171,7 +171,7 @@ public sealed class SylvanExcelFileParserTests
     public async Task ExtractHeadersAsync_with_sheet_name()
     {
         // Arrange
-        using MemoryStream stream = TestExcelHelper.CreateMultiSheetXlsx();
+        await using MemoryStream stream = TestExcelHelper.CreateMultiSheetXlsx();
         FileParsingOptions options = new() { MimeType = XlsxOptions.MimeType, SheetName = "Lookup" };
 
         // Act

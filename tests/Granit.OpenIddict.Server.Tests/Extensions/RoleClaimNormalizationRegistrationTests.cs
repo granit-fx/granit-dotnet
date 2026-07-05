@@ -46,7 +46,7 @@ public sealed class RoleClaimNormalizationRegistrationTests
         HostApplicationBuilder builder = BuildMinimalBuilder();
         builder.AddGranitOpenIddictServer();
 
-        using ServiceProvider provider = builder.Services.BuildServiceProvider();
+        await using ServiceProvider provider = builder.Services.BuildServiceProvider();
         using IServiceScope scope = provider.CreateScope();
 
         RoleClaimNormalizationTransformation transformation = scope.ServiceProvider

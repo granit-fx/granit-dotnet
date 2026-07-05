@@ -32,7 +32,7 @@ public sealed class HtmlTextExtractorTests
     public async Task Extracts_plain_text_from_paragraph()
     {
         HtmlTextExtractor extractor = CreateExtractor();
-        using MemoryStream stream = Utf8("<html><body><p>Hello world</p></body></html>");
+        await using MemoryStream stream = Utf8("<html><body><p>Hello world</p></body></html>");
 
         TextExtractionResult result = await extractor.ExtractAsync(
             stream, "text/html", maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -47,7 +47,7 @@ public sealed class HtmlTextExtractorTests
     public async Task Strips_script_and_style_tags()
     {
         HtmlTextExtractor extractor = CreateExtractor();
-        using MemoryStream stream = Utf8(
+        await using MemoryStream stream = Utf8(
             "<html><head><style>body{color:red}</style></head>" +
             "<body><script>alert('x')</script><p>Visible</p></body></html>");
 
@@ -64,7 +64,7 @@ public sealed class HtmlTextExtractorTests
     {
         HtmlTextExtractor extractor = CreateExtractor();
         string body = new('x', 5_000);
-        using MemoryStream stream = Utf8($"<p>{body}</p>");
+        await using MemoryStream stream = Utf8($"<p>{body}</p>");
 
         TextExtractionResult result = await extractor.ExtractAsync(
             stream, "text/html", maxCharLength: 100, cancellationToken: TestContext.Current.CancellationToken);
@@ -79,7 +79,7 @@ public sealed class HtmlTextExtractorTests
     {
         ExtractionOptions options = new() { MaxBodySizeBytes = 16 };
         HtmlTextExtractor extractor = CreateExtractor(options);
-        using MemoryStream stream = Utf8("<p>" + new string('a', 4096) + "</p>");
+        await using MemoryStream stream = Utf8("<p>" + new string('a', 4096) + "</p>");
 
         TextExtractionException tex = await Should.ThrowAsync<TextExtractionException>(
             async () => await extractor.ExtractAsync(
@@ -92,7 +92,7 @@ public sealed class HtmlTextExtractorTests
     public async Task Heading_followed_by_paragraph_renders_readable_text()
     {
         HtmlTextExtractor extractor = CreateExtractor();
-        using MemoryStream stream = Utf8("<h1>Welcome</h1><p>Body</p>");
+        await using MemoryStream stream = Utf8("<h1>Welcome</h1><p>Body</p>");
 
         TextExtractionResult result = await extractor.ExtractAsync(
             stream, "text/html", maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);

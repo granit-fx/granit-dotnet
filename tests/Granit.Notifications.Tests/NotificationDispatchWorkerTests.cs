@@ -37,7 +37,7 @@ public sealed class NotificationDispatchWorkerTests
     {
         var tenantId = Guid.NewGuid();
         var harness = Harness.Build();
-        using ServiceProvider sp = harness.ServiceProvider;
+        await using ServiceProvider sp = harness.ServiceProvider;
 
         await harness.Worker.StartAsync(Ct);
         await harness.Channel.Writer.WriteAsync(
@@ -59,7 +59,7 @@ public sealed class NotificationDispatchWorkerTests
     public async Task Dispatch_HostScopedTrigger_RunsInHostContext()
     {
         var harness = Harness.Build();
-        using ServiceProvider sp = harness.ServiceProvider;
+        await using ServiceProvider sp = harness.ServiceProvider;
 
         await harness.Worker.StartAsync(Ct);
         await harness.Channel.Writer.WriteAsync(

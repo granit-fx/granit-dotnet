@@ -165,8 +165,8 @@ public sealed class InMemoryNotificationPreferenceStoreTests
         var tenantA = Guid.NewGuid();
         var tenantB = Guid.NewGuid();
 
-        NotificationPreference prefTenantA = BuildPreference("user-1", "order.created", "email", tenantId: tenantA, isEnabled: false);
-        NotificationPreference prefTenantB = BuildPreference("user-1", "order.created", "email", tenantId: tenantB, isEnabled: true);
+        NotificationPreference prefTenantA = BuildPreference("user-1", "order.created", "email", isEnabled: false, tenantId: tenantA);
+        NotificationPreference prefTenantB = BuildPreference("user-1", "order.created", "email", isEnabled: true, tenantId: tenantB);
 
         await _store.SetAsync(prefTenantA, TestContext.Current.CancellationToken);
         await _store.SetAsync(prefTenantB, TestContext.Current.CancellationToken);
@@ -188,7 +188,7 @@ public sealed class InMemoryNotificationPreferenceStoreTests
         var tenantA = Guid.NewGuid();
         var tenantB = Guid.NewGuid();
 
-        NotificationPreference prefTenantA = BuildPreference("user-1", "order.created", "email", tenantId: tenantA, isEnabled: false);
+        NotificationPreference prefTenantA = BuildPreference("user-1", "order.created", "email", isEnabled: false, tenantId: tenantA);
         await _store.SetAsync(prefTenantA, TestContext.Current.CancellationToken);
 
         bool enabledForA = await _store.IsChannelEnabledAsync(

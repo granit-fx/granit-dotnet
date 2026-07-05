@@ -22,7 +22,7 @@ public sealed class KeycloakClaimsTransformationAdditionalTests
     public async Task TransformAsync_ResourceAccess_MissingClientId_ReturnsUnmodified()
     {
         // Arrange — resource_access with a different client ID than configured
-        string resourceAccess = """{"other-client":{"roles":["admin"]}}""";
+        const string resourceAccess = """{"other-client":{"roles":["admin"]}}""";
         ClaimsIdentity identity = new(
             [
                 new Claim("sub", "user-123"),
@@ -42,7 +42,7 @@ public sealed class KeycloakClaimsTransformationAdditionalTests
     public async Task TransformAsync_RealmAccess_NoRolesProperty_ReturnsUnmodified()
     {
         // Arrange — realm_access without "roles" key
-        string realmAccess = """{"something_else":["admin"]}""";
+        const string realmAccess = """{"something_else":["admin"]}""";
         ClaimsIdentity identity = new(
             [
                 new Claim("sub", "user-123"),
@@ -62,7 +62,7 @@ public sealed class KeycloakClaimsTransformationAdditionalTests
     public async Task TransformAsync_ResourceAccess_WithEmptyClientId_ReturnsUnmodified()
     {
         // Arrange — resource_access with empty ClientId configured
-        string resourceAccess = """{"test-client":{"roles":["admin"]}}""";
+        const string resourceAccess = """{"test-client":{"roles":["admin"]}}""";
         ClaimsIdentity identity = new(
             [
                 new Claim("sub", "user-123"),
@@ -82,7 +82,7 @@ public sealed class KeycloakClaimsTransformationAdditionalTests
     public async Task TransformAsync_NullRoleValue_IsSkipped()
     {
         // Arrange — roles array contains a null entry (unusual but possible)
-        string realmAccess = """{"roles":["admin",null,"editor"]}""";
+        const string realmAccess = """{"roles":["admin",null,"editor"]}""";
         ClaimsIdentity identity = new(
             [
                 new Claim("sub", "user-123"),

@@ -27,7 +27,7 @@ public sealed class WordTextExtractorTests
     public async Task Extracts_paragraph_text()
     {
         byte[] doc = OfficeFixtures.Docx("Hello world", "Second paragraph");
-        using MemoryStream stream = new(doc);
+        await using MemoryStream stream = new(doc);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, Docx, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -41,7 +41,7 @@ public sealed class WordTextExtractorTests
     public async Task Truncates_to_max_char_length_and_flags()
     {
         byte[] doc = OfficeFixtures.Docx(new string('x', 5_000));
-        using MemoryStream stream = new(doc);
+        await using MemoryStream stream = new(doc);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, Docx, maxCharLength: 100, cancellationToken: TestContext.Current.CancellationToken);
@@ -55,7 +55,7 @@ public sealed class WordTextExtractorTests
     {
         ExtractionOptions options = new() { MaxZipEntries = 5 };
         byte[] adversarial = OfficeFixtures.ZipWithEntryCount(entries: 10);
-        using MemoryStream stream = new(adversarial);
+        await using MemoryStream stream = new(adversarial);
 
         TextExtractionResult result = await CreateExtractor(options).ExtractAsync(
             stream, Docx, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -69,7 +69,7 @@ public sealed class WordTextExtractorTests
     {
         ExtractionOptions options = new() { MaxDecompressedBytes = 1024 };
         byte[] adversarial = OfficeFixtures.ZipWithAdvertisedSize(advertisedBytes: 64 * 1024);
-        using MemoryStream stream = new(adversarial);
+        await using MemoryStream stream = new(adversarial);
 
         TextExtractionResult result = await CreateExtractor(options).ExtractAsync(
             stream, Docx, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);
@@ -82,7 +82,7 @@ public sealed class WordTextExtractorTests
     public async Task Malformed_zip_returns_skipped_result()
     {
         byte[] bytes = OfficeFixtures.InvalidZip();
-        using MemoryStream stream = new(bytes);
+        await using MemoryStream stream = new(bytes);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, Docx, maxCharLength: 1024, cancellationToken: TestContext.Current.CancellationToken);

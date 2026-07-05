@@ -34,7 +34,7 @@ public sealed class EmailTextExtractorTests
     public async Task Extracts_envelope_and_plain_body_from_text_only_message()
     {
         byte[] eml = EmlFixtures.PlainTextOnly(subject: "Quarterly figures");
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
@@ -54,7 +54,7 @@ public sealed class EmailTextExtractorTests
         byte[] eml = EmlFixtures.MultipartAlternative(
             plainBody: "PLAIN-MARKER body",
             htmlBody: "<p>HTML-MARKER body</p>");
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
@@ -67,7 +67,7 @@ public sealed class EmailTextExtractorTests
     public async Task Falls_back_to_html_body_when_no_plain_alternative()
     {
         byte[] eml = EmlFixtures.HtmlOnly("<html><body><h1>Hello</h1><p>HTML-MARKER content</p></body></html>");
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
@@ -82,7 +82,7 @@ public sealed class EmailTextExtractorTests
     public async Task Includes_Cc_header_when_present()
     {
         byte[] eml = EmlFixtures.WithCc();
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
@@ -95,7 +95,7 @@ public sealed class EmailTextExtractorTests
     public async Task Omits_Cc_header_when_absent()
     {
         byte[] eml = EmlFixtures.PlainTextOnly();
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
@@ -107,7 +107,7 @@ public sealed class EmailTextExtractorTests
     public async Task Walks_nested_multipart_to_find_the_body()
     {
         byte[] eml = EmlFixtures.NestedMultipart();
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
@@ -119,7 +119,7 @@ public sealed class EmailTextExtractorTests
     public async Task Decodes_rfc2047_encoded_headers()
     {
         byte[] eml = EmlFixtures.EncodedHeaders();
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
@@ -132,7 +132,7 @@ public sealed class EmailTextExtractorTests
     public async Task Ignores_attachments_but_keeps_envelope_and_body()
     {
         byte[] eml = EmlFixtures.WithAttachment();
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
@@ -148,7 +148,7 @@ public sealed class EmailTextExtractorTests
     public async Task Encrypted_multipart_degrades_to_placeholder()
     {
         byte[] eml = EmlFixtures.EncryptedMultipart();
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
@@ -163,7 +163,7 @@ public sealed class EmailTextExtractorTests
     public async Task Malformed_eml_is_soft_skipped()
     {
         byte[] eml = EmlFixtures.Malformed();
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
@@ -179,7 +179,7 @@ public sealed class EmailTextExtractorTests
         byte[] eml = EmlFixtures.PlainTextOnly(
             subject: "abc",
             body: new string('x', 4000));
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 64, cancellationToken: TestContext.Current.CancellationToken);
@@ -194,7 +194,7 @@ public sealed class EmailTextExtractorTests
     {
         ExtractionOptions options = new() { MaxBodySizeBytes = 32 };
         byte[] eml = EmlFixtures.PlainTextOnly(body: "some body that is well above 32 bytes once headers are added");
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionException tex = await Should.ThrowAsync<TextExtractionException>(
             async () => await CreateExtractor(options).ExtractAsync(
@@ -208,7 +208,7 @@ public sealed class EmailTextExtractorTests
     {
         // Construct a raw message with an embedded LF+colon in the subject — a
         // header-injection attempt that should be neutralised on emit.
-        string raw =
+        const string raw =
             "From: sender@example.com\r\n" +
             "To: rec@example.com\r\n" +
             "Subject: cleansubject\r\n" +
@@ -217,7 +217,7 @@ public sealed class EmailTextExtractorTests
             "\r\n" +
             "body\r\n";
         byte[] eml = System.Text.Encoding.ASCII.GetBytes(raw);
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
@@ -235,7 +235,7 @@ public sealed class EmailTextExtractorTests
         // consumer would see a spliced fake header.
         //
         // =?utf-8?B?Z29vZApGcm9tOiBhdHRhY2tlckBldmls?= decodes to "good\nFrom: attacker@evil".
-        string raw =
+        const string raw =
             "From: sender@example.com\r\n" +
             "To: rec@example.com\r\n" +
             "Subject: =?utf-8?B?Z29vZApGcm9tOiBhdHRhY2tlckBldmls?=\r\n" +
@@ -244,7 +244,7 @@ public sealed class EmailTextExtractorTests
             "\r\n" +
             "body\r\n";
         byte[] eml = System.Text.Encoding.ASCII.GetBytes(raw);
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);
@@ -261,7 +261,7 @@ public sealed class EmailTextExtractorTests
     public async Task Strips_carriage_returns_too()
     {
         // Belt-and-braces: \r alone (no \n) is also a structured-log threat.
-        string raw =
+        const string raw =
             "From: sender@example.com\r\n" +
             "To: rec@example.com\r\n" +
             "Subject: =?utf-8?Q?carriage=0Dreturn?=\r\n" +
@@ -270,7 +270,7 @@ public sealed class EmailTextExtractorTests
             "\r\n" +
             "body\r\n";
         byte[] eml = System.Text.Encoding.ASCII.GetBytes(raw);
-        using MemoryStream stream = new(eml);
+        await using MemoryStream stream = new(eml);
 
         TextExtractionResult result = await CreateExtractor().ExtractAsync(
             stream, "message/rfc822", maxCharLength: 4096, cancellationToken: TestContext.Current.CancellationToken);

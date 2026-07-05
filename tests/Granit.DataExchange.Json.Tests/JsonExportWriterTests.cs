@@ -59,7 +59,7 @@ public sealed class JsonExportWriterTests
             new Dictionary<string, object?> { ["Name"] = "Bob", ["Email"] = "bob@test.com" },
         ];
 
-        using var stream = new MemoryStream();
+        await using var stream = new MemoryStream();
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
 
         stream.Position = 0;
@@ -76,7 +76,7 @@ public sealed class JsonExportWriterTests
     {
         List<ExportFieldDescriptor> fields = [new("Name", "String", null, null, 0, false)];
 
-        using var stream = new MemoryStream();
+        await using var stream = new MemoryStream();
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable([]), TestContext.Current.CancellationToken);
 
         stream.Position = 0;
@@ -92,7 +92,7 @@ public sealed class JsonExportWriterTests
         List<IReadOnlyDictionary<string, object?>> rows =
             [new Dictionary<string, object?> { ["Name"] = null }];
 
-        using var stream = new MemoryStream();
+        await using var stream = new MemoryStream();
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
 
         stream.Position = 0;
@@ -108,7 +108,7 @@ public sealed class JsonExportWriterTests
         List<IReadOnlyDictionary<string, object?>> rows =
             [new Dictionary<string, object?> { ["Email"] = "test@test.com" }];
 
-        using var stream = new MemoryStream();
+        await using var stream = new MemoryStream();
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
 
         stream.Position = 0;
@@ -143,7 +143,7 @@ public sealed class JsonExportWriterTests
             },
         ];
 
-        using var stream = new MemoryStream();
+        await using var stream = new MemoryStream();
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
 
         stream.Position = 0;
@@ -172,7 +172,7 @@ public sealed class JsonExportWriterTests
         List<IReadOnlyDictionary<string, object?>> rows =
             [new Dictionary<string, object?> { ["Pet"] = cat }];
 
-        using var stream = new MemoryStream();
+        await using var stream = new MemoryStream();
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
 
         stream.Position = 0;
@@ -201,7 +201,7 @@ public sealed class JsonExportWriterTests
         List<IReadOnlyDictionary<string, object?>> rows =
             [new Dictionary<string, object?> { ["Node"] = node }];
 
-        using var stream = new MemoryStream();
+        await using var stream = new MemoryStream();
 
         // Should NOT throw — IgnoreCycles breaks the cycle
         await Should.NotThrowAsync(

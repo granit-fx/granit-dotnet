@@ -39,11 +39,11 @@ public sealed class GranitTextExtractionPdfModuleTests
         services.AddLogging();
         services.AddGranitTextExtractionPdf();
 
-        using ServiceProvider sp = services.BuildServiceProvider();
+        await using ServiceProvider sp = services.BuildServiceProvider();
         ITextExtractionPipeline pipeline = sp.GetRequiredService<ITextExtractionPipeline>();
 
         byte[] pdf = PdfFixtures.TextOnly("DI smoke");
-        using MemoryStream stream = new(pdf);
+        await using MemoryStream stream = new(pdf);
 
         TextExtractionResult result =
             await pipeline.ExtractAsync(stream, "application/pdf", TestContext.Current.CancellationToken);

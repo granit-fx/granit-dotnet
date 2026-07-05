@@ -588,7 +588,7 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         await service.PublishAsync(TestContext.Current.CancellationToken);
 
         // Second capture with a fresh DbContext entry
-        using DbContext secondContext = CreateInMemoryDbContext();
+        await using DbContext secondContext = CreateInMemoryDbContext();
         secondContext.Add(new PropertyIgnoredEntity { Id = 2, Name = "Second", InternalNotes = "Secret2" });
         service.Capture(secondContext);
         await service.PublishAsync(TestContext.Current.CancellationToken);

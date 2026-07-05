@@ -22,8 +22,7 @@ public static class BackgroundJobConventionRules
         var violations = architecture.Classes
             .Where(c => c.FullName.StartsWith(typePrefix, StringComparison.Ordinal)
                 && !c.IsAbstract.GetValueOrDefault()
-                && ImplementsInterface(c, "Granit.BackgroundJobs.IBackgroundJob"))
-            .Where(c => !StripGenericArity(c.Name).EndsWith("Job", StringComparison.Ordinal))
+                && ImplementsInterface(c, "Granit.BackgroundJobs.IBackgroundJob") && !StripGenericArity(c.Name).EndsWith("Job", StringComparison.Ordinal))
             .Select(c => $"{c.FullName} (IBackgroundJob must end with 'Job')")
             .ToList();
 
@@ -42,8 +41,7 @@ public static class BackgroundJobConventionRules
         var violations = architecture.Classes
             .Where(c => c.FullName.StartsWith(typePrefix, StringComparison.Ordinal)
                 && !c.IsAbstract.GetValueOrDefault()
-                && HasAttribute(c, "Granit.BackgroundJobs.RecurringJobAttribute"))
-            .Where(c => !ImplementsInterface(c, "Granit.BackgroundJobs.IBackgroundJob"))
+                && HasAttribute(c, "Granit.BackgroundJobs.RecurringJobAttribute") && !ImplementsInterface(c, "Granit.BackgroundJobs.IBackgroundJob"))
             .Select(c => $"{c.FullName} (has [RecurringJob] but does not implement IBackgroundJob)")
             .ToList();
 

@@ -9,7 +9,7 @@ public sealed class TimelineEntryExportDefinitionTests
 {
     private static readonly TimelineEntryExportDefinition Sut = new();
     private static IReadOnlyList<ExportFieldDescriptor> Fields =>
-        ((IExportDefinitionDescriptor)Sut).GetFields();
+        Sut.GetFields();
 
     [Fact]
     public void Name_is_stable() =>

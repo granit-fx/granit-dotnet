@@ -9,7 +9,7 @@ namespace Granit.Features.Plans;
 /// plan-level values then take precedence over defaults but yield to tenant overrides.
 /// <para>
 /// Registration:
-/// <code>services.AddScoped&lt;IPlanFeatureStore, YourPlanFeatureStore&gt;();</code>
+/// <c>services.AddScoped&lt;IPlanFeatureStore, YourPlanFeatureStore&gt;();</c>
 /// </para>
 /// </remarks>
 public interface IPlanFeatureStore

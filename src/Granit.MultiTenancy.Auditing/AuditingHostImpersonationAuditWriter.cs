@@ -15,8 +15,8 @@ namespace Granit.MultiTenancy.Auditing;
 /// </summary>
 /// <remarks>
 /// Decision details (allowed flag, deny reason, resolver) are persisted as a
-/// synthetic <see cref="AuditEntityChange"/> with <c>EntityType =
-/// "HostImpersonation"</c> so investigators get a self-contained audit row
+/// synthetic <see cref="AuditEntityChange"/> with <code>EntityType =
+/// "HostImpersonation"</code> so investigators get a self-contained audit row
 /// without needing to correlate with logs or metrics. The <c>CorrelationId</c>
 /// still carries the request's trace id for cross-store lookups.
 /// </remarks>

@@ -29,7 +29,7 @@ public sealed class KeycloakClaimsTransformationTests
     public async Task TransformAsync_WithRealmAccessRoles_AddsRoleClaims()
     {
         // Arrange
-        string realmAccess = """{"roles":["admin","practitioner"]}""";
+        const string realmAccess = """{"roles":["admin","practitioner"]}""";
         var identity = new ClaimsIdentity(
             [
                 new Claim("sub", "user-123"),
@@ -51,7 +51,7 @@ public sealed class KeycloakClaimsTransformationTests
     public async Task TransformAsync_WithResourceAccessRoles_AddsRoleClaims()
     {
         // Arrange
-        string resourceAccess = """{"test-client":{"roles":["admin"]}}""";
+        const string resourceAccess = """{"test-client":{"roles":["admin"]}}""";
         var identity = new ClaimsIdentity(
             [
                 new Claim("sub", "user-123"),
@@ -103,7 +103,7 @@ public sealed class KeycloakClaimsTransformationTests
     public async Task TransformAsync_WithEmptyRoles_AddsNoClaims()
     {
         // Arrange
-        string realmAccess = """{"roles":[]}""";
+        const string realmAccess = """{"roles":[]}""";
         var identity = new ClaimsIdentity(
             [
                 new Claim("sub", "user-123"),
@@ -123,7 +123,7 @@ public sealed class KeycloakClaimsTransformationTests
     public async Task TransformAsync_DoesNotDuplicateExistingRoles()
     {
         // Arrange
-        string realmAccess = """{"roles":["admin"]}""";
+        const string realmAccess = """{"roles":["admin"]}""";
         var identity = new ClaimsIdentity(
             [
                 new Claim("sub", "user-123"),

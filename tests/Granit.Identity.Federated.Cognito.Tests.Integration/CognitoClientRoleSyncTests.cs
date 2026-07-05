@@ -117,7 +117,7 @@ public sealed class CognitoClientRoleSyncTests : IClassFixture<CognitoWireMockFi
 
         sut.Store.All.Count.ShouldBe(3, "only the 3 clientA-prefixed groups should be synced");
         sut.Store.All.ShouldAllBe(r => r.ClientId == CognitoWireMockFixture.AppClientIdA);
-        sut.Store.All.Select(r => r.Name).OrderBy(x => x).ShouldBe(["admin", "editor", "viewer"]);
+        sut.Store.All.Select(r => r.Name).Order().ShouldBe(["admin", "editor", "viewer"]);
         sut.Store.All.First(r => r.Name == "editor").Description.ShouldBe("Edit showcase documents");
     }
 
@@ -131,11 +131,11 @@ public sealed class CognitoClientRoleSyncTests : IClassFixture<CognitoWireMockFi
         using SutContext sut = BuildSut(trackedAppClientIds: CognitoWireMockFixture.AppClientIdA);
 
         await sut.Sync.SyncAsync(TestContext.Current.CancellationToken);
-        IReadOnlyList<Guid> firstRun = sut.Store.All.Select(r => r.Id).OrderBy(g => g).ToList();
+        IReadOnlyList<Guid> firstRun = sut.Store.All.Select(r => r.Id).Order().ToList();
 
         await sut.Sync.SyncAsync(TestContext.Current.CancellationToken);
 
-        sut.Store.All.Select(r => r.Id).OrderBy(g => g).ShouldBe(firstRun);
+        sut.Store.All.Select(r => r.Id).Order().ShouldBe(firstRun);
         sut.Store.All.Count.ShouldBe(2);
     }
 
@@ -193,6 +193,6 @@ public sealed class CognitoClientRoleSyncTests : IClassFixture<CognitoWireMockFi
 
         roles.Count.ShouldBe(2);
         roles.ShouldAllBe(r => r.ClientId == CognitoWireMockFixture.AppClientIdA);
-        roles.Select(r => r.Name).OrderBy(x => x).ShouldBe(["admin", "editor"]);
+        roles.Select(r => r.Name).Order().ShouldBe(["admin", "editor"]);
     }
 }

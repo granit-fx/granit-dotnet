@@ -24,7 +24,7 @@ public sealed class ClaimsPrincipalDestinationExtensionsTests
         provider.GetDestinations(Arg.Any<Claim>(), Arg.Any<ClaimsPrincipal>())
             .Returns([ClaimsDestinations.AccessToken]);
 
-        ClaimsPrincipal result = ClaimsPrincipalDestinationExtensions.SetDestinations(principal, provider);
+        ClaimsPrincipal result = principal.SetDestinations(provider);
 
         result.ShouldBeSameAs(principal);
         provider.Received(2).GetDestinations(Arg.Any<Claim>(), principal);
@@ -59,7 +59,7 @@ public sealed class ClaimsPrincipalDestinationExtensionsTests
         ClaimsPrincipal principal = new(new ClaimsIdentity([], "Test"));
         IClaimsDestinationProvider provider = Substitute.For<IClaimsDestinationProvider>();
 
-        ClaimsPrincipal result = ClaimsPrincipalDestinationExtensions.SetDestinations(principal, provider);
+        ClaimsPrincipal result = principal.SetDestinations(provider);
 
         result.ShouldBeSameAs(principal);
     }
@@ -70,7 +70,7 @@ public sealed class ClaimsPrincipalDestinationExtensionsTests
         ClaimsPrincipal principal = new(new ClaimsIdentity([], "Test"));
         IClaimsDestinationProvider provider = Substitute.For<IClaimsDestinationProvider>();
 
-        Should.NotThrow(() => ClaimsPrincipalDestinationExtensions.SetDestinations(principal, provider));
+        Should.NotThrow(() => principal.SetDestinations(provider));
 
         provider.DidNotReceive().GetDestinations(Arg.Any<Claim>(), Arg.Any<ClaimsPrincipal>());
     }

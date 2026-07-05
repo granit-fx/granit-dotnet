@@ -37,7 +37,7 @@ public sealed class CountingStreamTests
     [Fact]
     public async Task WriteAsync_ExceedingLimit_ThrowsSizeLimitExceededException()
     {
-        using MemoryStream inner = new();
+        await using MemoryStream inner = new();
         await using CountingStream sut = new(inner, maxBytes: 4);
 
         await sut.WriteAsync(new byte[] { 1, 2, 3 }, TestContext.Current.CancellationToken);

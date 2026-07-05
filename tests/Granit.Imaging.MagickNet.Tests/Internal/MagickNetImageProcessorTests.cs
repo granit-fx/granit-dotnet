@@ -89,7 +89,7 @@ public sealed class MagickNetImageProcessorTests
     public async Task Load_FromStream_PipelineIsDisposable()
     {
         // Arrange
-        using Stream stream = GetTestImageStream();
+        await using Stream stream = GetTestImageStream();
 
         // Act
         IImagePipeline pipeline = _processor.Load(stream);

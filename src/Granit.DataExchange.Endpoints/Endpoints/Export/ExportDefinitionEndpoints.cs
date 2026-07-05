@@ -19,13 +19,13 @@ internal static class ExportDefinitionEndpoints
     /// </summary>
     internal static RouteGroupBuilder MapExportDefinitionEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/definitions", ListDefinitionsAsync)
+        group.MapGet("/definitions", ListDefinitions)
             .WithName("ListExportDefinitions")
             .WithSummary("Lists all registered export definitions.")
             .WithDescription("Returns all export definitions registered by application modules. Each definition describes an exportable dataset, its supported output formats, and metadata. Use the fields endpoint to discover selectable columns for a specific definition.")
             .Produces<IReadOnlyList<ExportDefinitionResponse>>();
 
-        group.MapGet("/definitions/{name}/fields", GetFieldsAsync)
+        group.MapGet("/definitions/{name}/fields", GetFields)
             .WithName("GetExportDefinitionFields")
             .WithSummary("Returns the available fields for a given export definition.")
             .WithDescription("Returns the list of selectable fields for the named export definition — each with its property name, display label, and data type. Use this to populate a field picker UI before creating an export job. Returns 404 if the definition name is not registered.")
@@ -35,7 +35,7 @@ internal static class ExportDefinitionEndpoints
         return group;
     }
 
-    private static Ok<IReadOnlyList<ExportDefinitionResponse>> ListDefinitionsAsync(
+    private static Ok<IReadOnlyList<ExportDefinitionResponse>> ListDefinitions(
         [FromServices] IServiceProvider serviceProvider,
         [FromServices] IEnumerable<IExportWriter> writers)
     {
@@ -52,7 +52,7 @@ internal static class ExportDefinitionEndpoints
         return TypedResults.Ok(response);
     }
 
-    private static Results<Ok<IReadOnlyList<ExportFieldResponse>>, ProblemHttpResult> GetFieldsAsync(
+    private static Results<Ok<IReadOnlyList<ExportFieldResponse>>, ProblemHttpResult> GetFields(
         string name,
         [FromServices] IServiceProvider serviceProvider)
     {

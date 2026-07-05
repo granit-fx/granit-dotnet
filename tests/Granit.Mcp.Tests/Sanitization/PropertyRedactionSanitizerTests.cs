@@ -88,7 +88,7 @@ public sealed class PropertyRedactionSanitizerTests
     public async Task SanitizeAsync_NestedObject_RedactsNestedWellKnownNames()
     {
         PropertyRedactionSanitizer sut = CreateSanitizer();
-        string json = """{"user":{"name":"Alice","password":"s3cr3t"}}""";
+        const string json = """{"user":{"name":"Alice","password":"s3cr3t"}}""";
         CallToolResult result = new() { Content = [new TextContentBlock { Text = json }] };
 
         CallToolResult sanitized = await sut.SanitizeAsync(result, Services, TestContext.Current.CancellationToken);
@@ -104,7 +104,7 @@ public sealed class PropertyRedactionSanitizerTests
     public async Task SanitizeAsync_ArrayOfObjects_RedactsWellKnownNames()
     {
         PropertyRedactionSanitizer sut = CreateSanitizer();
-        string json = """[{"name":"Alice","token":"abc"},{"name":"Bob","token":"xyz"}]""";
+        const string json = """[{"name":"Alice","token":"abc"},{"name":"Bob","token":"xyz"}]""";
         CallToolResult result = new() { Content = [new TextContentBlock { Text = json }] };
 
         CallToolResult sanitized = await sut.SanitizeAsync(result, Services, TestContext.Current.CancellationToken);

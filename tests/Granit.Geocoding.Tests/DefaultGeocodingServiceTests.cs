@@ -171,7 +171,7 @@ public sealed class DefaultGeocodingServiceTests
     [Fact]
     public void BuildCacheKey_HashesKey_NeverEmbedsRawAddress()
     {
-        string normalized = "rue de la loi 16|1000|brussels|be";
+        const string normalized = "rue de la loi 16|1000|brussels|be";
 
         string key = DefaultGeocodingService.BuildCacheKey(normalized);
 

@@ -38,8 +38,8 @@ public sealed class LimitedStreamTests
     [Fact]
     public async Task WriteAsync_BeyondCap_Throws()
     {
-        using MemoryStream inner = new();
-        using LimitedStream stream = new(inner, 100);
+        await using MemoryStream inner = new();
+        await using LimitedStream stream = new(inner, 100);
 
         await Should.ThrowAsync<IOException>(async () =>
             await stream.WriteAsync(new byte[101]));
@@ -169,8 +169,8 @@ public sealed class LimitedStreamTests
     [Fact]
     public async Task FlushAsync_PassesThrough()
     {
-        using MemoryStream inner = new();
-        using LimitedStream stream = new(inner, 100);
+        await using MemoryStream inner = new();
+        await using LimitedStream stream = new(inner, 100);
 
         await Should.NotThrowAsync(() => stream.FlushAsync(CancellationToken.None));
     }
@@ -193,8 +193,8 @@ public sealed class LimitedStreamTests
     public async Task ReadAsync_Array_PassesThrough()
     {
         byte[] payload = [1, 2, 3];
-        using MemoryStream inner = new(payload);
-        using LimitedStream stream = new(inner, 100);
+        await using MemoryStream inner = new(payload);
+        await using LimitedStream stream = new(inner, 100);
 
         byte[] buffer = new byte[3];
 #pragma warning disable CA1835 // Intentionally exercises the byte[] overload for coverage.
@@ -208,8 +208,8 @@ public sealed class LimitedStreamTests
     public async Task ReadAsync_Memory_PassesThrough()
     {
         byte[] payload = [1, 2, 3];
-        using MemoryStream inner = new(payload);
-        using LimitedStream stream = new(inner, 100);
+        await using MemoryStream inner = new(payload);
+        await using LimitedStream stream = new(inner, 100);
 
         byte[] buffer = new byte[3];
         int read = await stream.ReadAsync(buffer.AsMemory());

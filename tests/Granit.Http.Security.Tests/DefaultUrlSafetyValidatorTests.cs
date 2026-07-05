@@ -104,7 +104,7 @@ public sealed class DefaultUrlSafetyValidatorTests
     public async Task SchemeMatchIsCaseInsensitive()
     {
         UrlSafetyOptions opts = new() { AllowedSchemes = ["HTTPS"] };
-        DefaultUrlSafetyValidator v = Create(options: opts, resolver: FakeDnsResolver.Returning("8.8.8.8"));
+        DefaultUrlSafetyValidator v = Create(resolver: FakeDnsResolver.Returning("8.8.8.8"), options: opts);
 
         UrlSafetyResult result = await v.ValidateAsync(new Uri("https://example.com/"), TestContext.Current.CancellationToken);
 
