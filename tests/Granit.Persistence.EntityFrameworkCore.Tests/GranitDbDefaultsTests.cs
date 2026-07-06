@@ -18,20 +18,6 @@ public sealed class GranitDbDefaultsTests : IDisposable
         GranitDbDefaults.HostDbSchema.ShouldBeNull();
 
     [Fact]
-    public void DbSchema_WhenSet_ReturnsSetValue()
-    {
-        GranitDbDefaults.DbSchema = "myapp";
-        GranitDbDefaults.DbSchema.ShouldBe("myapp");
-    }
-
-    [Fact]
-    public void HostDbSchema_WhenSet_ReturnsSetValue()
-    {
-        GranitDbDefaults.HostDbSchema = "host";
-        GranitDbDefaults.HostDbSchema.ShouldBe("host");
-    }
-
-    [Fact]
     public void ResetToDefaults_ClearsBothProperties()
     {
         GranitDbDefaults.DbSchema = "app";

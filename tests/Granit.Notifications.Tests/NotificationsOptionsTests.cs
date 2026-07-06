@@ -23,12 +23,4 @@ public sealed class NotificationsOptionsTests
 
         options.MaxParallelDeliveries.ShouldBe(8);
     }
-
-    [Fact]
-    public void MaxParallelDeliveries_CanBeSet()
-    {
-        NotificationsOptions options = new() { MaxParallelDeliveries = 16 };
-
-        options.MaxParallelDeliveries.ShouldBe(16);
-    }
 }

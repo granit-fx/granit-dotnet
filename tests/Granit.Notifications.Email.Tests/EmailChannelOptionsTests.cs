@@ -33,19 +33,4 @@ public sealed class EmailChannelOptionsTests
 
         options.DefaultSenderName.ShouldBe(string.Empty);
     }
-
-    [Fact]
-    public void Properties_CanBeSet()
-    {
-        EmailChannelOptions options = new()
-        {
-            Provider = "Brevo",
-            DefaultSenderEmail = "no-reply@example.com",
-            DefaultSenderName = "My App",
-        };
-
-        options.Provider.ShouldBe("Brevo");
-        options.DefaultSenderEmail.ShouldBe("no-reply@example.com");
-        options.DefaultSenderName.ShouldBe("My App");
-    }
 }

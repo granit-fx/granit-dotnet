@@ -35,32 +35,6 @@ public sealed class NotificationSubscriptionTests
     }
 
     [Fact]
-    public void Properties_CanBeSet()
-    {
-        var tenantId = Guid.NewGuid();
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-
-        NotificationSubscription subscription = new()
-        {
-            UserId = "user-42",
-            NotificationTypeName = "order.shipped",
-            TenantId = tenantId,
-            EntityType = "Order",
-            EntityId = "ORD-001",
-            CreatedAt = now,
-            CreatedBy = "admin",
-        };
-
-        subscription.UserId.ShouldBe("user-42");
-        subscription.NotificationTypeName.ShouldBe("order.shipped");
-        subscription.TenantId.ShouldBe(tenantId);
-        subscription.EntityType.ShouldBe("Order");
-        subscription.EntityId.ShouldBe("ORD-001");
-        subscription.CreatedAt.ShouldBe(now);
-        subscription.CreatedBy.ShouldBe("admin");
-    }
-
-    [Fact]
     public void TopicSubscription_HasNullEntityFields()
     {
         NotificationSubscription subscription = new()

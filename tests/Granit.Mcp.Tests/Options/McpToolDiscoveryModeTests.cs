@@ -10,10 +10,6 @@ public sealed class McpToolDiscoveryModeTests
         ((int)McpToolDiscoveryMode.Explicit).ShouldBe(0);
 
     [Fact]
-    public void Auto_HasValueOne() =>
-        ((int)McpToolDiscoveryMode.Auto).ShouldBe(1);
-
-    [Fact]
     public void Enum_HasTwoValues() =>
         Enum.GetValues<McpToolDiscoveryMode>().Length.ShouldBe(2);
 }

@@ -7,19 +7,6 @@ namespace Granit.Identity.Tests;
 public sealed class IdentityRoleTests
 {
     [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        var role = new IdentityRole(
-            Id: "role-1",
-            Name: "editor",
-            Description: "Content editor");
-
-        role.Id.ShouldBe("role-1");
-        role.Name.ShouldBe("editor");
-        role.Description.ShouldBe("Content editor");
-    }
-
-    [Fact]
     public void Constructor_AllowsNullDescription()
     {
         var role = new IdentityRole(

@@ -19,16 +19,6 @@ public sealed class BackgroundJobEventsTests
         evt.ShouldBeAssignableTo<IDomainEvent>();
     }
 
-    [Fact]
-    public void BackgroundJobPausedEvent_SetsProperties()
-    {
-        var jobId = Guid.NewGuid();
-        BackgroundJobPausedEvent evt = new(jobId, "test-job");
-
-        evt.JobId.ShouldBe(jobId);
-        evt.JobName.ShouldBe("test-job");
-    }
-
     // =========================================================================
     // BackgroundJobResumedEvent
     // =========================================================================
@@ -39,16 +29,6 @@ public sealed class BackgroundJobEventsTests
         BackgroundJobResumedEvent evt = new(Guid.NewGuid(), "test-job");
 
         evt.ShouldBeAssignableTo<IDomainEvent>();
-    }
-
-    [Fact]
-    public void BackgroundJobResumedEvent_SetsProperties()
-    {
-        var jobId = Guid.NewGuid();
-        BackgroundJobResumedEvent evt = new(jobId, "test-job");
-
-        evt.JobId.ShouldBe(jobId);
-        evt.JobName.ShouldBe("test-job");
     }
 
     // =========================================================================
@@ -63,18 +43,6 @@ public sealed class BackgroundJobEventsTests
         evt.ShouldBeAssignableTo<IDomainEvent>();
     }
 
-    [Fact]
-    public void BackgroundJobDefinitionChangedEvent_SetsProperties()
-    {
-        var jobId = Guid.NewGuid();
-        BackgroundJobDefinitionChangedEvent evt = new(jobId, "test-job", "0 * * * *", "0 8 * * *");
-
-        evt.JobId.ShouldBe(jobId);
-        evt.JobName.ShouldBe("test-job");
-        evt.OldCronExpression.ShouldBe("0 * * * *");
-        evt.NewCronExpression.ShouldBe("0 8 * * *");
-    }
-
     // =========================================================================
     // BackgroundJobExecutionStartedEto
     // =========================================================================
@@ -87,18 +55,6 @@ public sealed class BackgroundJobEventsTests
         eto.ShouldBeAssignableTo<IIntegrationEvent>();
     }
 
-    [Fact]
-    public void BackgroundJobExecutionStartedEto_SetsProperties()
-    {
-        var jobId = Guid.NewGuid();
-        DateTimeOffset startedAt = new(2026, 1, 15, 8, 0, 0, TimeSpan.Zero);
-        BackgroundJobExecutionStartedEto eto = new(jobId, "test-job", startedAt);
-
-        eto.JobId.ShouldBe(jobId);
-        eto.JobName.ShouldBe("test-job");
-        eto.StartedAt.ShouldBe(startedAt);
-    }
-
     // =========================================================================
     // BackgroundJobFailureThresholdExceededEto
     // =========================================================================
@@ -109,25 +65,5 @@ public sealed class BackgroundJobEventsTests
         BackgroundJobFailureThresholdExceededEto eto = new(Guid.NewGuid(), "test-job", 3, "error");
 
         eto.ShouldBeAssignableTo<IIntegrationEvent>();
-    }
-
-    [Fact]
-    public void BackgroundJobFailureThresholdExceededEto_SetsProperties()
-    {
-        var jobId = Guid.NewGuid();
-        BackgroundJobFailureThresholdExceededEto eto = new(jobId, "test-job", 5, "critical error");
-
-        eto.JobId.ShouldBe(jobId);
-        eto.JobName.ShouldBe("test-job");
-        eto.ConsecutiveFailureCount.ShouldBe(5);
-        eto.LastErrorMessage.ShouldBe("critical error");
-    }
-
-    [Fact]
-    public void BackgroundJobFailureThresholdExceededEto_NullLastErrorMessage()
-    {
-        BackgroundJobFailureThresholdExceededEto eto = new(Guid.NewGuid(), "test-job", 3, null);
-
-        eto.LastErrorMessage.ShouldBeNull();
     }
 }

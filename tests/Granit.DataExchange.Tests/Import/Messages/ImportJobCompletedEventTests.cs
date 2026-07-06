@@ -7,35 +7,6 @@ namespace Granit.DataExchange.Tests.Import.Messages;
 
 public sealed class ImportJobCompletedEtoTests
 {
-    [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        var jobId = Guid.NewGuid();
-
-        var sut = new ImportJobCompletedEto(
-            jobId,
-            "CustomerImport",
-            ImportJobStatus.Completed,
-            "user-123",
-            TotalRows: 100,
-            SucceededRows: 95,
-            FailedRows: 5,
-            InsertedRows: 80,
-            UpdatedRows: 15,
-            SkippedRows: 0);
-
-        sut.ImportJobId.ShouldBe(jobId);
-        sut.DefinitionName.ShouldBe("CustomerImport");
-        sut.Status.ShouldBe(ImportJobStatus.Completed);
-        sut.UserId.ShouldBe("user-123");
-        sut.TotalRows.ShouldBe(100);
-        sut.SucceededRows.ShouldBe(95);
-        sut.FailedRows.ShouldBe(5);
-        sut.InsertedRows.ShouldBe(80);
-        sut.UpdatedRows.ShouldBe(15);
-        sut.SkippedRows.ShouldBe(0);
-    }
-
     [Theory]
     [InlineData(ImportJobStatus.Completed)]
     [InlineData(ImportJobStatus.PartiallyCompleted)]

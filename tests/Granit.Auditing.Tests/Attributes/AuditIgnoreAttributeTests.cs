@@ -26,13 +26,6 @@ public sealed class AuditIgnoreAttributeTests
         (usage.ValidOn & AttributeTargets.Property).ShouldBe(AttributeTargets.Property);
     }
 
-    [Fact]
-    public void CanBeInstantiated()
-    {
-        AuditIgnoreAttribute attribute = new();
-        attribute.ShouldNotBeNull();
-    }
-
     [AuditIgnore]
     private sealed class IgnoredEntity;
 

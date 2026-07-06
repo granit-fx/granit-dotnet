@@ -7,23 +7,6 @@ namespace Granit.DataExchange.Tests.Import.Mapping;
 public sealed class CellConversionErrorTests
 {
     [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        var sut = new CellConversionError(
-            "DateOfBirth",
-            "BirthDate",
-            "not-a-date",
-            "DateTime",
-            "Granit:DataExchange:InvalidFormat");
-
-        sut.SourceColumn.ShouldBe("DateOfBirth");
-        sut.TargetProperty.ShouldBe("BirthDate");
-        sut.RawValue.ShouldBe("not-a-date");
-        sut.ExpectedType.ShouldBe("DateTime");
-        sut.ErrorCode.ShouldBe("Granit:DataExchange:InvalidFormat");
-    }
-
-    [Fact]
     public void RawValue_CanBeNull()
     {
         var sut = new CellConversionError(

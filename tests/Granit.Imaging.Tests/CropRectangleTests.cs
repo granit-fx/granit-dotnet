@@ -6,17 +6,6 @@ namespace Granit.Imaging.Tests;
 public sealed class CropRectangleTests
 {
     [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        CropRectangle rect = new(10, 20, 300, 200);
-
-        rect.X.ShouldBe(10);
-        rect.Y.ShouldBe(20);
-        rect.Width.ShouldBe(300);
-        rect.Height.ShouldBe(200);
-    }
-
-    [Fact]
     public void Equality_SameValues_AreEqual()
     {
         CropRectangle a = new(10, 20, 300, 200);

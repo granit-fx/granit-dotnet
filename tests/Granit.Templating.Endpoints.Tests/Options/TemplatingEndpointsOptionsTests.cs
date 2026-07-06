@@ -19,25 +19,4 @@ public sealed class TemplatingEndpointsOptionsTests
         options.TagName.ShouldBe("Templates");
     }
 
-    [Fact]
-    public void RoutePrefix_CanBeSet()
-    {
-        TemplatingEndpointsOptions options = new()
-        {
-            RoutePrefix = "custom-templates",
-        };
-
-        options.RoutePrefix.ShouldBe("custom-templates");
-    }
-
-    [Fact]
-    public void TagName_CanBeSet()
-    {
-        TemplatingEndpointsOptions options = new()
-        {
-            TagName = "CustomTag",
-        };
-
-        options.TagName.ShouldBe("CustomTag");
-    }
 }

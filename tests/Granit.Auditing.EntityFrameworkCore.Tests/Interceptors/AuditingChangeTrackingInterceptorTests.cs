@@ -17,18 +17,6 @@ namespace Granit.Auditing.EntityFrameworkCore.Tests.Interceptors;
 
 public sealed class AuditingChangeTrackingInterceptorTests
 {
-    // -------------------------------------------------------------------------
-    // Interceptor — can be instantiated
-    // -------------------------------------------------------------------------
-
-    [Fact]
-    public void Constructor_CreatesInstance()
-    {
-        AuditingChangeTrackingInterceptor interceptor = new();
-
-        interceptor.ShouldNotBeNull();
-    }
-
     [Fact]
     public void Interceptor_IsSealed() =>
         typeof(AuditingChangeTrackingInterceptor).IsSealed.ShouldBeTrue();

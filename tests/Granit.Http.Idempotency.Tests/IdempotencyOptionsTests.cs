@@ -103,22 +103,6 @@ public sealed class IdempotencyOptionsTests
     // =========================================================================
 
     [Fact]
-    public void HeaderName_CanBeCustomized()
-    {
-        IdempotencyOptions options = new() { HeaderName = "X-Custom-Key" };
-
-        options.HeaderName.ShouldBe("X-Custom-Key");
-    }
-
-    [Fact]
-    public void KeyPrefix_CanBeCustomized()
-    {
-        IdempotencyOptions options = new() { KeyPrefix = "myapp" };
-
-        options.KeyPrefix.ShouldBe("myapp");
-    }
-
-    [Fact]
     public void ShouldCacheStatusCode_CanBeOverridden()
     {
         IdempotencyOptions options = new()

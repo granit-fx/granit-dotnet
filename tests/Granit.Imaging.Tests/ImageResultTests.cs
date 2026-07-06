@@ -6,21 +6,6 @@ namespace Granit.Imaging.Tests;
 public sealed class ImageResultTests
 {
     [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        byte[] content = [0x89, 0x50, 0x4E, 0x47];
-        ReadOnlyMemory<byte> memory = content;
-
-        ImageResult result = new(memory, ImageFormat.Png, 800, 600, "image.png");
-
-        result.Content.ToArray().ShouldBe(content);
-        result.Format.ShouldBe(ImageFormat.Png);
-        result.Width.ShouldBe(800);
-        result.Height.ShouldBe(600);
-        result.FileName.ShouldBe("image.png");
-    }
-
-    [Fact]
     public void Constructor_FileNameDefaultsToNull()
     {
         ReadOnlyMemory<byte> content = new byte[] { 0x01 };

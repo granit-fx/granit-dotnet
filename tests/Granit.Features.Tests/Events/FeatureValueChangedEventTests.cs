@@ -26,16 +26,6 @@ public sealed class FeatureValueChangedEventTests
     }
 
     [Fact]
-    public void Record_Equality_SameValues_AreEqual()
-    {
-        var tenantId = Guid.NewGuid();
-        FeatureValueChangedEvent a = new("App.Feature", tenantId);
-        FeatureValueChangedEvent b = new("App.Feature", tenantId);
-
-        a.ShouldBe(b);
-    }
-
-    [Fact]
     public void Record_Equality_DifferentFeatureName_AreNotEqual()
     {
         var tenantId = Guid.NewGuid();

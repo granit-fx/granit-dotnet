@@ -64,62 +64,6 @@ public sealed class ObservabilityOptionsTests
     public void SectionName_IsCorrect() => ObservabilityOptions.SectionName.ShouldBe("Observability");
 
     [Fact]
-    public void SetServiceName_UpdatesValue()
-    {
-        ObservabilityOptions options = new() { ServiceName = "custom-api" };
-
-        options.ServiceName.ShouldBe("custom-api");
-    }
-
-    [Fact]
-    public void SetServiceVersion_UpdatesValue()
-    {
-        ObservabilityOptions options = new() { ServiceVersion = "3.1.0" };
-
-        options.ServiceVersion.ShouldBe("3.1.0");
-    }
-
-    [Fact]
-    public void SetOtlpEndpoint_UpdatesValue()
-    {
-        ObservabilityOptions options = new() { OtlpEndpoint = "http://remote:4317" };
-
-        options.OtlpEndpoint.ShouldBe("http://remote:4317");
-    }
-
-    [Fact]
-    public void SetServiceNamespace_UpdatesValue()
-    {
-        ObservabilityOptions options = new() { ServiceNamespace = "digital-dynamics" };
-
-        options.ServiceNamespace.ShouldBe("digital-dynamics");
-    }
-
-    [Fact]
-    public void SetEnvironment_UpdatesValue()
-    {
-        ObservabilityOptions options = new() { Environment = "staging" };
-
-        options.Environment.ShouldBe("staging");
-    }
-
-    [Fact]
-    public void SetEnableTracing_ToFalse_UpdatesValue()
-    {
-        ObservabilityOptions options = new() { EnableTracing = false };
-
-        options.EnableTracing.ShouldBeFalse();
-    }
-
-    [Fact]
-    public void SetEnableMetrics_ToFalse_UpdatesValue()
-    {
-        ObservabilityOptions options = new() { EnableMetrics = false };
-
-        options.EnableMetrics.ShouldBeFalse();
-    }
-
-    [Fact]
     public void Binding_PartialConfiguration_KeepsDefaults()
     {
         // Arrange — only set ServiceName, leave everything else at defaults

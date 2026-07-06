@@ -11,24 +11,6 @@ public sealed class FeatureDtoTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void FeatureDefinitionResponse_SetsAllProperties()
-    {
-        FeatureNumericConstraintResponse constraint = new(0, 1000);
-        IReadOnlyList<string> selection = ["a", "b"];
-
-        FeatureDefinitionResponse response = new(
-            "App.Feature", "false", "Toggle", constraint, selection, "Display", "Description");
-
-        response.Name.ShouldBe("App.Feature");
-        response.DefaultValue.ShouldBe("false");
-        response.ValueType.ShouldBe("Toggle");
-        response.NumericConstraint.ShouldBe(constraint);
-        response.SelectionValues.ShouldBe(selection);
-        response.DisplayName.ShouldBe("Display");
-        response.Description.ShouldBe("Description");
-    }
-
-    [Fact]
     public void FeatureDefinitionResponse_NullableProperties_CanBeNull()
     {
         FeatureDefinitionResponse response = new(

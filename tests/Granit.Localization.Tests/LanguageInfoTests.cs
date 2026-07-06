@@ -6,17 +6,6 @@ namespace Granit.Localization.Tests;
 public sealed class LanguageInfoTests
 {
     [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        LanguageInfo lang = new("fr", "Français", "fr");
-
-        lang.CultureName.ShouldBe("fr");
-        lang.DisplayName.ShouldBe("Français");
-        lang.FlagIcon.ShouldBe("fr");
-        lang.IsDefault.ShouldBeFalse();
-    }
-
-    [Fact]
     public void Constructor_WithoutFlagIcon_DefaultsToNull()
     {
         LanguageInfo lang = new("en", "English");

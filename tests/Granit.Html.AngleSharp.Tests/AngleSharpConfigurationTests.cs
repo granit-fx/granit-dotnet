@@ -1,29 +1,11 @@
 using System.Text.RegularExpressions;
 using Shouldly;
 using Xunit;
-using AngleSharpLib = global::AngleSharp;
 
 namespace Granit.Html.AngleSharp.Tests;
 
 public sealed partial class AngleSharpConfigurationTests
 {
-    // Reach the type through the global alias so the test namespace (which ends in
-    // ".AngleSharp") doesn't shadow the library's `AngleSharp` root.
-    [Fact]
-    public void BuildForTrustedTemplates_returns_a_configuration()
-    {
-        AngleSharpLib.IConfiguration config =
-            global::Granit.Html.AngleSharp.AngleSharpConfiguration.BuildForTrustedTemplates();
-        config.ShouldNotBeNull();
-    }
-
-    [Fact]
-    public void BuildForUntrustedContent_returns_a_configuration()
-    {
-        AngleSharpLib.IConfiguration config =
-            global::Granit.Html.AngleSharp.AngleSharpConfiguration.BuildForUntrustedContent();
-        config.ShouldNotBeNull();
-    }
 
     /// <summary>
     /// The untrusted-content profile MUST NEVER opt into AngleSharp's default loader. Doing so

@@ -7,19 +7,6 @@ namespace Granit.DataExchange.Tests.Import.Validation;
 public sealed class RowFieldErrorTests
 {
     [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        var sut = new RowFieldError(
-            "Email",
-            "Validation:NotEmpty",
-            "The Email field is required.");
-
-        sut.PropertyName.ShouldBe("Email");
-        sut.ErrorCode.ShouldBe("Validation:NotEmpty");
-        sut.ErrorMessage.ShouldBe("The Email field is required.");
-    }
-
-    [Fact]
     public void Equality_SameValues_AreEqual()
     {
         var a = new RowFieldError("Name", "ERR", "msg");

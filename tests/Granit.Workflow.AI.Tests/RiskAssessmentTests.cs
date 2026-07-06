@@ -7,34 +7,6 @@ namespace Granit.Workflow.AI.Tests;
 /// </summary>
 public sealed class RiskAssessmentTests
 {
-    [Fact]
-    public void Properties_ShouldBeSetCorrectly()
-    {
-        // Arrange
-        List<string> factors = ["Missing approval", "High amount"];
-
-        // Act
-        RiskAssessment assessment = new(
-            RiskScore: 0.85,
-            Reasoning: "Financial risk detected.",
-            RiskFactors: factors);
-
-        // Assert
-        assessment.RiskScore.ShouldBe(0.85);
-        assessment.Reasoning.ShouldBe("Financial risk detected.");
-        assessment.RiskFactors.Count.ShouldBe(2);
-        assessment.RiskFactors[0].ShouldBe("Missing approval");
-    }
-
-    [Fact]
-    public void EmptyRiskFactors_ShouldBeValid()
-    {
-        // Act
-        RiskAssessment assessment = new(0.0, "No risk.", []);
-
-        // Assert
-        assessment.RiskFactors.ShouldBeEmpty();
-    }
 
     [Fact]
     public void Record_ShouldSupportValueEquality()

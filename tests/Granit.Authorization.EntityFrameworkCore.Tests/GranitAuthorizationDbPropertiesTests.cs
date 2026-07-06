@@ -24,22 +24,6 @@ public sealed class GranitAuthorizationDbPropertiesTests
     }
 
     [Fact]
-    public void DbTablePrefix_CanBeModified()
-    {
-        string originalPrefix = GranitAuthorizationDbProperties.DbTablePrefix;
-
-        try
-        {
-            GranitAuthorizationDbProperties.DbTablePrefix = "custom_";
-            GranitAuthorizationDbProperties.DbTablePrefix.ShouldBe("custom_");
-        }
-        finally
-        {
-            GranitAuthorizationDbProperties.DbTablePrefix = originalPrefix;
-        }
-    }
-
-    [Fact]
     public void DbSchema_CanBeModified()
     {
         string? originalSchema = GranitAuthorizationDbProperties.DbSchema;

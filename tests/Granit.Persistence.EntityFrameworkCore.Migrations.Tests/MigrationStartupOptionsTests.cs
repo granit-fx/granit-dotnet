@@ -25,22 +25,4 @@ public sealed class MigrationStartupOptionsTests
         options.BatchExecutionTimeout.ShouldBe(TimeSpan.FromMinutes(5));
     }
 
-    [Fact]
-    public void DefaultBatchSize_SetAndGet_ReturnsAssignedValue()
-    {
-        MigrationStartupOptions options = new() { DefaultBatchSize = 1000 };
-
-        options.DefaultBatchSize.ShouldBe(1000);
-    }
-
-    [Fact]
-    public void BatchExecutionTimeout_SetAndGet_ReturnsAssignedValue()
-    {
-        MigrationStartupOptions options = new()
-        {
-            BatchExecutionTimeout = TimeSpan.FromMinutes(10),
-        };
-
-        options.BatchExecutionTimeout.ShouldBe(TimeSpan.FromMinutes(10));
-    }
 }

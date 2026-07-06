@@ -48,35 +48,4 @@ public sealed class SettingRecordTests
         record.ShouldBeAssignableTo<IEmitEntityLifecycleEvents>();
     }
 
-    [Fact]
-    public void Properties_CanBeSet()
-    {
-        SettingRecord record = new()
-        {
-            Name = "App.Theme",
-            ProviderName = "G",
-            ProviderKey = null,
-            Value = "dark",
-        };
-
-        record.Name.ShouldBe("App.Theme");
-        record.ProviderName.ShouldBe("G");
-        record.ProviderKey.ShouldBeNull();
-        record.Value.ShouldBe("dark");
-    }
-
-    [Fact]
-    public void Properties_WithProviderKey_CanBeSet()
-    {
-        SettingRecord record = new()
-        {
-            Name = "App.Theme",
-            ProviderName = "T",
-            ProviderKey = "tenant-42",
-            Value = "blue",
-        };
-
-        record.ProviderName.ShouldBe("T");
-        record.ProviderKey.ShouldBe("tenant-42");
-    }
 }

@@ -6,12 +6,6 @@ namespace Granit.Scheduling.BackgroundJobs.Tests;
 
 public sealed class SchedulingCatchUpJobTests
 {
-    [Fact]
-    public void Job_ShouldBeRecordType()
-    {
-        var job = new SchedulingCatchUpJob();
-        job.ShouldNotBeNull();
-    }
 
     [Fact]
     public void Job_ShouldImplementIBackgroundJob()

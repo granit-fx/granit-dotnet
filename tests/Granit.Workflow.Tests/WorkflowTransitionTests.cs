@@ -9,26 +9,6 @@ namespace Granit.Workflow.Tests;
 /// </summary>
 public sealed class WorkflowTransitionTests
 {
-    [Fact]
-    public void Properties_ShouldBeSetCorrectly()
-    {
-        // Act
-        WorkflowTransition<WorkflowLifecycleStatus> transition = new()
-        {
-            From = WorkflowLifecycleStatus.Draft,
-            To = WorkflowLifecycleStatus.Published,
-            Name = "Publier",
-            RequiredPermission = "workflow.publish",
-            RequiresApproval = true,
-        };
-
-        // Assert
-        transition.From.ShouldBe(WorkflowLifecycleStatus.Draft);
-        transition.To.ShouldBe(WorkflowLifecycleStatus.Published);
-        transition.Name.ShouldBe("Publier");
-        transition.RequiredPermission.ShouldBe("workflow.publish");
-        transition.RequiresApproval.ShouldBeTrue();
-    }
 
     [Fact]
     public void OptionalProperties_ShouldDefaultToNull()

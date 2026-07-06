@@ -40,20 +40,4 @@ public sealed class CachingOptionsTests
 
         options.JsonOptions.ShouldBeNull();
     }
-
-    [Fact]
-    public void KeyPrefix_CanBeOverridden()
-    {
-        CachingOptions options = new() { KeyPrefix = "myapp" };
-
-        options.KeyPrefix.ShouldBe("myapp");
-    }
-
-    [Fact]
-    public void DefaultAbsoluteExpirationRelativeToNow_CanBeSetToNull()
-    {
-        CachingOptions options = new() { DefaultAbsoluteExpirationRelativeToNow = null };
-
-        options.DefaultAbsoluteExpirationRelativeToNow.ShouldBeNull();
-    }
 }

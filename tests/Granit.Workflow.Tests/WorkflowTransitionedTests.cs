@@ -11,24 +11,6 @@ namespace Granit.Workflow.Tests;
 /// </summary>
 public sealed class WorkflowTransitionedTests
 {
-    [Fact]
-    public void Constructor_ShouldSetAllProperties()
-    {
-        // Arrange & Act
-        WorkflowTransitionedEvent<WorkflowLifecycleStatus> evt = new(
-            EntityType: "Document",
-            EntityId: "abc-123",
-            PreviousState: WorkflowLifecycleStatus.Draft,
-            NewState: WorkflowLifecycleStatus.Published,
-            TransitionedBy: "user-42");
-
-        // Assert
-        evt.EntityType.ShouldBe("Document");
-        evt.EntityId.ShouldBe("abc-123");
-        evt.PreviousState.ShouldBe(WorkflowLifecycleStatus.Draft);
-        evt.NewState.ShouldBe(WorkflowLifecycleStatus.Published);
-        evt.TransitionedBy.ShouldBe("user-42");
-    }
 
     [Fact]
     public void Record_ShouldImplementIDomainEvent()

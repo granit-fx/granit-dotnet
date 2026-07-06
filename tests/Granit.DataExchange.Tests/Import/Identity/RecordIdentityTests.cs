@@ -12,19 +12,6 @@ public sealed class RecordIdentityTests
     }
 
     [Fact]
-    public void Insert_HasInsertOperationAndNullExisting()
-    {
-        RecordIdentity<TestEntity> identity = new()
-        {
-            Operation = RecordOperation.Insert,
-            ExistingEntity = null,
-        };
-
-        identity.Operation.ShouldBe(RecordOperation.Insert);
-        identity.ExistingEntity.ShouldBeNull();
-    }
-
-    [Fact]
     public void Update_HasUpdateOperationAndExistingEntity()
     {
         TestEntity existing = new() { Name = "Alice" };

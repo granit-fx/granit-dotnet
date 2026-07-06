@@ -24,17 +24,4 @@ public sealed class IdentityProviderEndpointsOptionsTests
 
         options.TagName.ShouldBe("Identity - Provider");
     }
-
-    [Fact]
-    public void Properties_AreSettable()
-    {
-        IdentityProviderEndpointsOptions options = new()
-        {
-            RoutePrefix = "admin/identity",
-            TagName = "Admin Identity",
-        };
-
-        options.RoutePrefix.ShouldBe("admin/identity");
-        options.TagName.ShouldBe("Admin Identity");
-    }
 }

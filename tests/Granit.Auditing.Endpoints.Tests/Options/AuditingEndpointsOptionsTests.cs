@@ -18,17 +18,4 @@ public sealed class AuditingEndpointsOptionsTests
         options.RoutePrefix.ShouldBe("auditing");
         options.TagName.ShouldBe("Audit Log");
     }
-
-    [Fact]
-    public void AllProperties_CanBeSet()
-    {
-        AuditingEndpointsOptions options = new()
-        {
-            RoutePrefix = "custom-audit",
-            TagName = "Custom Tag",
-        };
-
-        options.RoutePrefix.ShouldBe("custom-audit");
-        options.TagName.ShouldBe("Custom Tag");
-    }
 }

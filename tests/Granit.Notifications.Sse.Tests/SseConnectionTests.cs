@@ -7,19 +7,6 @@ namespace Granit.Notifications.Sse.Tests;
 public sealed class SseConnectionTests
 {
     [Fact]
-    public void Constructor_SetsProperties()
-    {
-        var connectionId = Guid.NewGuid();
-        var channel = Channel.CreateUnbounded<SseNotificationMessage>();
-
-        SseConnection connection = new(connectionId, "user-1", channel);
-
-        connection.ConnectionId.ShouldBe(connectionId);
-        connection.UserId.ShouldBe("user-1");
-        connection.Channel.ShouldBe(channel);
-    }
-
-    [Fact]
     public void Reader_ReturnsSameAsChannelReader()
     {
         var channel = Channel.CreateUnbounded<SseNotificationMessage>();

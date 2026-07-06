@@ -7,20 +7,6 @@ namespace Granit.Workflow.AI.Tests;
 /// </summary>
 public sealed class TransitionRecommendationTests
 {
-    [Fact]
-    public void Properties_ShouldBeSetCorrectly()
-    {
-        // Act
-        TransitionRecommendation recommendation = new(
-            RecommendedTransition: "Publish",
-            Reasoning: "Document is complete.",
-            Confidence: 0.95);
-
-        // Assert
-        recommendation.RecommendedTransition.ShouldBe("Publish");
-        recommendation.Reasoning.ShouldBe("Document is complete.");
-        recommendation.Confidence.ShouldBe(0.95);
-    }
 
     [Fact]
     public void Record_ShouldSupportValueEquality()

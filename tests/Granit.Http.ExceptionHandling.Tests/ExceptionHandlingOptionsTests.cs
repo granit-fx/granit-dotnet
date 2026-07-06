@@ -20,12 +20,4 @@ public sealed class ExceptionHandlingOptionsTests
         options.ExposeInternalErrorDetails.ShouldBeFalse(
             "internal error details must default to false for ISO 27001 compliance");
     }
-
-    [Fact]
-    public void ExposeInternalErrorDetails_CanBeSetToTrue()
-    {
-        ExceptionHandlingOptions options = new() { ExposeInternalErrorDetails = true };
-
-        options.ExposeInternalErrorDetails.ShouldBeTrue();
-    }
 }

@@ -36,28 +36,4 @@ public sealed class MultiTenancyOptionsTests
 
         options.TenantIdHeaderName.ShouldBe("X-Tenant-Id");
     }
-
-    [Fact]
-    public void IsEnabled_CanBeSet()
-    {
-        MultiTenancyOptions options = new() { IsEnabled = false };
-
-        options.IsEnabled.ShouldBeFalse();
-    }
-
-    [Fact]
-    public void TenantIdClaimType_CanBeSet()
-    {
-        MultiTenancyOptions options = new() { TenantIdClaimType = "custom_claim" };
-
-        options.TenantIdClaimType.ShouldBe("custom_claim");
-    }
-
-    [Fact]
-    public void TenantIdHeaderName_CanBeSet()
-    {
-        MultiTenancyOptions options = new() { TenantIdHeaderName = "X-Custom-Header" };
-
-        options.TenantIdHeaderName.ShouldBe("X-Custom-Header");
-    }
 }

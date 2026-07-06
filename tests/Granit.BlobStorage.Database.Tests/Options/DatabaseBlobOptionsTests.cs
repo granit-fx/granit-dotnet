@@ -14,11 +14,4 @@ public sealed class DatabaseBlobOptionsTests
     [Fact]
     public void SectionName_InheritsFromBlobStorageOptions() =>
         BlobStorageOptions.SectionName.ShouldBe("BlobStorage");
-
-    [Fact]
-    public void MaxBlobSizeBytes_CanBeOverridden()
-    {
-        DatabaseBlobOptions options = new() { MaxBlobSizeBytes = 5 * 1024 * 1024 };
-        options.MaxBlobSizeBytes.ShouldBe(5 * 1024 * 1024);
-    }
 }

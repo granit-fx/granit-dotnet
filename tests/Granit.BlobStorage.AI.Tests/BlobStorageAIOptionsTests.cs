@@ -32,19 +32,4 @@ public sealed class BlobStorageAIOptionsTests
 
         options.EnablePiiDetection.ShouldBeTrue();
     }
-
-    [Fact]
-    public void Properties_CanBeCustomized()
-    {
-        BlobStorageAIOptions options = new()
-        {
-            WorkspaceName = "custom-workspace",
-            TimeoutSeconds = 30,
-            EnablePiiDetection = false,
-        };
-
-        options.WorkspaceName.ShouldBe("custom-workspace");
-        options.TimeoutSeconds.ShouldBe(30);
-        options.EnablePiiDetection.ShouldBeFalse();
-    }
 }

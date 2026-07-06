@@ -58,24 +58,4 @@ public sealed class GranitKeyRotationOptionsTests
         options.SigningAlgorithm.ShouldBe("RS256");
     }
 
-    [Fact]
-    public void Properties_Can_Be_Set()
-    {
-        GranitKeyRotationOptions options = new()
-        {
-            Enabled = true,
-            KeyLifetime = TimeSpan.FromDays(180),
-            GracePeriod = TimeSpan.FromDays(30),
-            RotationLeadTime = TimeSpan.FromDays(14),
-            RsaKeySize = 4096,
-            SigningAlgorithm = "RS384",
-        };
-
-        options.Enabled.ShouldBeTrue();
-        options.KeyLifetime.ShouldBe(TimeSpan.FromDays(180));
-        options.GracePeriod.ShouldBe(TimeSpan.FromDays(30));
-        options.RotationLeadTime.ShouldBe(TimeSpan.FromDays(14));
-        options.RsaKeySize.ShouldBe(4096);
-        options.SigningAlgorithm.ShouldBe("RS384");
-    }
 }

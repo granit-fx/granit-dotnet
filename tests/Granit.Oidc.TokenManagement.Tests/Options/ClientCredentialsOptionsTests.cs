@@ -39,29 +39,4 @@ public sealed class ClientCredentialsOptionsTests
     [Fact]
     public void CacheMargin_DefaultsToNull() =>
         new ClientCredentialsOptions().CacheMargin.ShouldBeNull();
-
-    [Fact]
-    public void AllProperties_CanBeSet()
-    {
-        var options = new ClientCredentialsOptions
-        {
-            Authority = "https://idp.example.com",
-            ClientId = "my-client",
-            ClientSecret = "s3cr3t",
-            Scope = "api1 api2",
-            ClientAuthenticationMethod = ClientAuthenticationMethod.PrivateKeyJwt,
-            ClientSigningKeyJwk = """{"kty":"EC"}""",
-            UseDPoP = true,
-            CacheMargin = TimeSpan.FromSeconds(15),
-        };
-
-        options.Authority.ShouldBe("https://idp.example.com");
-        options.ClientId.ShouldBe("my-client");
-        options.ClientSecret.ShouldBe("s3cr3t");
-        options.Scope.ShouldBe("api1 api2");
-        options.ClientAuthenticationMethod.ShouldBe(ClientAuthenticationMethod.PrivateKeyJwt);
-        options.ClientSigningKeyJwk.ShouldBe("""{"kty":"EC"}""");
-        options.UseDPoP.ShouldBeTrue();
-        options.CacheMargin.ShouldBe(TimeSpan.FromSeconds(15));
-    }
 }

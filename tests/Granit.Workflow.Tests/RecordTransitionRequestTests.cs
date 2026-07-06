@@ -8,33 +8,6 @@ namespace Granit.Workflow.Tests;
 /// </summary>
 public sealed class RecordTransitionRequestTests
 {
-    [Fact]
-    public void Properties_ShouldBeSetCorrectly()
-    {
-        // Arrange
-        var tenantId = Guid.NewGuid();
-
-        // Act
-        RecordTransitionRequest request = new()
-        {
-            EntityType = "Invoice",
-            EntityId = "inv-123",
-            PreviousState = "Draft",
-            NewState = "Published",
-            UserId = "user-42",
-            Comment = "Approved by manager",
-            TenantId = tenantId,
-        };
-
-        // Assert
-        request.EntityType.ShouldBe("Invoice");
-        request.EntityId.ShouldBe("inv-123");
-        request.PreviousState.ShouldBe("Draft");
-        request.NewState.ShouldBe("Published");
-        request.UserId.ShouldBe("user-42");
-        request.Comment.ShouldBe("Approved by manager");
-        request.TenantId.ShouldBe(tenantId);
-    }
 
     [Fact]
     public void OptionalProperties_ShouldDefaultToNull()

@@ -11,17 +11,6 @@ public sealed class LocalizationDtosTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void LanguageInfoResponse_Constructor_SetsAllProperties()
-    {
-        LanguageInfoResponse response = new("fr", "Français", "fr", true);
-
-        response.CultureName.ShouldBe("fr");
-        response.DisplayName.ShouldBe("Français");
-        response.FlagIcon.ShouldBe("fr");
-        response.IsDefault.ShouldBeTrue();
-    }
-
-    [Fact]
     public void LanguageInfoResponse_WithNullFlagIcon_IsValid()
     {
         LanguageInfoResponse response = new("en", "English", null, false);

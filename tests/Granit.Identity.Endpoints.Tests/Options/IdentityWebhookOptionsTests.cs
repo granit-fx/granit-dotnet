@@ -32,19 +32,4 @@ public sealed class IdentityWebhookOptionsTests
 
         options.ReplayWindow.ShouldBe(TimeSpan.FromMinutes(5));
     }
-
-    [Fact]
-    public void Properties_AreSettable()
-    {
-        IdentityWebhookOptions options = new()
-        {
-            Secret = "my-secret-key",
-            SignatureHeaderName = "X-Custom-Signature",
-            ReplayWindow = TimeSpan.FromMinutes(2),
-        };
-
-        options.Secret.ShouldBe("my-secret-key");
-        options.SignatureHeaderName.ShouldBe("X-Custom-Signature");
-        options.ReplayWindow.ShouldBe(TimeSpan.FromMinutes(2));
-    }
 }

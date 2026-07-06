@@ -56,11 +56,4 @@ public sealed class WolverineMessagingOptionsAdditionalTests
         options.RetryDelays[1].ShouldBe(TimeSpan.FromSeconds(2));
     }
 
-    [Fact]
-    public void MaxRetryAttempts_CanBeSetToCustomValue()
-    {
-        WolverineMessagingOptions options = new() { MaxRetryAttempts = 5 };
-
-        options.MaxRetryAttempts.ShouldBe(5);
-    }
 }

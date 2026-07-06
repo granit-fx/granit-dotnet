@@ -23,13 +23,6 @@ public sealed class GranitPasskeyOptionsTests
         new GranitPasskeyOptions().ChallengeSize.ShouldBe(32);
 
     [Fact]
-    public void ServerDomain_CanBeSet()
-    {
-        GranitPasskeyOptions options = new() { ServerDomain = "example.com" };
-        options.ServerDomain.ShouldBe("example.com");
-    }
-
-    [Fact]
     public void AuthenticatorTimeout_CanBeSet()
     {
         GranitPasskeyOptions options = new() { AuthenticatorTimeout = TimeSpan.FromSeconds(30) };

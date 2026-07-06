@@ -13,25 +13,6 @@ namespace Granit.Notifications.Tests;
 public sealed class EntityStateChangedDataTests
 {
     [Fact]
-    public void Constructor_RequiredProperties_AreSet()
-    {
-        DateTimeOffset changedAt = new(2026, 3, 1, 10, 0, 0, TimeSpan.Zero);
-
-        EntityStateChangedData data = new()
-        {
-            EntityType = "Patient",
-            EntityId = "pat-42",
-            PropertyName = "Status",
-            ChangedAt = changedAt,
-        };
-
-        data.EntityType.ShouldBe("Patient");
-        data.EntityId.ShouldBe("pat-42");
-        data.PropertyName.ShouldBe("Status");
-        data.ChangedAt.ShouldBe(changedAt);
-    }
-
-    [Fact]
     public void OptionalProperties_DefaultToNull()
     {
         EntityStateChangedData data = new()

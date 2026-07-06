@@ -17,25 +17,4 @@ public sealed class TemplatingAIOptionsTests
         options.TimeoutSeconds.ShouldBe(30);
     }
 
-    [Fact]
-    public void WorkspaceName_CanBeSet()
-    {
-        TemplatingAIOptions options = new()
-        {
-            WorkspaceName = "custom-workspace",
-        };
-
-        options.WorkspaceName.ShouldBe("custom-workspace");
-    }
-
-    [Fact]
-    public void TimeoutSeconds_CanBeSet()
-    {
-        TemplatingAIOptions options = new()
-        {
-            TimeoutSeconds = 60,
-        };
-
-        options.TimeoutSeconds.ShouldBe(60);
-    }
 }

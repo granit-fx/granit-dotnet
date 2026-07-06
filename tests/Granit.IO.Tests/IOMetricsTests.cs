@@ -12,7 +12,7 @@ public sealed class IOMetricsTests
         Should.Throw<ArgumentNullException>(() => new IOMetrics(null!));
 
     [Fact]
-    public void RecordBytes_Histogram_DoesNotThrow()
+    public void RecordBytes_Histogram_EmitsRecordedSize()
     {
         using TestMeterFactory factory = new();
         IOMetrics metrics = new(factory);
@@ -20,8 +20,7 @@ public sealed class IOMetricsTests
 
         metrics.RecordBytes("har", "abc", 1234);
 
-        // No assert beyond "did not throw" — histogram fan-out is harness-dependent.
-        Should.NotThrow(() => metrics.RecordBytes("har", null, 0));
+        harness.LongCounts("granit.io.temp.bytes").ShouldBe(1234);
     }
 
     [Fact]

@@ -54,24 +54,4 @@ public sealed class SettingsEndpointsOptionsTests
         options.UserTagName.ShouldBe("Settings - User");
     }
 
-    [Fact]
-    public void AllProperties_CanBeCustomized()
-    {
-        SettingsEndpointsOptions options = new()
-        {
-            UserRoutePrefix = "custom/user",
-            GlobalRoutePrefix = "custom/global",
-            TenantRoutePrefix = "custom/tenant",
-            GlobalTagName = "CustomGlobal",
-            TenantTagName = "CustomTenant",
-            UserTagName = "CustomUser",
-        };
-
-        options.UserRoutePrefix.ShouldBe("custom/user");
-        options.GlobalRoutePrefix.ShouldBe("custom/global");
-        options.TenantRoutePrefix.ShouldBe("custom/tenant");
-        options.GlobalTagName.ShouldBe("CustomGlobal");
-        options.TenantTagName.ShouldBe("CustomTenant");
-        options.UserTagName.ShouldBe("CustomUser");
-    }
 }

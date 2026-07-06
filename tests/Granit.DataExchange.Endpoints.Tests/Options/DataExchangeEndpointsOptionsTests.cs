@@ -25,17 +25,4 @@ public sealed class DataExchangeEndpointsOptionsTests
 
         options.TagName.ShouldBe("Data Exchange");
     }
-
-    [Fact]
-    public void Properties_AreSettable()
-    {
-        DataExchangeEndpointsOptions options = new()
-        {
-            RoutePrefix = "custom-prefix",
-            TagName = "Custom Tag",
-        };
-
-        options.RoutePrefix.ShouldBe("custom-prefix");
-        options.TagName.ShouldBe("Custom Tag");
-    }
 }

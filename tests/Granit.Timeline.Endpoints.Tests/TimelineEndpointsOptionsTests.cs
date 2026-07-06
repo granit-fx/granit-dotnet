@@ -27,16 +27,4 @@ public sealed class TimelineEndpointsOptionsTests
         options.TagName.ShouldBe("Timeline");
     }
 
-    [Fact]
-    public void Properties_are_mutable()
-    {
-        TimelineEndpointsOptions options = new()
-        {
-            RoutePrefix = "audit-trail",
-            TagName = "AuditTrail",
-        };
-
-        options.RoutePrefix.ShouldBe("audit-trail");
-        options.TagName.ShouldBe("AuditTrail");
-    }
 }

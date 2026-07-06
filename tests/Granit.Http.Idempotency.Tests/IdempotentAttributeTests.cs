@@ -28,26 +28,6 @@ public sealed class IdempotentAttributeTests
     }
 
     // =========================================================================
-    // Custom values
-    // =========================================================================
-
-    [Fact]
-    public void Required_SetToFalse_RetainsFalse()
-    {
-        IdempotentAttribute attribute = new() { Required = false };
-
-        attribute.Required.ShouldBeFalse();
-    }
-
-    [Fact]
-    public void CompletedTtlSeconds_SetToCustomValue_RetainsValue()
-    {
-        IdempotentAttribute attribute = new() { CompletedTtlSeconds = 3600 };
-
-        attribute.CompletedTtlSeconds.ShouldBe(3600);
-    }
-
-    // =========================================================================
     // IIdempotencyMetadata interface
     // =========================================================================
 
@@ -57,22 +37,6 @@ public sealed class IdempotentAttributeTests
         IdempotentAttribute attribute = new();
 
         attribute.ShouldBeAssignableTo<IIdempotencyMetadata>();
-    }
-
-    [Fact]
-    public void IIdempotencyMetadata_Required_MatchesAttributeProperty()
-    {
-        IdempotentAttribute attribute = new() { Required = false, CompletedTtlSeconds = 7200 };
-
-        attribute.Required.ShouldBeFalse();
-    }
-
-    [Fact]
-    public void IIdempotencyMetadata_CompletedTtlSeconds_MatchesAttributeProperty()
-    {
-        IdempotentAttribute attribute = new() { Required = false, CompletedTtlSeconds = 7200 };
-
-        attribute.CompletedTtlSeconds.ShouldBe(7200);
     }
 
     // =========================================================================

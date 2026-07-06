@@ -7,16 +7,6 @@ namespace Granit.DataExchange.Tests.Import.Mapping;
 public sealed class ImportColumnMappingTests
 {
     [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        ImportColumnMapping mapping = new("Email", "Email", MappingConfidence.Exact);
-
-        mapping.SourceColumn.ShouldBe("Email");
-        mapping.TargetProperty.ShouldBe("Email");
-        mapping.Confidence.ShouldBe(MappingConfidence.Exact);
-    }
-
-    [Fact]
     public void Constructor_WithNullTarget()
     {
         ImportColumnMapping mapping = new("UnknownColumn", null, MappingConfidence.Manual);

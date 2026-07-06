@@ -32,19 +32,4 @@ public sealed class UserCacheOptionsTests
 
         options.IncrementalSyncBatchSize.ShouldBe(50);
     }
-
-    [Fact]
-    public void Properties_AreSettable()
-    {
-        UserCacheOptions options = new()
-        {
-            StalenessThreshold = TimeSpan.FromHours(12),
-            EnableLoginTimeSync = false,
-            IncrementalSyncBatchSize = 100,
-        };
-
-        options.StalenessThreshold.ShouldBe(TimeSpan.FromHours(12));
-        options.EnableLoginTimeSync.ShouldBeFalse();
-        options.IncrementalSyncBatchSize.ShouldBe(100);
-    }
 }

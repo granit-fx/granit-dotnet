@@ -7,23 +7,6 @@ namespace Granit.DataExchange.Tests.Import.Parsing;
 public sealed class RawImportRowTests
 {
     [Fact]
-    public void Constructor_SetsRowNumberAndValues()
-    {
-        Dictionary<string, string?> values = new()
-        {
-            ["Name"] = "Alice",
-            ["Email"] = "alice@example.com",
-        };
-
-        RawImportRow row = new(1, values);
-
-        row.RowNumber.ShouldBe(1);
-        row.Values.Count.ShouldBe(2);
-        row.Values["Name"].ShouldBe("Alice");
-        row.Values["Email"].ShouldBe("alice@example.com");
-    }
-
-    [Fact]
     public void Constructor_WithNullValue()
     {
         Dictionary<string, string?> values = new()

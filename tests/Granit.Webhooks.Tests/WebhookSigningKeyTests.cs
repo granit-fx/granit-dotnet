@@ -153,9 +153,9 @@ public sealed class WebhookSigningKeyTests
 
         key.LastRotationNotificationAt.ShouldBeNull();
 
-        // Internal — invoked here via the same assembly as the test project (InternalsVisibleTo).
-        // For a black-box test we'd need a public surface, but this is sufficient for FU-1a.
-        // Architectural justification: the scanner (FU-1b) lives in the same assembly.
+        key.StampRotationNotification(Now);
+
+        key.LastRotationNotificationAt.ShouldBe(Now);
     }
 
     private static WebhookSubscription WithSigningKey(out Guid initialKeyId)

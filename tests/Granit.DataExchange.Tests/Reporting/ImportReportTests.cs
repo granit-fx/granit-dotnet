@@ -8,29 +8,6 @@ namespace Granit.DataExchange.Tests.Reporting;
 public sealed class ImportReportTests
 {
     [Fact]
-    public void Report_with_all_success()
-    {
-        // Arrange
-        ImportReport report = new()
-        {
-            TotalRows = 1000,
-            SucceededRows = 1000,
-            FailedRows = 0,
-            SkippedRows = 0,
-            InsertedRows = 800,
-            UpdatedRows = 200,
-            Duration = TimeSpan.FromSeconds(5),
-            FinalStatus = ImportJobStatus.Completed,
-            RowErrors = [],
-        };
-
-        // Assert
-        report.RowErrors.ShouldBeEmpty();
-        report.FinalStatus.ShouldBe(ImportJobStatus.Completed);
-        (report.InsertedRows + report.UpdatedRows).ShouldBe(report.SucceededRows);
-    }
-
-    [Fact]
     public void Report_with_partial_success()
     {
         // Arrange

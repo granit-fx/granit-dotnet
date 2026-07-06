@@ -36,37 +36,4 @@ public sealed class WorkflowTransitionRecordTests
         record.TenantId.ShouldBeNull();
     }
 
-    [Fact]
-    public void Properties_ShouldBeMutable()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        var tenantId = Guid.NewGuid();
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-
-        // Act
-        WorkflowTransitionRecord record = new()
-        {
-            Id = id,
-            EntityType = "Invoice",
-            EntityId = "inv-123",
-            PreviousState = "Draft",
-            NewState = "Published",
-            TransitionedAt = now,
-            TransitionedBy = "user-42",
-            Comment = "Approved",
-            TenantId = tenantId,
-        };
-
-        // Assert
-        record.Id.ShouldBe(id);
-        record.EntityType.ShouldBe("Invoice");
-        record.EntityId.ShouldBe("inv-123");
-        record.PreviousState.ShouldBe("Draft");
-        record.NewState.ShouldBe("Published");
-        record.TransitionedAt.ShouldBe(now);
-        record.TransitionedBy.ShouldBe("user-42");
-        record.Comment.ShouldBe("Approved");
-        record.TenantId.ShouldBe(tenantId);
-    }
 }

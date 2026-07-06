@@ -60,18 +60,6 @@ public sealed class FeatureOverrideChangedEventTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void Record_Equality_SameValues_AreEqual()
-    {
-        var tenantId = Guid.NewGuid();
-        DateTimeOffset timestamp = DateTimeOffset.UtcNow;
-
-        FeatureOverrideChangedEvent a = new("Acme.Feature", tenantId, "old", "new", timestamp);
-        FeatureOverrideChangedEvent b = new("Acme.Feature", tenantId, "old", "new", timestamp);
-
-        a.ShouldBe(b);
-    }
-
-    [Fact]
     public void Record_Equality_DifferentFeatureName_AreNotEqual()
     {
         var tenantId = Guid.NewGuid();

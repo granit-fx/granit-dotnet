@@ -42,11 +42,13 @@ public sealed class PrivacyPermissionsTests
     }
 
     [Theory]
-    [InlineData("Privacy.Exports.Execute")]
-    [InlineData("Privacy.Exports.ExecuteOnBehalfOf")]
-    [InlineData("Privacy.Deletions.Execute")]
-    [InlineData("Privacy.Agreements.Read")]
-    [InlineData("Privacy.Agreements.Create")]
+    [InlineData(PrivacyPermissions.Exports.Execute)]
+    [InlineData(PrivacyPermissions.Exports.ExecuteOnBehalfOf)]
+    [InlineData(PrivacyPermissions.Deletions.Execute)]
+    [InlineData(PrivacyPermissions.Agreements.Read)]
+    [InlineData(PrivacyPermissions.Agreements.Create)]
     public void AllPermissions_StartWithGroupName(string permission) =>
+        // Driven by the real PrivacyPermissions.* constants, not independent literals — so a
+        // constant whose value drifts off the group prefix is actually caught.
         permission.ShouldStartWith(PrivacyPermissions.GroupName + ".");
 }

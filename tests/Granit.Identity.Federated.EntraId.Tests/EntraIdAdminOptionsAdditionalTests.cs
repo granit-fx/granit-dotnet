@@ -139,25 +139,4 @@ public sealed class EntraIdAdminOptionsAdditionalTests
 
         endpoint.ShouldBe("/v1.0/groups/group-1/members/user-1/$ref");
     }
-
-    [Fact]
-    public void Properties_AreSettable()
-    {
-        EntraIdAdminOptions options = new()
-        {
-            TenantId = "t1",
-            ClientId = "c1",
-            ClientSecret = "s1",
-            ServicePrincipalObjectId = "sp1",
-            DefaultDomain = "contoso.onmicrosoft.com",
-            TimeoutSeconds = 60,
-            GraphBaseUrl = "https://custom.graph.com",
-            RopcClientId = "ropc-client",
-        };
-
-        options.DefaultDomain.ShouldBe("contoso.onmicrosoft.com");
-        options.TimeoutSeconds.ShouldBe(60);
-        options.GraphBaseUrl.ShouldBe("https://custom.graph.com");
-        options.RopcClientId.ShouldBe("ropc-client");
-    }
 }

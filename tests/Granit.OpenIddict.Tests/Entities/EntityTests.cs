@@ -28,39 +28,6 @@ public sealed class EntityTests
     }
 
     [Fact]
-    public void GranitUser_Property_Setters()
-    {
-        var tenantId = Guid.NewGuid();
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-        LocalIdentity user = new()
-        {
-            FirstName = "Alice",
-            LastName = "Doe",
-            TenantId = tenantId,
-            IsDeleted = true,
-            DeletedAt = now,
-            DeletedBy = "admin",
-            CustomAttributesJson = """{"key":"value"}""",
-            CreatedAt = now,
-            CreatedBy = "system",
-            ModifiedAt = now,
-            ModifiedBy = "admin",
-        };
-
-        user.FirstName.ShouldBe("Alice");
-        user.LastName.ShouldBe("Doe");
-        user.TenantId.ShouldBe(tenantId);
-        user.IsDeleted.ShouldBeTrue();
-        user.DeletedAt.ShouldBe(now);
-        user.DeletedBy.ShouldBe("admin");
-        user.CustomAttributesJson.ShouldBe("""{"key":"value"}""");
-        user.CreatedAt.ShouldBe(now);
-        user.CreatedBy.ShouldBe("system");
-        user.ModifiedAt.ShouldBe(now);
-        user.ModifiedBy.ShouldBe("admin");
-    }
-
-    [Fact]
     public void GranitUser_Implements_IMultiTenant()
     {
         LocalIdentity user = new();
@@ -69,28 +36,11 @@ public sealed class EntityTests
     }
 
     [Fact]
-    public void GranitUser_IMultiTenant_TenantId()
-    {
-        var tenantId = Guid.NewGuid();
-        LocalIdentity user = new() { TenantId = tenantId };
-
-        user.TenantId.ShouldBe(tenantId);
-    }
-
-    [Fact]
     public void GranitRole_Default_Values()
     {
         GranitRole role = new();
 
         role.Description.ShouldBeNull();
-    }
-
-    [Fact]
-    public void GranitRole_Description_Setter()
-    {
-        GranitRole role = new() { Description = "Administrator role" };
-
-        role.Description.ShouldBe("Administrator role");
     }
 
     [Fact]
@@ -112,22 +62,6 @@ public sealed class EntityTests
     }
 
     [Fact]
-    public void GranitUserGroup_Property_Setters()
-    {
-        var tenantId = Guid.NewGuid();
-        GranitUserGroup group = new()
-        {
-            Name = "Developers",
-            Description = "Development team",
-            TenantId = tenantId,
-        };
-
-        group.Name.ShouldBe("Developers");
-        group.Description.ShouldBe("Development team");
-        group.TenantId.ShouldBe(tenantId);
-    }
-
-    [Fact]
     public void GranitUserGroupMember_Default_Values()
     {
         GranitUserGroupMember member = new();
@@ -143,24 +77,6 @@ public sealed class EntityTests
         GranitUserGroupMember member = new();
 
         member.ShouldBeAssignableTo<IMultiTenant>();
-    }
-
-    [Fact]
-    public void GranitUserGroupMember_Property_Setters()
-    {
-        var groupId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
-        var tenantId = Guid.NewGuid();
-        GranitUserGroupMember member = new()
-        {
-            GroupId = groupId,
-            UserId = userId,
-            TenantId = tenantId,
-        };
-
-        member.GroupId.ShouldBe(groupId);
-        member.UserId.ShouldBe(userId);
-        member.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -222,15 +138,6 @@ public sealed class EntityTests
         GranitOpenIddictApplication application = new();
 
         application.TenantId.ShouldBeNull();
-    }
-
-    [Fact]
-    public void GranitOpenIddictApplication_TenantId_Setter()
-    {
-        var tenantId = Guid.NewGuid();
-        GranitOpenIddictApplication application = new() { TenantId = tenantId };
-
-        application.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]

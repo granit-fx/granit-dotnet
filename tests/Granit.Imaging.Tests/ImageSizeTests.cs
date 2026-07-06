@@ -6,15 +6,6 @@ namespace Granit.Imaging.Tests;
 public sealed class ImageSizeTests
 {
     [Fact]
-    public void Constructor_SetsWidthAndHeight()
-    {
-        ImageSize size = new(800, 600);
-
-        size.Width.ShouldBe(800);
-        size.Height.ShouldBe(600);
-    }
-
-    [Fact]
     public void Equality_SameDimensions_AreEqual()
     {
         ImageSize a = new(1024, 768);

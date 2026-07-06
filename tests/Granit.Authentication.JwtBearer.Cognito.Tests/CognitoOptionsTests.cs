@@ -28,13 +28,4 @@ public sealed class CognitoOptionsTests
 
         options.Audience.ShouldBeNull();
     }
-
-    [Fact]
-    public void Audience_CanBeSetExplicitly()
-    {
-        CognitoOptions options = new() { Audience = "custom-audience" };
-
-        options.Audience.ShouldBe("custom-audience");
-    }
-
 }

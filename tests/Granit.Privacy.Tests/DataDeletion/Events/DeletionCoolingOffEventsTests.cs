@@ -21,24 +21,6 @@ public sealed class DeletionCoolingOffEventsTests
         sut.ShouldBeAssignableTo<IIntegrationEvent>();
     }
 
-    [Fact]
-    public void DeletionDeferredEto_SetsAllProperties()
-    {
-        var requestId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-        DateTimeOffset deadline = now.AddDays(30);
-
-        var sut = new DeletionDeferredEto(requestId, userId, "admin@test.com", now, "Account closure", deadline, "EU_GDPR");
-
-        sut.RequestId.ShouldBe(requestId);
-        sut.UserId.ShouldBe(userId);
-        sut.RequestedBy.ShouldBe("admin@test.com");
-        sut.RequestedAt.ShouldBe(now);
-        sut.Reason.ShouldBe("Account closure");
-        sut.ScheduledDeletionAt.ShouldBe(deadline);
-    }
-
     // ── DeletionCancelledEto ─────────────────────────────────────────────────
 
     [Fact]
@@ -100,17 +82,4 @@ public sealed class DeletionCoolingOffEventsTests
         sut.ShouldBeAssignableTo<IIntegrationEvent>();
     }
 
-    [Fact]
-    public void DeletionExecutedEto_SetsAllProperties()
-    {
-        var requestId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
-        DateTimeOffset executedAt = DateTimeOffset.UtcNow;
-
-        var sut = new DeletionExecutedEto(requestId, userId, executedAt);
-
-        sut.RequestId.ShouldBe(requestId);
-        sut.UserId.ShouldBe(userId);
-        sut.ExecutedAt.ShouldBe(executedAt);
-    }
 }

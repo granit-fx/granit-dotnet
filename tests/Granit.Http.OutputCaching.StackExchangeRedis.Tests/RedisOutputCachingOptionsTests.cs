@@ -25,21 +25,4 @@ public sealed class RedisOutputCachingOptionsTests
     [Fact]
     public void RequireTls_DefaultsToTrue() =>
         new RedisOutputCachingOptions().RequireTls.ShouldBeTrue();
-
-    [Fact]
-    public void AllProperties_CanBeSet()
-    {
-        RedisOutputCachingOptions options = new()
-        {
-            IsEnabled = false,
-            Configuration = "redis-prod:6379,password=secret",
-            InstanceName = "custom:",
-            RequireTls = false,
-        };
-
-        options.IsEnabled.ShouldBeFalse();
-        options.Configuration.ShouldBe("redis-prod:6379,password=secret");
-        options.InstanceName.ShouldBe("custom:");
-        options.RequireTls.ShouldBeFalse();
-    }
 }

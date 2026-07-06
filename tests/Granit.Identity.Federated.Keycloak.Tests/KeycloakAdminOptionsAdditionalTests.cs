@@ -128,15 +128,4 @@ public sealed class KeycloakAdminOptionsAdditionalTests
 
         options.DirectAccessClientId.ShouldBeNull();
     }
-
-    [Fact]
-    public void DirectAccessClientId_IsSettable()
-    {
-        KeycloakAdminOptions options = new()
-        {
-            DirectAccessClientId = "my-frontend-client",
-        };
-
-        options.DirectAccessClientId.ShouldBe("my-frontend-client");
-    }
 }

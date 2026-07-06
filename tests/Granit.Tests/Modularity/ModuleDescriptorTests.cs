@@ -43,17 +43,6 @@ public sealed class ModuleDescriptorTests
         descriptor.IsEnabled.ShouldBeTrue();
     }
 
-    [Fact]
-    public void IsEnabled_CanBeSetToFalse()
-    {
-        TestModule instance = new();
-        ModuleDescriptor descriptor = new(typeof(TestModule), instance, []);
-
-        descriptor.IsEnabled = false;
-
-        descriptor.IsEnabled.ShouldBeFalse();
-    }
-
     // -------------------------------------------------------------------------
     // Test fixture
     // -------------------------------------------------------------------------

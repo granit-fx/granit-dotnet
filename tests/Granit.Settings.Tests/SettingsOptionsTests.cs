@@ -17,14 +17,4 @@ public sealed class SettingsOptionsTests
         options.CacheExpiration.ShouldBe(TimeSpan.FromMinutes(30));
     }
 
-    [Fact]
-    public void CacheExpiration_CanBeChanged()
-    {
-        SettingsOptions options = new()
-        {
-            CacheExpiration = TimeSpan.FromHours(1),
-        };
-
-        options.CacheExpiration.ShouldBe(TimeSpan.FromHours(1));
-    }
 }

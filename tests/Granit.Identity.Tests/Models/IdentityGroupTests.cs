@@ -7,27 +7,6 @@ namespace Granit.Identity.Tests.Models;
 public sealed class IdentityGroupTests
 {
     [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        List<IdentityGroup> subGroups =
-        [
-            new("child-1", "Child Group", "/parent/child", []),
-        ];
-
-        var group = new IdentityGroup(
-            Id: "group-1",
-            Name: "Parent Group",
-            Path: "/parent",
-            SubGroups: subGroups);
-
-        group.Id.ShouldBe("group-1");
-        group.Name.ShouldBe("Parent Group");
-        group.Path.ShouldBe("/parent");
-        group.SubGroups.ShouldHaveSingleItem();
-        group.SubGroups[0].Name.ShouldBe("Child Group");
-    }
-
-    [Fact]
     public void Constructor_AllowsNullPath()
     {
         var group = new IdentityGroup(

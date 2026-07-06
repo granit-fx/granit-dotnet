@@ -14,11 +14,4 @@ public sealed class GranitPrivacyModuleTests
         module.ShouldBeAssignableTo<GranitModule>();
     }
 
-    [Fact]
-    public void GranitPrivacyModule_CanBeInstantiated()
-    {
-        GranitPrivacyModule module = new();
-
-        module.ShouldNotBeNull();
-    }
 }

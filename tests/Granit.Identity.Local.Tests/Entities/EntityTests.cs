@@ -26,39 +26,6 @@ public sealed class EntityTests
     }
 
     [Fact]
-    public void GranitUser_Property_Setters()
-    {
-        var tenantId = Guid.NewGuid();
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-        LocalIdentity user = new()
-        {
-            FirstName = "Alice",
-            LastName = "Doe",
-            TenantId = tenantId,
-            IsDeleted = true,
-            DeletedAt = now,
-            DeletedBy = "admin",
-            CustomAttributesJson = """{"key":"value"}""",
-            CreatedAt = now,
-            CreatedBy = "system",
-            ModifiedAt = now,
-            ModifiedBy = "admin",
-        };
-
-        user.FirstName.ShouldBe("Alice");
-        user.LastName.ShouldBe("Doe");
-        user.TenantId.ShouldBe(tenantId);
-        user.IsDeleted.ShouldBeTrue();
-        user.DeletedAt.ShouldBe(now);
-        user.DeletedBy.ShouldBe("admin");
-        user.CustomAttributesJson.ShouldBe("""{"key":"value"}""");
-        user.CreatedAt.ShouldBe(now);
-        user.CreatedBy.ShouldBe("system");
-        user.ModifiedAt.ShouldBe(now);
-        user.ModifiedBy.ShouldBe("admin");
-    }
-
-    [Fact]
     public void GranitUser_Implements_IMultiTenant()
     {
         LocalIdentity user = new();

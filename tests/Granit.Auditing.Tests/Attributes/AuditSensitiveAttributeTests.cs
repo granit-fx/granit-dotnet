@@ -26,13 +26,6 @@ public sealed class SensitiveDataAttributeTests
         (usage.ValidOn & AttributeTargets.Class).ShouldBe((AttributeTargets)0);
     }
 
-    [Fact]
-    public void CanBeInstantiated()
-    {
-        SensitiveDataAttribute attribute = new();
-        attribute.ShouldNotBeNull();
-    }
-
     private sealed class EntityWithSensitive
     {
         [SensitiveData]

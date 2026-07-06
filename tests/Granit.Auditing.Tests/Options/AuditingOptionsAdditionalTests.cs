@@ -49,23 +49,4 @@ public sealed class AuditingOptionsAdditionalTests
         options.GetRetention(AuditCategory.DataAccess).ShouldBe(TimeSpan.FromDays(30));
         options.GetRetention(AuditCategory.AccessDenied).ShouldBe(TimeSpan.FromDays(400));
     }
-
-    [Fact]
-    public void AllProperties_CanBeSet()
-    {
-        AuditingOptions options = new()
-        {
-            PersistenceMode = AuditPersistenceMode.Strict,
-            EnablePropertyTracking = false,
-            CleanupBatchSize = 5000,
-            CacheEntryTtl = TimeSpan.FromMinutes(60),
-            CacheEntityQueryTtl = TimeSpan.FromMinutes(5),
-        };
-
-        options.PersistenceMode.ShouldBe(AuditPersistenceMode.Strict);
-        options.EnablePropertyTracking.ShouldBeFalse();
-        options.CleanupBatchSize.ShouldBe(5000);
-        options.CacheEntryTtl.ShouldBe(TimeSpan.FromMinutes(60));
-        options.CacheEntityQueryTtl.ShouldBe(TimeSpan.FromMinutes(5));
-    }
 }

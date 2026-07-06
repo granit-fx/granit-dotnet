@@ -8,19 +8,6 @@ namespace Granit.Identity.Tests.Events;
 public sealed class UserCacheSyncedEtoTests
 {
     [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        var tenantId = Guid.NewGuid();
-        DateTimeOffset syncedAt = DateTimeOffset.UtcNow;
-
-        var eto = new UserCacheSyncedEto("user-1", tenantId, syncedAt);
-
-        eto.ExternalUserId.ShouldBe("user-1");
-        eto.TenantId.ShouldBe(tenantId);
-        eto.SyncedAt.ShouldBe(syncedAt);
-    }
-
-    [Fact]
     public void Constructor_AllowsNullTenantId()
     {
         DateTimeOffset syncedAt = DateTimeOffset.UtcNow;

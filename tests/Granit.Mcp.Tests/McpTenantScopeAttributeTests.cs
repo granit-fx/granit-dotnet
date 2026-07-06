@@ -9,10 +9,6 @@ public sealed class McpTenantScopeAttributeTests
         new McpTenantScopeAttribute().RequireTenant.ShouldBeFalse();
 
     [Fact]
-    public void RequireTenant_CanBeSetToTrue() =>
-        new McpTenantScopeAttribute { RequireTenant = true }.RequireTenant.ShouldBeTrue();
-
-    [Fact]
     public void Attribute_TargetsClass()
     {
         AttributeUsageAttribute usage = typeof(McpTenantScopeAttribute)

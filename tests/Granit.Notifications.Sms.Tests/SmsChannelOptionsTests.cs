@@ -25,17 +25,4 @@ public sealed class SmsChannelOptionsTests
 
         options.SenderId.ShouldBeNull();
     }
-
-    [Fact]
-    public void Properties_CanBeSet()
-    {
-        SmsChannelOptions options = new()
-        {
-            Provider = "Twilio",
-            SenderId = "MyAppSms",
-        };
-
-        options.Provider.ShouldBe("Twilio");
-        options.SenderId.ShouldBe("MyAppSms");
-    }
 }

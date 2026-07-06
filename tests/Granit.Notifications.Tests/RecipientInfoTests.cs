@@ -13,14 +13,6 @@ namespace Granit.Notifications.Tests;
 public sealed class RecipientInfoTests
 {
     [Fact]
-    public void Constructor_RequiredUserId_IsSet()
-    {
-        RecipientInfo info = new() { UserId = "user-42" };
-
-        info.UserId.ShouldBe("user-42");
-    }
-
-    [Fact]
     public void OptionalProperties_DefaultToNull()
     {
         RecipientInfo info = new() { UserId = "user-1" };

@@ -1,5 +1,6 @@
 using System.Reflection;
 using Granit.Bff.Endpoints.Extensions;
+using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
@@ -21,12 +22,38 @@ public sealed class BffEndpointRouteBuilderExtensionsTests
         method.IsPublic.ShouldBeTrue();
     }
 
-    [Fact]
-    public void BffSecurityHeadersMiddleware_CanBeInstantiated()
+    [Theory]
+    [InlineData("/bff/login")]
+    [InlineData("/bff/callback")]
+    [InlineData("/app/bff/login")]
+    public async Task InvokeAsync_OnBffAuthPath_SetsClickjackingHeaders(string path)
     {
-        // Verify the middleware can be instantiated with a RequestDelegate
-        var middleware = new BffSecurityHeadersMiddleware(_ => Task.CompletedTask);
+        bool nextCalled = false;
+        BffSecurityHeadersMiddleware middleware = new(_ =>
+        {
+            nextCalled = true;
+            return Task.CompletedTask;
+        });
+        DefaultHttpContext context = new();
+        context.Request.Path = path;
 
-        middleware.ShouldNotBeNull();
+        await middleware.InvokeAsync(context);
+
+        context.Response.Headers.XFrameOptions.ToString().ShouldBe("DENY");
+        context.Response.Headers.ContentSecurityPolicy.ToString().ShouldBe("frame-ancestors 'none'");
+        nextCalled.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task InvokeAsync_OnNonBffPath_LeavesSecurityHeadersUntouched()
+    {
+        BffSecurityHeadersMiddleware middleware = new(_ => Task.CompletedTask);
+        DefaultHttpContext context = new();
+        context.Request.Path = "/api/orders";
+
+        await middleware.InvokeAsync(context);
+
+        context.Response.Headers.XFrameOptions.ToString().ShouldBeEmpty();
+        context.Response.Headers.ContentSecurityPolicy.ToString().ShouldBeEmpty();
     }
 }

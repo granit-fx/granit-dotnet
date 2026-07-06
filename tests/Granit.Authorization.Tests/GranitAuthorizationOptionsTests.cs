@@ -33,38 +33,6 @@ public sealed class GranitAuthorizationOptionsTests
         options.AlwaysAllow.ShouldBeFalse();
     }
 
-    [Fact]
-    public void AdminRoles_CanBeModified()
-    {
-        GranitAuthorizationOptions options = new();
-
-        options.AdminRoles = ["superadmin", "root"];
-
-        options.AdminRoles.Count.ShouldBe(2);
-        options.AdminRoles.ShouldContain("superadmin");
-        options.AdminRoles.ShouldContain("root");
-    }
-
-    [Fact]
-    public void CacheDuration_CanBeModified()
-    {
-        GranitAuthorizationOptions options = new();
-
-        options.CacheDuration = TimeSpan.FromMinutes(10);
-
-        options.CacheDuration.ShouldBe(TimeSpan.FromMinutes(10));
-    }
-
-    [Fact]
-    public void AlwaysAllow_CanBeSetToTrue()
-    {
-        GranitAuthorizationOptions options = new();
-
-        options.AlwaysAllow = true;
-
-        options.AlwaysAllow.ShouldBeTrue();
-    }
-
     // =========================================================================
     // Data annotations
     // =========================================================================

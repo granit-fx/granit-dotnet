@@ -15,30 +15,6 @@ namespace Granit.Notifications.Tests;
 public sealed class NotificationDeliveryContextTests
 {
     [Fact]
-    public void RequiredProperties_AreSetCorrectly()
-    {
-        var notificationId = Guid.NewGuid();
-        var deliveryId = Guid.NewGuid();
-        JsonElement data = JsonSerializer.SerializeToElement(new { key = "value" });
-
-        NotificationDeliveryContext context = new()
-        {
-            NotificationId = notificationId,
-            DeliveryId = deliveryId,
-            NotificationTypeName = "order.created",
-            Severity = NotificationSeverity.Warning,
-            RecipientUserId = "user-1",
-            Data = data,
-        };
-
-        context.NotificationId.ShouldBe(notificationId);
-        context.DeliveryId.ShouldBe(deliveryId);
-        context.NotificationTypeName.ShouldBe("order.created");
-        context.Severity.ShouldBe(NotificationSeverity.Warning);
-        context.RecipientUserId.ShouldBe("user-1");
-    }
-
-    [Fact]
     public void OptionalProperties_DefaultToNull()
     {
         NotificationDeliveryContext context = new()

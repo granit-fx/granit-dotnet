@@ -40,21 +40,4 @@ public sealed class GoogleCloudIdentityOptionsTests
 
         options.TimeoutSeconds.ShouldBe(30);
     }
-
-    [Fact]
-    public void Properties_AreSettable()
-    {
-        GoogleCloudIdentityOptions options = new()
-        {
-            ProjectId = "my-gcp-project",
-            CredentialFilePath = "/etc/keys/service-account.json",
-            RolesClaimKey = "custom_roles",
-            TimeoutSeconds = 60,
-        };
-
-        options.ProjectId.ShouldBe("my-gcp-project");
-        options.CredentialFilePath.ShouldBe("/etc/keys/service-account.json");
-        options.RolesClaimKey.ShouldBe("custom_roles");
-        options.TimeoutSeconds.ShouldBe(60);
-    }
 }

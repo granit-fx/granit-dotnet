@@ -7,24 +7,6 @@ namespace Granit.Identity.Tests.Models;
 public sealed class IdentityUserUpdateTests
 {
     [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        Dictionary<string, string?> attrs = new() { ["key"] = "value", ["remove"] = null };
-
-        var update = new IdentityUserUpdate(
-            Email: "new@test.com",
-            FirstName: "New",
-            LastName: "Name",
-            Attributes: attrs);
-
-        update.Email.ShouldBe("new@test.com");
-        update.FirstName.ShouldBe("New");
-        update.LastName.ShouldBe("Name");
-        update.Attributes.ShouldNotBeNull();
-        update.Attributes!.Count.ShouldBe(2);
-    }
-
-    [Fact]
     public void Constructor_DefaultsAllToNull()
     {
         var update = new IdentityUserUpdate();

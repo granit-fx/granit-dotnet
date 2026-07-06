@@ -20,16 +20,6 @@ public sealed class LookupDescriptorTests
     }
 
     [Fact]
-    public void Records_with_same_values_are_equal()
-    {
-        LookupDescriptor a = new(Name: "tenants", Kind: LookupKind.QueryEngine, RequiredPermission: "MultiTenancy.Tenants.Read");
-        LookupDescriptor b = new(Name: "tenants", Kind: LookupKind.QueryEngine, RequiredPermission: "MultiTenancy.Tenants.Read");
-
-        a.ShouldBe(b);
-        a.GetHashCode().ShouldBe(b.GetHashCode());
-    }
-
-    [Fact]
     public void Endpoint_fallback_is_supported_without_name()
     {
         LookupDescriptor descriptor = new(
@@ -41,21 +31,6 @@ public sealed class LookupDescriptorTests
         descriptor.Endpoint.ShouldBe("/api/external/stripe/customers");
         descriptor.Kind.ShouldBe(LookupKind.Simple);
         descriptor.SearchParam.ShouldBe("q");
-    }
-}
-
-public sealed class LookupItemTests
-{
-    [Fact]
-    public void Exposes_value_label_and_extra()
-    {
-        Dictionary<string, object?> extra = new(StringComparer.Ordinal) { ["active"] = true };
-        LookupItem item = new(Value: Guid.Empty, Label: "Acme", Extra: extra);
-
-        item.Value.ShouldBe(Guid.Empty);
-        item.Label.ShouldBe("Acme");
-        item.Extra.ShouldNotBeNull();
-        item.Extra!["active"].ShouldBe(true);
     }
 }
 

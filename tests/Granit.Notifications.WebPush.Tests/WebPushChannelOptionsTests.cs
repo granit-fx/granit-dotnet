@@ -33,19 +33,4 @@ public sealed class WebPushChannelOptionsTests
 
         options.VapidPrivateKey.ShouldBe(string.Empty);
     }
-
-    [Fact]
-    public void Properties_CanBeSet()
-    {
-        WebPushChannelOptions options = new()
-        {
-            VapidSubject = "mailto:test@example.com",
-            VapidPublicKey = "public-key",
-            VapidPrivateKey = "private-key",
-        };
-
-        options.VapidSubject.ShouldBe("mailto:test@example.com");
-        options.VapidPublicKey.ShouldBe("public-key");
-        options.VapidPrivateKey.ShouldBe("private-key");
-    }
 }

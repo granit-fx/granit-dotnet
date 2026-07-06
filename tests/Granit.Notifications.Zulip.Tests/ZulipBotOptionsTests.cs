@@ -37,21 +37,4 @@ public sealed class ZulipBotOptionsTests
         var options = new ZulipBotOptions();
         options.TimeoutSeconds.ShouldBe(30);
     }
-
-    [Fact]
-    public void CanSet_AllProperties()
-    {
-        var options = new ZulipBotOptions
-        {
-            BaseUrl = "https://zulip.test.com",
-            BotEmail = "bot@test.com",
-            ApiKey = "secret-key",
-            TimeoutSeconds = 60,
-        };
-
-        options.BaseUrl.ShouldBe("https://zulip.test.com");
-        options.BotEmail.ShouldBe("bot@test.com");
-        options.ApiKey.ShouldBe("secret-key");
-        options.TimeoutSeconds.ShouldBe(60);
-    }
 }

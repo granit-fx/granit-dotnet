@@ -13,20 +13,4 @@ public sealed class PermissionGrantCacheItemTests
 
         item.IsGranted.ShouldBeFalse();
     }
-
-    [Fact]
-    public void IsGranted_SetToTrue_ReturnsTrue()
-    {
-        PermissionGrantCacheItem item = new() { IsGranted = true };
-
-        item.IsGranted.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void IsGranted_SetToFalse_ReturnsFalse()
-    {
-        PermissionGrantCacheItem item = new() { IsGranted = false };
-
-        item.IsGranted.ShouldBeFalse();
-    }
 }

@@ -25,22 +25,6 @@ public sealed class GranitPrivacyOptionsTests
         options.ExportMaxSizeMb.ShouldBe(100);
     }
 
-    [Fact]
-    public void ExportTimeoutMinutes_CanBeSet()
-    {
-        GranitPrivacyOptions options = new() { ExportTimeoutMinutes = 30 };
-
-        options.ExportTimeoutMinutes.ShouldBe(30);
-    }
-
-    [Fact]
-    public void ExportMaxSizeMb_CanBeSet()
-    {
-        GranitPrivacyOptions options = new() { ExportMaxSizeMb = 500 };
-
-        options.ExportMaxSizeMb.ShouldBe(500);
-    }
-
     // ── Deletion cooling-off ─────────────────────────────────────────────────
 
     [Fact]

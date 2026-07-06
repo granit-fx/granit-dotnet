@@ -24,19 +24,4 @@ public sealed class QueryEngineAIOptionsTests
         options.TimeoutSeconds.ShouldBe(5);
     }
 
-    [Fact]
-    public void WorkspaceName_can_be_set()
-    {
-        QueryEngineAIOptions options = new() { WorkspaceName = "production" };
-
-        options.WorkspaceName.ShouldBe("production");
-    }
-
-    [Fact]
-    public void TimeoutSeconds_can_be_set()
-    {
-        QueryEngineAIOptions options = new() { TimeoutSeconds = 30 };
-
-        options.TimeoutSeconds.ShouldBe(30);
-    }
 }

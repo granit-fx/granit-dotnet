@@ -7,15 +7,6 @@ namespace Granit.OpenIddict.Tests.Services;
 
 public sealed class ImpersonationResultTests
 {
-    [Fact]
-    public void ImpersonationResult_Properties()
-    {
-        ImpersonationResult result = new("access-token-value", "refresh-token-value", 3600);
-
-        result.AccessToken.ShouldBe("access-token-value");
-        result.RefreshToken.ShouldBe("refresh-token-value");
-        result.ExpiresIn.ShouldBe(3600);
-    }
 
     [Fact]
     public void ImpersonationResult_Equality()
@@ -38,16 +29,6 @@ public sealed class ImpersonationResultTests
 
 public sealed class KeyRotationResultTests
 {
-    [Fact]
-    public void KeyRotationResult_Properties()
-    {
-        KeyRotationResult result = new(1, 2, 3, 4);
-
-        result.KeysGenerated.ShouldBe(1);
-        result.KeysRetired.ShouldBe(2);
-        result.KeysRevoked.ShouldBe(3);
-        result.KeysPruned.ShouldBe(4);
-    }
 
     [Fact]
     public void KeyRotationResult_Zero_Values()
@@ -118,16 +99,6 @@ public sealed class ProcessCallbackResultTests
 
 public sealed class TwoFactorStatusTests
 {
-    [Fact]
-    public void TwoFactorStatus_Properties()
-    {
-        TwoFactorStatus status = new(true, true, true, 5);
-
-        status.IsEnabled.ShouldBeTrue();
-        status.HasAuthenticatorApp.ShouldBeTrue();
-        status.HasEmailOtp.ShouldBeTrue();
-        status.RecoveryCodesLeft.ShouldBe(5);
-    }
 
     [Fact]
     public void TwoFactorStatus_Disabled()
@@ -152,14 +123,6 @@ public sealed class TwoFactorStatusTests
 
 public sealed class AuthenticatorKeyInfoTests
 {
-    [Fact]
-    public void AuthenticatorKeyInfo_Properties()
-    {
-        AuthenticatorKeyInfo info = new("JBSWY3DPEHPK3PXP", "otpauth://totp/App:user@test.com?secret=JBSWY3DPEHPK3PXP");
-
-        info.SharedKey.ShouldBe("JBSWY3DPEHPK3PXP");
-        info.QrCodeUri.ShouldBe("otpauth://totp/App:user@test.com?secret=JBSWY3DPEHPK3PXP");
-    }
 
     [Fact]
     public void AuthenticatorKeyInfo_Equality()
@@ -173,20 +136,6 @@ public sealed class AuthenticatorKeyInfoTests
 
 public sealed class PasskeyInfoTests
 {
-    [Fact]
-    public void PasskeyInfo_Properties()
-    {
-        var id = Guid.NewGuid();
-        var createdAt = new DateTimeOffset(2026, 1, 15, 10, 0, 0, TimeSpan.Zero);
-        var lastUsedAt = new DateTimeOffset(2026, 3, 20, 14, 30, 0, TimeSpan.Zero);
-
-        PasskeyInfo info = new(id, "My YubiKey", createdAt, lastUsedAt);
-
-        info.Id.ShouldBe(id);
-        info.Name.ShouldBe("My YubiKey");
-        info.CreatedAt.ShouldBe(createdAt);
-        info.LastUsedAt.ShouldBe(lastUsedAt);
-    }
 
     [Fact]
     public void PasskeyInfo_NullName()
@@ -214,17 +163,6 @@ public sealed class PasskeyInfoTests
 
 public sealed class UserSessionActivityTests
 {
-    [Fact]
-    public void UserSessionActivity_Properties()
-    {
-        var lastActivity = new DateTimeOffset(2026, 3, 21, 12, 0, 0, TimeSpan.Zero);
-
-        UserSessionActivity activity = new("user-123", "jti-abc", lastActivity);
-
-        activity.UserId.ShouldBe("user-123");
-        activity.Jti.ShouldBe("jti-abc");
-        activity.LastActivityAt.ShouldBe(lastActivity);
-    }
 
     [Fact]
     public void UserSessionActivity_Equality()
@@ -249,15 +187,6 @@ public sealed class UserSessionActivityTests
 
 public sealed class ExternalLoginInfoTests
 {
-    [Fact]
-    public void ExternalLoginInfo_Properties()
-    {
-        ExternalLoginInfo info = new("Google", "google-key-123", "Google");
-
-        info.LoginProvider.ShouldBe("Google");
-        info.ProviderKey.ShouldBe("google-key-123");
-        info.ProviderDisplayName.ShouldBe("Google");
-    }
 
     [Fact]
     public void ExternalLoginInfo_NullDisplayName()

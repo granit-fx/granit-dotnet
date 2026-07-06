@@ -17,32 +17,10 @@ public sealed class LocalizationAIOptionsTests
     }
 
     [Fact]
-    public void WorkspaceName_CanBeChanged()
-    {
-        LocalizationAIOptions options = new()
-        {
-            WorkspaceName = "translation-workspace",
-        };
-
-        options.WorkspaceName.ShouldBe("translation-workspace");
-    }
-
-    [Fact]
     public void TimeoutSeconds_DefaultsTo30()
     {
         LocalizationAIOptions options = new();
 
         options.TimeoutSeconds.ShouldBe(30);
-    }
-
-    [Fact]
-    public void TimeoutSeconds_CanBeChanged()
-    {
-        LocalizationAIOptions options = new()
-        {
-            TimeoutSeconds = 60,
-        };
-
-        options.TimeoutSeconds.ShouldBe(60);
     }
 }

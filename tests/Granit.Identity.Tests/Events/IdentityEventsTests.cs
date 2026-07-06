@@ -8,16 +8,6 @@ namespace Granit.Identity.Tests.Events;
 public sealed class IdentityEventsTests
 {
     [Fact]
-    public void IdentityUserCreatedEto_SetsAllProperties()
-    {
-        var evt = new IdentityUserCreatedEto("u1", "alice", "alice@test.com");
-
-        evt.UserId.ShouldBe("u1");
-        evt.Username.ShouldBe("alice");
-        evt.Email.ShouldBe("alice@test.com");
-    }
-
-    [Fact]
     public void IdentityUserCreatedEto_AllowsNullOptionalFields()
     {
         var evt = new IdentityUserCreatedEto("u1", null, null);

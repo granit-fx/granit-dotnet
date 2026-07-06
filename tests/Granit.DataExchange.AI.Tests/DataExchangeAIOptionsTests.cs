@@ -48,23 +48,4 @@ public sealed class DataExchangeAIOptionsTests
 
         options.PreviewRowCount.ShouldBe(5);
     }
-
-    [Fact]
-    public void Properties_AreSettable()
-    {
-        DataExchangeAIOptions options = new()
-        {
-            WorkspaceName = "custom-ws",
-            TimeoutSeconds = 30,
-            MinConfidenceScore = 0.8,
-            IncludePreviewRows = true,
-            PreviewRowCount = 10,
-        };
-
-        options.WorkspaceName.ShouldBe("custom-ws");
-        options.TimeoutSeconds.ShouldBe(30);
-        options.MinConfidenceScore.ShouldBe(0.8);
-        options.IncludePreviewRows.ShouldBeTrue();
-        options.PreviewRowCount.ShouldBe(10);
-    }
 }

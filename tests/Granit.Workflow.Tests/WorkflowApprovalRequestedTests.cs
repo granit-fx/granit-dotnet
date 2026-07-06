@@ -10,24 +10,6 @@ namespace Granit.Workflow.Tests;
 /// </summary>
 public sealed class WorkflowApprovalRequestedTests
 {
-    [Fact]
-    public void Constructor_ShouldSetAllProperties()
-    {
-        // Arrange & Act
-        WorkflowApprovalRequestedEvent evt = new(
-            EntityType: "Invoice",
-            EntityId: "inv-456",
-            RequestedBy: "user-7",
-            TargetState: "Published",
-            RequiredPermission: "workflow.publish");
-
-        // Assert
-        evt.EntityType.ShouldBe("Invoice");
-        evt.EntityId.ShouldBe("inv-456");
-        evt.RequestedBy.ShouldBe("user-7");
-        evt.TargetState.ShouldBe("Published");
-        evt.RequiredPermission.ShouldBe("workflow.publish");
-    }
 
     [Fact]
     public void Record_ShouldImplementIDomainEvent()

@@ -7,25 +7,6 @@ namespace Granit.Identity.Tests.Models;
 public sealed class IdentityUserCreateTests
 {
     [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        var create = new IdentityUserCreate(
-            Username: "alice",
-            Email: "alice@test.com",
-            FirstName: "Alice",
-            LastName: "Doe",
-            Enabled: true,
-            TemporaryPassword: "Temp123!");
-
-        create.Username.ShouldBe("alice");
-        create.Email.ShouldBe("alice@test.com");
-        create.FirstName.ShouldBe("Alice");
-        create.LastName.ShouldBe("Doe");
-        create.Enabled.ShouldBeTrue();
-        create.TemporaryPassword.ShouldBe("Temp123!");
-    }
-
-    [Fact]
     public void Constructor_DefaultsOptionalFields()
     {
         var create = new IdentityUserCreate(

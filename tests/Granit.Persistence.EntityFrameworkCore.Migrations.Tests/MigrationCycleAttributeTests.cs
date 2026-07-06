@@ -15,14 +15,6 @@ public sealed class MigrationCycleAttributeTests
     }
 
     [Fact]
-    public void Constructor_ContractPhase_SetsCorrectly()
-    {
-        MigrationCycleAttribute attr = new(MigrationPhase.Contract, "patient-fullname-v2");
-
-        attr.Phase.ShouldBe(MigrationPhase.Contract);
-    }
-
-    [Fact]
     public void Attribute_IsNotAllowedMultipleTimes()
     {
         AttributeUsageAttribute? usage = typeof(MigrationCycleAttribute)

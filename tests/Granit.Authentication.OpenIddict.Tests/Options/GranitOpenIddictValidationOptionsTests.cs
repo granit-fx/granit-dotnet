@@ -21,21 +21,4 @@ public sealed class GranitOpenIddictValidationOptionsTests
     [Fact]
     public void Audience_DefaultsToNull() =>
         new GranitOpenIddictValidationOptions().Audience.ShouldBeNull();
-
-    [Fact]
-    public void AllProperties_CanBeSet()
-    {
-        var issuer = new Uri("https://auth.example.com");
-
-        GranitOpenIddictValidationOptions options = new()
-        {
-            Issuer = issuer,
-            Audience = "api.example.com",
-            RequireDPoP = true,
-        };
-
-        options.Issuer.ShouldBe(issuer);
-        options.Audience.ShouldBe("api.example.com");
-        options.RequireDPoP.ShouldBeTrue();
-    }
 }

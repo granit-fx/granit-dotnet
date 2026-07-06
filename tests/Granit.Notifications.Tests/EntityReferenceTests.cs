@@ -14,14 +14,6 @@ namespace Granit.Notifications.Tests;
 public sealed class EntityReferenceTests
 {
     [Fact]
-    public void Constructor_SetsEntityType()
-    {
-        EntityReference reference = new("Invoice", "inv-42");
-
-        reference.EntityType.ShouldBe("Invoice");
-    }
-
-    [Fact]
     public void Constructor_SetsEntityId()
     {
         EntityReference reference = new("Invoice", "inv-42");

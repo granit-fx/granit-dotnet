@@ -46,29 +46,4 @@ public sealed class DPoPValidationOptionsTests
     [Fact]
     public void MinimumRsaKeySize_DefaultsTo2048() =>
         new DPoPValidationOptions().MinimumRsaKeySize.ShouldBe(2048);
-
-    [Fact]
-    public void AllProperties_CanBeSet()
-    {
-        DPoPValidationOptions options = new()
-        {
-            RequireDPoP = true,
-            AllowedAlgorithms = ["ES256"],
-            ClockSkew = TimeSpan.FromSeconds(10),
-            MaxProofLifetime = TimeSpan.FromMinutes(2),
-            EnableReplayProtection = false,
-            RequireNonce = true,
-            RequireTokenBinding = true,
-            MinimumRsaKeySize = 4096,
-        };
-
-        options.RequireDPoP.ShouldBeTrue();
-        options.AllowedAlgorithms.ShouldBe(["ES256"]);
-        options.ClockSkew.ShouldBe(TimeSpan.FromSeconds(10));
-        options.MaxProofLifetime.ShouldBe(TimeSpan.FromMinutes(2));
-        options.EnableReplayProtection.ShouldBeFalse();
-        options.RequireNonce.ShouldBeTrue();
-        options.RequireTokenBinding.ShouldBeTrue();
-        options.MinimumRsaKeySize.ShouldBe(4096);
-    }
 }

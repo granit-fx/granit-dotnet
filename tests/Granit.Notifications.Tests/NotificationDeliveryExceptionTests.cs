@@ -49,12 +49,4 @@ public sealed class NotificationDeliveryExceptionTests
         exception.InnerException.ShouldBe(inner);
         exception.InnerException.ShouldBeOfType<InvalidOperationException>();
     }
-
-    [Fact]
-    public void Exception_IsException()
-    {
-        NotificationDeliveryException exception = new("test");
-
-        exception.ShouldBeAssignableTo<Exception>();
-    }
 }

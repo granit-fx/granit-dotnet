@@ -8,16 +8,6 @@ namespace Granit.Identity.Federated.Tests.Events;
 public sealed class FederatedIdentityErasedEventTests
 {
     [Fact]
-    public void FederatedIdentityErasedEvent_SetsAllProperties()
-    {
-        var tenantId = Guid.NewGuid();
-        var evt = new FederatedIdentityErasedEvent("user-1", tenantId);
-
-        evt.ExternalUserId.ShouldBe("user-1");
-        evt.TenantId.ShouldBe(tenantId);
-    }
-
-    [Fact]
     public void FederatedIdentityErasedEvent_AllowsNullTenantId()
     {
         var evt = new FederatedIdentityErasedEvent("user-1", null);

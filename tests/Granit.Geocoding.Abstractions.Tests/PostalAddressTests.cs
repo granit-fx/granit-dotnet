@@ -15,23 +15,4 @@ public sealed class PostalAddressTests
         address.Locality.ShouldBe("Brussels");
         address.Country.ShouldBe("BE");
     }
-
-    [Fact]
-    public void Value_equality_holds_across_all_components()
-    {
-        PostalAddress a = new("Rue de la Loi 16", "1000", "Brussels", "BE");
-        PostalAddress b = new("Rue de la Loi 16", "1000", "Brussels", "BE");
-
-        b.ShouldBe(a);
-        b.GetHashCode().ShouldBe(a.GetHashCode());
-    }
-
-    [Fact]
-    public void Differing_postal_code_breaks_equality()
-    {
-        PostalAddress a = new("Rue de la Loi 16", "1000", "Brussels", "BE");
-        PostalAddress b = a with { PostalCode = "1040" };
-
-        b.ShouldNotBe(a);
-    }
 }

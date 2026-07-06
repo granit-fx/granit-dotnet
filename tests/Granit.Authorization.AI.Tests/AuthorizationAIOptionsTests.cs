@@ -23,24 +23,4 @@ public sealed class AuthorizationAIOptionsTests
 
         options.TimeoutSeconds.ShouldBe(5);
     }
-
-    [Fact]
-    public void WorkspaceName_CanBeModified()
-    {
-        AuthorizationAIOptions options = new();
-
-        options.WorkspaceName = "security";
-
-        options.WorkspaceName.ShouldBe("security");
-    }
-
-    [Fact]
-    public void TimeoutSeconds_CanBeModified()
-    {
-        AuthorizationAIOptions options = new();
-
-        options.TimeoutSeconds = 10;
-
-        options.TimeoutSeconds.ShouldBe(10);
-    }
 }

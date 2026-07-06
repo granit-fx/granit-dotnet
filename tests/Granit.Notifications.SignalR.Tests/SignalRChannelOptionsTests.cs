@@ -13,11 +13,4 @@ public sealed class SignalRChannelOptionsTests
     [Fact]
     public void RedisConnectionString_Default_IsNull() =>
         new SignalRChannelOptions().RedisConnectionString.ShouldBeNull();
-
-    [Fact]
-    public void RedisConnectionString_CanBeSet()
-    {
-        SignalRChannelOptions options = new() { RedisConnectionString = "localhost:6379" };
-        options.RedisConnectionString.ShouldBe("localhost:6379");
-    }
 }

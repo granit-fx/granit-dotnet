@@ -6,21 +6,6 @@ namespace Granit.Notifications.Sms.Tests;
 public sealed class SmsMessageTests
 {
     [Fact]
-    public void Properties_SetCorrectly()
-    {
-        SmsMessage message = new()
-        {
-            To = "+32470123456",
-            Body = "Hello World",
-            SenderId = "MyApp",
-        };
-
-        message.To.ShouldBe("+32470123456");
-        message.Body.ShouldBe("Hello World");
-        message.SenderId.ShouldBe("MyApp");
-    }
-
-    [Fact]
     public void SenderId_DefaultsToNull()
     {
         SmsMessage message = new()

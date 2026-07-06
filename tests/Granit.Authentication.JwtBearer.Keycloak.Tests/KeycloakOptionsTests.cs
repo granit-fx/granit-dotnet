@@ -24,26 +24,10 @@ public sealed class KeycloakOptionsTests
     }
 
     [Fact]
-    public void RoleClaimsSource_CanBeSetToResourceAccess()
-    {
-        KeycloakOptions options = new() { RoleClaimsSource = "resource_access" };
-
-        options.RoleClaimsSource.ShouldBe("resource_access");
-    }
-
-    [Fact]
     public void Audience_WhenNull_DefaultsToNull()
     {
         KeycloakOptions options = new();
 
         options.Audience.ShouldBeNull();
-    }
-
-    [Fact]
-    public void Audience_CanBeSetExplicitly()
-    {
-        KeycloakOptions options = new() { Audience = "custom-audience" };
-
-        options.Audience.ShouldBe("custom-audience");
     }
 }

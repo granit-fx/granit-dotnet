@@ -17,17 +17,4 @@ public sealed class ZulipChannelOptionsTests
     [Fact]
     public void DefaultTopic_IsSystem() =>
         new ZulipChannelOptions().DefaultTopic.ShouldBe("system");
-
-    [Fact]
-    public void CanSet_AllProperties()
-    {
-        var options = new ZulipChannelOptions
-        {
-            DefaultStream = "custom-stream",
-            DefaultTopic = "custom-topic",
-        };
-
-        options.DefaultStream.ShouldBe("custom-stream");
-        options.DefaultTopic.ShouldBe("custom-topic");
-    }
 }

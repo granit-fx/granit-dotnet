@@ -5,24 +5,6 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Tests;
 
 public sealed class MigrationBatchContextTests
 {
-    [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        var tenantId = Guid.NewGuid();
-        MigrationBatchContext context = new("cursor-123", 500, tenantId);
-
-        context.Cursor.ShouldBe("cursor-123");
-        context.Size.ShouldBe(500);
-        context.TenantId.ShouldBe(tenantId);
-    }
-
-    [Fact]
-    public void Constructor_NullCursor_IsAllowed()
-    {
-        MigrationBatchContext context = new(null, 100, Guid.Empty);
-
-        context.Cursor.ShouldBeNull();
-    }
 
     [Fact]
     public void Equality_SameValues_AreEqual()

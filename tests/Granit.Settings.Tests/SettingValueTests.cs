@@ -6,16 +6,6 @@ namespace Granit.Settings.Tests;
 
 public sealed class SettingValueTests
 {
-    [Fact]
-    public void Record_Properties_AreAccessible()
-    {
-        SettingValue sv = new("App.Theme", "G", null, "dark");
-
-        sv.Name.ShouldBe("App.Theme");
-        sv.ProviderName.ShouldBe("G");
-        sv.ProviderKey.ShouldBeNull();
-        sv.Value.ShouldBe("dark");
-    }
 
     [Fact]
     public void Record_Equality_SameValues_AreEqual()
@@ -45,19 +35,4 @@ public sealed class SettingValueTests
         a.ShouldNotBe(b);
     }
 
-    [Fact]
-    public void Record_WithNullValue_IsValid()
-    {
-        SettingValue sv = new("App.Theme", "G", null, null);
-
-        sv.Value.ShouldBeNull();
-    }
-
-    [Fact]
-    public void Record_WithProviderKey_IsValid()
-    {
-        SettingValue sv = new("App.Theme", "U", "user-42", "dark");
-
-        sv.ProviderKey.ShouldBe("user-42");
-    }
 }

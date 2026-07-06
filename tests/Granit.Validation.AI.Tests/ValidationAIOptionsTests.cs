@@ -32,18 +32,4 @@ public sealed class ValidationAIOptionsTests
         options.SeverityThreshold.ShouldBe(0.5);
     }
 
-    [Fact]
-    public void AllProperties_CanBeChanged()
-    {
-        ValidationAIOptions options = new()
-        {
-            WorkspaceName = "custom",
-            TimeoutSeconds = 5,
-            SeverityThreshold = 0.8,
-        };
-
-        options.WorkspaceName.ShouldBe("custom");
-        options.TimeoutSeconds.ShouldBe(5);
-        options.SeverityThreshold.ShouldBe(0.8);
-    }
 }

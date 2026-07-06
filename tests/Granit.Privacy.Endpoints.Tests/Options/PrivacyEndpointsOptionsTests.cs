@@ -27,22 +27,6 @@ public sealed class PrivacyEndpointsOptionsTests
     }
 
     [Fact]
-    public void RoutePrefix_CanBeOverridden()
-    {
-        PrivacyEndpointsOptions options = new() { RoutePrefix = "api/privacy" };
-
-        options.RoutePrefix.ShouldBe("api/privacy");
-    }
-
-    [Fact]
-    public void TagName_CanBeOverridden()
-    {
-        PrivacyEndpointsOptions options = new() { TagName = "GDPR" };
-
-        options.TagName.ShouldBe("GDPR");
-    }
-
-    [Fact]
     public void Class_IsSealed() =>
         typeof(PrivacyEndpointsOptions).IsSealed.ShouldBeTrue();
 }

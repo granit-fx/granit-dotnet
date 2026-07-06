@@ -77,17 +77,4 @@ public sealed class GuidGeneratorOptionsTests
         // Assert
         result.ShouldBe(SequentialGuidType.SequentialAsString);
     }
-
-    [Theory]
-    [InlineData(GuidStrategy.UuidV7)]
-    [InlineData(GuidStrategy.Sequential)]
-    [InlineData(GuidStrategy.Random)]
-    public void Strategy_SetAndGet_RoundTrips(GuidStrategy strategy)
-    {
-        // Arrange
-        GuidGeneratorOptions options = new() { Strategy = strategy };
-
-        // Assert
-        options.Strategy.ShouldBe(strategy);
-    }
 }

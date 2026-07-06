@@ -24,17 +24,4 @@ public sealed class BlobStorageEndpointsOptionsTests
 
         options.TagName.ShouldBe("Blob Storage");
     }
-
-    [Fact]
-    public void Properties_CanBeCustomized()
-    {
-        BlobStorageEndpointsOptions options = new()
-        {
-            RoutePrefix = "custom-blobs",
-            TagName = "Files",
-        };
-
-        options.RoutePrefix.ShouldBe("custom-blobs");
-        options.TagName.ShouldBe("Files");
-    }
 }

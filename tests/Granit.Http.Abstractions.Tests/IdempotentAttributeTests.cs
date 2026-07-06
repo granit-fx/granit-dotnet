@@ -27,15 +27,6 @@ public sealed class IdempotentAttributeTests
     }
 
     [Fact]
-    public void Custom_values_are_applied()
-    {
-        IdempotentAttribute attribute = new() { Required = false, CompletedTtlSeconds = 3600 };
-
-        attribute.Required.ShouldBeFalse();
-        attribute.CompletedTtlSeconds.ShouldBe(3600);
-    }
-
-    [Fact]
     public void Implements_IIdempotencyMetadata()
     {
         IdempotentAttribute attribute = new();

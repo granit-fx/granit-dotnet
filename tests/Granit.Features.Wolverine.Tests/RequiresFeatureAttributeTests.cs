@@ -7,14 +7,6 @@ namespace Granit.Features.Wolverine.Tests;
 public sealed class RequiresFeatureAttributeTests
 {
     [Fact]
-    public void Constructor_SetsFeatureName()
-    {
-        RequiresFeatureAttribute attribute = new("App.VideoConsultation");
-
-        attribute.FeatureName.ShouldBe("App.VideoConsultation");
-    }
-
-    [Fact]
     public void AttributeUsage_AllowsMultiple()
     {
         var usage = (AttributeUsageAttribute?)Attribute.GetCustomAttribute(

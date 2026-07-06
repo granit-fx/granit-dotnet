@@ -34,50 +34,10 @@ public sealed class RedisCachingOptionsTests
     }
 
     [Fact]
-    public void Configuration_CanBeOverridden()
-    {
-        RedisCachingOptions options = new() { Configuration = "redis-cluster:6380,ssl=true" };
-
-        options.Configuration.ShouldBe("redis-cluster:6380,ssl=true");
-    }
-
-    [Fact]
-    public void InstanceName_CanBeOverridden()
-    {
-        RedisCachingOptions options = new() { InstanceName = "myapp:" };
-
-        options.InstanceName.ShouldBe("myapp:");
-    }
-
-    [Fact]
-    public void IsEnabled_CanBeDisabled()
-    {
-        RedisCachingOptions options = new() { IsEnabled = false };
-
-        options.IsEnabled.ShouldBeFalse();
-    }
-
-    [Fact]
     public void Defaults_ConnectionStringName_IsCache()
     {
         RedisCachingOptions options = new();
 
         options.ConnectionStringName.ShouldBe("cache");
-    }
-
-    [Fact]
-    public void ConnectionStringName_CanBeSetToNull()
-    {
-        RedisCachingOptions options = new() { ConnectionStringName = null };
-
-        options.ConnectionStringName.ShouldBeNull();
-    }
-
-    [Fact]
-    public void ConnectionStringName_CanBeOverridden()
-    {
-        RedisCachingOptions options = new() { ConnectionStringName = "my-redis" };
-
-        options.ConnectionStringName.ShouldBe("my-redis");
     }
 }

@@ -10,24 +10,6 @@ namespace Granit.Workflow.Tests;
 /// </summary>
 public sealed class WorkflowStateChangedEventTests
 {
-    [Fact]
-    public void Constructor_ShouldSetAllProperties()
-    {
-        // Arrange & Act
-        WorkflowStateChangedEvent evt = new(
-            EntityType: "Publication",
-            EntityId: "pub-42",
-            PreviousState: "Draft",
-            NewState: "Published",
-            TransitionedBy: "user-1");
-
-        // Assert
-        evt.EntityType.ShouldBe("Publication");
-        evt.EntityId.ShouldBe("pub-42");
-        evt.PreviousState.ShouldBe("Draft");
-        evt.NewState.ShouldBe("Published");
-        evt.TransitionedBy.ShouldBe("user-1");
-    }
 
     [Fact]
     public void Record_ShouldImplementIDomainEvent()

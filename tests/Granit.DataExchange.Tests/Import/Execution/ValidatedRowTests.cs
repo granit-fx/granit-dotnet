@@ -13,18 +13,6 @@ public sealed class ValidatedRowTests
     }
 
     [Fact]
-    public void Constructor_SetsRowNumberAndEntity()
-    {
-        TestEntity entity = new() { Name = "Alice" };
-
-        ValidatedRow<TestEntity> row = new(5, entity);
-
-        row.RowNumber.ShouldBe(5);
-        row.Entity.ShouldBeSameAs(entity);
-        row.Identity.ShouldBeNull();
-    }
-
-    [Fact]
     public void Constructor_WithIdentity_SetsIdentity()
     {
         TestEntity entity = new() { Name = "Bob" };

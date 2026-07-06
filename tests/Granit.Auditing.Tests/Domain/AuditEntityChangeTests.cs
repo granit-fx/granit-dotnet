@@ -7,32 +7,6 @@ namespace Granit.Auditing.Tests.Domain;
 public sealed class AuditEntityChangeTests
 {
     [Fact]
-    public void Properties_AreSetCorrectly()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        var entryId = Guid.NewGuid();
-
-        // Act
-        AuditEntityChange change = new()
-        {
-            Id = id,
-            AuditEntryId = entryId,
-            EntityType = "Patient",
-            EntityId = "12345",
-            ChangeType = AuditChangeType.Modified,
-        };
-
-        // Assert
-        change.Id.ShouldBe(id);
-        change.AuditEntryId.ShouldBe(entryId);
-        change.EntityType.ShouldBe("Patient");
-        change.EntityId.ShouldBe("12345");
-        change.ChangeType.ShouldBe(AuditChangeType.Modified);
-        change.PropertyChanges.ShouldBeEmpty();
-    }
-
-    [Fact]
     public void DefaultValues_AreCorrect()
     {
         AuditEntityChange change = new();

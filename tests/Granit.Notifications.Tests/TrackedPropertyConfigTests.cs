@@ -13,17 +13,6 @@ namespace Granit.Notifications.Tests;
 public sealed class TrackedPropertyConfigTests
 {
     [Fact]
-    public void NotificationTypeName_IsSet()
-    {
-        TrackedPropertyConfig config = new()
-        {
-            NotificationTypeName = "patient.status.changed",
-        };
-
-        config.NotificationTypeName.ShouldBe("patient.status.changed");
-    }
-
-    [Fact]
     public void Severity_DefaultIsInfo()
     {
         TrackedPropertyConfig config = new()

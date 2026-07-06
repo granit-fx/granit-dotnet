@@ -6,36 +6,10 @@ namespace Granit.Identity.EntityFrameworkCore.Tests;
 public sealed class GranitIdentityDbPropertiesTests
 {
     [Fact]
-    public void DbTablePrefix_DefaultsToIdentityUnderscore()
-    {
-        string original = GranitIdentityDbProperties.DbTablePrefix;
-        try
-        {
-            GranitIdentityDbProperties.DbTablePrefix = "identity_";
-
-            GranitIdentityDbProperties.DbTablePrefix.ShouldBe("identity_");
-        }
-        finally
-        {
-            GranitIdentityDbProperties.DbTablePrefix = original;
-        }
-    }
-
-    [Fact]
-    public void DbTablePrefix_IsSettable()
-    {
-        string original = GranitIdentityDbProperties.DbTablePrefix;
-        try
-        {
-            GranitIdentityDbProperties.DbTablePrefix = "custom_";
-
-            GranitIdentityDbProperties.DbTablePrefix.ShouldBe("custom_");
-        }
-        finally
-        {
-            GranitIdentityDbProperties.DbTablePrefix = original;
-        }
-    }
+    public void DbTablePrefix_DefaultsToIdentityUnderscore() =>
+        // Assert the framework's chosen default WITHOUT assigning it first (no test in this
+        // assembly mutates DbTablePrefix, so the initializer value is observable here).
+        GranitIdentityDbProperties.DbTablePrefix.ShouldBe("identity_");
 
     [Fact]
     public void DbSchema_ExplicitSet_TakesPriority()

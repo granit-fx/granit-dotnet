@@ -18,17 +18,4 @@ public sealed class MultiTenancyEndpointsOptionsTests
         options.RoutePrefix.ShouldBe("multi-tenancy");
         options.TagName.ShouldBe("Multi-Tenancy - Tenants");
     }
-
-    [Fact]
-    public void AllProperties_CanBeSet()
-    {
-        MultiTenancyEndpointsOptions options = new()
-        {
-            RoutePrefix = "custom-tenants",
-            TagName = "Custom Tag",
-        };
-
-        options.RoutePrefix.ShouldBe("custom-tenants");
-        options.TagName.ShouldBe("Custom Tag");
-    }
 }

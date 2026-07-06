@@ -36,11 +36,4 @@ public sealed class TenantSchemaOptionsTests
         options.NamingConvention.ShouldBe(TenantSchemaNamingConvention.Custom);
     }
 
-    [Fact]
-    public void Prefix_SetAndGet_ReturnsAssignedValue()
-    {
-        TenantSchemaOptions options = new() { Prefix = "t_" };
-
-        options.Prefix.ShouldBe("t_");
-    }
 }

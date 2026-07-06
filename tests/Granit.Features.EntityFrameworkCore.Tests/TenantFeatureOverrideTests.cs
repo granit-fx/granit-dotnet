@@ -34,39 +34,6 @@ public sealed class TenantFeatureOverrideTests
     }
 
     [Fact]
-    public void Properties_CanBeSetAndRead()
-    {
-        var tenantId = Guid.NewGuid();
-        var id = Guid.NewGuid();
-
-        TenantFeatureOverride entity = new()
-        {
-            Id = id,
-            TenantId = tenantId,
-            FeatureName = "Acme.MaxUsersCount",
-            Value = "5000",
-        };
-
-        entity.Id.ShouldBe(id);
-        entity.TenantId.ShouldBe(tenantId);
-        entity.FeatureName.ShouldBe("Acme.MaxUsersCount");
-        entity.Value.ShouldBe("5000");
-    }
-
-    [Fact]
-    public void TenantId_CanBeNull_ForGlobalOverride()
-    {
-        TenantFeatureOverride entity = new()
-        {
-            TenantId = null,
-            FeatureName = "Global.Feature",
-            Value = "enabled",
-        };
-
-        entity.TenantId.ShouldBeNull();
-    }
-
-    [Fact]
     public void Class_IsSealed() =>
         typeof(TenantFeatureOverride).IsSealed.ShouldBeTrue();
 

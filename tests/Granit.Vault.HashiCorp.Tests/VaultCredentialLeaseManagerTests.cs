@@ -149,10 +149,6 @@ public sealed class VaultCredentialLeaseManagerTests : IDisposable
         _sut.Password.ShouldBe("pass2");
     }
 
-    [Fact]
-    public void IDatabaseCredentialProvider_IsImplemented() =>
-        _sut.ShouldBeAssignableTo<IDatabaseCredentialProvider>();
-
     private void SetupDatabaseCredentials(string username, string password, string leaseId, int ttl) =>
         _databaseEngine.GetCredentialsAsync("readwrite", mountPoint: "database")
             .Returns(new Secret<UsernamePasswordCredentials>

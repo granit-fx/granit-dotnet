@@ -37,20 +37,4 @@ public sealed class TimelineAIOptionsTests
         options.AnomalyDetectorMaxEntries.ShouldBe(500);
     }
 
-    [Fact]
-    public void Properties_AreMutable()
-    {
-        TimelineAIOptions options = new()
-        {
-            WorkspaceName = "custom-workspace",
-            TimeoutSeconds = 30,
-            SummarizerMaxEntries = 50,
-            AnomalyDetectorMaxEntries = 1000,
-        };
-
-        options.WorkspaceName.ShouldBe("custom-workspace");
-        options.TimeoutSeconds.ShouldBe(30);
-        options.SummarizerMaxEntries.ShouldBe(50);
-        options.AnomalyDetectorMaxEntries.ShouldBe(1000);
-    }
 }

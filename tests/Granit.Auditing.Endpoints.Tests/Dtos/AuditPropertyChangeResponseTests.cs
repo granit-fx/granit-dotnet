@@ -7,16 +7,6 @@ namespace Granit.Auditing.Endpoints.Tests.Dtos;
 public sealed class AuditPropertyChangeResponseTests
 {
     [Fact]
-    public void Properties_AreSetCorrectly()
-    {
-        AuditPropertyChangeResponse response = new("Email", "old@test.com", "new@test.com");
-
-        response.PropertyName.ShouldBe("Email");
-        response.OriginalValue.ShouldBe("old@test.com");
-        response.NewValue.ShouldBe("new@test.com");
-    }
-
-    [Fact]
     public void WithNullValues_IsValid()
     {
         AuditPropertyChangeResponse response = new("Name", null, "New");

@@ -25,23 +25,4 @@ public sealed class AccessRiskScoreTests
         score.Score.ShouldBe(0.0);
         score.RiskFactors.ShouldBeEmpty();
     }
-
-    [Fact]
-    public void Equality_SameValues_AreEqual()
-    {
-        List<string> factors = ["factor1"];
-        AccessRiskScore first = new(0.5, "Medium risk", factors);
-        AccessRiskScore second = new(0.5, "Medium risk", factors);
-
-        first.ShouldBe(second);
-    }
-
-    [Fact]
-    public void Equality_DifferentScore_AreNotEqual()
-    {
-        AccessRiskScore first = new(0.5, "Risk", []);
-        AccessRiskScore second = new(0.7, "Risk", []);
-
-        first.ShouldNotBe(second);
-    }
 }

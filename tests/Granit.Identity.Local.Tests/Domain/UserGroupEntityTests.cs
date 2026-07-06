@@ -26,22 +26,6 @@ public sealed class UserGroupEntityTests
     }
 
     [Fact]
-    public void GranitUserGroup_Property_Setters()
-    {
-        var tenantId = Guid.NewGuid();
-        GranitUserGroup group = new()
-        {
-            Name = "Developers",
-            Description = "Development team",
-            TenantId = tenantId,
-        };
-
-        group.Name.ShouldBe("Developers");
-        group.Description.ShouldBe("Development team");
-        group.TenantId.ShouldBe(tenantId);
-    }
-
-    [Fact]
     public void GranitUserGroupMember_Default_Values()
     {
         GranitUserGroupMember member = new();

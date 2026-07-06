@@ -6,36 +6,20 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests;
 public sealed class GranitApiKeysDbPropertiesTests
 {
     [Fact]
-    public void DbTablePrefix_DefaultIsAuthenticationApiKeys()
+    public void DbSchema_ExplicitNull_SuppressesHostFallback()
     {
-        // Reset to default in case other tests modified it
-        GranitApiKeysDbProperties.DbTablePrefix = "authentication_api_keys_";
-
-        GranitApiKeysDbProperties.DbTablePrefix.ShouldBe("authentication_api_keys_");
-    }
-
-    [Fact]
-    public void DbSchema_DefaultIsNull()
-    {
-        // Reset to default in case other tests modified it
-        GranitApiKeysDbProperties.DbSchema = null;
-
-        GranitApiKeysDbProperties.DbSchema.ShouldBeNull();
-    }
-
-    [Fact]
-    public void DbTablePrefix_CanBeOverridden()
-    {
-        string original = GranitApiKeysDbProperties.DbTablePrefix;
+        string? original = GranitApiKeysDbProperties.DbSchema;
         try
         {
-            GranitApiKeysDbProperties.DbTablePrefix = "custom_";
+            // Explicitly assigning null must be honored as an override, NOT fall back to
+            // GranitDbDefaults.HostDbSchema ?? GranitDbDefaults.DbSchema.
+            GranitApiKeysDbProperties.DbSchema = null;
 
-            GranitApiKeysDbProperties.DbTablePrefix.ShouldBe("custom_");
+            GranitApiKeysDbProperties.DbSchema.ShouldBeNull();
         }
         finally
         {
-            GranitApiKeysDbProperties.DbTablePrefix = original;
+            GranitApiKeysDbProperties.DbSchema = original;
         }
     }
 

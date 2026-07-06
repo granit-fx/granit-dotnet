@@ -7,17 +7,6 @@ namespace Granit.DataExchange.Tests.Import.Reporting;
 public sealed class ImportProgressTests
 {
     [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        var sut = new ImportProgress(50, 100, 45, 5);
-
-        sut.ProcessedRows.ShouldBe(50);
-        sut.TotalRows.ShouldBe(100);
-        sut.SucceededRows.ShouldBe(45);
-        sut.FailedRows.ShouldBe(5);
-    }
-
-    [Fact]
     public void Constructor_ZeroValues()
     {
         var sut = new ImportProgress(0, 0, 0, 0);

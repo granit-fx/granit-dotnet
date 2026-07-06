@@ -24,17 +24,4 @@ public sealed class IdentityEndpointsOptionsTests
 
         options.TagName.ShouldBe("Identity - User Cache");
     }
-
-    [Fact]
-    public void Properties_AreSettable()
-    {
-        IdentityEndpointsOptions options = new()
-        {
-            RoutePrefix = "custom/prefix",
-            TagName = "Custom Tag",
-        };
-
-        options.RoutePrefix.ShouldBe("custom/prefix");
-        options.TagName.ShouldBe("Custom Tag");
-    }
 }

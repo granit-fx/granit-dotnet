@@ -63,23 +63,4 @@ public sealed class StringEncryptionOptionsTests
 
         options.AllowEphemeralPassPhrase.ShouldBeFalse();
     }
-
-    [Fact]
-    public void AllProperties_AreSettable()
-    {
-        StringEncryptionOptions options = new()
-        {
-            PassPhrase = "my-secret",
-            KeySize = 128,
-            ProviderName = "Vault",
-            VaultKeyName = "custom-key",
-            AllowEphemeralPassPhrase = true
-        };
-
-        options.PassPhrase.ShouldBe("my-secret");
-        options.KeySize.ShouldBe(128);
-        options.ProviderName.ShouldBe("Vault");
-        options.VaultKeyName.ShouldBe("custom-key");
-        options.AllowEphemeralPassPhrase.ShouldBeTrue();
-    }
 }

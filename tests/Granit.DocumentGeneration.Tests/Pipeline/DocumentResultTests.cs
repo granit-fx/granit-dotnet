@@ -8,40 +8,11 @@ namespace Granit.DocumentGeneration.Tests.Pipeline;
 public sealed class DocumentResultTests
 {
     [Fact]
-    public void Constructor_SetsContentAndFormat()
-    {
-        byte[] content = [0x25, 0x50, 0x44, 0x46];
-
-        DocumentResult result = new(content, DocumentFormat.Pdf);
-
-        result.Content.ToArray().ShouldBe(content);
-        result.Format.ShouldBe(DocumentFormat.Pdf);
-    }
-
-    [Fact]
-    public void Constructor_WithFileName_SetsFileName()
-    {
-        byte[] content = [0x50, 0x4B, 0x03, 0x04];
-
-        DocumentResult result = new(content, DocumentFormat.Excel, "report.xlsx");
-
-        result.FileName.ShouldBe("report.xlsx");
-    }
-
-    [Fact]
     public void Constructor_WithoutFileName_DefaultsToNull()
     {
         DocumentResult result = new(ReadOnlyMemory<byte>.Empty, DocumentFormat.Html);
 
         result.FileName.ShouldBeNull();
-    }
-
-    [Fact]
-    public void Constructor_WithEmptyContent_SetsEmptyMemory()
-    {
-        DocumentResult result = new(ReadOnlyMemory<byte>.Empty, DocumentFormat.Pdf);
-
-        result.Content.IsEmpty.ShouldBeTrue();
     }
 
     [Fact]

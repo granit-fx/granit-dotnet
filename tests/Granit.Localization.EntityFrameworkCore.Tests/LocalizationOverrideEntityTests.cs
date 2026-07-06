@@ -19,27 +19,6 @@ public sealed class LocalizationOverrideEntityTests
     }
 
     [Fact]
-    public void Properties_CanBeSet()
-    {
-        var tenantId = Guid.NewGuid();
-
-        LocalizationOverride entity = new()
-        {
-            ResourceName = "TestApp",
-            CultureName = "fr",
-            Key = "Hello",
-            Value = "Bonjour",
-            TenantId = tenantId,
-        };
-
-        entity.ResourceName.ShouldBe("TestApp");
-        entity.CultureName.ShouldBe("fr");
-        entity.Key.ShouldBe("Hello");
-        entity.Value.ShouldBe("Bonjour");
-        entity.TenantId.ShouldBe(tenantId);
-    }
-
-    [Fact]
     public void ImplementsIMultiTenant()
     {
         LocalizationOverride entity = new();
@@ -61,26 +40,5 @@ public sealed class LocalizationOverrideEntityTests
         LocalizationOverride entity = new();
 
         entity.ShouldBeAssignableTo<Granit.Domain.AuditedEntity>();
-    }
-
-    [Fact]
-    public void AuditFields_CanBeSet()
-    {
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-
-        LocalizationOverride entity = new()
-        {
-            Id = Guid.NewGuid(),
-            CreatedAt = now,
-            CreatedBy = "admin",
-            ModifiedAt = now,
-            ModifiedBy = "admin",
-        };
-
-        entity.Id.ShouldNotBe(Guid.Empty);
-        entity.CreatedAt.ShouldBe(now);
-        entity.CreatedBy.ShouldBe("admin");
-        entity.ModifiedAt.ShouldBe(now);
-        entity.ModifiedBy.ShouldBe("admin");
     }
 }

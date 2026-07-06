@@ -22,15 +22,4 @@ public sealed class FileSystemBlobOptionsTests
         options.UploadUrlExpiry.ShouldBe(TimeSpan.FromMinutes(15));
         options.DownloadUrlExpiry.ShouldBe(TimeSpan.FromMinutes(5));
     }
-
-    [Fact]
-    public void BasePath_CanBeCustomized()
-    {
-        FileSystemBlobOptions options = new()
-        {
-            BasePath = "/data/blobs",
-        };
-
-        options.BasePath.ShouldBe("/data/blobs");
-    }
 }

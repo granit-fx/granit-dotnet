@@ -151,7 +151,7 @@ public sealed class EfLocalizationOverrideQueryableSourceTests
     }
 
     [Fact]
-    public async Task GetQueryable_ReturnsNoTrackingQueryable()
+    public async Task GetQueryable_ReturnsTheSeededHostOverride()
     {
         // Arrange
         string db = Guid.NewGuid().ToString();
@@ -166,10 +166,9 @@ public sealed class EfLocalizationOverrideQueryableSourceTests
         LocalizationOverride row = await source.GetQueryable()
             .SingleAsync(TestContext.Current.CancellationToken);
 
-        // Assert — projection should not enroll entities in the change tracker (read-only path).
-        row.Value = "mutated";
-        // No SaveChanges call: the source's context is short-lived for the request; this
-        // test simply asserts that mutating the projection does not throw or persist.
-        row.Value.ShouldBe("mutated");
+        // Assert — the source surfaces exactly the seeded override with its key/value intact.
+        row.Key.ShouldBe("host-key");
+        row.Value.ShouldBe("Value-host-key");
+        row.TenantId.ShouldBeNull();
     }
 }

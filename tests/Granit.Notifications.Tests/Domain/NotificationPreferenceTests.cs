@@ -37,36 +37,6 @@ public sealed class NotificationPreferenceTests
     }
 
     [Fact]
-    public void Properties_CanBeSet()
-    {
-        var tenantId = Guid.NewGuid();
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-
-        NotificationPreference preference = new()
-        {
-            UserId = "user-42",
-            NotificationTypeName = "order.created",
-            ChannelName = "Email",
-            IsEnabled = false,
-            TenantId = tenantId,
-            CreatedAt = now,
-            CreatedBy = "user-42",
-            ModifiedAt = now.AddHours(1),
-            ModifiedBy = "user-42",
-        };
-
-        preference.UserId.ShouldBe("user-42");
-        preference.NotificationTypeName.ShouldBe("order.created");
-        preference.ChannelName.ShouldBe("Email");
-        preference.IsEnabled.ShouldBeFalse();
-        preference.TenantId.ShouldBe(tenantId);
-        preference.CreatedAt.ShouldBe(now);
-        preference.CreatedBy.ShouldBe("user-42");
-        preference.ModifiedAt.ShouldBe(now.AddHours(1));
-        preference.ModifiedBy.ShouldBe("user-42");
-    }
-
-    [Fact]
     public void DefaultIsEnabled_IsTrue() =>
         new NotificationPreference().IsEnabled.ShouldBeTrue();
 }

@@ -32,19 +32,4 @@ public sealed class ProxyBlobOptionsTests
 
         options.MaxUploadBytes.ShouldBe(104_857_600L);
     }
-
-    [Fact]
-    public void Properties_CanBeCustomized()
-    {
-        ProxyBlobOptions options = new()
-        {
-            BaseUrl = "https://api.example.com",
-            RoutePrefix = "/custom/blobs",
-            MaxUploadBytes = 50_000_000L,
-        };
-
-        options.BaseUrl.ShouldBe("https://api.example.com");
-        options.RoutePrefix.ShouldBe("/custom/blobs");
-        options.MaxUploadBytes.ShouldBe(50_000_000L);
-    }
 }

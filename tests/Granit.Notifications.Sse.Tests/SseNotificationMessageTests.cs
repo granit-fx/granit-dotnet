@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Shouldly;
 using Xunit;
 
@@ -16,33 +15,5 @@ public sealed class SseNotificationMessageTests
         message.Severity.ShouldBe(NotificationSeverity.Info);
         message.RelatedEntityType.ShouldBeNull();
         message.RelatedEntityId.ShouldBeNull();
-    }
-
-    [Fact]
-    public void Record_SupportsValueEquality()
-    {
-        JsonElement data = JsonSerializer.SerializeToElement(new { key = "value" });
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-        var id = Guid.NewGuid();
-
-        SseNotificationMessage msg1 = new()
-        {
-            NotificationId = id,
-            NotificationTypeName = "test",
-            Severity = NotificationSeverity.Warning,
-            Data = data,
-            OccurredAt = now,
-        };
-
-        SseNotificationMessage msg2 = new()
-        {
-            NotificationId = id,
-            NotificationTypeName = "test",
-            Severity = NotificationSeverity.Warning,
-            Data = data,
-            OccurredAt = now,
-        };
-
-        msg1.ShouldBe(msg2);
     }
 }

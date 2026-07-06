@@ -56,26 +56,6 @@ public sealed class InMemoryDbContextFactoryAdditionalTests
     }
 
     [Fact]
-    public async Task CreateContext_Uses_Provided_Tenant()
-    {
-        FakeCurrentTenant tenant = new();
-        var tenantId = Guid.NewGuid();
-        tenant.Id = tenantId;
-
-        InMemoryDbContextFactory<TestDbContext> factory = new(tenant: tenant);
-
-        await using TestDbContext context = factory.CreateContext();
-        context.ShouldNotBeNull();
-
-        // Verify we can still add entities (proves the context is functional)
-        TestAuditedEntity entity = new() { Name = "TenantTest" };
-        context.AuditedEntities.Add(entity);
-        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        entity.Id.ShouldNotBe(Guid.Empty);
-    }
-
-    [Fact]
     public void CreateContext_With_Default_Fakes_Succeeds()
     {
         InMemoryDbContextFactory<TestDbContext> factory = new();

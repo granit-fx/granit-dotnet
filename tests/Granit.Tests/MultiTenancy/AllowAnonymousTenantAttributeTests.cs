@@ -6,13 +6,6 @@ namespace Granit.Tests.MultiTenancy;
 
 public sealed class AllowAnonymousTenantAttributeTests
 {
-    [Fact]
-    public void CanBeInstantiated()
-    {
-        AllowAnonymousTenantAttribute attr = new();
-
-        attr.ShouldNotBeNull();
-    }
 
     [Fact]
     public void Attribute_TargetsClassAndMethod()

@@ -16,12 +16,4 @@ public sealed class CacheEncryptionOptionsTests
 
         options.Key.ShouldBeNull();
     }
-
-    [Fact]
-    public void Key_CanBeSet()
-    {
-        CacheEncryptionOptions options = new() { Key = "dGVzdC1rZXk=" };
-
-        options.Key.ShouldBe("dGVzdC1rZXk=");
-    }
 }

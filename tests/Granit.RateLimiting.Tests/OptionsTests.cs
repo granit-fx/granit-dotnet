@@ -36,15 +36,11 @@ public sealed class OptionsTests
     }
 
     [Fact]
-    public void Policies_CaseInsensitive()
+    public void Policies_DefaultDictionary_IsCaseInsensitive()
     {
-        var options = new GranitRateLimitingOptions
-        {
-            Policies = new Dictionary<string, RateLimitPolicyOptions>(StringComparer.OrdinalIgnoreCase)
-            {
-                ["Api"] = new() { PermitLimit = 100 },
-            },
-        };
+        // Exercise the SUT's own default Policies dictionary comparer, not a test-created one.
+        var options = new GranitRateLimitingOptions();
+        options.Policies["Api"] = new() { PermitLimit = 100 };
 
         options.Policies.TryGetValue("api", out RateLimitPolicyOptions? policy).ShouldBeTrue();
         policy!.PermitLimit.ShouldBe(100);

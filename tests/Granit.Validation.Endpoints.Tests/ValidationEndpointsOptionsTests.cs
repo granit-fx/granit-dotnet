@@ -22,25 +22,4 @@ public sealed class ValidationEndpointsOptionsTests
         options.TagName.ShouldBe("Validation");
     }
 
-    [Fact]
-    public void RoutePrefix_CanBeChanged()
-    {
-        ValidationEndpointsOptions options = new()
-        {
-            RoutePrefix = "custom-prefix",
-        };
-
-        options.RoutePrefix.ShouldBe("custom-prefix");
-    }
-
-    [Fact]
-    public void TagName_CanBeChanged()
-    {
-        ValidationEndpointsOptions options = new()
-        {
-            TagName = "CustomTag",
-        };
-
-        options.TagName.ShouldBe("CustomTag");
-    }
 }

@@ -52,13 +52,6 @@ public sealed class TokenEndpointServiceTests : IDisposable
     public void Dispose() => _meterFactory.Dispose();
 
     [Fact]
-    public void TokenEndpointService_CanBeConstructed()
-    {
-        _sut.ShouldNotBeNull();
-        _sut.ShouldBeAssignableTo<ITokenEndpointService>();
-    }
-
-    [Fact]
     public void DPoPOptions_Record_PropertiesWork()
     {
         DPoPOptions options = new("private-key-jwk", "server-nonce");

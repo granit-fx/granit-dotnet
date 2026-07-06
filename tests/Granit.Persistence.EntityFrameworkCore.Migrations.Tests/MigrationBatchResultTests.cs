@@ -5,14 +5,6 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Tests;
 
 public sealed class MigrationBatchResultTests
 {
-    [Fact]
-    public void Constructor_SetsAllProperties()
-    {
-        MigrationBatchResult result = new(42, "next-cursor");
-
-        result.ProcessedCount.ShouldBe(42);
-        result.NextCursor.ShouldBe("next-cursor");
-    }
 
     [Fact]
     public void Constructor_NullNextCursor_SignalsCompletion()

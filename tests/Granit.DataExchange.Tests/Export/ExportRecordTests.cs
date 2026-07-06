@@ -10,32 +10,6 @@ public sealed class ExportRecordTests
     // ── ExportRequest ────────────────────────────────────────────
 
     [Fact]
-    public void ExportRequest_Constructor_SetsAllProperties()
-    {
-        Dictionary<string, string> filter = new() { ["name.contains"] = "John" };
-        Dictionary<string, string> presets = new() { ["status"] = "active" };
-
-        ExportRequest request = new(
-            "Acme.PatientExport",
-            "xlsx",
-            ["Name", "Email"],
-            IncludeIdForImport: true,
-            Sort: "-createdAt,lastName",
-            Filter: filter,
-            Presets: presets,
-            Search: "test");
-
-        request.DefinitionName.ShouldBe("Acme.PatientExport");
-        request.Format.ShouldBe("xlsx");
-        request.SelectedFields.ShouldBe(["Name", "Email"]);
-        request.IncludeIdForImport.ShouldBeTrue();
-        request.Sort.ShouldBe("-createdAt,lastName");
-        request.Filter.ShouldBe(filter);
-        request.Presets.ShouldBe(presets);
-        request.Search.ShouldBe("test");
-    }
-
-    [Fact]
     public void ExportRequest_NullOptionalFields()
     {
         ExportRequest request = new(

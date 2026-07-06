@@ -33,18 +33,4 @@ public sealed class WorkflowAIOptionsTests
         options.AutoApprovalThreshold.ShouldBe(0.3);
     }
 
-    [Fact]
-    public void Properties_AreMutable()
-    {
-        WorkflowAIOptions options = new()
-        {
-            WorkspaceName = "custom",
-            TimeoutSeconds = 30,
-            AutoApprovalThreshold = 0.5,
-        };
-
-        options.WorkspaceName.ShouldBe("custom");
-        options.TimeoutSeconds.ShouldBe(30);
-        options.AutoApprovalThreshold.ShouldBe(0.5);
-    }
 }

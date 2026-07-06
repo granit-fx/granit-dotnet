@@ -7,14 +7,6 @@ namespace Granit.Http.Bulkhead.Tests;
 public sealed class BulkheadAttributeTests
 {
     [Fact]
-    public void PolicyName_ReturnsConstructorValue()
-    {
-        BulkheadAttribute attribute = new("import");
-
-        attribute.PolicyName.ShouldBe("import");
-    }
-
-    [Fact]
     public void AttributeUsage_AllowsClassAndStruct()
     {
         var usage = (AttributeUsageAttribute?)Attribute.GetCustomAttribute(

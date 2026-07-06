@@ -27,16 +27,6 @@ public sealed class GranitWorkflowDbPropertiesTests : IDisposable
         GranitWorkflowDbProperties.DbSchema.ShouldBeNull();
 
     [Fact]
-    public void DbTablePrefix_CanBeChanged()
-    {
-        // Act
-        GranitWorkflowDbProperties.DbTablePrefix = "wf_";
-
-        // Assert
-        GranitWorkflowDbProperties.DbTablePrefix.ShouldBe("wf_");
-    }
-
-    [Fact]
     public void DbSchema_CanBeChanged()
     {
         // Act

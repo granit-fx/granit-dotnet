@@ -6,15 +6,16 @@ namespace Granit.Privacy.Regulations.Tests;
 public sealed class LegalBasisTests
 {
     [Fact]
-    public void GdprBases_HasSixBases()
+    public void GdprBases_ExposeCanonicalArticle6Codes()
     {
-        LegalBasis[] gdprBases =
-        [
-            LegalBasis.Consent, LegalBasis.Contract, LegalBasis.LegalObligation,
-            LegalBasis.VitalInterest, LegalBasis.PublicInterest, LegalBasis.LegitimateInterest,
-        ];
-
-        gdprBases.Length.ShouldBe(6);
+        // Pins the six GDPR Art. 6(1) lawful-basis codes exposed by the SUT — these strings are
+        // a compliance contract (persisted + surfaced in DSR exports), so drift must break here.
+        LegalBasis.Consent.Value.ShouldBe("CONSENT");
+        LegalBasis.Contract.Value.ShouldBe("CONTRACT");
+        LegalBasis.LegalObligation.Value.ShouldBe("LEGAL_OBLIGATION");
+        LegalBasis.VitalInterest.Value.ShouldBe("VITAL_INTEREST");
+        LegalBasis.PublicInterest.Value.ShouldBe("PUBLIC_INTEREST");
+        LegalBasis.LegitimateInterest.Value.ShouldBe("LEGITIMATE_INTEREST");
     }
 
     [Fact]

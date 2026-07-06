@@ -9,17 +9,6 @@ public sealed class IdentityDtoTests
     // ──── IdentityWebhookPayload ────
 
     [Fact]
-    public void IdentityWebhookPayload_SetsAllProperties()
-    {
-        DateTimeOffset timestamp = DateTimeOffset.UtcNow;
-        var payload = new IdentityWebhookPayload("user_updated", "user-1", timestamp);
-
-        payload.EventType.ShouldBe("user_updated");
-        payload.UserId.ShouldBe("user-1");
-        payload.Timestamp.ShouldBe(timestamp);
-    }
-
-    [Fact]
     public void IdentityWebhookPayload_TimestampDefaultsToNull()
     {
         var payload = new IdentityWebhookPayload("user_deleted", "user-1");

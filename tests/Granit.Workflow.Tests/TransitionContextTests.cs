@@ -19,16 +19,6 @@ public sealed class TransitionContextTests
     }
 
     [Fact]
-    public void Comment_CanBeSet()
-    {
-        // Arrange & Act
-        TransitionContext context = new() { Comment = "Regulatory justification" };
-
-        // Assert
-        context.Comment.ShouldBe("Regulatory justification");
-    }
-
-    [Fact]
     public void Record_ShouldSupportValueEquality()
     {
         // Arrange

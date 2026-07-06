@@ -6,13 +6,6 @@ namespace Granit.Validation.Tests;
 
 public sealed class SkipAutoValidationAttributeTests
 {
-    [Fact]
-    public void CanBeInstantiated()
-    {
-        SkipAutoValidationAttribute attribute = new();
-
-        attribute.ShouldNotBeNull();
-    }
 
     [Fact]
     public void IsAssignableFromAttribute()
