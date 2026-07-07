@@ -1,7 +1,7 @@
 using Granit.AI.Endpoints.Endpoints;
 using Granit.AI.Endpoints.Options;
 using Granit.AI.Endpoints.Permissions;
-using Granit.QueryEngine.AspNetCore.Extensions;
+using Granit.QueryEngine.Endpoints.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

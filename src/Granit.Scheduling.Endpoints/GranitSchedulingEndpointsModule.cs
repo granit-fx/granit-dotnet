@@ -1,7 +1,7 @@
 using Granit.Authorization;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
-using Granit.QueryEngine.AspNetCore;
+using Granit.QueryEngine.Endpoints;
 using Granit.Scheduling.Endpoints.Internal;
 using Granit.Scheduling.Endpoints.Workspaces;
 using Granit.Validation;
@@ -21,7 +21,7 @@ namespace Granit.Scheduling.Endpoints;
 /// </remarks>
 [DependsOn(
     typeof(GranitAuthorizationModule),
-    typeof(GranitQueryEngineAspNetCoreModule),
+    typeof(GranitQueryEngineEndpointsModule),
     typeof(GranitSchedulingModule),
     typeof(GranitValidationModule),
     typeof(GranitWorkspacesAbstractionsModule))]

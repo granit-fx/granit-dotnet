@@ -97,7 +97,7 @@
       "src/Granit.Privacy.BlobStorage/Granit.Privacy.BlobStorage.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
-      "src/Granit.QueryEngine.AspNetCore/Granit.QueryEngine.AspNetCore.csproj",
+      "src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj",
       "src/Granit.QueryEngine.EntityFrameworkCore/Granit.QueryEngine.EntityFrameworkCore.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",
       "src/Granit.Templating/Granit.Templating.csproj",

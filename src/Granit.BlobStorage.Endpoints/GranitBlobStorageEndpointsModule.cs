@@ -4,7 +4,7 @@ using Granit.BlobStorage.Endpoints.Workspaces;
 using Granit.Http.RateLimiting;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
-using Granit.QueryEngine.AspNetCore;
+using Granit.QueryEngine.Endpoints;
 using Granit.Validation;
 using Granit.Workspaces;
 using Granit.Workspaces.Extensions;
@@ -18,7 +18,7 @@ namespace Granit.BlobStorage.Endpoints;
     typeof(GranitAuthorizationModule),
     typeof(GranitBlobStorageModule),
     typeof(GranitHttpRateLimitingModule),
-    typeof(GranitQueryEngineAspNetCoreModule),
+    typeof(GranitQueryEngineEndpointsModule),
     typeof(GranitValidationModule),
     typeof(GranitWorkspacesAbstractionsModule))]
 public sealed class GranitBlobStorageEndpointsModule : GranitModule

@@ -1,4 +1,4 @@
-using Granit.QueryEngine.AspNetCore.Extensions;
+using Granit.QueryEngine.Endpoints.Extensions;
 using Granit.Scheduling.Domain;
 using Granit.Scheduling.Endpoints.Endpoints;
 using Granit.Scheduling.Endpoints.Options;

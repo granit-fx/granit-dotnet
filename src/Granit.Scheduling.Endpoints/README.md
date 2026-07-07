@@ -14,7 +14,7 @@ dotnet add package Granit.Scheduling.Endpoints
 
 - `Granit.Authorization`
 - `Granit.Scheduling`
-- `Granit.QueryEngine.AspNetCore`
+- `Granit.QueryEngine.Endpoints`
 - `Granit.Validation`
 
 ## Documentation

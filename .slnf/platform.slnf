@@ -155,7 +155,7 @@
       "src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
-      "src/Granit.QueryEngine.AspNetCore/Granit.QueryEngine.AspNetCore.csproj",
+      "src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj",
       "src/Granit.QueryEngine.EntityFrameworkCore/Granit.QueryEngine.EntityFrameworkCore.csproj",
       "src/Granit.RateLimiting.Wolverine/Granit.RateLimiting.Wolverine.csproj",
       "src/Granit.RateLimiting/Granit.RateLimiting.csproj",

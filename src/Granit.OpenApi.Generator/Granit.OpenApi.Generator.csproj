@@ -28,9 +28,9 @@
          AND GeneratorEndpoints.All (slug + route mapping) — those drive generation, not the glob. -->
     <ProjectReference Include="..\Granit.*.Endpoints\Granit.*.Endpoints.csproj" />
     <!-- The query-engine exposes its HTTP surface (the GET /catalog query catalogue) from
-         Granit.QueryEngine.AspNetCore, not a *.Endpoints package, so the wildcard above does
+         Granit.QueryEngine.Endpoints, not a *.Endpoints package, so the wildcard above does
          not cover it. Reference it explicitly to publish a 'query-engine' contract document. -->
-    <ProjectReference Include="..\Granit.QueryEngine.AspNetCore\Granit.QueryEngine.AspNetCore.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Endpoints\Granit.QueryEngine.Endpoints.csproj" />
   </ItemGroup>
 
 </Project>

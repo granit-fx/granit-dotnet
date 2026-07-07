@@ -2,7 +2,7 @@ using Granit.Localization.Domain;
 using Granit.Localization.Endpoints.Endpoints;
 using Granit.Localization.Endpoints.Options;
 using Granit.Localization.Endpoints.Permissions;
-using Granit.QueryEngine.AspNetCore.Extensions;
+using Granit.QueryEngine.Endpoints.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

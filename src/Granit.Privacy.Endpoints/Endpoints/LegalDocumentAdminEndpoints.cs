@@ -3,7 +3,7 @@ using Granit.Privacy.Endpoints.Dtos;
 using Granit.Privacy.Endpoints.Permissions;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Domain;
-using Granit.QueryEngine.AspNetCore.Extensions;
+using Granit.QueryEngine.Endpoints.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

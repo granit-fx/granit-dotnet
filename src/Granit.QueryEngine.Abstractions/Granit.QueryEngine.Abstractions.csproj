@@ -10,8 +10,8 @@
     <InternalsVisibleTo Include="Granit.QueryEngine.Abstractions.Tests" />
     <InternalsVisibleTo Include="Granit.QueryEngine.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.QueryEngine.EntityFrameworkCore.Tests" />
-    <InternalsVisibleTo Include="Granit.QueryEngine.AspNetCore" />
-    <InternalsVisibleTo Include="Granit.QueryEngine.AspNetCore.Tests" />
+    <InternalsVisibleTo Include="Granit.QueryEngine.Endpoints" />
+    <InternalsVisibleTo Include="Granit.QueryEngine.Endpoints.Tests" />
     <InternalsVisibleTo Include="Granit.DataExchange" />
     <InternalsVisibleTo Include="Granit.DataExchange.Tests" />
     <InternalsVisibleTo Include="Granit.DataExchange.Abstractions" />

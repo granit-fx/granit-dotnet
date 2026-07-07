@@ -3,7 +3,7 @@ using Granit.AI.Endpoints.Workspaces;
 using Granit.Authorization;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
-using Granit.QueryEngine.AspNetCore;
+using Granit.QueryEngine.Endpoints;
 using Granit.Workspaces;
 using Granit.Workspaces.Extensions;
 
@@ -15,7 +15,7 @@ namespace Granit.AI.Endpoints;
 [DependsOn(
     typeof(GranitAIModule),
     typeof(GranitAuthorizationModule),
-    typeof(GranitQueryEngineAspNetCoreModule),
+    typeof(GranitQueryEngineEndpointsModule),
     typeof(GranitWorkspacesAbstractionsModule))]
 public sealed class GranitAIEndpointsModule : GranitModule
 {

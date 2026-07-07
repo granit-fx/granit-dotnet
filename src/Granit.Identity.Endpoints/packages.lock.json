@@ -183,7 +183,7 @@
           "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
         }
       },
-      "granit.queryengine.aspnetcore": {
+      "granit.queryengine.endpoints": {
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",

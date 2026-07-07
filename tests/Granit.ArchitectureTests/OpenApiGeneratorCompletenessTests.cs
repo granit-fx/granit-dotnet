@@ -38,7 +38,7 @@ public sealed partial class OpenApiGeneratorCompletenessTests
     /// wired into the generator explicitly (csproj <c>ProjectReference</c>, <c>GeneratorModule</c>
     /// <c>[DependsOn]</c>, and a <c>GeneratorEndpoints.All</c> entry) — they are counted here so the
     /// registry-completeness assertion stays exact. The query-engine exposes its query catalogue
-    /// (<c>GET /catalog</c>) from <c>Granit.QueryEngine.AspNetCore</c>.
+    /// (<c>GET /catalog</c>) from <c>Granit.QueryEngine.Endpoints</c>.
     /// </summary>
     private static readonly IReadOnlyList<string> NonEndpointsDocumentSlugs = ["query-engine"];
 

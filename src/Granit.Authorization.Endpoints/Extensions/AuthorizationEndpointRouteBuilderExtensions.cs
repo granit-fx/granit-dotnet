@@ -2,7 +2,7 @@ using Granit.Authorization.Domain;
 using Granit.Authorization.Endpoints.Endpoints;
 using Granit.Authorization.Endpoints.Options;
 using Granit.Authorization.Endpoints.Permissions;
-using Granit.QueryEngine.AspNetCore.Extensions;
+using Granit.QueryEngine.Endpoints.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

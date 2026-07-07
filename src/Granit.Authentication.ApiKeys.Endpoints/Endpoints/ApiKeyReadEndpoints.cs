@@ -1,7 +1,7 @@
 using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Authorization.Extensions;
-using Granit.QueryEngine.AspNetCore.Extensions;
+using Granit.QueryEngine.Endpoints.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

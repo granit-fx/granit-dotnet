@@ -303,7 +303,7 @@
     <ProjectReference Include="..\..\src\Granit.Privacy.Vault\Granit.Privacy.Vault.csproj" />
     <ProjectReference Include="..\..\src\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.QueryEngine.AI\Granit.QueryEngine.AI.csproj" />
-    <ProjectReference Include="..\..\src\Granit.QueryEngine.AspNetCore\Granit.QueryEngine.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.QueryEngine.Endpoints\Granit.QueryEngine.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.QueryEngine.EntityFrameworkCore\Granit.QueryEngine.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.RateLimiting\Granit.RateLimiting.csproj" />
     <ProjectReference Include="..\..\src\Granit.RateLimiting.Wolverine\Granit.RateLimiting.Wolverine.csproj" />

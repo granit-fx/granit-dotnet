@@ -1,4 +1,4 @@
-using Granit.QueryEngine.AspNetCore.Extensions;
+using Granit.QueryEngine.Endpoints.Extensions;
 using Granit.Templating.Endpoints.Endpoints;
 using Granit.Templating.Endpoints.Options;
 using Granit.Validation.AspNetCore;

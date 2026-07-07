@@ -2,7 +2,7 @@ using Granit.Auditing.Domain;
 using Granit.Auditing.Endpoints.Endpoints;
 using Granit.Auditing.Endpoints.Options;
 using Granit.Auditing.Endpoints.Permissions;
-using Granit.QueryEngine.AspNetCore.Extensions;
+using Granit.QueryEngine.Endpoints.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

@@ -100,7 +100,7 @@
       "deps": [
         "Granit.AI",
         "Granit.Authorization",
-        "Granit.QueryEngine.AspNetCore",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -274,7 +274,7 @@
         "Granit.Auditing",
         "Granit.Authorization",
         "Granit.Http.ApiDocumentation",
-        "Granit.QueryEngine.AspNetCore",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -344,7 +344,7 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.QueryEngine.Abstractions",
-        "Granit.QueryEngine.AspNetCore",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Timing",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
@@ -496,7 +496,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.Http.ApiDocumentation",
-        "Granit.QueryEngine.AspNetCore",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -668,7 +668,7 @@
         "Granit.BlobStorage",
         "Granit.Http.Abstractions",
         "Granit.Http.RateLimiting",
-        "Granit.QueryEngine.AspNetCore",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -1354,7 +1354,7 @@
         "Granit.Identity",
         "Granit.IpGeolocation",
         "Granit.QueryEngine.Abstractions",
-        "Granit.QueryEngine.AspNetCore",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Identity.Abstractions",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
@@ -1706,7 +1706,7 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.Localization",
-        "Granit.QueryEngine.AspNetCore",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -2127,7 +2127,7 @@
       "deps": [
         "Granit.OpenApi.Generation",
         "Granit.*.Endpoints",
-        "Granit.QueryEngine.AspNetCore"
+        "Granit.QueryEngine.Endpoints"
       ],
       "framework": "net10.0"
     },
@@ -2353,7 +2353,7 @@
         "Granit.Http.RateLimiting",
         "Granit.Privacy",
         "Granit.Privacy.Regulations",
-        "Granit.QueryEngine.AspNetCore",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -2423,7 +2423,7 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.QueryEngine.AspNetCore",
+      "name": "Granit.QueryEngine.Endpoints",
       "deps": [
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
@@ -2482,7 +2482,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.Scheduling",
-        "Granit.QueryEngine.AspNetCore",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -2571,7 +2571,7 @@
       "deps": [
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
-        "Granit.QueryEngine.AspNetCore",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Templating",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
@@ -2878,7 +2878,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.Http.Abstractions",
-        "Granit.QueryEngine.AspNetCore",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Validation",
         "Granit.Webhooks",
         "Granit.Workspaces.Abstractions"
@@ -48612,116 +48612,6 @@
       "members": []
     },
     {
-      "name": "QueryRequestBinder",
-      "fqn": "Granit.QueryEngine.AspNetCore.Binding.QueryRequestBinder",
-      "kind": "class",
-      "project": "Granit.QueryEngine.AspNetCore",
-      "file": "src/Granit.QueryEngine.AspNetCore/Binding/QueryRequestBinder.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "BindAsync",
-          "kind": "method",
-          "signature": "BindAsync(HttpContext context, ParameterInfo parameter)",
-          "returnType": "ValueTask<QueryRequest?>"
-        }
-      ]
-    },
-    {
-      "name": "BindableQueryRequest",
-      "fqn": "Granit.QueryEngine.AspNetCore.Dtos.BindableQueryRequest",
-      "kind": "class",
-      "project": "Granit.QueryEngine.AspNetCore",
-      "file": "src/Granit.QueryEngine.AspNetCore/Dtos/BindableQueryRequest.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "BindableQueryRequest",
-          "kind": "method",
-          "signature": "BindableQueryRequest(QueryRequest value)",
-          "returnType": "QueryRequest Value { get; } private"
-        },
-        {
-          "name": "BindAsync",
-          "kind": "method",
-          "signature": "BindAsync(HttpContext context, ParameterInfo parameter)",
-          "returnType": "ValueTask<BindableQueryRequest?>"
-        }
-      ]
-    },
-    {
-      "name": "QueryCatalogEntryResponse",
-      "fqn": "Granit.QueryEngine.AspNetCore.Dtos.QueryCatalogEntryResponse",
-      "kind": "record",
-      "project": "Granit.QueryEngine.AspNetCore",
-      "file": "src/Granit.QueryEngine.AspNetCore/Dtos/QueryCatalogEntryResponse.cs",
-      "line": 31,
-      "members": []
-    },
-    {
-      "name": "QueryCatalogEndpointRouteBuilderExtensions",
-      "fqn": "Granit.QueryEngine.AspNetCore.Extensions.QueryCatalogEndpointRouteBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.QueryEngine.AspNetCore",
-      "file": "src/Granit.QueryEngine.AspNetCore/Extensions/QueryCatalogEndpointRouteBuilderExtensions.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "MapGranitQueryCatalog",
-          "kind": "method",
-          "signature": "MapGranitQueryCatalog(this IEndpointRouteBuilder endpoints, string prefix = \"\")",
-          "returnType": "RouteGroupBuilder"
-        }
-      ]
-    },
-    {
-      "name": "QueryEndpointRouteBuilderExtensions",
-      "fqn": "Granit.QueryEngine.AspNetCore.Extensions.QueryEndpointRouteBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.QueryEngine.AspNetCore",
-      "file": "src/Granit.QueryEngine.AspNetCore/Extensions/QueryEndpointRouteBuilderExtensions.cs",
-      "line": 23,
-      "members": []
-    },
-    {
-      "name": "GranitQueryEngineAspNetCoreModule",
-      "fqn": "Granit.QueryEngine.AspNetCore.GranitQueryEngineAspNetCoreModule",
-      "kind": "class",
-      "project": "Granit.QueryEngine.AspNetCore",
-      "file": "src/Granit.QueryEngine.AspNetCore/GranitQueryEngineAspNetCoreModule.cs",
-      "line": 26,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "QueryEndpointOptions",
-      "fqn": "Granit.QueryEngine.AspNetCore.Options.QueryEndpointOptions",
-      "kind": "class",
-      "project": "Granit.QueryEngine.AspNetCore",
-      "file": "src/Granit.QueryEngine.AspNetCore/Options/QueryEndpointOptions.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "TagName",
-          "kind": "property",
-          "signature": "string? TagName",
-          "returnType": "string?"
-        },
-        {
-          "name": "IncludeListEndpoint",
-          "kind": "property",
-          "signature": "bool IncludeListEndpoint",
-          "returnType": "bool"
-        }
-      ]
-    },
-    {
       "name": "ColumnBuilder",
       "fqn": "Granit.QueryEngine.ColumnBuilder",
       "kind": "class",
@@ -48788,6 +48678,116 @@
       "file": "src/Granit.QueryEngine.Abstractions/Diagnostics/QueryEngineMetrics.cs",
       "line": 10,
       "members": []
+    },
+    {
+      "name": "QueryRequestBinder",
+      "fqn": "Granit.QueryEngine.Endpoints.Binding.QueryRequestBinder",
+      "kind": "class",
+      "project": "Granit.QueryEngine.Endpoints",
+      "file": "src/Granit.QueryEngine.Endpoints/Binding/QueryRequestBinder.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "BindAsync",
+          "kind": "method",
+          "signature": "BindAsync(HttpContext context, ParameterInfo parameter)",
+          "returnType": "ValueTask<QueryRequest?>"
+        }
+      ]
+    },
+    {
+      "name": "BindableQueryRequest",
+      "fqn": "Granit.QueryEngine.Endpoints.Dtos.BindableQueryRequest",
+      "kind": "class",
+      "project": "Granit.QueryEngine.Endpoints",
+      "file": "src/Granit.QueryEngine.Endpoints/Dtos/BindableQueryRequest.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "BindableQueryRequest",
+          "kind": "method",
+          "signature": "BindableQueryRequest(QueryRequest value)",
+          "returnType": "QueryRequest Value { get; } private"
+        },
+        {
+          "name": "BindAsync",
+          "kind": "method",
+          "signature": "BindAsync(HttpContext context, ParameterInfo parameter)",
+          "returnType": "ValueTask<BindableQueryRequest?>"
+        }
+      ]
+    },
+    {
+      "name": "QueryCatalogEntryResponse",
+      "fqn": "Granit.QueryEngine.Endpoints.Dtos.QueryCatalogEntryResponse",
+      "kind": "record",
+      "project": "Granit.QueryEngine.Endpoints",
+      "file": "src/Granit.QueryEngine.Endpoints/Dtos/QueryCatalogEntryResponse.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "QueryCatalogEndpointRouteBuilderExtensions",
+      "fqn": "Granit.QueryEngine.Endpoints.Extensions.QueryCatalogEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.QueryEngine.Endpoints",
+      "file": "src/Granit.QueryEngine.Endpoints/Extensions/QueryCatalogEndpointRouteBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "MapGranitQueryCatalog",
+          "kind": "method",
+          "signature": "MapGranitQueryCatalog(this IEndpointRouteBuilder endpoints, string prefix = \"\")",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "QueryEndpointRouteBuilderExtensions",
+      "fqn": "Granit.QueryEngine.Endpoints.Extensions.QueryEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.QueryEngine.Endpoints",
+      "file": "src/Granit.QueryEngine.Endpoints/Extensions/QueryEndpointRouteBuilderExtensions.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "GranitQueryEngineEndpointsModule",
+      "fqn": "Granit.QueryEngine.Endpoints.GranitQueryEngineEndpointsModule",
+      "kind": "class",
+      "project": "Granit.QueryEngine.Endpoints",
+      "file": "src/Granit.QueryEngine.Endpoints/GranitQueryEngineEndpointsModule.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "QueryEndpointOptions",
+      "fqn": "Granit.QueryEngine.Endpoints.Options.QueryEndpointOptions",
+      "kind": "class",
+      "project": "Granit.QueryEngine.Endpoints",
+      "file": "src/Granit.QueryEngine.Endpoints/Options/QueryEndpointOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string? TagName",
+          "returnType": "string?"
+        },
+        {
+          "name": "IncludeListEndpoint",
+          "kind": "property",
+          "signature": "bool IncludeListEndpoint",
+          "returnType": "bool"
+        }
+      ]
     },
     {
       "name": "GranitQueryEngineEntityFrameworkCoreModule",

@@ -82,7 +82,7 @@
         "tests/Granit.DocumentGeneration.Tests",
         "tests/Granit.Entities.Abstractions.Tests",
         "tests/Granit.QueryEngine.Abstractions.Tests",
-        "tests/Granit.QueryEngine.AspNetCore.Tests",
+        "tests/Granit.QueryEngine.Endpoints.Tests",
         "tests/Granit.QueryEngine.EntityFrameworkCore.Tests",
         "tests/Granit.Templating.Endpoints.Tests",
         "tests/Granit.Templating.EntityFrameworkCore.Tests",
@@ -416,7 +416,7 @@
         "tests/Granit.Identity.Federated.Keycloak.Tests.Integration",
         "tests/Granit.Identity.Local.AspNetIdentity.Tests.Integration",
         "tests/Granit.OpenIddict.Tests.Integration",
-        "tests/Granit.QueryEngine.AspNetCore.Tests.Integration",
+        "tests/Granit.QueryEngine.Endpoints.Tests.Integration",
         "tests/Granit.TextExtraction.Ocr.Tesseract.Tests.Integration",
         "tests/Granit.Wolverine.Postgresql.Tests.Integration",
         "tests/Granit.Wolverine.SqlServer.Tests.Integration"

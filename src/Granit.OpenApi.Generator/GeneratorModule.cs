@@ -12,7 +12,7 @@ namespace Granit.OpenApi.Generator;
 /// <c>src/Granit.*.Endpoints</c> packages — <c>OpenApiGeneratorCompletenessTests</c> fails the
 /// build if a module is added without being wired here. A small number of HTTP surfaces ship
 /// from a non-<c>.Endpoints</c> package (e.g. the query catalogue in
-/// <c>Granit.QueryEngine.AspNetCore</c>); those are wired explicitly and tracked by the same test.
+/// <c>Granit.QueryEngine.Endpoints</c>); those are wired explicitly and tracked by the same test.
 /// </remarks>
 [DependsOn(
     typeof(Granit.AI.Chat.Endpoints.GranitAIChatEndpointsModule),
@@ -42,7 +42,7 @@ namespace Granit.OpenApi.Generator;
     typeof(Granit.OpenIddict.Endpoints.GranitOpenIddictEndpointsModule),
     typeof(Granit.Presence.Endpoints.GranitPresenceEndpointsModule),
     typeof(Granit.Privacy.Endpoints.GranitPrivacyEndpointsModule),
-    typeof(Granit.QueryEngine.AspNetCore.GranitQueryEngineAspNetCoreModule),
+    typeof(Granit.QueryEngine.Endpoints.GranitQueryEngineEndpointsModule),
     typeof(Granit.Scheduling.Endpoints.GranitSchedulingEndpointsModule),
     typeof(Granit.Settings.Endpoints.GranitSettingsEndpointsModule),
     typeof(Granit.Templating.Endpoints.GranitTemplatingEndpointsModule),

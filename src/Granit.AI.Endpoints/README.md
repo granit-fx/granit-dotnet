@@ -30,7 +30,7 @@ Without `MapGranitAI()` the endpoints are never mapped, even with the package re
 
 - `Granit.AI`
 - `Granit.Authorization`
-- `Granit.QueryEngine.AspNetCore`
+- `Granit.QueryEngine.Endpoints`
 - `Granit.Validation`
 
 ## Documentation
