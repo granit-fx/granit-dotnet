@@ -5,6 +5,7 @@
 // value for both single-tenant and per-tenant extension methods.
 // =============================================================================
 
+using Granit.Persistence.EntityFrameworkCore.Hosting;
 using Granit.Wolverine.Extensions;
 using Granit.Wolverine.SqlServer.Extensions;
 using Granit.Wolverine.SqlServer.Options;
@@ -21,19 +22,26 @@ public sealed class AddGranitWolverineWithSqlServerTests
     private const string ValidTransportConnStr =
         "Server=localhost;Database=wolverine_transport;User Id=sa;Password=test;TrustServerCertificate=True";
 
-    private static HostApplicationBuilder CreateBuilder()
+    private static HostApplicationBuilder CreateBuilder(
+        Dictionary<string, string?>? config = null,
+        bool withWolverine = true)
     {
         HostApplicationBuilderSettings settings = new()
         {
             Configuration = new ConfigurationManager(),
         };
-        settings.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        settings.Configuration.AddInMemoryCollection(config ?? new Dictionary<string, string?>
         {
             [$"{WolverineSqlServerOptions.SectionName}:TransportConnectionString"] =
                 ValidTransportConnStr,
         });
         HostApplicationBuilder builder = Host.CreateApplicationBuilder(settings);
-        builder.AddGranitWolverine();
+
+        if (withWolverine)
+        {
+            builder.AddGranitWolverine();
+        }
+
         return builder;
     }
 
@@ -67,6 +75,63 @@ public sealed class AddGranitWolverineWithSqlServerTests
 
         builder.Services.ShouldContain(d =>
             d.ServiceType == typeof(IValidateOptions<WolverineSqlServerOptions>));
+    }
+
+    // -----------------------------------------------------------------------
+    // Connection string name — resolved from ConnectionStrings section (Aspire)
+    // -----------------------------------------------------------------------
+
+    [Fact]
+    public void AddGranitWolverineWithSqlServer_WithConnectionStringName_DoesNotThrow()
+    {
+        HostApplicationBuilder builder = CreateBuilder(new Dictionary<string, string?>
+        {
+            [$"{WolverineSqlServerOptions.SectionName}:TransportConnectionStringName"] = "catalog-db",
+            ["ConnectionStrings:catalog-db"] = ValidTransportConnStr,
+        });
+
+        Action act = () => builder.AddGranitWolverineWithSqlServer();
+
+        Should.NotThrow(act);
+    }
+
+    // -----------------------------------------------------------------------
+    // Missing connection string name — throws
+    // -----------------------------------------------------------------------
+
+    [Fact]
+    public void AddGranitWolverineWithSqlServer_WithMissingConnectionStringName_ThrowsInvalidOperationException()
+    {
+        // Throws before WolverineOptionsHolder lookup, so AddGranitWolverine() is not needed.
+        HostApplicationBuilder builder = CreateBuilder(
+            config: new Dictionary<string, string?>
+            {
+                [$"{WolverineSqlServerOptions.SectionName}:TransportConnectionStringName"] = "non-existent-db",
+            },
+            withWolverine: false);
+
+        Action act = () => builder.AddGranitWolverineWithSqlServer();
+
+        InvalidOperationException exception = Should.Throw<InvalidOperationException>(act);
+        exception.Message.ShouldContain("non-existent-db");
+    }
+
+    // -----------------------------------------------------------------------
+    // Migrate pipeline — no auto-DDL at boot, migrator registered instead
+    // -----------------------------------------------------------------------
+
+    [Fact]
+    public void AddGranitWolverineWithSqlServer_RegistersWolverineStoreMigrator()
+    {
+        // Table creation must go through --migrate mode (IExternalStoreMigrator),
+        // never through startup auto-provisioning: concurrent DDL between replicas
+        // during a rolling update, and the runtime DB user must not need DDL grants.
+        HostApplicationBuilder builder = CreateBuilder();
+
+        builder.AddGranitWolverineWithSqlServer();
+
+        builder.Services.ShouldContain(d =>
+            d.ServiceType == typeof(IExternalStoreMigrator));
     }
 
     // -----------------------------------------------------------------------

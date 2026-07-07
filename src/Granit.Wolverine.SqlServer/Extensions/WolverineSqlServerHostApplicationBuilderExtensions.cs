@@ -1,8 +1,11 @@
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Hosting;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Granit.Wolverine.Internal;
 using Granit.Wolverine.SqlServer.Internal;
 using Granit.Wolverine.SqlServer.Options;
+using JasperFx;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -99,7 +102,7 @@ public static class WolverineSqlServerHostApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Shared core setup: options binding, connection string validation, and SQL Server Wolverine configuration.
+    /// Shared core setup: options binding, connection string resolution, and SQL Server Wolverine configuration.
     /// </summary>
     private static IHostApplicationBuilder AddGranitWolverineWithSqlServerCore(
         IHostApplicationBuilder builder,
@@ -120,6 +123,8 @@ public static class WolverineSqlServerHostApplicationBuilderExtensions
             .GetSection(WolverineSqlServerOptions.SectionName)
             .Bind(options);
 
+        string connectionString = ResolveConnectionString(builder.Configuration, options);
+
         // Resolve the WolverineOptions instance captured by AddGranitWolverine().
         // We apply SQL Server configuration directly on this instance instead of using
         // ConfigureWolverine(), which registers a deferred LambdaWolverineExtension in
@@ -136,11 +141,51 @@ public static class WolverineSqlServerHostApplicationBuilderExtensions
                 "AddGranitWolverine() must be called before AddGranitWolverineWithSqlServer(). " +
                 "Ensure GranitWolverineModule is declared in the [DependsOn] chain.");
 
-        wolverineOptions.PersistMessagesWithSqlServer(options.TransportConnectionString);
+        // Resolve Wolverine envelope schema: explicit option → HostDbSchema fallback → Wolverine default
+        string? wolverineSchema = options.SchemaName
+            ?? GranitDbDefaults.HostDbSchema;
+
+        if (wolverineSchema is not null)
+        {
+            wolverineOptions.PersistMessagesWithSqlServer(connectionString, wolverineSchema);
+        }
+        else
+        {
+            wolverineOptions.PersistMessagesWithSqlServer(connectionString);
+        }
+
+        // Disable auto-provisioning at startup — table creation is handled
+        // by IExternalStoreMigrator during --migrate mode only.
+        wolverineOptions.AutoBuildMessageStorageOnStartup = AutoCreate.None;
+
         wolverineOptions.UseEntityFrameworkCoreTransactions(options.TransactionMode);
         wolverineOptions.Policies.AutoApplyTransactions();
         configure?.Invoke(wolverineOptions);
 
+        // Register the Wolverine storage migrator for the --migrate pipeline
+        builder.Services.AddSingleton<IExternalStoreMigrator, WolverineStoreMigrator>();
+
         return builder;
+    }
+
+    /// <summary>
+    /// Resolves the transport connection string from explicit value or <c>ConnectionStrings:{name}</c> fallback.
+    /// </summary>
+    private static string ResolveConnectionString(IConfiguration configuration, WolverineSqlServerOptions options)
+    {
+        if (!string.IsNullOrWhiteSpace(options.TransportConnectionString))
+        {
+            return options.TransportConnectionString;
+        }
+
+        if (!string.IsNullOrWhiteSpace(options.TransportConnectionStringName))
+        {
+            return configuration.GetConnectionString(options.TransportConnectionStringName)
+                ?? throw new InvalidOperationException(
+                    $"Connection string '{options.TransportConnectionStringName}' not found in ConnectionStrings configuration. " +
+                    "Ensure the Aspire resource name matches TransportConnectionStringName.");
+        }
+
+        return string.Empty;
     }
 }

@@ -2922,10 +2922,7 @@
       "name": "Granit.Wolverine",
       "deps": [
         "Granit",
-        "Granit",
-        "Granit",
-        "Granit.Validation",
-        "Granit"
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -2950,7 +2947,8 @@
       "name": "Granit.Wolverine.SqlServer",
       "deps": [
         "Granit.Wolverine",
-        "Granit.Persistence.EntityFrameworkCore"
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Persistence.EntityFrameworkCore.Hosting"
       ],
       "framework": "net10.0"
     },
@@ -58315,30 +58313,12 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Diagnostics/WolverineMetrics.cs",
-      "line": 10,
+      "line": 16,
       "members": [
         {
           "name": "RecordMessageHandled",
           "kind": "method",
           "signature": "RecordMessageHandled(string? tenantId, string messageType)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordRetriesExhausted",
-          "kind": "method",
-          "signature": "RecordRetriesExhausted(string? tenantId, string messageType)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordClaimCheckStored",
-          "kind": "method",
-          "signature": "RecordClaimCheckStored(string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordClaimCheckRetrieved",
-          "kind": "method",
-          "signature": "RecordClaimCheckRetrieved(string? tenantId)",
           "returnType": "void"
         },
         {
@@ -58371,7 +58351,7 @@
       "kind": "class",
       "project": "Granit.Wolverine.Encryption",
       "file": "src/Granit.Wolverine.Encryption/GranitWolverineEncryptionModule.cs",
-      "line": 26,
+      "line": 24,
       "members": [
         {
           "name": "ConfigureServices",
@@ -58387,7 +58367,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Extensions/WolverineHostApplicationBuilderExtensions.cs",
-      "line": 27,
+      "line": 28,
       "members": [
         {
           "name": "AddGranitWolverine",
@@ -58511,7 +58491,7 @@
       "kind": "class",
       "project": "Granit.Wolverine.Postgresql",
       "file": "src/Granit.Wolverine.Postgresql/GranitWolverinePostgresqlModule.cs",
-      "line": 25,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -58543,7 +58523,7 @@
       "kind": "class",
       "project": "Granit.Wolverine.SqlServer",
       "file": "src/Granit.Wolverine.SqlServer/Extensions/WolverineSqlServerHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 23,
       "members": [
         {
           "name": "AddGranitWolverineWithSqlServer",
@@ -58559,7 +58539,7 @@
       "kind": "class",
       "project": "Granit.Wolverine.SqlServer",
       "file": "src/Granit.Wolverine.SqlServer/GranitWolverineSqlServerModule.cs",
-      "line": 25,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -58575,19 +58555,13 @@
       "kind": "class",
       "project": "Granit.Wolverine.SqlServer",
       "file": "src/Granit.Wolverine.SqlServer/Options/WolverineSqlServerOptions.cs",
-      "line": 21,
+      "line": 20,
       "members": [
         {
-          "name": "TransportConnectionString",
+          "name": "TransportConnectionStringName",
           "kind": "property",
-          "signature": "string TransportConnectionString",
-          "returnType": "string"
-        },
-        {
-          "name": "TransactionMode",
-          "kind": "property",
-          "signature": "TransactionMiddlewareMode TransactionMode",
-          "returnType": "TransactionMiddlewareMode"
+          "signature": "string? TransportConnectionStringName",
+          "returnType": "string?"
         }
       ]
     },
@@ -58597,7 +58571,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/WolverineScopedSender.cs",
-      "line": 13,
+      "line": 17,
       "members": []
     },
     {

@@ -33,7 +33,11 @@ public sealed class WolverineSqlServerOptionsAdditionalTests
     public void Validate_FailureMessage_ContainsISO27001Reference()
     {
         WolverineSqlServerOptionsValidator validator = new();
-        WolverineSqlServerOptions options = new() { TransportConnectionString = string.Empty };
+        WolverineSqlServerOptions options = new()
+        {
+            TransportConnectionString = string.Empty,
+            TransportConnectionStringName = string.Empty,
+        };
 
         ValidateOptionsResult result = validator.Validate(null, options);
 

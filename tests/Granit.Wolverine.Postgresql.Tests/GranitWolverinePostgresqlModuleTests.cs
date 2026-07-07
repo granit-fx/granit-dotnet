@@ -7,6 +7,7 @@
 
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.Hosting;
 using Granit.Wolverine.Extensions;
 using Granit.Wolverine.Postgresql.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -42,6 +43,16 @@ public sealed class GranitWolverinePostgresqlModuleTests
             typeof(GranitWolverinePostgresqlModule).GetCustomAttributes(typeof(DependsOnAttribute), inherit: false);
 
         attributes.ShouldContain(a => a.DependedTypes.Contains(typeof(GranitPersistenceEntityFrameworkCoreModule)));
+    }
+
+    [Fact]
+    public void GranitWolverinePostgresqlModule_DependsOn_PersistenceHostingModule()
+    {
+        // Direct project reference (IExternalStoreMigrator) → must be declared.
+        var attributes = (DependsOnAttribute[])
+            typeof(GranitWolverinePostgresqlModule).GetCustomAttributes(typeof(DependsOnAttribute), inherit: false);
+
+        attributes.ShouldContain(a => a.DependedTypes.Contains(typeof(GranitPersistenceEntityFrameworkCoreHostingModule)));
     }
 
     [Fact]
