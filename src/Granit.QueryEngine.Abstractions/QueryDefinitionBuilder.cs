@@ -195,10 +195,12 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     /// <summary>
     /// Overrides the default global search strategy (<c>LIKE '%term%'</c>) with a custom
     /// implementation. Use this for provider-specific full-text search (e.g. PostgreSQL FTS).
+    /// The declared type takes precedence over any <see cref="IGlobalSearchStrategy{TEntity}"/>
+    /// registered in DI for this entity.
     /// </summary>
     /// <typeparam name="TStrategy">
-    /// The search strategy type. Must implement <see cref="IGlobalSearchStrategy{TEntity}"/>
-    /// and be registered in DI.
+    /// The search strategy type. Resolved from DI when registered; otherwise activated with
+    /// constructor injection (<c>ActivatorUtilities</c>), so its dependencies must be resolvable.
     /// </typeparam>
     public QueryDefinitionBuilder<TEntity> UseSearchStrategy<TStrategy>()
         where TStrategy : class, IGlobalSearchStrategy<TEntity>
@@ -310,8 +312,19 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     }
 
     /// <summary>
-    /// Declares an aggregate computation for grouped queries.
+    /// Declares an aggregate computation for grouped queries. Each declared aggregate is
+    /// computed server-side per group and surfaced in <c>GroupEntry.Aggregates</c> under
+    /// <paramref name="alias"/> as a <see cref="decimal"/> value.
     /// </summary>
+    /// <remarks>
+    /// <see cref="AggregateFunction.Sum"/>, <see cref="AggregateFunction.Avg"/>,
+    /// <see cref="AggregateFunction.Min"/> and <see cref="AggregateFunction.Max"/> require a
+    /// numeric property (the value is computed as <c>decimal</c> so all aggregates translate
+    /// to a single SQL projection). <see cref="AggregateFunction.Count"/> counts the rows of
+    /// the group regardless of the selected property. At most
+    /// <see cref="QueryEngineDefaults.MaxAggregates"/> aggregates per definition, each with a
+    /// unique alias.
+    /// </remarks>
     /// <typeparam name="TProp">The property type.</typeparam>
     /// <param name="property">Expression selecting the property to aggregate.</param>
     /// <param name="function">The aggregate function to apply.</param>
@@ -321,8 +334,35 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
         AggregateFunction function,
         string alias)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(alias);
+
         string propertyName = GetPropertyName(property);
         ThrowIfValueObjectColumn<TProp>(propertyName, "aggregated", nameof(property));
+
+        if (function is not AggregateFunction.Count && !IsNumericType(typeof(TProp)))
+        {
+            throw new ArgumentException(
+                $"Aggregate '{alias}' applies {function} to property '{propertyName}' of type " +
+                $"'{typeof(TProp).Name}', which is not numeric. Sum/Avg/Min/Max aggregates are " +
+                "computed as decimal in a single SQL projection, so only numeric columns are " +
+                "supported. Use AggregateFunction.Count for non-numeric columns.",
+                nameof(property));
+        }
+
+        if (Aggregates.Count >= QueryEngineDefaults.MaxAggregates)
+        {
+            throw new InvalidOperationException(
+                $"A query definition supports at most {QueryEngineDefaults.MaxAggregates} " +
+                "aggregates (each aggregate occupies a fixed slot in the grouped SQL projection).");
+        }
+
+        if (Aggregates.Any(a => a.Alias.Equals(alias, StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new ArgumentException(
+                $"An aggregate with alias '{alias}' is already declared. Aliases must be unique " +
+                "within a query definition.",
+                nameof(alias));
+        }
 
         Aggregates.Add(new AggregateDescriptor
         {
@@ -616,6 +656,19 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
         }
 
         return false;
+    }
+
+    // Numeric CLR types eligible for Sum/Avg/Min/Max aggregates (computed as decimal so a
+    // single fixed-slot SQL projection covers every declared aggregate).
+    private static bool IsNumericType(Type type)
+    {
+        Type t = Nullable.GetUnderlyingType(type) ?? type;
+        return t == typeof(byte) || t == typeof(sbyte)
+            || t == typeof(short) || t == typeof(ushort)
+            || t == typeof(int) || t == typeof(uint)
+            || t == typeof(long) || t == typeof(ulong)
+            || t == typeof(float) || t == typeof(double)
+            || t == typeof(decimal);
     }
 
     // A scalar (primitive / string / enum / date-time / Guid / …) can never be an EF Core complex-type

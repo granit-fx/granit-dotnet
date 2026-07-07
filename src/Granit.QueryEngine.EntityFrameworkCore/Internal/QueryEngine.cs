@@ -9,6 +9,7 @@ using Granit.QueryEngine.Meta;
 using Granit.QueryEngine.Options;
 using Granit.QueryEngine.Search;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -27,14 +28,16 @@ internal sealed class QueryEngine<TEntity>(
     IGlobalSearchStrategy<TEntity>? searchStrategy = null,
     QueryEngineMetrics? metrics = null,
     ICurrentTenant? currentTenant = null,
-    IStringLocalizerFactory? localizerFactory = null) : IQueryEngine<TEntity>
+    IStringLocalizerFactory? localizerFactory = null,
+    IServiceProvider? serviceProvider = null) : IQueryEngine<TEntity>
     where TEntity : class
 {
     private static readonly string EntityTypeName = typeof(TEntity).Name;
 
     private readonly QueryDefinitionBuilder<TEntity> _builder = definition.GetBuilder();
     private readonly ILogger _logger = logger;
-    private readonly IGlobalSearchStrategy<TEntity> _searchStrategy = searchStrategy ?? new ContainsSearchStrategy<TEntity>();
+    private readonly IGlobalSearchStrategy<TEntity> _searchStrategy =
+        ResolveSearchStrategy(definition, searchStrategy, serviceProvider);
     private readonly QueryEngineMetrics? _metrics = metrics;
     private readonly ICurrentTenant? _currentTenant = currentTenant;
     private readonly byte[]? _cursorHmacKey = !string.IsNullOrEmpty(engineOptions.Value.CursorHmacKey)
@@ -260,7 +263,10 @@ internal sealed class QueryEngine<TEntity>(
         QueryRequest request,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        Activity? activity = QueryEngineEfCoreActivitySource.Source.StartActivity(QueryEngineEfCoreActivitySource.ExecuteStream);
+        // `using` ties the Activity to enumerator disposal, and the finally block records the
+        // duration metric even when the consumer breaks out of the stream early — a manual
+        // Dispose() after the last yield would leak both on early termination.
+        using Activity? activity = QueryEngineEfCoreActivitySource.Source.StartActivity(QueryEngineEfCoreActivitySource.ExecuteStream);
         activity?.SetTag("entity_type", EntityTypeName);
         long startTimestamp = Stopwatch.GetTimestamp();
 
@@ -270,20 +276,24 @@ internal sealed class QueryEngine<TEntity>(
         int limit = _builder.MaxStreamSizeValue;
         int count = 0;
 
-        await foreach (TEntity entity in query.Take(limit).AsAsyncEnumerableSafe().WithCancellation(cancellationToken).ConfigureAwait(false))
+        try
         {
-            count++;
-            yield return entity;
-        }
+            await foreach (TEntity entity in query.Take(limit).AsAsyncEnumerableSafe().WithCancellation(cancellationToken).ConfigureAwait(false))
+            {
+                count++;
+                yield return entity;
+            }
 
-        if (count >= limit)
+            if (count >= limit)
+            {
+                QueryEngineEfCoreLog.StreamLimitReached(_logger, EntityTypeName, limit);
+                _metrics?.RecordStreamLimitReached(GetTenantId(), EntityTypeName);
+            }
+        }
+        finally
         {
-            QueryEngineEfCoreLog.StreamLimitReached(_logger, EntityTypeName, limit);
-            _metrics?.RecordStreamLimitReached(GetTenantId(), EntityTypeName);
+            RecordMetrics("stream", startTimestamp);
         }
-
-        RecordMetrics("stream", startTimestamp);
-        activity?.Dispose();
     }
 
     /// <inheritdoc/>
@@ -351,6 +361,34 @@ internal sealed class QueryEngine<TEntity>(
                 _builder.CursorPropertyName is not null),
             DefaultSort = _builder.DefaultSortValue,
         };
+    }
+
+    /// <summary>
+    /// Resolves the effective global search strategy. A type declared via
+    /// <c>QueryDefinitionBuilder.UseSearchStrategy&lt;T&gt;()</c> wins: it is resolved from DI
+    /// when registered, otherwise activated with constructor injection. Without a declared
+    /// type, the DI-injected <see cref="IGlobalSearchStrategy{TEntity}"/> applies, falling
+    /// back to the default <see cref="ContainsSearchStrategy{TEntity}"/> (LIKE '%term%').
+    /// </summary>
+    private static IGlobalSearchStrategy<TEntity> ResolveSearchStrategy(
+        QueryDefinition<TEntity> definition,
+        IGlobalSearchStrategy<TEntity>? injected,
+        IServiceProvider? serviceProvider)
+    {
+        Type? declared = definition.GetBuilder().GlobalSearchStrategyType;
+        if (declared is null)
+        {
+            return injected ?? new ContainsSearchStrategy<TEntity>();
+        }
+
+        object strategy = serviceProvider is not null
+            ? serviceProvider.GetService(declared)
+                ?? ActivatorUtilities.CreateInstance(serviceProvider, declared)
+            : Activator.CreateInstance(declared)
+                ?? throw new InvalidOperationException(
+                    $"Search strategy '{declared.Name}' could not be activated.");
+
+        return (IGlobalSearchStrategy<TEntity>)strategy;
     }
 
     private static string[]? GetEnumValues(Type clrType)
