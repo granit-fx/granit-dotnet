@@ -27,7 +27,7 @@ namespace Granit.Identity;
 /// </summary>
 [DependsOn(typeof(GranitAuditingModule))]
 [DependsOn(typeof(GranitIdentityAbstractionsModule))]
-[DependsOn(typeof(GranitQueryEngineModule))]
+[DependsOn(typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitIdentityModule : GranitModule
 {
     /// <inheritdoc/>

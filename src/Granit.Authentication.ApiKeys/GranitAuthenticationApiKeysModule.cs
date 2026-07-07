@@ -12,7 +12,7 @@ namespace Granit.Authentication.ApiKeys;
 /// </summary>
 [DependsOn(typeof(GranitHttpExceptionHandlingModule))]
 [DependsOn(typeof(GranitGuidsModule))]
-[DependsOn(typeof(GranitQueryEngineModule))]
+[DependsOn(typeof(GranitQueryEngineAbstractionsModule))]
 [DependsOn(typeof(GranitTimingModule))]
 public sealed class GranitAuthenticationApiKeysModule : GranitModule
 {

@@ -19,7 +19,7 @@ public sealed class GranitBackgroundJobsEndpointsModuleTests
         attribute.ShouldNotBeNull();
         attribute!.DependedTypes.ShouldContain(typeof(GranitAuthorizationModule));
         attribute.DependedTypes.ShouldContain(typeof(GranitBackgroundJobsModule));
-        attribute.DependedTypes.ShouldContain(typeof(GranitQueryEngineModule));
+        attribute.DependedTypes.ShouldContain(typeof(GranitQueryEngineAbstractionsModule));
     }
 
     [Fact]

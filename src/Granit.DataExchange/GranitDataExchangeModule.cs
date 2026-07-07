@@ -30,7 +30,7 @@ namespace Granit.DataExchange;
 [DependsOn(
     typeof(GranitEventsModule),
     typeof(GranitGuidsModule),
-    typeof(GranitQueryEngineModule),
+    typeof(GranitQueryEngineAbstractionsModule),
     typeof(GranitTimingModule),
     typeof(GranitValidationModule))]
 public sealed class GranitDataExchangeModule : GranitModule

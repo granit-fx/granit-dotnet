@@ -27,6 +27,6 @@ public sealed class GranitQueryEngineAIModuleTests
         attrs.ShouldNotBeEmpty();
         IEnumerable<Type> dependedTypes = attrs.SelectMany(a => a.DependedTypes);
         dependedTypes.ShouldContain(typeof(Granit.AI.GranitAIModule));
-        dependedTypes.ShouldContain(typeof(GranitQueryEngineModule));
+        dependedTypes.ShouldContain(typeof(GranitQueryEngineAbstractionsModule));
     }
 }

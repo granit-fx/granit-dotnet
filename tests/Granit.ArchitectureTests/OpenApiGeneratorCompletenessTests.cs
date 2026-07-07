@@ -40,7 +40,9 @@ public sealed partial class OpenApiGeneratorCompletenessTests
     /// registry-completeness assertion stays exact. The query-engine exposes its query catalogue
     /// (<c>GET /catalog</c>) from <c>Granit.QueryEngine.Endpoints</c>.
     /// </summary>
-    private static readonly IReadOnlyList<string> NonEndpointsDocumentSlugs = ["query-engine"];
+    // Empty since Granit.QueryEngine.AspNetCore was renamed to Granit.QueryEngine.Endpoints:
+    // its 'query-engine' document is covered by the regular one-per-endpoints-module rule.
+    private static readonly IReadOnlyList<string> NonEndpointsDocumentSlugs = [];
 
     [Fact]
     public void Generator_csproj_references_exactly_the_endpoints_projects()

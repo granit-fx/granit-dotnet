@@ -2126,8 +2126,7 @@
       "name": "Granit.OpenApi.Generator",
       "deps": [
         "Granit.OpenApi.Generation",
-        "Granit.*.Endpoints",
-        "Granit.QueryEngine.Endpoints"
+        "Granit.*.Endpoints"
       ],
       "framework": "net10.0"
     },
@@ -48960,11 +48959,11 @@
       "members": []
     },
     {
-      "name": "GranitQueryEngineModule",
-      "fqn": "Granit.QueryEngine.GranitQueryEngineModule",
+      "name": "GranitQueryEngineAbstractionsModule",
+      "fqn": "Granit.QueryEngine.GranitQueryEngineAbstractionsModule",
       "kind": "class",
       "project": "Granit.QueryEngine.Abstractions",
-      "file": "src/Granit.QueryEngine.Abstractions/GranitQueryEngineModule.cs",
+      "file": "src/Granit.QueryEngine.Abstractions/GranitQueryEngineAbstractionsModule.cs",
       "line": 19,
       "members": [
         {

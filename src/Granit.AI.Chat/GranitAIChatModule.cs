@@ -33,7 +33,7 @@ namespace Granit.AI.Chat;
     typeof(GranitAIToolsModule),
     typeof(GranitGuidsModule),
     typeof(GranitMentionsModule),
-    typeof(GranitQueryEngineModule),
+    typeof(GranitQueryEngineAbstractionsModule),
     typeof(GranitSettingsModule),
     typeof(GranitTextExtractionModule))]
 public sealed class GranitAIChatModule : GranitModule

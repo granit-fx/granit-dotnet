@@ -18,7 +18,7 @@ namespace Granit.QueryEngine.AI;
 /// </remarks>
 [DependsOn(
     typeof(GranitAIModule),
-    typeof(GranitQueryEngineModule))]
+    typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitQueryEngineAIModule : GranitModule
 {
     /// <inheritdoc/>

@@ -16,7 +16,7 @@ namespace Granit.QueryEngine;
 /// For REST endpoints, add <c>Granit.QueryEngine.Endpoints</c>.
 /// </para>
 /// </remarks>
-public sealed class GranitQueryEngineModule : GranitModule
+public sealed class GranitQueryEngineAbstractionsModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>

@@ -14,14 +14,14 @@ namespace Granit.QueryEngine.Endpoints;
 /// </summary>
 /// <remarks>
 /// Exposes query list routes via <c>MapGranitQuery&lt;TEntity&gt;()</c> plus the
-/// <c>GET /meta</c> metadata endpoint. Requires <see cref="GranitQueryEngineModule"/>
+/// <c>GET /meta</c> metadata endpoint. Requires <see cref="GranitQueryEngineAbstractionsModule"/>
 /// (core infrastructure) and <see cref="GranitAuthorizationModule"/> (permission
 /// policy enforcement). Validators are auto-discovered by <c>GranitValidationModule</c>.
 /// </remarks>
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitHttpApiDocumentationModule),
-    typeof(GranitQueryEngineModule),
+    typeof(GranitQueryEngineAbstractionsModule),
     typeof(GranitValidationModule))]
 public sealed class GranitQueryEngineEndpointsModule : GranitModule
 {

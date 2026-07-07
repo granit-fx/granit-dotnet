@@ -22,5 +22,5 @@ namespace Granit.MultiTenancy.EntityFrameworkCore;
     typeof(GranitMultiTenancyModule),
     typeof(GranitPersistenceEntityFrameworkCoreMigrationsModule),
     typeof(GranitPersistenceEntityFrameworkCoreModule),
-    typeof(GranitQueryEngineModule))]
+    typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitMultiTenancyEntityFrameworkCoreModule : GranitModule;

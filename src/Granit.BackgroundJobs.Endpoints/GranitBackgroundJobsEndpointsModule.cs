@@ -23,7 +23,7 @@ namespace Granit.BackgroundJobs.Endpoints;
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitBackgroundJobsModule),
-    typeof(GranitQueryEngineModule),
+    typeof(GranitQueryEngineAbstractionsModule),
     typeof(GranitValidationModule),
     typeof(GranitWorkspacesAbstractionsModule))]
 public sealed class GranitBackgroundJobsEndpointsModule : GranitModule

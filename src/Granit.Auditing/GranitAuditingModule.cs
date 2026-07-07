@@ -17,7 +17,7 @@ namespace Granit.Auditing;
 /// For EF Core persistence, add <c>Granit.Auditing.EntityFrameworkCore</c>.
 /// For admin endpoints, add <c>Granit.Auditing.Endpoints</c>.
 /// </remarks>
-[DependsOn(typeof(GranitQueryEngineModule))]
+[DependsOn(typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitAuditingModule : GranitModule
 {
     /// <inheritdoc/>

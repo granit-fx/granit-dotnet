@@ -4,17 +4,17 @@ using Xunit;
 
 namespace Granit.QueryEngine.Abstractions.Tests;
 
-public sealed class GranitQueryEngineModuleTests
+public sealed class GranitQueryEngineAbstractionsModuleTests
 {
     [Fact]
     public void Module_inherits_from_GranitModule()
     {
-        GranitQueryEngineModule module = new();
+        GranitQueryEngineAbstractionsModule module = new();
 
         module.ShouldBeAssignableTo<GranitModule>();
     }
 
     [Fact]
     public void Module_is_sealed() =>
-        typeof(GranitQueryEngineModule).IsSealed.ShouldBeTrue();
+        typeof(GranitQueryEngineAbstractionsModule).IsSealed.ShouldBeTrue();
 }

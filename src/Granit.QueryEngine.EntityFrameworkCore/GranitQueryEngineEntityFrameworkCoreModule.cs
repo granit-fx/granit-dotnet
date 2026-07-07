@@ -14,7 +14,7 @@ namespace Granit.QueryEngine.EntityFrameworkCore;
 /// </summary>
 [DependsOn(
     typeof(GranitPersistenceEntityFrameworkCoreModule),
-    typeof(GranitQueryEngineModule))]
+    typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitQueryEngineEntityFrameworkCoreModule : GranitModule
 {
     /// <inheritdoc/>

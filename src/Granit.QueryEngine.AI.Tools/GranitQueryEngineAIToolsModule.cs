@@ -16,5 +16,5 @@ namespace Granit.QueryEngine.AI.Tools;
 /// </remarks>
 [DependsOn(
     typeof(GranitAIToolsModule),
-    typeof(GranitQueryEngineModule))]
+    typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitQueryEngineAIToolsModule : GranitModule;

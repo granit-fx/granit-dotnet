@@ -28,6 +28,9 @@ public sealed class OpenApiTagNameConventionTests
         => OpenApiTagConventionRules.EveryEndpointsPackageShouldHaveEndpointsOptions(
             SrcDir,
             // Uses dynamic per-frontend tags ($"BFF - {frontend.Name}") — no static options default.
-            "Granit.Bff.Endpoints");
+            "Granit.Bff.Endpoints",
+            // MapGranitQuery maps per-entity groups whose tag is inherited from the parent group
+            // or overridden per call via QueryEndpointOptions.TagName — no static package default.
+            "Granit.QueryEngine.Endpoints");
 
 }
