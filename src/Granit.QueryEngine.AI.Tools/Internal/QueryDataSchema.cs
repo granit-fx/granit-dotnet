@@ -3,7 +3,7 @@ using System.Text.Json.Nodes;
 using Granit.QueryEngine.Filtering;
 using Granit.QueryEngine.Meta;
 
-namespace Granit.QueryEngine.AI.Internal;
+namespace Granit.QueryEngine.AI.Tools.Internal;
 
 /// <summary>
 /// Projects a <see cref="QueryMetadata"/> into the JSON Schema for a <c>query_data</c> tool and
@@ -85,21 +85,20 @@ internal static class QueryDataSchema
 
     /// <summary>
     /// Maps the model arguments onto a validated <see cref="QueryRequest"/>, returning any filter
-    /// keys that were rejected because they are not exposed by the definition.
+    /// keys that were rejected because they are not exposed by the definition. Whitelisting and
+    /// pagination clamping are delegated to the shared <see cref="QueryRequestSanitizer"/> so this
+    /// path cannot drift from the NLQ translator path.
     /// </summary>
     public static (QueryRequest Request, IReadOnlyList<string> IgnoredFilters) BuildRequest(
         JsonElement arguments, QueryMetadata metadata)
     {
-        HashSet<string> allowedKeys = [.. metadata.FilterableFields
-            .SelectMany(f => f.Operators.Select(op => $"{f.Name}.{OperatorCode(op)}"))];
-
-        Dictionary<string, string> filter = new(StringComparer.Ordinal);
-        List<string> ignored = [];
+        List<KeyValuePair<string, string>>? filter = null;
 
         if (arguments.ValueKind == JsonValueKind.Object
             && arguments.TryGetProperty("filters", out JsonElement filters)
             && filters.ValueKind == JsonValueKind.Array)
         {
+            filter = [];
             foreach (JsonElement clause in filters.EnumerateArray())
             {
                 if (clause.ValueKind != JsonValueKind.Object
@@ -111,33 +110,21 @@ internal static class QueryDataSchema
                 }
 
                 string key = $"{fieldEl.GetString()}.{opEl.GetString()?.ToLowerInvariant()}";
-                if (allowedKeys.Contains(key))
-                {
-                    filter[key] = valueEl.GetString() ?? string.Empty;
-                }
-                else
-                {
-                    ignored.Add(key);
-                }
+                filter.Add(new KeyValuePair<string, string>(key, valueEl.GetString() ?? string.Empty));
             }
         }
 
-        QueryRequest request = new()
+        QueryRequestCandidate candidate = new()
         {
-            Filter = filter.Count > 0 ? filter : null,
+            Filter = filter,
             Search = ReadString(arguments, "search"),
             Sort = ReadString(arguments, "sort"),
             Page = ReadInt(arguments, "page"),
-            PageSize = ClampPageSize(ReadInt(arguments, "pageSize"), metadata.Pagination),
+            PageSize = ReadInt(arguments, "pageSize") ?? metadata.Pagination.DefaultPageSize,
         };
 
-        return (request, ignored);
-    }
-
-    private static int ClampPageSize(int? requested, PaginationMeta pagination)
-    {
-        int size = requested ?? pagination.DefaultPageSize;
-        return Math.Clamp(size, 1, pagination.MaxPageSize);
+        QueryRequestSanitizationResult result = QueryRequestSanitizer.Sanitize(candidate, metadata);
+        return (result.Request, result.IgnoredFilters);
     }
 
     private static string? ReadString(JsonElement arguments, string name) =>
@@ -155,5 +142,5 @@ internal static class QueryDataSchema
             ? parsed
             : null;
 
-    private static string OperatorCode(FilterOperator op) => op.ToString().ToLowerInvariant();
+    private static string OperatorCode(FilterOperator op) => QueryRequestSanitizer.OperatorCode(op);
 }

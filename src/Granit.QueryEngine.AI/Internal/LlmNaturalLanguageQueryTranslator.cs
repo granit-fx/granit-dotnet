@@ -33,6 +33,8 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
         QueryMetadata metadata,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(metadata);
+
         if (string.IsNullOrWhiteSpace(naturalLanguage))
         {
             return null;
@@ -41,6 +43,8 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
         using Activity? activity = QueryEngineAIActivitySource.Source.StartActivity(QueryEngineAIActivitySource.Translate);
         long startTimestamp = Stopwatch.GetTimestamp();
         string? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id?.ToString() : null;
+        activity?.SetTag("tenant_id", tenantId ?? "global");
+        activity?.SetTag("input_length", naturalLanguage.Length);
 
         QueryEngineAIOptions opts = options.Value;
 
@@ -65,16 +69,19 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
             {
                 LogInvalidResponse(logger, naturalLanguage.Length, result.Status.ToString());
                 metrics?.RecordTranslationFailed(tenantId, MapFailureReason(result.Status));
+                activity?.SetStatus(ActivityStatusCode.Error, result.Status.ToString());
                 return null;
             }
 
-            metrics?.RecordTranslationExecuted(tenantId, "success");
+            metrics?.RecordTranslationExecuted(tenantId);
+            activity?.SetStatus(ActivityStatusCode.Ok);
             return ValidateAndConvert(result.Value!, metadata);
         }
         catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
             LogTimeout(logger, naturalLanguage.Length);
             metrics?.RecordTranslationFailed(tenantId, "timeout");
+            activity?.SetStatus(ActivityStatusCode.Error, "timeout");
             return null;
         }
         finally
@@ -200,78 +207,20 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
 
     private static QueryRequest ValidateAndConvert(LlmQueryPayload dto, QueryMetadata metadata)
     {
-        // Build whitelist of allowed filter keys from metadata (CWE-20, LLM02)
-        var allowedFilterKeys = metadata.FilterableFields
-            .SelectMany(f => f.Operators.Select(op => $"{f.Name}.{op.ToString().ToLowerInvariant()}"))
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        var allowedSortFields = metadata.SortableFields
-            .Select(f => f.Name)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        var allowedGroupByFields = metadata.GroupByFields
-            .Select(f => f.Name)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        var allowedQuickFilters = metadata.QuickFilters
-            .Select(f => f.Name)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        // Validate and strip non-whitelisted clauses; the list may carry duplicate keys, so
-        // collapse them (first wins) before building the dictionary the domain expects.
-        Dictionary<string, string>? validatedFilter = null;
-        if (dto.Filter is { Count: > 0 })
-        {
-            validatedFilter = dto.Filter
-                .Where(c => !string.IsNullOrEmpty(c.Key) && allowedFilterKeys.Contains(c.Key))
-                .GroupBy(c => c.Key, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(g => g.First().Key, g => g.First().Value, StringComparer.OrdinalIgnoreCase);
-
-            if (validatedFilter.Count == 0)
-            {
-                validatedFilter = null;
-            }
-        }
-
-        // Validate sort fields
-        string? validatedSort = null;
-        if (!string.IsNullOrWhiteSpace(dto.Sort))
-        {
-            string[] sortParts = dto.Sort.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            string[] validParts = sortParts
-                .Where(p =>
-                {
-                    string fieldName = p.StartsWith('-') ? p[1..] : p;
-                    return allowedSortFields.Contains(fieldName);
-                })
-                .ToArray();
-            validatedSort = validParts.Length > 0 ? string.Join(',', validParts) : null;
-        }
-
-        // Validate group-by
-        string? validatedGroupBy = !string.IsNullOrWhiteSpace(dto.GroupBy) && allowedGroupByFields.Contains(dto.GroupBy)
-            ? dto.GroupBy
-            : null;
-
-        // Validate quick filters
-        List<string>? validatedQuickFilters = dto.QuickFilters is { Count: > 0 }
-            ? dto.QuickFilters.Where(allowedQuickFilters.Contains).ToList()
-            : null;
-
-        if (validatedQuickFilters is { Count: 0 })
-        {
-            validatedQuickFilters = null;
-        }
-
-        return new QueryRequest
+        // Single shared whitelist gate (CWE-20, LLM02): field/operator whitelisting, sort/
+        // group-by/quick-filter stripping and pagination clamping live in
+        // QueryRequestSanitizer so this path cannot drift from the query_data tool path.
+        QueryRequestCandidate candidate = new()
         {
             Page = dto.Page,
             PageSize = dto.PageSize,
-            Sort = validatedSort,
-            Filter = validatedFilter,
-            QuickFilters = validatedQuickFilters?.AsReadOnly(),
-            GroupBy = validatedGroupBy,
+            Sort = dto.Sort,
+            Filter = dto.Filter?.ConvertAll(c => new KeyValuePair<string, string>(c.Key, c.Value)),
+            QuickFilters = dto.QuickFilters,
+            GroupBy = dto.GroupBy,
         };
+
+        return QueryRequestSanitizer.Sanitize(candidate, metadata).Request;
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "NLQ translation returned a non-success status {Status} (input length: {InputLength})")]

@@ -2408,9 +2408,16 @@
       "name": "Granit.QueryEngine.AI",
       "deps": [
         "Granit.AI",
-        "Granit.AI.Tools",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.QueryEngine.AI.Tools",
+      "deps": [
+        "Granit.AI.Tools",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -48517,22 +48524,6 @@
       "members": []
     },
     {
-      "name": "QueryDataToolRegistrationExtensions",
-      "fqn": "Granit.QueryEngine.AI.Extensions.QueryDataToolRegistrationExtensions",
-      "kind": "class",
-      "project": "Granit.QueryEngine.AI",
-      "file": "src/Granit.QueryEngine.AI/Extensions/QueryDataToolRegistrationExtensions.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "AddQueryData",
-          "kind": "method",
-          "signature": "AddQueryData(this AIToolRegistrationBuilder tools, Action<QueryDataToolBuilder> configure)",
-          "returnType": "AIToolRegistrationBuilder"
-        }
-      ]
-    },
-    {
       "name": "QueryEngineAIHostApplicationBuilderExtensions",
       "fqn": "Granit.QueryEngine.AI.Extensions.QueryEngineAIHostApplicationBuilderExtensions",
       "kind": "class",
@@ -48603,11 +48594,36 @@
       ]
     },
     {
-      "name": "QueryDataToolBuilder",
-      "fqn": "Granit.QueryEngine.AI.QueryDataToolBuilder",
+      "name": "QueryDataToolRegistrationExtensions",
+      "fqn": "Granit.QueryEngine.AI.Tools.Extensions.QueryDataToolRegistrationExtensions",
       "kind": "class",
-      "project": "Granit.QueryEngine.AI",
-      "file": "src/Granit.QueryEngine.AI/QueryDataToolBuilder.cs",
+      "project": "Granit.QueryEngine.AI.Tools",
+      "file": "src/Granit.QueryEngine.AI.Tools/Extensions/QueryDataToolRegistrationExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "AddQueryData",
+          "kind": "method",
+          "signature": "AddQueryData(this AIToolRegistrationBuilder tools, Action<QueryDataToolBuilder> configure)",
+          "returnType": "AIToolRegistrationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitQueryEngineAIToolsModule",
+      "fqn": "Granit.QueryEngine.AI.Tools.GranitQueryEngineAIToolsModule",
+      "kind": "class",
+      "project": "Granit.QueryEngine.AI.Tools",
+      "file": "src/Granit.QueryEngine.AI.Tools/GranitQueryEngineAIToolsModule.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "QueryDataToolBuilder",
+      "fqn": "Granit.QueryEngine.AI.Tools.QueryDataToolBuilder",
+      "kind": "class",
+      "project": "Granit.QueryEngine.AI.Tools",
+      "file": "src/Granit.QueryEngine.AI.Tools/QueryDataToolBuilder.cs",
       "line": 12,
       "members": []
     },
@@ -49368,6 +49384,47 @@
       "file": "src/Granit.QueryEngine.Abstractions/QueryRequest.cs",
       "line": 16,
       "members": []
+    },
+    {
+      "name": "QueryRequestCandidate",
+      "fqn": "Granit.QueryEngine.QueryRequestCandidate",
+      "kind": "record",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/QueryRequestSanitizer.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "QueryRequestSanitizationResult",
+      "fqn": "Granit.QueryEngine.QueryRequestSanitizationResult",
+      "kind": "record",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/QueryRequestSanitizer.cs",
+      "line": 42,
+      "members": [
+        {
+          "name": "Sanitize",
+          "kind": "method",
+          "signature": "Sanitize(QueryRequestCandidate candidate, QueryMetadata metadata)",
+          "returnType": "QueryRequestSanitizationResult"
+        }
+      ]
+    },
+    {
+      "name": "QueryRequestSanitizer",
+      "fqn": "Granit.QueryEngine.QueryRequestSanitizer",
+      "kind": "class",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/QueryRequestSanitizer.cs",
+      "line": 53,
+      "members": [
+        {
+          "name": "Sanitize",
+          "kind": "method",
+          "signature": "Sanitize(QueryRequestCandidate candidate, QueryMetadata metadata)",
+          "returnType": "QueryRequestSanitizationResult"
+        }
+      ]
     },
     {
       "name": "IGlobalSearchStrategy",

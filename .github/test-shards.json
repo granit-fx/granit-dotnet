@@ -104,6 +104,7 @@
         "tests/Granit.Workspaces.Abstractions.Tests",
         "tests/Granit.DataExchange.AI.Tests",
         "tests/Granit.QueryEngine.AI.Tests",
+        "tests/Granit.QueryEngine.AI.Tools.Tests",
         "tests/Granit.Templating.AI.Tests",
         "tests/Granit.Timeline.AI.Tests",
         "tests/Granit.Workflow.AI.Tests"

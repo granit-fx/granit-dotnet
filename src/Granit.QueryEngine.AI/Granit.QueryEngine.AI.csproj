@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.QueryEngine.AI</PackageId>
-    <Description>Natural Language Query (NLQ) for Granit.QueryEngine. Translates natural language phrases into structured QueryRequest objects using LLM. The LLM only receives query metadata (column names, filter types), never business data.</Description>
+    <Description>Natural Language Query (NLQ) for Granit.QueryEngine. Translates natural language phrases into structured QueryRequest objects using LLM. The translator sends only query metadata (column names, filter types) plus the user's phrase to the LLM — never stored business data. For agent query_data tools (which return ACL-bounded rows to the model), see Granit.QueryEngine.AI.Tools.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.AI\Granit.AI.csproj" />
-    <ProjectReference Include="..\Granit.AI.Tools\Granit.AI.Tools.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
   </ItemGroup>

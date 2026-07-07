@@ -1,15 +1,15 @@
 using System.Text.Json;
 using Granit.AI.Tools;
 using Granit.AI.Tools.Extensions;
-using Granit.QueryEngine.AI.Extensions;
-using Granit.QueryEngine.AI.Internal;
+using Granit.QueryEngine.AI.Tools.Extensions;
+using Granit.QueryEngine.AI.Tools.Internal;
 using Granit.QueryEngine.Filtering;
 using Granit.QueryEngine.Meta;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 
-namespace Granit.QueryEngine.AI.Tests;
+namespace Granit.QueryEngine.AI.Tools.Tests;
 
 public sealed class QueryDataToolTests
 {

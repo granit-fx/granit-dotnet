@@ -201,6 +201,7 @@
     <Project Path="src/Granit.Localization.SourceGenerator/Granit.Localization.SourceGenerator.csproj" />
     <Project Path="src/Granit.Localization/Granit.Localization.csproj" />
     <Project Path="src/Granit.QueryEngine.AI/Granit.QueryEngine.AI.csproj" />
+    <Project Path="src/Granit.QueryEngine.AI.Tools/Granit.QueryEngine.AI.Tools.csproj" />
     <Project Path="src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj" />
     <Project Path="src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj" />
     <Project Path="src/Granit.QueryEngine.EntityFrameworkCore/Granit.QueryEngine.EntityFrameworkCore.csproj" />
@@ -581,6 +582,7 @@
     <Project Path="tests/Granit.Localization.SourceGenerator.Tests/Granit.Localization.SourceGenerator.Tests.csproj" />
     <Project Path="tests/Granit.Localization.Tests/Granit.Localization.Tests.csproj" />
     <Project Path="tests/Granit.QueryEngine.AI.Tests/Granit.QueryEngine.AI.Tests.csproj" />
+    <Project Path="tests/Granit.QueryEngine.AI.Tools.Tests/Granit.QueryEngine.AI.Tools.Tests.csproj" />
     <Project Path="tests/Granit.QueryEngine.Abstractions.Tests/Granit.QueryEngine.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.QueryEngine.Endpoints.Tests.Integration/Granit.QueryEngine.Endpoints.Tests.Integration.csproj" />
     <Project Path="tests/Granit.QueryEngine.Endpoints.Tests/Granit.QueryEngine.Endpoints.Tests.csproj" />

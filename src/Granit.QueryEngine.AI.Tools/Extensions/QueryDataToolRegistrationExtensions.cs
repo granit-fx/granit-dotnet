@@ -1,6 +1,6 @@
 using Granit.AI.Tools;
 
-namespace Granit.QueryEngine.AI.Extensions;
+namespace Granit.QueryEngine.AI.Tools.Extensions;
 
 /// <summary>
 /// Registers <c>query_data</c> tools on the Granit AI tool registry.

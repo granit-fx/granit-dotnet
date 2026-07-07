@@ -275,6 +275,7 @@
       "src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj",
       "src/Granit.Privacy.Vault/Granit.Privacy.Vault.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",
+      "src/Granit.QueryEngine.AI.Tools/Granit.QueryEngine.AI.Tools.csproj",
       "src/Granit.QueryEngine.AI/Granit.QueryEngine.AI.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
       "src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj",

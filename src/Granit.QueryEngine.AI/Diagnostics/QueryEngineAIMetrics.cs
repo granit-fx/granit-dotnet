@@ -33,12 +33,13 @@ public sealed class QueryEngineAIMetrics
             description: "Duration of NLQ translation in seconds.");
     }
 
-    public void RecordTranslationExecuted(string? tenantId, string outcome)
+    public void RecordTranslationExecuted(string? tenantId)
     {
+        // No outcome tag: failures are recorded on the dedicated `failed` counter, so an
+        // outcome dimension here would be a constant ("success") — a dead cardinality.
         TagList tags =
         [
             new("tenant_id", tenantId ?? "global"),
-            new("outcome", outcome),
         ];
         _translationsExecuted.Add(1, tags);
     }

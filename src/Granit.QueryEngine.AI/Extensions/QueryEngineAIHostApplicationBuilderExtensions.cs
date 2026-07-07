@@ -24,7 +24,8 @@ public static class QueryEngineAIHostApplicationBuilderExtensions
     {
         builder.Services
             .AddOptions<QueryEngineAIOptions>()
-            .BindConfiguration(QueryEngineAIOptions.SectionName);
+            .BindConfiguration(QueryEngineAIOptions.SectionName)
+            .ValidateOnStart();
 
         builder.Services.TryAddSingleton<IValidateOptions<QueryEngineAIOptions>, QueryEngineAIOptionsValidator>();
         builder.Services.TryAddScoped<INaturalLanguageQueryTranslator, LlmNaturalLanguageQueryTranslator>();

@@ -1,8 +1,8 @@
 using Granit.AI.Tools;
-using Granit.QueryEngine.AI.Internal;
+using Granit.QueryEngine.AI.Tools.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Granit.QueryEngine.AI;
+namespace Granit.QueryEngine.AI.Tools;
 
 /// <summary>
 /// Opt-in surface for exposing <c>QueryDefinition</c>s as ACL-bound <c>query_data</c> tools.

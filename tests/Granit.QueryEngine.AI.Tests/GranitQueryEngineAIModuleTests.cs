@@ -1,3 +1,6 @@
+using Granit.Modularity;
+using Shouldly;
+
 namespace Granit.QueryEngine.AI.Tests;
 
 public sealed class GranitQueryEngineAIModuleTests

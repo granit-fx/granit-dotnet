@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Granit.AI.Tools;
 using Granit.QueryEngine.Meta;
 
-namespace Granit.QueryEngine.AI.Internal;
+namespace Granit.QueryEngine.AI.Tools.Internal;
 
 /// <summary>
 /// An <see cref="IAITool"/> over a single opted-in <c>QueryDefinition</c>. Exposes the
@@ -37,6 +37,8 @@ internal sealed class QueryDataTool<TEntity>(
         AIToolInvocationContext context,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(context);
+
         (QueryRequest request, IReadOnlyList<string> ignored) =
             QueryDataSchema.BuildRequest(context.Arguments, _metadata);
 

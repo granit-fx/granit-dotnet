@@ -153,6 +153,21 @@ public sealed class LlmNaturalLanguageQueryTranslatorAdditionalTests
         result.PageSize.ShouldBe(50);
     }
 
+    [Fact]
+    public async Task TranslateAsync_clamps_hallucinated_pageSize_to_the_definition_max()
+    {
+        // A model (or a prompt-injected phrase) asking for a million rows must be bounded by
+        // the definition's MaxPageSize — the shared QueryRequestSanitizer enforces the clamp.
+        Respond(new LlmQueryPayload { Page = -5, PageSize = 1_000_000 });
+
+        QueryRequest? result = await _sut.TranslateAsync(
+            "give me everything", CreateMinimalMetadata(), TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.Page.ShouldBeNull();
+        result.PageSize.ShouldBe(100);
+    }
+
     private static QueryMetadata CreateMinimalMetadata() =>
         new()
         {

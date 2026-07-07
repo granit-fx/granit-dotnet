@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.QueryEngine.AI.Tools</PackageId>
+    <Description>Agent tool integration for Granit.QueryEngine: exposes opted-in QueryDefinitions as ACL-bound query_data tools. Tool results return matching rows (bounded by the caller's tenant and ACL filters) to the LLM — reference Granit.QueryEngine.AI instead if only metadata may ever reach the model.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.QueryEngine.AI.Tools.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI.Tools\Granit.AI.Tools.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
