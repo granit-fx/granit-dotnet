@@ -1,8 +1,8 @@
 using Granit.Encryption;
 using Granit.Modularity;
-using Granit.Wolverine.Encryption.Extensions;
+using Granit.Wolverine.Encryption.Internal;
 using Granit.Wolverine.Internal;
-using Microsoft.Extensions.DependencyInjection;
+using Wolverine;
 
 namespace Granit.Wolverine.Encryption;
 
@@ -12,17 +12,15 @@ namespace Granit.Wolverine.Encryption;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Resolves the registered <see cref="IStringEncryptionService"/> and the
-/// <c>WolverineOptionsHolder</c> placed by
-/// <see cref="GranitWolverineModule"/>, then calls
-/// <see cref="WolverineEncryptionOptionsExtensions.UseEncryptedSensitiveData"/>
-/// once the host has finished registering services. From that point on, every
-/// saga state, command and integration event Wolverine serializes through
-/// System.Text.Json has its <see cref="EncryptedAttribute"/>-marked properties
-/// transparently encrypted on the wire.
+/// Registers <see cref="WolverineEncryptionExtension"/>, applied by Wolverine at
+/// bootstrap with the host-resolved <see cref="IStringEncryptionService"/>. From
+/// that point on, every saga state, command and integration event Wolverine
+/// serializes through System.Text.Json has its
+/// <see cref="EncryptedAttribute"/>-marked properties transparently encrypted
+/// on the wire.
 /// </para>
 /// </remarks>
-[DependsOn(typeof(GranitWolverineModule), typeof(GranitEncryptionModule))]
+[DependsOn(typeof(GranitEncryptionModule), typeof(GranitWolverineModule))]
 public sealed class GranitWolverineEncryptionModule : GranitModule
 {
     /// <inheritdoc/>
@@ -30,10 +28,12 @@ public sealed class GranitWolverineEncryptionModule : GranitModule
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        // The holder is registered as ImplementationInstance by
-        // GranitWolverineModule's UseWolverine() — readable from the descriptor
-        // list without building a provider.
-        WolverineOptionsHolder holder = context.Services
+        // Fail fast on mis-ordering: the holder is registered as
+        // ImplementationInstance by GranitWolverineModule's UseWolverine() —
+        // readable from the descriptor list without building a provider. Without
+        // AddGranitWolverine() the extension below would silently never apply
+        // and PII would reach the outbox in plaintext.
+        _ = context.Services
             .Select(d => d.ImplementationInstance)
             .OfType<WolverineOptionsHolder>()
             .FirstOrDefault()
@@ -42,14 +42,6 @@ public sealed class GranitWolverineEncryptionModule : GranitModule
                 + "GranitWolverineEncryptionModule. Ensure the [DependsOn] chain "
                 + "is preserved.");
 
-        // IStringEncryptionService is a stateless delegator to
-        // IStringEncryptionProvider (key + algorithm captured from options).
-        // Build a transient provider once, resolve the singleton, then dispose.
-        // Cipher round-trip is identical with the eventual host-resolved
-        // instance because both share the same configuration-derived provider.
-        using ServiceProvider sp = context.Services.BuildServiceProvider();
-        IStringEncryptionService encryption = sp.GetRequiredService<IStringEncryptionService>();
-
-        holder.Options.UseEncryptedSensitiveData(encryption);
+        context.Services.AddWolverineExtension<WolverineEncryptionExtension>();
     }
 }

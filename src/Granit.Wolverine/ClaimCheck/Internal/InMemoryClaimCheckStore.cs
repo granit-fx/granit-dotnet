@@ -27,7 +27,7 @@ internal sealed class InMemoryClaimCheckStore : IClaimCheckStore
         TimeSpan? expiry = null,
         CancellationToken cancellationToken = default)
     {
-#pragma warning disable GRSEC002
+#pragma warning disable GRSEC002 // dev/test-only store: references are opaque and unordered, no UUIDv7/IGuidGenerator need
         var id = Guid.NewGuid();
 #pragma warning restore GRSEC002
         _store[id] = data.ToArray();

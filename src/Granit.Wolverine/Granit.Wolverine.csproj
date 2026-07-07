@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,7 +17,6 @@
     <InternalsVisibleTo Include="Granit.Wolverine.Tests" />
     <InternalsVisibleTo Include="WolverineHandlers" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
-    <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,12 +25,11 @@
     <!-- v6 split Roslyn runtime codegen out of core WolverineFx; the host needs this for the
          default TypeLoadMode.Dynamic. Auto-registers via [WolverineModule] (Automatic discovery). -->
     <PackageReference Include="WolverineFx.RuntimeCompilation" />
-    <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
     <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
   </ItemGroup>
 
 </Project>
