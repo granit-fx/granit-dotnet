@@ -47,6 +47,41 @@ public sealed class QueryDefinitionServiceCollectionExtensionsTests
         services.ShouldContain(d => d.ServiceType == typeof(SampleQueryDefinition));
     }
 
+    [Fact]
+    public void Configured_options_flow_into_definitions_without_AddGranitQueryEngine()
+    {
+        // A module that only declares definitions configures the options pipeline but never
+        // calls AddGranitQueryEngine (no bare QueryEngineOptions singleton registered).
+        ServiceCollection services = new();
+        services.Configure<Granit.QueryEngine.Options.QueryEngineOptions>(o =>
+        {
+            o.DefaultPageSize = 42;
+            o.MaxPageSize = 250;
+        });
+
+        services.AddQueryDefinition<SampleEntity, SampleQueryDefinition>();
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+        QueryDefinition<SampleEntity> definition = sp.GetRequiredService<QueryDefinition<SampleEntity>>();
+
+        definition.GetDefaultPageSize().ShouldBe(42);
+        definition.GetMaxPageSize().ShouldBe(250);
+    }
+
+    [Fact]
+    public void Explicit_bare_options_singleton_takes_precedence_over_IOptions()
+    {
+        ServiceCollection services = new();
+        services.Configure<Granit.QueryEngine.Options.QueryEngineOptions>(o => o.DefaultPageSize = 42);
+        services.AddSingleton(new Granit.QueryEngine.Options.QueryEngineOptions { DefaultPageSize = 7 });
+
+        services.AddQueryDefinition<SampleEntity, SampleQueryDefinition>();
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+
+        sp.GetRequiredService<QueryDefinition<SampleEntity>>().GetDefaultPageSize().ShouldBe(7);
+    }
+
     private sealed class SampleEntity
     {
         public string Name { get; set; } = string.Empty;

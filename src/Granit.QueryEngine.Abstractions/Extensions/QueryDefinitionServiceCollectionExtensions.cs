@@ -1,5 +1,6 @@
 using Granit.QueryEngine.Options;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Granit.QueryEngine.Extensions;
 
@@ -8,8 +9,8 @@ namespace Granit.QueryEngine.Extensions;
 /// </summary>
 /// <remarks>
 /// Lives in <c>Granit.QueryEngine.Abstractions</c> so a base module can declare and
-/// register its query definitions without taking a runtime dependency on
-/// <c>Granit.QueryEngine</c> (engine, EF Core integration, AspNetCore endpoint mapper).
+/// register its query definitions without taking a runtime dependency on the execution
+/// packages (<c>Granit.QueryEngine.EntityFrameworkCore</c>, <c>Granit.QueryEngine.Endpoints</c>).
 /// </remarks>
 public static class QueryDefinitionServiceCollectionExtensions
 {
@@ -50,7 +51,16 @@ public static class QueryDefinitionServiceCollectionExtensions
         services.AddSingleton<TDefinition>(sp =>
         {
             TDefinition definition = new();
-            QueryEngineOptions options = sp.GetService<QueryEngineOptions>() ?? new();
+
+            // Prefer an explicitly registered instance (AddGranitQueryEngine bridges one from
+            // IOptions), then fall back to the options pipeline directly so a host that only
+            // calls Configure<QueryEngineOptions>(...) — without AddGranitQueryEngine — still
+            // flows its configured page-size limits into every definition.
+            QueryEngineOptions options =
+                sp.GetService<QueryEngineOptions>()
+                ?? sp.GetService<IOptions<QueryEngineOptions>>()?.Value
+                ?? new();
+
             definition.Initialize(options);
             return definition;
         });

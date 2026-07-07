@@ -48811,7 +48811,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Extensions/QueryDefinitionServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": []
     },
     {
