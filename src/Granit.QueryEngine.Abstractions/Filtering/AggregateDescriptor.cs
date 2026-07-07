@@ -3,7 +3,7 @@ namespace Granit.QueryEngine.Filtering;
 /// <summary>
 /// Immutable metadata about a declared aggregate (used in grouped queries).
 /// </summary>
-public sealed class AggregateDescriptor
+public sealed record AggregateDescriptor
 {
     /// <summary>Property name to aggregate (e.g. <c>"Amount"</c>).</summary>
     public required string PropertyName { get; init; }

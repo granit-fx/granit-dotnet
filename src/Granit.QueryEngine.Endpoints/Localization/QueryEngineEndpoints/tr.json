@@ -1,9 +1,10 @@
 {
   "culture": "tr",
   "texts": {
-    "Validation:CursorPageMutuallyExclusive": "'Cursor' ve 'Page' birlikte kullanılamaz.",
-    "Validation:MaxFilterEntries": "En fazla 50 filtre girişine izin verilir.",
-    "Validation:MaxPresetEntries": "En fazla 20 ön ayara izin verilir.",
-    "Validation:MaxQuickFilterEntries": "En fazla 20 hızlı filtreye izin verilir."
+    "QueryEngine:Validation:CursorPageMutuallyExclusive": "'Cursor' ve 'Page' birlikte kullanılamaz.",
+    "QueryEngine:Validation:FilterEntryTooLong": "Filtre anahtarı 200 karakteri, filtre değeri 2000 karakteri aşamaz.",
+    "QueryEngine:Validation:MaxFilterEntries": "En fazla 50 filtre girişine izin verilir.",
+    "QueryEngine:Validation:MaxPresetEntries": "En fazla 20 ön ayara izin verilir.",
+    "QueryEngine:Validation:MaxQuickFilterEntries": "En fazla 20 hızlı filtreye izin verilir."
   }
 }

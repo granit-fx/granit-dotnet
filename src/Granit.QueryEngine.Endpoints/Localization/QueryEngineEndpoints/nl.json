@@ -1,9 +1,10 @@
 {
   "culture": "nl",
   "texts": {
-    "Validation:CursorPageMutuallyExclusive": "'Cursor' en 'Page' sluiten elkaar uit.",
-    "Validation:MaxFilterEntries": "Maximaal 50 filteritems zijn toegestaan.",
-    "Validation:MaxPresetEntries": "Maximaal 20 voorinstellingen zijn toegestaan.",
-    "Validation:MaxQuickFilterEntries": "Maximaal 20 snelfilters zijn toegestaan."
+    "QueryEngine:Validation:CursorPageMutuallyExclusive": "'Cursor' en 'Page' sluiten elkaar uit.",
+    "QueryEngine:Validation:FilterEntryTooLong": "Een filtersleutel mag niet langer zijn dan 200 tekens en een filterwaarde niet langer dan 2000 tekens.",
+    "QueryEngine:Validation:MaxFilterEntries": "Maximaal 50 filteritems zijn toegestaan.",
+    "QueryEngine:Validation:MaxPresetEntries": "Maximaal 20 voorinstellingen zijn toegestaan.",
+    "QueryEngine:Validation:MaxQuickFilterEntries": "Maximaal 20 snelfilters zijn toegestaan."
   }
 }

@@ -3,7 +3,7 @@ namespace Granit.QueryEngine.Filtering;
 /// <summary>
 /// Immutable metadata about a date filter with period shortcuts.
 /// </summary>
-public sealed class DateFilterDescriptor
+public sealed record DateFilterDescriptor
 {
     /// <summary>Property name of the date field (e.g. <c>"CreatedAt"</c>).</summary>
     public required string PropertyName { get; init; }

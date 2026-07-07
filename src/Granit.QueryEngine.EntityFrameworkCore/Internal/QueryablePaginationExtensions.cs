@@ -64,11 +64,11 @@ internal static class QueryablePaginationExtensions
         string? cursor,
         int pageSize,
         string cursorPropertyName,
-        CancellationToken cancellationToken,
         ILogger? logger = null,
         string? effectiveSort = null,
         IReadOnlySet<string>? sortableFields = null,
-        byte[]? cursorHmacKey = null)
+        byte[]? cursorHmacKey = null,
+        CancellationToken cancellationToken = default)
         where T : class
     {
         PropertyInfo? cursorProperty = typeof(T).GetProperty(

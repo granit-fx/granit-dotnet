@@ -34,6 +34,9 @@ internal sealed class QueryEngine<TEntity>(
 {
     private static readonly string EntityTypeName = typeof(TEntity).Name;
 
+    // Sentinel bucket key for null group values (ILookup needs a non-null key).
+    private static readonly object NullGroupKey = new();
+
     private readonly QueryDefinitionBuilder<TEntity> _builder = definition.GetBuilder();
     private readonly ILogger _logger = logger;
     private readonly IGlobalSearchStrategy<TEntity> _searchStrategy =
@@ -73,8 +76,8 @@ internal sealed class QueryEngine<TEntity>(
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
             IQueryable<TEntity> sorted = filtered.ApplySort(request.Sort, _builder);
             result = await sorted.ApplyCursorPaginationAsync(
-                request.Cursor, pageSize, _builder.CursorPropertyName, cancellationToken,
-                _logger, effectiveSort, sortableSet, _cursorHmacKey)
+                request.Cursor, pageSize, _builder.CursorPropertyName,
+                _logger, effectiveSort, sortableSet, _cursorHmacKey, cancellationToken)
                 .ConfigureAwait(false);
         }
         else
@@ -216,6 +219,9 @@ internal sealed class QueryEngine<TEntity>(
 
         if (entityResult.Groups.Count > 0)
         {
+            // Items are best-effort: a single Take budget (MaxPageSize * groupCount) bounds the
+            // fetch, so under heavy skew a large group can exhaust the budget and leave later
+            // groups with fewer (or zero) Items even though their Count is accurate.
             IQueryable<TEntity> sorted = query.ApplySort(request.Sort, _builder);
             List<TEntity> allItems = await sorted
                 .Take(_builder.MaxPageSizeValue * entityResult.Groups.Count)
@@ -223,7 +229,10 @@ internal sealed class QueryEngine<TEntity>(
                 .ConfigureAwait(false);
 
             // Resolve the same (possibly dotted, VO-drilling) key access used to build the SQL
-            // GROUP BY so in-memory buckets match the materialized group keys.
+            // GROUP BY so in-memory buckets match the materialized group keys. Bucket on the
+            // boxed key VALUES (not ToString) — string formatting is culture/format-sensitive
+            // and could split or merge buckets when the SQL-materialized key and the in-memory
+            // key format differently.
             ParameterExpression bucketParam = Expression.Parameter(typeof(TEntity), "e");
             Expression? keyAccess = GroupByPathResolver.BuildKeyAccess(bucketParam, request.GroupBy);
             Func<TEntity, object?>? keyGetter = keyAccess is null
@@ -231,15 +240,15 @@ internal sealed class QueryEngine<TEntity>(
                 : Expression.Lambda<Func<TEntity, object?>>(
                     Expression.Convert(keyAccess, typeof(object)), bucketParam).Compile();
 
-            ILookup<string, TItem>? itemsByKey = keyGetter is null
+            ILookup<object, TItem>? itemsByKey = keyGetter is null
                 ? null
                 : allItems.ToLookup(
-                    e => keyGetter(e)?.ToString() ?? "(null)",
+                    e => keyGetter(e) ?? NullGroupKey,
                     e => projector is null ? (TItem)(object)e : projector(e));
 
             foreach (GroupEntry<TEntity> group in entityResult.Groups)
             {
-                IReadOnlyList<TItem>? items = itemsByKey?[group.Value?.ToString() ?? "(null)"].ToList();
+                IReadOnlyList<TItem>? items = itemsByKey?[group.Value ?? NullGroupKey].ToList();
 
                 groups.Add(new GroupEntry<TItem>
                 {

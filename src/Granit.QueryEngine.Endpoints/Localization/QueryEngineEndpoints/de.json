@@ -1,9 +1,10 @@
 {
   "culture": "de",
   "texts": {
-    "Validation:CursorPageMutuallyExclusive": "'Cursor' und 'Page' schließen sich gegenseitig aus.",
-    "Validation:MaxFilterEntries": "Maximal 50 Filtereinträge sind zulässig.",
-    "Validation:MaxPresetEntries": "Maximal 20 Voreinstellungen sind zulässig.",
-    "Validation:MaxQuickFilterEntries": "Maximal 20 Schnellfilter sind zulässig."
+    "QueryEngine:Validation:CursorPageMutuallyExclusive": "'Cursor' und 'Page' schließen sich gegenseitig aus.",
+    "QueryEngine:Validation:FilterEntryTooLong": "Ein Filterschlüssel darf höchstens 200 Zeichen und ein Filterwert höchstens 2000 Zeichen umfassen.",
+    "QueryEngine:Validation:MaxFilterEntries": "Maximal 50 Filtereinträge sind zulässig.",
+    "QueryEngine:Validation:MaxPresetEntries": "Maximal 20 Voreinstellungen sind zulässig.",
+    "QueryEngine:Validation:MaxQuickFilterEntries": "Maximal 20 Schnellfilter sind zulässig."
   }
 }

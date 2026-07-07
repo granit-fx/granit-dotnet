@@ -5,7 +5,7 @@ namespace Granit.QueryEngine;
 /// <summary>
 /// Immutable metadata about a single declared column, built from <see cref="ColumnBuilder{TEntity}"/>.
 /// </summary>
-public sealed class ColumnDescriptor
+public sealed record ColumnDescriptor
 {
     /// <summary>Property name on the entity (e.g. <c>"LastName"</c>).</summary>
     public required string PropertyName { get; init; }

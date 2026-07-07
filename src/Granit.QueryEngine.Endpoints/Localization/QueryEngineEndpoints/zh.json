@@ -1,9 +1,10 @@
 {
   "culture": "zh",
   "texts": {
-    "Validation:CursorPageMutuallyExclusive": "'Cursor' 和 'Page' 不能同时使用。",
-    "Validation:MaxFilterEntries": "最多允许 50 个筛选条目。",
-    "Validation:MaxPresetEntries": "最多允许 20 个预设条目。",
-    "Validation:MaxQuickFilterEntries": "最多允许 20 个快速筛选。"
+    "QueryEngine:Validation:CursorPageMutuallyExclusive": "'Cursor' 和 'Page' 不能同时使用。",
+    "QueryEngine:Validation:FilterEntryTooLong": "筛选键不能超过 200 个字符，筛选值不能超过 2000 个字符。",
+    "QueryEngine:Validation:MaxFilterEntries": "最多允许 50 个筛选条目。",
+    "QueryEngine:Validation:MaxPresetEntries": "最多允许 20 个预设条目。",
+    "QueryEngine:Validation:MaxQuickFilterEntries": "最多允许 20 个快速筛选。"
   }
 }

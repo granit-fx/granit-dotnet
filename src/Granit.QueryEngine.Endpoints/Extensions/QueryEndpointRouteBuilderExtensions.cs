@@ -137,9 +137,7 @@ public static class QueryEndpointRouteBuilderExtensions
         // GET /meta — query metadata
         if (options.IncludeMetaEndpoint)
         {
-            group.MapGet("/meta", (
-                [FromServices] IQueryEngine<TEntity> engine) =>
-                QueryEndpointHandler.GetMetadata(engine))
+            group.MapGet("/meta", QueryEndpointHandler.GetMetadata<TEntity>)
             .WithName($"Get{entityName}Meta")
             .WithSummary($"Returns query metadata for {entityName} (columns, filters, sorts, presets).")
             .WithDescription($"Returns the query definition metadata for {entityName}: available columns with display labels and data types, supported filter operators, default sort order, presets, and quick filters. Use this to dynamically build query UIs without hardcoding column definitions.")
@@ -155,31 +153,16 @@ public static class QueryEndpointRouteBuilderExtensions
         string entityName)
         where TEntity : class
     {
-        // Lambda returns different typed results (Ok<GroupedResult<T>> / Ok<PagedResult<T>>)
-        // depending on the query mode — IResult is the only common type.
-#pragma warning disable GRAPI001 // Results.Ok is needed here for polymorphic return
-        return group.MapGet("/", async (
+        // Trampoline (documented pattern): the handler needs the setup-time sourceProvider
+        // closure, which Minimal API cannot bind — the lambda only resolves the source and
+        // delegates to the named, unit-testable QueryEndpointHandler.QueryAsync.
+        return group.MapGet("/", (
             [FromServices] IQueryEngine<TEntity> engine,
             BindableQueryRequest request,
             HttpContext httpContext,
             CancellationToken cancellationToken) =>
-        {
-            IQueryable<TEntity> source = sourceProvider(httpContext.RequestServices);
-
-            if (!string.IsNullOrWhiteSpace(request.Value.GroupBy))
-            {
-                GroupedResult<TEntity> grouped = await engine
-                    .ExecuteGroupedAsync(source, request.Value, cancellationToken)
-                    .ConfigureAwait(false);
-                return Results.Ok(grouped);
-            }
-
-            PagedResult<TEntity> paged = await engine
-                .ExecuteAsync(source, request.Value, cancellationToken)
-                .ConfigureAwait(false);
-            return Results.Ok(paged);
-        })
-#pragma warning restore GRAPI001
+            QueryEndpointHandler.QueryAsync(
+                engine, request.Value, sourceProvider(httpContext.RequestServices), cancellationToken))
         .WithName($"Query{entityName}")
         .WithSummary($"Returns a filtered, sorted, and paginated list of {entityName} entries.")
         .WithDescription($"Executes a dynamic query against {entityName} using the Granit query engine. Accepts filter expressions, sort directives, column selection, pagination, and free-text search via query parameters. Returns a PagedResult by default. When the groupBy query parameter is specified, returns a GroupedResult instead (same status code, different shape).")
@@ -200,32 +183,16 @@ public static class QueryEndpointRouteBuilderExtensions
         var projection = (Expression<Func<TEntity, TDto>>)projectionLambda;
         string dtoName = typeof(TDto).Name;
 
-        // The projection applies to BOTH branches: paged uses SQL-level projection (typed
-        // ExecuteAsync<TDto>); grouped applies the same projection in-memory after entity
-        // materialization so GroupedResult.Items[] surfaces TDto, never the raw entity.
-#pragma warning disable GRAPI001 // Results.Ok is needed here for polymorphic return
-        return group.MapGet("/", async (
+        // Trampoline (documented pattern): the handler needs the setup-time sourceProvider
+        // and projection closures, which Minimal API cannot bind — the lambda only resolves
+        // the source and delegates to the named QueryEndpointHandler.QueryProjectedAsync.
+        return group.MapGet("/", (
             [FromServices] IQueryEngine<TEntity> engine,
             BindableQueryRequest request,
             HttpContext httpContext,
             CancellationToken cancellationToken) =>
-        {
-            IQueryable<TEntity> source = sourceProvider(httpContext.RequestServices);
-
-            if (!string.IsNullOrWhiteSpace(request.Value.GroupBy))
-            {
-                GroupedResult<TDto> grouped = await engine
-                    .ExecuteGroupedAsync(source, request.Value, projection, cancellationToken)
-                    .ConfigureAwait(false);
-                return Results.Ok(grouped);
-            }
-
-            PagedResult<TDto> paged = await engine
-                .ExecuteAsync(source, request.Value, projection, cancellationToken)
-                .ConfigureAwait(false);
-            return Results.Ok(paged);
-        })
-#pragma warning restore GRAPI001
+            QueryEndpointHandler.QueryProjectedAsync(
+                engine, request.Value, sourceProvider(httpContext.RequestServices), projection, cancellationToken))
         .WithName($"Query{entityName}")
         .WithSummary($"Returns a paged, filterable list of {dtoName} from {entityName}.")
         .WithDescription($"Executes a dynamic query against {entityName} using the Granit query engine and projects each row to {dtoName}. Accepts filter expressions, sort directives, column selection, pagination, and free-text search via query parameters. Returns a PagedResult<{dtoName}> by default. When the groupBy query parameter is specified, returns a GroupedResult<{dtoName}> with the same projection applied to the items inside each group.")

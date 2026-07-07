@@ -48664,7 +48664,7 @@
     {
       "name": "ColumnDescriptor",
       "fqn": "Granit.QueryEngine.ColumnDescriptor",
-      "kind": "class",
+      "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/ColumnDescriptor.cs",
       "line": 8,
@@ -48849,7 +48849,7 @@
     {
       "name": "AggregateDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.AggregateDescriptor",
-      "kind": "class",
+      "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Filtering/AggregateDescriptor.cs",
       "line": 6,
@@ -48867,7 +48867,7 @@
     {
       "name": "DateFilterDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.DateFilterDescriptor",
-      "kind": "class",
+      "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Filtering/DateFilterDescriptor.cs",
       "line": 6,
@@ -48901,7 +48901,7 @@
     {
       "name": "FilterGroupDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.FilterGroupDescriptor",
-      "kind": "class",
+      "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Filtering/FilterGroupDescriptor.cs",
       "line": 7,
@@ -48935,32 +48935,16 @@
     {
       "name": "GroupByDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.GroupByDescriptor",
-      "kind": "class",
+      "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Filtering/GroupByDescriptor.cs",
       "line": 6,
       "members": []
     },
     {
-      "name": "IQueryFilter",
-      "fqn": "Granit.QueryEngine.Filtering.IQueryFilter",
-      "kind": "interface",
-      "project": "Granit.QueryEngine.Abstractions",
-      "file": "src/Granit.QueryEngine.Abstractions/Filtering/IQueryFilter.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "Apply",
-          "kind": "method",
-          "signature": "Apply(string value)",
-          "returnType": "string Name { get; } Expression<Func<TEntity, bool>>"
-        }
-      ]
-    },
-    {
       "name": "PresetDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.PresetDescriptor",
-      "kind": "class",
+      "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Filtering/PresetDescriptor.cs",
       "line": 8,
@@ -48969,7 +48953,7 @@
     {
       "name": "QuickFilterDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.QuickFilterDescriptor",
-      "kind": "class",
+      "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Filtering/QuickFilterDescriptor.cs",
       "line": 11,

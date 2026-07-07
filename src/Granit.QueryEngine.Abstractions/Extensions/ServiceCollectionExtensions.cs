@@ -25,6 +25,8 @@ public static class ServiceCollectionExtensions
     /// Registers the following services:
     /// <list type="bullet">
     ///   <item><see cref="QueryEngineOptions"/> singleton (resolved from <see cref="IOptions{T}"/>).</item>
+    ///   <item><see cref="QueryEngineOptionsValidator"/> so misconfiguration (including a
+    ///   malformed <see cref="QueryEngineOptions.CursorHmacKey"/>) fails at startup, not per request.</item>
     ///   <item><see cref="QueryEngineMetrics"/> singleton.</item>
     /// </list>
     /// <para>
@@ -39,6 +41,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton(sp =>
             sp.GetRequiredService<IOptions<QueryEngineOptions>>().Value);
 
+        services.TryAddSingleton<IValidateOptions<QueryEngineOptions>, QueryEngineOptionsValidator>();
         services.TryAddSingleton<QueryEngineMetrics>();
 
         return services;

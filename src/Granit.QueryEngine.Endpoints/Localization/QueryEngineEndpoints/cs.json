@@ -1,9 +1,10 @@
 {
   "culture": "cs",
   "texts": {
-    "Validation:CursorPageMutuallyExclusive": "'Cursor' a 'Page' nelze použít současně.",
-    "Validation:MaxFilterEntries": "Je povoleno maximálně 50 položek filtru.",
-    "Validation:MaxPresetEntries": "Je povoleno maximálně 20 předvoleb.",
-    "Validation:MaxQuickFilterEntries": "Je povoleno maximálně 20 rychlých filtrů."
+    "QueryEngine:Validation:CursorPageMutuallyExclusive": "'Cursor' a 'Page' nelze použít současně.",
+    "QueryEngine:Validation:FilterEntryTooLong": "Klíč filtru nesmí přesáhnout 200 znaků a hodnota filtru 2000 znaků.",
+    "QueryEngine:Validation:MaxFilterEntries": "Je povoleno maximálně 50 položek filtru.",
+    "QueryEngine:Validation:MaxPresetEntries": "Je povoleno maximálně 20 předvoleb.",
+    "QueryEngine:Validation:MaxQuickFilterEntries": "Je povoleno maximálně 20 rychlých filtrů."
   }
 }

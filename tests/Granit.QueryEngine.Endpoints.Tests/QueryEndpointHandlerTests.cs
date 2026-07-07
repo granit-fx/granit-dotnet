@@ -1,4 +1,3 @@
-using Granit.QueryEngine.Endpoints.Dtos;
 using Granit.QueryEngine.Endpoints.Internal;
 using Granit.QueryEngine.Meta;
 using Microsoft.AspNetCore.Http;
@@ -25,11 +24,10 @@ public sealed class QueryEndpointHandlerTests
         engine.ExecuteAsync(Arg.Any<IQueryable<TestEntity>>(), Arg.Any<QueryRequest>(), Arg.Any<CancellationToken>())
             .Returns(pagedResult);
 
-        BindableQueryRequest request = CreateBindableRequest(new QueryRequest());
         IQueryable<TestEntity> source = Array.Empty<TestEntity>().AsQueryable();
 
         IResult result = await QueryEndpointHandler.QueryAsync(
-            engine, request, source, TestContext.Current.CancellationToken);
+            engine, new QueryRequest(), source, TestContext.Current.CancellationToken);
 
         Ok<PagedResult<TestEntity>> okResult = result.ShouldBeOfType<Ok<PagedResult<TestEntity>>>();
         okResult.Value.ShouldBe(pagedResult);
@@ -44,11 +42,10 @@ public sealed class QueryEndpointHandlerTests
             .Returns(groupedResult);
 
         var queryRequest = new QueryRequest { GroupBy = "Name" };
-        BindableQueryRequest request = CreateBindableRequest(queryRequest);
         IQueryable<TestEntity> source = Array.Empty<TestEntity>().AsQueryable();
 
         IResult result = await QueryEndpointHandler.QueryAsync(
-            engine, request, source, TestContext.Current.CancellationToken);
+            engine, queryRequest, source, TestContext.Current.CancellationToken);
 
         Ok<GroupedResult<TestEntity>> okResult = result.ShouldBeOfType<Ok<GroupedResult<TestEntity>>>();
         okResult.Value.ShouldBe(groupedResult);
@@ -63,11 +60,10 @@ public sealed class QueryEndpointHandlerTests
             .Returns(pagedResult);
 
         var queryRequest = new QueryRequest { GroupBy = "  " };
-        BindableQueryRequest request = CreateBindableRequest(queryRequest);
         IQueryable<TestEntity> source = Array.Empty<TestEntity>().AsQueryable();
 
         IResult result = await QueryEndpointHandler.QueryAsync(
-            engine, request, source, TestContext.Current.CancellationToken);
+            engine, queryRequest, source, TestContext.Current.CancellationToken);
 
         result.ShouldBeOfType<Ok<PagedResult<TestEntity>>>();
     }
@@ -96,12 +92,4 @@ public sealed class QueryEndpointHandlerTests
             GroupByFields = [],
             Pagination = new PaginationMeta(20, 100, QueryEngineDefaults.MaxStreamSize, false),
         };
-
-    private static BindableQueryRequest CreateBindableRequest(QueryRequest queryRequest)
-    {
-        System.Reflection.ConstructorInfo? ctor = typeof(BindableQueryRequest).GetConstructor(
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
-            [typeof(QueryRequest)]);
-        return (BindableQueryRequest)ctor!.Invoke([queryRequest]);
-    }
 }

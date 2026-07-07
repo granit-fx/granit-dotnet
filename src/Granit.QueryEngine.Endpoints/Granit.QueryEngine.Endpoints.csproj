@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.QueryEngine.Endpoints</PackageId>
-    <Description>ASP.NET Core integration for Granit.QueryEngine. MapGranitQuery fluent API, filter[field.op]=value query string binding, GET /meta metadata endpoint, and OpenAPI conventions.</Description>
+    <Description>HTTP endpoints for Granit.QueryEngine. MapGranitQuery fluent API, filter[field.op]=value query string binding, GET /meta metadata endpoint, query catalog endpoint, and OpenAPI conventions.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

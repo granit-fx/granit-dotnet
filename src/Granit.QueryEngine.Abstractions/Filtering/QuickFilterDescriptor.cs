@@ -8,7 +8,7 @@ namespace Granit.QueryEngine.Filtering;
 /// Unlike <see cref="FilterGroupDescriptor"/> presets which are mutually exclusive (OR within a group),
 /// quick filters act like independent checkboxes.
 /// </summary>
-public sealed class QuickFilterDescriptor
+public sealed record QuickFilterDescriptor
 {
     /// <summary>Unique name of this filter (e.g. <c>"MyAppointments"</c>).</summary>
     public required string Name { get; init; }

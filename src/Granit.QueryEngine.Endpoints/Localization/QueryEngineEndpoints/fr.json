@@ -1,9 +1,10 @@
 {
   "culture": "fr",
   "texts": {
-    "Validation:CursorPageMutuallyExclusive": "'Cursor' et 'Page' sont mutuellement exclusifs.",
-    "Validation:MaxFilterEntries": "50 entrées de filtre maximum sont autorisées.",
-    "Validation:MaxPresetEntries": "20 entrées de préréglage maximum sont autorisées.",
-    "Validation:MaxQuickFilterEntries": "20 filtres rapides maximum sont autorisés."
+    "QueryEngine:Validation:CursorPageMutuallyExclusive": "'Cursor' et 'Page' sont mutuellement exclusifs.",
+    "QueryEngine:Validation:FilterEntryTooLong": "Une clé de filtre ne peut pas dépasser 200 caractères et une valeur de filtre ne peut pas dépasser 2000 caractères.",
+    "QueryEngine:Validation:MaxFilterEntries": "50 entrées de filtre maximum sont autorisées.",
+    "QueryEngine:Validation:MaxPresetEntries": "20 entrées de préréglage maximum sont autorisées.",
+    "QueryEngine:Validation:MaxQuickFilterEntries": "20 filtres rapides maximum sont autorisés."
   }
 }

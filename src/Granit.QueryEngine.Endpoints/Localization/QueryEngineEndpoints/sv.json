@@ -1,9 +1,10 @@
 {
   "culture": "sv",
   "texts": {
-    "Validation:CursorPageMutuallyExclusive": "'Cursor' och 'Page' kan inte användas samtidigt.",
-    "Validation:MaxFilterEntries": "Högst 50 filterposter är tillåtna.",
-    "Validation:MaxPresetEntries": "Högst 20 förinställningar är tillåtna.",
-    "Validation:MaxQuickFilterEntries": "Högst 20 snabbfilter är tillåtna."
+    "QueryEngine:Validation:CursorPageMutuallyExclusive": "'Cursor' och 'Page' kan inte användas samtidigt.",
+    "QueryEngine:Validation:FilterEntryTooLong": "En filternyckel får inte överstiga 200 tecken och ett filtervärde får inte överstiga 2000 tecken.",
+    "QueryEngine:Validation:MaxFilterEntries": "Högst 50 filterposter är tillåtna.",
+    "QueryEngine:Validation:MaxPresetEntries": "Högst 20 förinställningar är tillåtna.",
+    "QueryEngine:Validation:MaxQuickFilterEntries": "Högst 20 snabbfilter är tillåtna."
   }
 }

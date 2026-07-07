@@ -170,7 +170,7 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
         IQueryable<TestProduct> source = _db.Products.OrderBy(p => p.Price);
 
         PagedResult<TestProduct> result = await source.ApplyCursorPaginationAsync(
-            null, 2, "Price", TestContext.Current.CancellationToken);
+            null, 2, "Price", cancellationToken: TestContext.Current.CancellationToken);
 
         result.Items.Count.ShouldBe(2);
         result.TotalCount.ShouldBeNull();
@@ -184,7 +184,7 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
         IQueryable<TestProduct> source = _db.Products.OrderBy(p => p.Name);
 
         PagedResult<TestProduct> result = await source.ApplyCursorPaginationAsync(
-            null, 3, "NonExistentProperty", TestContext.Current.CancellationToken);
+            null, 3, "NonExistentProperty", cancellationToken: TestContext.Current.CancellationToken);
 
         result.Items.Count.ShouldBe(3);
     }
@@ -195,7 +195,7 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
         IQueryable<TestProduct> source = _db.Products.OrderBy(p => p.Price);
 
         PagedResult<TestProduct> result = await source.ApplyCursorPaginationAsync(
-            null, 10, "Price", TestContext.Current.CancellationToken);
+            null, 10, "Price", cancellationToken: TestContext.Current.CancellationToken);
 
         result.Items.Count.ShouldBe(5);
         result.HasMore.ShouldBeFalse();
@@ -209,13 +209,13 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
 
         // First get a page to obtain a cursor
         PagedResult<TestProduct> firstPage = await source.ApplyCursorPaginationAsync(
-            null, 2, "Price", TestContext.Current.CancellationToken);
+            null, 2, "Price", cancellationToken: TestContext.Current.CancellationToken);
 
         firstPage.NextCursor.ShouldNotBeNull();
 
         // Use the cursor for next page
         PagedResult<TestProduct> secondPage = await source.ApplyCursorPaginationAsync(
-            firstPage.NextCursor, 2, "Price", TestContext.Current.CancellationToken);
+            firstPage.NextCursor, 2, "Price", cancellationToken: TestContext.Current.CancellationToken);
 
         // All items should have Price > last item of first page
         int lastPriceFirstPage = firstPage.Items[^1].Price;

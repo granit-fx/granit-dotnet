@@ -5,7 +5,7 @@ namespace Granit.QueryEngine.Filtering;
 /// <summary>
 /// Immutable metadata about a single filter preset within a <see cref="FilterGroupDescriptor"/>.
 /// </summary>
-public sealed class PresetDescriptor
+public sealed record PresetDescriptor
 {
     /// <summary>Unique name of this preset within its group (e.g. <c>"Active"</c>).</summary>
     public required string Name { get; init; }

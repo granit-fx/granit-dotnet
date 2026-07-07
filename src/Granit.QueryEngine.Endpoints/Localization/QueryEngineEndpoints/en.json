@@ -1,9 +1,10 @@
 {
   "culture": "en",
   "texts": {
-    "Validation:CursorPageMutuallyExclusive": "'Cursor' and 'Page' are mutually exclusive.",
-    "Validation:MaxFilterEntries": "At most 50 filter entries are allowed.",
-    "Validation:MaxPresetEntries": "At most 20 preset entries are allowed.",
-    "Validation:MaxQuickFilterEntries": "At most 20 quick filters are allowed."
+    "QueryEngine:Validation:CursorPageMutuallyExclusive": "'Cursor' and 'Page' are mutually exclusive.",
+    "QueryEngine:Validation:FilterEntryTooLong": "A filter key must not exceed 200 characters and a filter value must not exceed 2000 characters.",
+    "QueryEngine:Validation:MaxFilterEntries": "At most 50 filter entries are allowed.",
+    "QueryEngine:Validation:MaxPresetEntries": "At most 20 preset entries are allowed.",
+    "QueryEngine:Validation:MaxQuickFilterEntries": "At most 20 quick filters are allowed."
   }
 }

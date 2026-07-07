@@ -1,9 +1,10 @@
 {
   "culture": "ja",
   "texts": {
-    "Validation:CursorPageMutuallyExclusive": "'Cursor' と 'Page' は同時に使用できません。",
-    "Validation:MaxFilterEntries": "フィルター項目は最大50件までです。",
-    "Validation:MaxPresetEntries": "プリセット項目は最大20件までです。",
-    "Validation:MaxQuickFilterEntries": "クイックフィルターは最大20件までです。"
+    "QueryEngine:Validation:CursorPageMutuallyExclusive": "'Cursor' と 'Page' は同時に使用できません。",
+    "QueryEngine:Validation:FilterEntryTooLong": "フィルターキーは200文字以内、フィルター値は2000文字以内にしてください。",
+    "QueryEngine:Validation:MaxFilterEntries": "フィルター項目は最大50件までです。",
+    "QueryEngine:Validation:MaxPresetEntries": "プリセット項目は最大20件までです。",
+    "QueryEngine:Validation:MaxQuickFilterEntries": "クイックフィルターは最大20件までです。"
   }
 }

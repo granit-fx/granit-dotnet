@@ -4,7 +4,7 @@ namespace Granit.QueryEngine.Filtering;
 /// Immutable metadata about a mutually exclusive filter preset group.
 /// Presets within a group use OR semantics; groups are combined with AND.
 /// </summary>
-public sealed class FilterGroupDescriptor
+public sealed record FilterGroupDescriptor
 {
     /// <summary>Unique name of this group (e.g. <c>"Status"</c>).</summary>
     public required string Name { get; init; }
