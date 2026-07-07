@@ -144,8 +144,8 @@ public sealed class BackgroundJobsDbContextTests
             Guid.NewGuid(), "daily-report", "0 8 * * *", "My.App.DailyReportMessage, My.App");
         job.RecordExecutionStart(new DateTimeOffset(2026, 1, 15, 8, 0, 0, TimeSpan.Zero));
         job.ScheduleNext(new DateTimeOffset(2026, 1, 16, 8, 0, 0, TimeSpan.Zero));
-        job.RecordFailure("Timeout after 30s");
-        job.RecordFailure("Timeout after 30s");
+        job.RecordFailure("Timeout after 30s", 3);
+        job.RecordFailure("Timeout after 30s", 3);
         job.SetTriggeredBy("admin-user");
 
         ctx.Jobs.Add(job);

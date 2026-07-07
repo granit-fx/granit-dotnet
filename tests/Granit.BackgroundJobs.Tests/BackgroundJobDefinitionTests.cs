@@ -116,8 +116,8 @@ public sealed class BackgroundJobDefinitionTests
     {
         BackgroundJobDefinition job = BuildJob();
 
-        job.RecordFailure("timeout");
-        job.RecordFailure("timeout");
+        job.RecordFailure("timeout", 3);
+        job.RecordFailure("timeout", 3);
 
         job.ConsecutiveFailureCount.ShouldBe(2);
         job.IntegrationEvents.ShouldBeEmpty();
@@ -128,9 +128,9 @@ public sealed class BackgroundJobDefinitionTests
     {
         BackgroundJobDefinition job = BuildJob();
 
-        job.RecordFailure("error 1");
-        job.RecordFailure("error 2");
-        job.RecordFailure("error 3");
+        job.RecordFailure("error 1", 3);
+        job.RecordFailure("error 2", 3);
+        job.RecordFailure("error 3", 3);
 
         job.ConsecutiveFailureCount.ShouldBe(3);
 
@@ -143,16 +143,40 @@ public sealed class BackgroundJobDefinitionTests
     }
 
     [Fact]
-    public void RecordFailure_AboveThreshold_ShouldEmitOnEachSubsequentFailure()
+    public void RecordFailure_AboveThreshold_ShouldAlertOnlyOnce()
     {
         BackgroundJobDefinition job = BuildJob();
 
         for (int i = 0; i < 5; i++)
         {
-            job.RecordFailure($"error {i + 1}");
+            job.RecordFailure($"error {i + 1}", 3);
         }
 
-        job.IntegrationEvents.Count.ShouldBe(3); // failures 3, 4, 5
+        // Alert fires exactly when the threshold is reached (failure 3), never again
+        // until a successful execution resets the counter.
+        job.IntegrationEvents.ShouldHaveSingleItem();
+    }
+
+    [Fact]
+    public void RecordFailure_AfterSuccessReset_ShouldReAlertAtThreshold()
+    {
+        BackgroundJobDefinition job = BuildJob();
+
+        for (int i = 0; i < 3; i++)
+        {
+            job.RecordFailure("first wave", 3);
+        }
+
+        job.RecordExecutionStart(DateTimeOffset.UtcNow);
+        job.ClearIntegrationEvents();
+
+        for (int i = 0; i < 3; i++)
+        {
+            job.RecordFailure("second wave", 3);
+        }
+
+        job.IntegrationEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<BackgroundJobFailureThresholdExceededEto>();
     }
 
     [Fact]
@@ -161,7 +185,7 @@ public sealed class BackgroundJobDefinitionTests
         BackgroundJobDefinition job = BuildJob();
         string longMessage = new('x', 1000);
 
-        job.RecordFailure(longMessage);
+        job.RecordFailure(longMessage, 3);
 
         job.LastErrorMessage.ShouldNotBeNull();
         job.LastErrorMessage.Length.ShouldBeLessThanOrEqualTo(
@@ -175,7 +199,7 @@ public sealed class BackgroundJobDefinitionTests
         BackgroundJobDefinition job = BuildJob();
         const string shortMessage = "timeout";
 
-        job.RecordFailure(shortMessage);
+        job.RecordFailure(shortMessage, 3);
 
         job.LastErrorMessage.ShouldBe("timeout");
     }
@@ -185,7 +209,7 @@ public sealed class BackgroundJobDefinitionTests
     {
         BackgroundJobDefinition job = BuildJob();
 
-        job.RecordFailure(null);
+        job.RecordFailure(null, 3);
 
         job.LastErrorMessage.ShouldBeNull();
     }

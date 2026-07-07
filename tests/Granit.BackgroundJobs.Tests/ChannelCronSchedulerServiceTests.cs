@@ -42,15 +42,13 @@ public sealed class ChannelCronSchedulerServiceTests
 
     /// <summary>
     /// Starts the <see cref="BackgroundService"/> and waits for <c>ExecuteAsync</c> to complete.
-    /// The service has a 2-second startup delay, so we wait long enough for it to finish.
     /// </summary>
     private static async Task RunServiceAsync(ChannelCronSchedulerService service, CancellationToken cancellationToken)
     {
         await service.StartAsync(cancellationToken);
 
-        // ExecuteAsync has a 2-second Task.Delay before processing jobs.
-        // Wait for it to complete naturally before calling StopAsync.
-        await Task.Delay(TimeSpan.FromSeconds(4), cancellationToken);
+        // Give the background service a moment to drain its (synchronous) work.
+        await Task.Delay(200, cancellationToken);
 
         await service.StopAsync(cancellationToken);
     }

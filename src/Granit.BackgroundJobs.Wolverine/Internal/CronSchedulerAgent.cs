@@ -1,4 +1,3 @@
-using Cronos;
 using Granit.BackgroundJobs.Abstractions;
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Internal;
@@ -19,14 +18,16 @@ namespace Granit.BackgroundJobs.Wolverine.Internal;
 /// preventing duplicate scheduling on multi-node startup.
 /// </para>
 /// <para>
+/// The agent outlives any request scope, so the Scoped store and dispatcher services are
+/// resolved from a dedicated scope — never constructor-injected (captive dependency).
+/// </para>
+/// <para>
 /// <b>Anti-doublon guarantee:</b> before scheduling a job, <see cref="startAsync"/> checks
 /// whether <see cref="BackgroundJobDefinition.NextExecutionAt"/> is already in the future.
 /// If it is, the job is already scheduled via the Outbox — no message is published.
 /// </para>
 /// </remarks>
 internal sealed partial class CronSchedulerAgent(
-    IBackgroundJobStoreReader storeReader,
-    IBackgroundJobStoreWriter storeWriter,
     IServiceScopeFactory scopeFactory,
     IClock clock,
     ILogger<CronSchedulerAgent> logger) : SingularAgent("granit-background-jobs")
@@ -34,7 +35,16 @@ internal sealed partial class CronSchedulerAgent(
     /// <inheritdoc/>
     protected override async Task startAsync(CancellationToken cancellationToken)
     {
-        IReadOnlyList<BackgroundJobDefinition> jobs = await storeReader.GetEnabledJobsAsync(cancellationToken).ConfigureAwait(false);
+        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+        IBackgroundJobStoreReader storeReader =
+            scope.ServiceProvider.GetRequiredService<IBackgroundJobStoreReader>();
+        IBackgroundJobStoreWriter storeWriter =
+            scope.ServiceProvider.GetRequiredService<IBackgroundJobStoreWriter>();
+        IBackgroundJobDispatcher dispatcher =
+            scope.ServiceProvider.GetRequiredService<IBackgroundJobDispatcher>();
+
+        IReadOnlyList<BackgroundJobDefinition> jobs =
+            await storeReader.GetEnabledJobsAsync(cancellationToken).ConfigureAwait(false);
 
         foreach (BackgroundJobDefinition job in jobs)
         {
@@ -44,7 +54,7 @@ internal sealed partial class CronSchedulerAgent(
                 continue;
             }
 
-            DateTimeOffset? next = ComputeNext(job.CronExpression);
+            DateTimeOffset? next = CronSchedulerHelper.ComputeNext(job.CronExpression, clock.Now);
             if (next is null)
             {
                 LogJobCronInvalid(logger, job.JobName, job.CronExpression);
@@ -52,9 +62,6 @@ internal sealed partial class CronSchedulerAgent(
             }
 
             object message = CronSchedulerHelper.CreateMessage(job.MessageType, job.JobName);
-
-            await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
-            IBackgroundJobDispatcher dispatcher = scope.ServiceProvider.GetRequiredService<IBackgroundJobDispatcher>();
             await dispatcher.ScheduleAsync(message, next.Value, cancellationToken).ConfigureAwait(false);
             await storeWriter.RecordNextExecutionAsync(job.JobName, next.Value, cancellationToken).ConfigureAwait(false);
             LogJobScheduled(logger, job.JobName, next.Value);
@@ -63,28 +70,6 @@ internal sealed partial class CronSchedulerAgent(
 
     /// <inheritdoc/>
     protected override Task stopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-
-    private DateTimeOffset? ComputeNext(string cronExpression)
-    {
-        try
-        {
-            CronExpression cron;
-            try
-            {
-                cron = CronExpression.Parse(cronExpression, CronFormat.IncludeSeconds);
-            }
-            catch (CronFormatException)
-            {
-                cron = CronExpression.Parse(cronExpression);
-            }
-
-            return cron.GetNextOccurrence(clock.Now, TimeZoneInfo.Utc);
-        }
-        catch (CronFormatException)
-        {
-            return null;
-        }
-    }
 
     [LoggerMessage(Level = LogLevel.Debug,
         Message = "BackgroundJob '{JobName}' already scheduled for {Next} — skipping.")]

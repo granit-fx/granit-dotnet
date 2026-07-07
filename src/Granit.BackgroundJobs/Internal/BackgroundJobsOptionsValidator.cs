@@ -1,4 +1,3 @@
-using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Options;
 using Microsoft.Extensions.Options;
 
@@ -12,13 +11,11 @@ internal sealed class BackgroundJobsOptionsValidator : IValidateOptions<Backgrou
     /// <inheritdoc/>
     public ValidateOptionsResult Validate(string? name, BackgroundJobsOptions options)
     {
-        if (options.Mode == JobStoreMode.Durable
-            && string.IsNullOrWhiteSpace(options.ConnectionString))
+        if (options.FailureAlertThreshold < 1)
         {
             return ValidateOptionsResult.Fail(
-                $"{nameof(options.ConnectionString)} must be non-empty when " +
-                $"{nameof(options.Mode)} is {nameof(JobStoreMode.Durable)}. " +
-                "Provide a valid SQL Server or PostgreSQL connection string.");
+                $"{nameof(options.FailureAlertThreshold)} must be at least 1 " +
+                $"(got {options.FailureAlertThreshold}).");
         }
 
         return ValidateOptionsResult.Success;

@@ -17,8 +17,9 @@ public static class BackgroundJobsPermissions
         public const string Read = "BackgroundJobs.Jobs.Read";
 
         /// <summary>
-        /// Grants full management access to all background jobs endpoints
-        /// (list, detail, pause, resume, trigger).
+        /// Grants access to the write endpoints (pause, resume, trigger).
+        /// Read endpoints require <see cref="Read"/> — grant both to operators
+        /// who administer jobs through the dashboard.
         /// </summary>
         public const string Manage = "BackgroundJobs.Jobs.Manage";
     }

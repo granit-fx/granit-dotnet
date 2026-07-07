@@ -2,16 +2,25 @@ using System.Collections.Concurrent;
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Options;
 using Granit.Guids;
+using Microsoft.Extensions.Options;
 
 namespace Granit.BackgroundJobs.Internal;
 
 /// <summary>
 /// Thread-safe, in-memory implementation of <see cref="IBackgroundJobStoreReader"/> and
 /// <see cref="IBackgroundJobStoreWriter"/>.
-/// Registered as a <b>Singleton</b> when <see cref="BackgroundJobsOptions.Mode"/> is
-/// <see cref="JobStoreMode.InMemory"/>. State is lost on application restart.
+/// Registered as a <b>Singleton</b> default; replaced by the EF Core store when
+/// <c>Granit.BackgroundJobs.EntityFrameworkCore</c> is added. State is lost on restart.
 /// </summary>
-internal sealed class InMemoryBackgroundJobStore(IGuidGenerator guidGenerator) : IBackgroundJobStoreReader, IBackgroundJobStoreWriter
+/// <remarks>
+/// Domain and integration events raised by <see cref="BackgroundJobDefinition"/> are
+/// <b>not dispatched</b> by this store — there is no SaveChanges pipeline to publish them.
+/// They are drained after each mutation to prevent unbounded accumulation on the
+/// long-lived aggregates. Durable mode dispatches them via the EF Core interceptors.
+/// </remarks>
+internal sealed class InMemoryBackgroundJobStore(
+    IGuidGenerator guidGenerator,
+    IOptions<BackgroundJobsOptions> options) : IBackgroundJobStoreReader, IBackgroundJobStoreWriter
 {
     private readonly ConcurrentDictionary<string, BackgroundJobDefinition> _jobs = new();
 
@@ -33,7 +42,7 @@ internal sealed class InMemoryBackgroundJobStore(IGuidGenerator guidGenerator) :
     {
         foreach (RecurringJobRegistration reg in registrations)
         {
-            _jobs.AddOrUpdate(
+            BackgroundJobDefinition job = _jobs.AddOrUpdate(
                 reg.JobName,
                 addValueFactory: _ => BackgroundJobDefinition.Create(
                     guidGenerator.Create(), reg.JobName, reg.CronExpression, reg.MessageType),
@@ -43,48 +52,27 @@ internal sealed class InMemoryBackgroundJobStore(IGuidGenerator guidGenerator) :
                     existing.UpdateDefinition(reg.CronExpression, reg.MessageType);
                     return existing;
                 });
+            DrainEvents(job);
         }
 
         return Task.CompletedTask;
     }
 
     /// <inheritdoc/>
-    public Task RecordExecutionStartAsync(string jobName, DateTimeOffset startedAt, CancellationToken cancellationToken = default)
-    {
-        if (_jobs.TryGetValue(jobName, out BackgroundJobDefinition? job))
-        {
-            job.RecordExecutionStart(startedAt);
-        }
-
-        return Task.CompletedTask;
-    }
+    public Task RecordExecutionStartAsync(string jobName, DateTimeOffset startedAt, CancellationToken cancellationToken = default) =>
+        MutateAsync(jobName, job => job.RecordExecutionStart(startedAt));
 
     /// <inheritdoc/>
-    public Task RecordNextExecutionAsync(string jobName, DateTimeOffset nextExecution, CancellationToken cancellationToken = default)
-    {
-        if (_jobs.TryGetValue(jobName, out BackgroundJobDefinition? job))
-        {
-            job.ScheduleNext(nextExecution);
-        }
-
-        return Task.CompletedTask;
-    }
+    public Task RecordNextExecutionAsync(string jobName, DateTimeOffset nextExecution, CancellationToken cancellationToken = default) =>
+        MutateAsync(jobName, job => job.ScheduleNext(nextExecution));
 
     /// <inheritdoc/>
-    public Task RecordExecutionFailureAsync(string jobName, string errorMessage, CancellationToken cancellationToken = default)
-    {
-        if (_jobs.TryGetValue(jobName, out BackgroundJobDefinition? job))
-        {
-            job.RecordFailure(errorMessage);
-        }
-
-        return Task.CompletedTask;
-    }
+    public Task RecordExecutionFailureAsync(string jobName, string errorMessage, CancellationToken cancellationToken = default) =>
+        MutateAsync(jobName, job => job.RecordFailure(errorMessage, options.Value.FailureAlertThreshold));
 
     /// <inheritdoc/>
-    public Task SetEnabledAsync(string jobName, bool enabled, CancellationToken cancellationToken = default)
-    {
-        if (_jobs.TryGetValue(jobName, out BackgroundJobDefinition? job))
+    public Task SetEnabledAsync(string jobName, bool enabled, CancellationToken cancellationToken = default) =>
+        MutateAsync(jobName, job =>
         {
             if (enabled)
             {
@@ -94,19 +82,26 @@ internal sealed class InMemoryBackgroundJobStore(IGuidGenerator guidGenerator) :
             {
                 job.Pause();
             }
+        });
+
+    /// <inheritdoc/>
+    public Task SetTriggeredByAsync(string jobName, string? triggeredBy, CancellationToken cancellationToken = default) =>
+        MutateAsync(jobName, job => job.SetTriggeredBy(triggeredBy));
+
+    private Task MutateAsync(string jobName, Action<BackgroundJobDefinition> mutation)
+    {
+        if (_jobs.TryGetValue(jobName, out BackgroundJobDefinition? job))
+        {
+            mutation(job);
+            DrainEvents(job);
         }
 
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc/>
-    public Task SetTriggeredByAsync(string jobName, string? triggeredBy, CancellationToken cancellationToken = default)
+    private static void DrainEvents(BackgroundJobDefinition job)
     {
-        if (_jobs.TryGetValue(jobName, out BackgroundJobDefinition? job))
-        {
-            job.SetTriggeredBy(triggeredBy);
-        }
-
-        return Task.CompletedTask;
+        job.ClearDomainEvents();
+        job.ClearIntegrationEvents();
     }
 }

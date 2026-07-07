@@ -12047,7 +12047,7 @@
       "kind": "record",
       "project": "Granit.BackgroundJobs",
       "file": "src/Granit.BackgroundJobs/BackgroundJobStatus.cs",
-      "line": 20,
+      "line": 19,
       "members": []
     },
     {
@@ -12106,15 +12106,6 @@
       ]
     },
     {
-      "name": "JobStoreMode",
-      "fqn": "Granit.BackgroundJobs.Domain.JobStoreMode",
-      "kind": "enum",
-      "project": "Granit.BackgroundJobs",
-      "file": "src/Granit.BackgroundJobs/Domain/JobStoreMode.cs",
-      "line": 7,
-      "members": []
-    },
-    {
       "name": "RecurringJobRegistration",
       "fqn": "Granit.BackgroundJobs.Domain.RecurringJobRegistration",
       "kind": "record",
@@ -12124,34 +12115,12 @@
       "members": []
     },
     {
-      "name": "CronSchedule",
-      "fqn": "Granit.BackgroundJobs.Domain.ValueObjects.CronSchedule",
-      "kind": "class",
-      "project": "Granit.BackgroundJobs",
-      "file": "src/Granit.BackgroundJobs/Domain/ValueObjects/CronSchedule.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(string value)",
-          "returnType": "required string Value { get; init; } public CronSchedule"
-        },
-        {
-          "name": "CronSchedule",
-          "kind": "method",
-          "signature": "CronSchedule(string value)",
-          "returnType": "implicit operator"
-        }
-      ]
-    },
-    {
       "name": "BackgroundJobsEndpointRouteBuilderExtensions",
       "fqn": "Granit.BackgroundJobs.Endpoints.Extensions.BackgroundJobsEndpointRouteBuilderExtensions",
       "kind": "class",
       "project": "Granit.BackgroundJobs.Endpoints",
       "file": "src/Granit.BackgroundJobs.Endpoints/Extensions/BackgroundJobsEndpointRouteBuilderExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitBackgroundJobs",
@@ -12350,7 +12319,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs",
       "file": "src/Granit.BackgroundJobs/Extensions/BackgroundJobsHostApplicationBuilderExtensions.cs",
-      "line": 24,
+      "line": 23,
       "members": [
         {
           "name": "AddGranitBackgroundJobs",
@@ -12366,7 +12335,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs",
       "file": "src/Granit.BackgroundJobs/GranitBackgroundJobsModule.cs",
-      "line": 28,
+      "line": 25,
       "members": [
         {
           "name": "ConfigureServices",
@@ -12487,7 +12456,7 @@
       "kind": "interface",
       "project": "Granit.BackgroundJobs",
       "file": "src/Granit.BackgroundJobs/IBackgroundJobWriter.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "PauseAsync",
@@ -12584,19 +12553,13 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs",
       "file": "src/Granit.BackgroundJobs/Options/BackgroundJobsOptions.cs",
-      "line": 17,
+      "line": 13,
       "members": [
         {
-          "name": "Mode",
+          "name": "FailureAlertThreshold",
           "kind": "property",
-          "signature": "JobStoreMode Mode",
-          "returnType": "JobStoreMode"
-        },
-        {
-          "name": "ConnectionString",
-          "kind": "property",
-          "signature": "string ConnectionString",
-          "returnType": "string"
+          "signature": "int FailureAlertThreshold",
+          "returnType": "int"
         }
       ]
     },
@@ -12647,7 +12610,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs.Wolverine",
       "file": "src/Granit.BackgroundJobs.Wolverine/RecurringJobSchedulingMiddleware.cs",
-      "line": 33,
+      "line": 41,
       "members": [
         {
           "name": "BeforeAsync",

@@ -1,10 +1,47 @@
+using Cronos;
+
 namespace Granit.BackgroundJobs.Internal;
 
 /// <summary>
-/// Shared helper for creating job message instances from type names.
+/// Shared helpers for cron parsing, next-occurrence computation and job message creation.
+/// Single source of truth for the 6-field-then-5-field Cronos parse fallback.
 /// </summary>
 internal static class CronSchedulerHelper
 {
+    /// <summary>
+    /// Parses a cron expression, trying the 6-field (seconds) format first and
+    /// falling back to the standard 5-field format.
+    /// </summary>
+    /// <exception cref="CronFormatException">When the expression is valid in neither format.</exception>
+    internal static CronExpression Parse(string cronExpression)
+    {
+        try
+        {
+            return CronExpression.Parse(cronExpression, CronFormat.IncludeSeconds);
+        }
+        catch (CronFormatException)
+        {
+            return CronExpression.Parse(cronExpression);
+        }
+    }
+
+    /// <summary>
+    /// Returns the next UTC occurrence of <paramref name="cronExpression"/> strictly after
+    /// <paramref name="from"/>, or <c>null</c> when the expression is invalid or produces
+    /// no further occurrence.
+    /// </summary>
+    internal static DateTimeOffset? ComputeNext(string cronExpression, DateTimeOffset from)
+    {
+        try
+        {
+            return Parse(cronExpression).GetNextOccurrence(from, TimeZoneInfo.Utc);
+        }
+        catch (CronFormatException)
+        {
+            return null;
+        }
+    }
+
     /// <summary>
     /// Creates an instance of the message type resolved from the assembly-qualified type name.
     /// The resolved type must implement <see cref="IBackgroundJob"/> to prevent arbitrary type

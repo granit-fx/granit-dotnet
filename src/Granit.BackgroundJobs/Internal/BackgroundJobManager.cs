@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Cronos;
 using Granit.BackgroundJobs.Abstractions;
 using Granit.BackgroundJobs.Diagnostics;
 using Granit.BackgroundJobs.Domain;
@@ -58,7 +57,7 @@ internal sealed partial class BackgroundJobManager(
         BackgroundJobDefinition job = await RequireJobAsync(jobName, cancellationToken).ConfigureAwait(false);
         await storeWriter.SetEnabledAsync(job.JobName, true, cancellationToken).ConfigureAwait(false);
 
-        DateTimeOffset? next = ComputeNext(job.CronExpression);
+        DateTimeOffset? next = CronSchedulerHelper.ComputeNext(job.CronExpression, clock.Now);
         if (next is not null)
         {
             object message = CronSchedulerHelper.CreateMessage(job.MessageType, jobName);
@@ -83,11 +82,14 @@ internal sealed partial class BackgroundJobManager(
 
         object message = CronSchedulerHelper.CreateMessage(job.MessageType, jobName);
 
-        Dictionary<string, string>? headers = null;
+        // The ManualTrigger marker tells the scheduling middleware NOT to advance the
+        // recurring chain for this execution — the regular occurrence stays armed, so a
+        // manual run can never duplicate the recurrence.
+        Dictionary<string, string> headers = new() { [BackgroundJobHeaders.ManualTrigger] = "true" };
         if (currentUserService.IsAuthenticated
             && currentUserService.UserId is { Length: > 0 } userId)
         {
-            headers = new() { [BackgroundJobHeaders.TriggeredBy] = userId };
+            headers[BackgroundJobHeaders.TriggeredBy] = userId;
         }
 
         await dispatcher.PublishAsync(message, headers, cancellationToken).ConfigureAwait(false);
@@ -125,28 +127,6 @@ internal sealed partial class BackgroundJobManager(
             ConsecutiveFailures: job.ConsecutiveFailureCount,
             DeadLetterCount: dlqCount,
             LastError: job.LastErrorMessage);
-    }
-
-    private DateTimeOffset? ComputeNext(string cronExpression)
-    {
-        try
-        {
-            CronExpression cron;
-            try
-            {
-                cron = CronExpression.Parse(cronExpression, CronFormat.IncludeSeconds);
-            }
-            catch (CronFormatException)
-            {
-                cron = CronExpression.Parse(cronExpression);
-            }
-
-            return cron.GetNextOccurrence(clock.Now, TimeZoneInfo.Utc);
-        }
-        catch (CronFormatException)
-        {
-            return null;
-        }
     }
 
     // =========================================================================

@@ -1,4 +1,3 @@
-using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Options;
 using Shouldly;
 using Xunit;
@@ -11,34 +10,18 @@ public sealed class BackgroundJobsOptionsTests
     public void SectionName_IsBackgroundJobs() => BackgroundJobsOptions.SectionName.ShouldBe("BackgroundJobs");
 
     [Fact]
-    public void Mode_Default_IsInMemory()
+    public void FailureAlertThreshold_Default_IsThree()
     {
         BackgroundJobsOptions options = new();
 
-        options.Mode.ShouldBe(JobStoreMode.InMemory);
+        options.FailureAlertThreshold.ShouldBe(3);
     }
 
     [Fact]
-    public void ConnectionString_Default_IsEmpty()
+    public void FailureAlertThreshold_CanBeSet()
     {
-        BackgroundJobsOptions options = new();
+        BackgroundJobsOptions options = new() { FailureAlertThreshold = 5 };
 
-        options.ConnectionString.ShouldBe(string.Empty);
-    }
-
-    [Fact]
-    public void Mode_CanBeSetToDurable()
-    {
-        BackgroundJobsOptions options = new() { Mode = JobStoreMode.Durable };
-
-        options.Mode.ShouldBe(JobStoreMode.Durable);
-    }
-
-    [Fact]
-    public void ConnectionString_CanBeSet()
-    {
-        BackgroundJobsOptions options = new() { ConnectionString = "Host=localhost;Database=test;" };
-
-        options.ConnectionString.ShouldBe("Host=localhost;Database=test;");
+        options.FailureAlertThreshold.ShouldBe(5);
     }
 }

@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.BackgroundJobs.Endpoints\Granit.BackgroundJobs.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Testing\Granit.Testing.csproj" />
   </ItemGroup>
 
 </Project>

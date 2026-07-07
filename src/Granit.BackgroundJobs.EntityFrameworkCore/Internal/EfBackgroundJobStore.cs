@@ -1,25 +1,31 @@
 using Granit.BackgroundJobs.Domain;
+using Granit.BackgroundJobs.Options;
 using Granit.Guids;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Granit.BackgroundJobs.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// EF Core implementation of <see cref="IBackgroundJobStoreReader"/> and
-/// <see cref="IBackgroundJobStoreWriter"/>.
+/// Durable EF Core implementation of <see cref="IBackgroundJobStoreReader"/> and
+/// <see cref="IBackgroundJobStoreWriter"/> — replaces the in-memory default when
+/// <c>AddGranitBackgroundJobsEntityFrameworkCore()</c> is called.
 /// </summary>
 /// <remarks>
-/// Registered as <b>Scoped</b> when <see cref="JobStoreMode.Durable"/> is configured.
-/// <c>AddGranitDbContext</c> registers <see cref="IDbContextFactory{TContext}"/> as Scoped
-/// (required so interceptors can resolve <c>ICurrentTenant</c> and <c>ICurrentUser</c>);
-/// this store must therefore also be Scoped to avoid captive dependency violations.
+/// Registered as <b>Scoped</b>: <c>AddGranitDbContext</c> registers
+/// <see cref="IDbContextFactory{TContext}"/> as Scoped (required so interceptors can resolve
+/// <c>ICurrentTenant</c> and <c>ICurrentUser</c>); this store must therefore also be Scoped
+/// to avoid captive dependency violations.
 /// Each operation creates and disposes its own <see cref="BackgroundJobsDbContext"/> via the factory.
 /// </remarks>
-internal sealed class EfBackgroundJobStore(
+internal sealed partial class EfBackgroundJobStore(
     IDbContextFactory<BackgroundJobsDbContext> contextFactory,
-    IGuidGenerator guidGenerator)
+    IGuidGenerator guidGenerator,
+    IOptions<BackgroundJobsOptions> options,
+    ILogger<EfBackgroundJobStore> logger)
     : EfStoreBase<BackgroundJobDefinition, BackgroundJobsDbContext>(contextFactory),
       IBackgroundJobStoreReader, IBackgroundJobStoreWriter
 {
@@ -89,7 +95,10 @@ internal sealed class EfBackgroundJobStore(
         string jobName,
         string errorMessage,
         CancellationToken cancellationToken = default) =>
-        MutateJobAsync(jobName, job => job.RecordFailure(errorMessage), cancellationToken);
+        MutateJobAsync(
+            jobName,
+            job => job.RecordFailure(errorMessage, options.Value.FailureAlertThreshold),
+            cancellationToken);
 
     /// <inheritdoc/>
     public Task SetEnabledAsync(
@@ -119,7 +128,8 @@ internal sealed class EfBackgroundJobStore(
         MutateJobAsync(jobName, job => job.SetTriggeredBy(triggeredBy), cancellationToken);
 
     /// <summary>
-    /// Fetches a job by name and applies a mutation. Silently no-ops if the job does not exist.
+    /// Fetches a job by name and applies a mutation. No-ops (with a Debug trace) if the
+    /// job does not exist.
     /// </summary>
     private Task MutateJobAsync(
         string jobName,
@@ -134,10 +144,15 @@ internal sealed class EfBackgroundJobStore(
 
                 if (job is null)
                 {
+                    LogJobNotFoundForMutation(jobName);
                     return;
                 }
 
                 mutation(job);
             },
             cancellationToken);
+
+    [LoggerMessage(Level = LogLevel.Debug,
+        Message = "BackgroundJob '{JobName}' not found in store — mutation skipped")]
+    private partial void LogJobNotFoundForMutation(string jobName);
 }

@@ -1,5 +1,7 @@
+using System.Diagnostics.Metrics;
 using System.Threading.Channels;
 using Granit.BackgroundJobs.Abstractions;
+using Granit.BackgroundJobs.Diagnostics;
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Internal;
 using Granit.Timing;
@@ -37,14 +39,20 @@ public sealed class BackgroundJobWorkerTests
         sp.GetService(typeof(RecurringFakeJobHandler)).Returns(new RecurringFakeJobHandler());
         sp.GetService(typeof(FailingJobHandler)).Returns(new FailingJobHandler());
         sp.GetService(typeof(NonRecurringFailingJobHandler)).Returns(new NonRecurringFailingJobHandler());
+        sp.GetService(typeof(IFakeCleanupService)).Returns(_cleanupService);
 
         scope.ServiceProvider.Returns(sp);
         _scopeFactory = Substitute.For<IServiceScopeFactory>();
         _scopeFactory.CreateAsyncScope().Returns(new AsyncServiceScope(scope));
     }
 
+    private readonly IFakeCleanupService _cleanupService = Substitute.For<IFakeCleanupService>();
+
+    private static BackgroundJobsMetrics CreateMetrics() =>
+        new(new ServiceCollection().AddMetrics().BuildServiceProvider().GetRequiredService<IMeterFactory>());
+
     private BackgroundJobWorker CreateWorker() =>
-        new(_channel, _scopeFactory, _clock, NullLogger<BackgroundJobWorker>.Instance);
+        new(_channel, _scopeFactory, _clock, CreateMetrics(), NullLogger<BackgroundJobWorker>.Instance);
 
     /// <summary>
     /// Writes envelope to channel, starts the worker, and waits for processing.
@@ -214,14 +222,21 @@ public sealed class BackgroundJobWorkerTests
     }
 
     [Fact]
-    public async Task ProcessAsync_RecurringJobHandlerFails_DoesNotReschedule()
+    public async Task ProcessAsync_RecurringJobHandlerFails_StillReschedules()
     {
+        // A failing run must not stop the recurring chain.
+        var jobDef = BackgroundJobDefinition.Create(
+            Guid.NewGuid(), "test-failing-job", "0 * * * *", typeof(FailingJob).AssemblyQualifiedName!);
+
+        _storeReader.FindAsync("test-failing-job", Arg.Any<CancellationToken>())
+            .Returns(jobDef);
+
         var envelope = new BackgroundJobEnvelope(new FailingJob());
 
         await RunWorkerWithEnvelopeAsync(envelope);
 
-        await _dispatcher.DidNotReceive().ScheduleAsync(
-            Arg.Any<object>(), Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());
+        await _dispatcher.Received(1).ScheduleAsync(
+            Arg.Any<FailingJob>(), Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -274,6 +289,69 @@ public sealed class BackgroundJobWorkerTests
 
         await _dispatcher.DidNotReceive().ScheduleAsync(
             Arg.Any<object>(), Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());
+    }
+
+    // =========================================================================
+    // Manual trigger — must not advance the recurring chain
+    // =========================================================================
+
+    [Fact]
+    public async Task ProcessAsync_ManualTrigger_DoesNotReschedule()
+    {
+        var jobDef = BackgroundJobDefinition.Create(
+            Guid.NewGuid(), "test-recurring-job", "0 * * * *", typeof(RecurringFakeJob).AssemblyQualifiedName!);
+
+        _storeReader.FindAsync("test-recurring-job", Arg.Any<CancellationToken>())
+            .Returns(jobDef);
+
+        var headers = new Dictionary<string, string>
+        {
+            [BackgroundJobHeaders.ManualTrigger] = "true",
+        };
+        var envelope = new BackgroundJobEnvelope(new RecurringFakeJob(), headers);
+
+        await RunWorkerWithEnvelopeAsync(envelope);
+
+        await _dispatcher.DidNotReceive().ScheduleAsync(
+            Arg.Any<object>(), Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());
+    }
+
+    // =========================================================================
+    // Anti-doublon — occurrence already armed
+    // =========================================================================
+
+    [Fact]
+    public async Task ProcessAsync_OccurrenceAlreadyArmed_DoesNotRescheduleTwice()
+    {
+        var jobDef = BackgroundJobDefinition.Create(
+            Guid.NewGuid(), "test-recurring-job", "0 * * * *", typeof(RecurringFakeJob).AssemblyQualifiedName!);
+
+        // _fixedTime is 10:00 — the hourly cron's next occurrence is 11:00, already armed.
+        jobDef.ScheduleNext(new DateTimeOffset(2026, 3, 15, 11, 0, 0, TimeSpan.Zero));
+
+        _storeReader.FindAsync("test-recurring-job", Arg.Any<CancellationToken>())
+            .Returns(jobDef);
+
+        var envelope = new BackgroundJobEnvelope(new RecurringFakeJob());
+
+        await RunWorkerWithEnvelopeAsync(envelope);
+
+        await _dispatcher.DidNotReceive().ScheduleAsync(
+            Arg.Any<object>(), Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());
+    }
+
+    // =========================================================================
+    // Handler resolution — convention handlers (static class, injected services)
+    // =========================================================================
+
+    [Fact]
+    public async Task ProcessAsync_StaticHandlerWithInjectedService_ResolvesServiceFromScope()
+    {
+        var envelope = new BackgroundJobEnvelope(new ServiceInjectedJob());
+
+        await RunWorkerWithEnvelopeAsync(envelope);
+
+        await _cleanupService.Received(1).CleanupAsync(Arg.Any<CancellationToken>());
     }
 
     // =========================================================================
@@ -357,5 +435,26 @@ public sealed class BackgroundJobWorkerTests
     {
         public static Task HandleAsync(NonRecurringFailingJob job, CancellationToken cancellationToken) =>
             throw new InvalidOperationException("Non-recurring failure");
+    }
+
+    /// <summary>
+    /// A job whose handler follows the framework convention: static class, static
+    /// HandleAsync with a DI-injected service parameter — exactly the shape produced
+    /// by <c>Granit.{Module}.BackgroundJobs</c> packages.
+    /// </summary>
+    public sealed class ServiceInjectedJob : IBackgroundJob;
+
+    public interface IFakeCleanupService
+    {
+        Task CleanupAsync(CancellationToken cancellationToken);
+    }
+
+    public static class ServiceInjectedJobHandler
+    {
+        public static Task HandleAsync(
+            ServiceInjectedJob job,
+            IFakeCleanupService service,
+            CancellationToken cancellationToken) =>
+            service.CleanupAsync(cancellationToken);
     }
 }

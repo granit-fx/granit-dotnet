@@ -5,6 +5,8 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.BackgroundJobs.Endpoints.Extensions;
 
@@ -38,22 +40,37 @@ public static class BackgroundJobsEndpointRouteBuilderExtensions
     /// </para>
     /// </remarks>
     /// <param name="endpoints">The endpoint route builder.</param>
-    /// <param name="configure">Optional delegate to customize <see cref="BackgroundJobsEndpointsOptions"/>.</param>
+    /// <param name="configure">
+    /// Optional delegate to customize <see cref="BackgroundJobsEndpointsOptions"/>.
+    /// Applied on top of the values bound from the
+    /// <see cref="BackgroundJobsEndpointsOptions.SectionName"/> configuration section.
+    /// </param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
     public static RouteGroupBuilder MapGranitBackgroundJobs(
         this IEndpointRouteBuilder endpoints,
         Action<BackgroundJobsEndpointsOptions>? configure = null)
     {
         BackgroundJobsEndpointsOptions options = new();
+        endpoints.ServiceProvider.GetService<IConfiguration>()
+            ?.GetSection(BackgroundJobsEndpointsOptions.SectionName)
+            .Bind(options);
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
-        RouteGroupBuilder jobsGroup = group.MapGranitGroup("jobs");
-        jobsGroup.RequireAuthorization(BackgroundJobsPermissions.Jobs.Read).MapReadEndpoints();
-        jobsGroup.RequireAuthorization(BackgroundJobsPermissions.Jobs.Manage).MapWriteEndpoints();
+        // Two sibling groups sharing the "jobs" prefix: RequireAuthorization on a group
+        // is a group-wide convention, so read and write endpoints MUST live in separate
+        // groups — chaining both policies on one group would demand Read AND Manage on
+        // every endpoint.
+        RouteGroupBuilder readGroup = group.MapGranitGroup("jobs");
+        readGroup.RequireAuthorization(BackgroundJobsPermissions.Jobs.Read);
+        readGroup.MapReadEndpoints();
+
+        RouteGroupBuilder writeGroup = group.MapGranitGroup("jobs");
+        writeGroup.RequireAuthorization(BackgroundJobsPermissions.Jobs.Manage);
+        writeGroup.MapWriteEndpoints();
 
         return group;
     }

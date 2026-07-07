@@ -1,10 +1,12 @@
 using System.Data.Common;
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.EntityFrameworkCore.Internal;
+using Granit.BackgroundJobs.Options;
 using Granit.Guids;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 
@@ -47,7 +49,11 @@ public sealed class EfBackgroundJobStoreTests : IDisposable
         using BackgroundJobsDbContext ctx = factory.CreateDbContext();
         ctx.Database.EnsureDeleted();
         ctx.Database.EnsureCreated();
-        return new EfBackgroundJobStore(factory, new SimpleGuidGenerator());
+        return new EfBackgroundJobStore(
+            factory,
+            new SimpleGuidGenerator(),
+            Microsoft.Extensions.Options.Options.Create(new BackgroundJobsOptions()),
+            NullLogger<EfBackgroundJobStore>.Instance);
     }
 
     private static RecurringJobRegistration MakeRegistration(

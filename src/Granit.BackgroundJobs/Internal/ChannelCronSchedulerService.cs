@@ -1,4 +1,3 @@
-using Cronos;
 using Granit.BackgroundJobs.Abstractions;
 using Granit.BackgroundJobs.Domain;
 using Granit.Timing;
@@ -19,6 +18,10 @@ namespace Granit.BackgroundJobs.Internal;
 /// multi-node deployments, use <c>Granit.BackgroundJobs.Wolverine</c> instead.
 /// </para>
 /// <para>
+/// The store is already seeded when this service starts: <c>BackgroundJobsSeedService</c>
+/// is registered first and hosted services start sequentially in registration order.
+/// </para>
+/// <para>
 /// Anti-doublon: before scheduling a job, checks whether
 /// <see cref="BackgroundJobDefinition.NextExecutionAt"/> is already in the future.
 /// </para>
@@ -36,9 +39,6 @@ internal sealed partial class ChannelCronSchedulerService(
         {
             LogMultiReplicaWarning();
         }
-
-        // Small delay to let seed service run first.
-        await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken).ConfigureAwait(false);
 
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
         IBackgroundJobStoreReader storeReader =
@@ -59,7 +59,7 @@ internal sealed partial class ChannelCronSchedulerService(
                 continue;
             }
 
-            DateTimeOffset? next = ComputeNext(job.CronExpression);
+            DateTimeOffset? next = CronSchedulerHelper.ComputeNext(job.CronExpression, clock.Now);
             if (next is null)
             {
                 LogJobCronInvalid(job.JobName, job.CronExpression);
@@ -71,28 +71,6 @@ internal sealed partial class ChannelCronSchedulerService(
             await storeWriter.RecordNextExecutionAsync(job.JobName, next.Value, stoppingToken)
                 .ConfigureAwait(false);
             LogJobScheduled(job.JobName, next.Value);
-        }
-    }
-
-    private DateTimeOffset? ComputeNext(string cronExpression)
-    {
-        try
-        {
-            CronExpression cron;
-            try
-            {
-                cron = CronExpression.Parse(cronExpression, CronFormat.IncludeSeconds);
-            }
-            catch (CronFormatException)
-            {
-                cron = CronExpression.Parse(cronExpression);
-            }
-
-            return cron.GetNextOccurrence(clock.Now, TimeZoneInfo.Utc);
-        }
-        catch (CronFormatException)
-        {
-            return null;
         }
     }
 

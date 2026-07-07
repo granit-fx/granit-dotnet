@@ -19,6 +19,11 @@ namespace Granit.BackgroundJobs.EntityFrameworkCore.Internal;
 /// <para>
 /// Compatible with SQL Server and PostgreSQL.
 /// </para>
+/// <para>
+/// Inherits <see cref="GranitDbContext"/> although no entity is <c>IMultiTenant</c>:
+/// the base wiring brings <c>ApplyGranitConventions</c> (enum-as-string, soft-delete, …)
+/// and the leak hazard cannot arise without a tenant-filtered entity.
+/// </para>
 /// </remarks>
 internal sealed class BackgroundJobsDbContext(
     DbContextOptions<BackgroundJobsDbContext> options,

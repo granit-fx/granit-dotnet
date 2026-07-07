@@ -19,6 +19,12 @@ namespace Granit.BackgroundJobs.Domain;
 /// </remarks>
 public sealed class BackgroundJobDefinition : AggregateRoot
 {
+    /// <summary>
+    /// Maximum length of stored error messages. Prevents unbounded PII propagation
+    /// through API responses and integration events.
+    /// </summary>
+    internal const int MaxErrorMessageLength = 500;
+
     // Parameterless constructor required by EF Core materializer.
     private BackgroundJobDefinition() { }
 
@@ -77,8 +83,8 @@ public sealed class BackgroundJobDefinition : AggregateRoot
     public int ConsecutiveFailureCount { get; private set; }
 
     /// <summary>
-    /// Error message from the last handler failure.
-    /// Maximum length: 2000 characters. Null when the last execution succeeded.
+    /// Error message from the last handler failure, truncated to
+    /// <see cref="MaxErrorMessageLength"/> characters. Null when the last execution succeeded.
     /// </summary>
     public string? LastErrorMessage { get; private set; }
 
@@ -124,23 +130,20 @@ public sealed class BackgroundJobDefinition : AggregateRoot
         NextExecutionAt = nextExecution;
 
     /// <summary>
-    /// Maximum length of stored error messages. Prevents unbounded PII propagation
-    /// through API responses and integration events.
-    /// </summary>
-    internal const int MaxErrorMessageLength = 500;
-
-    /// <summary>
     /// Records an execution failure. Error messages are truncated to
     /// <see cref="MaxErrorMessageLength"/> characters to limit information disclosure.
+    /// A <see cref="BackgroundJobFailureThresholdExceededEto"/> is published exactly once,
+    /// when the consecutive failure count reaches <paramref name="failureAlertThreshold"/> —
+    /// subsequent failures do not re-alert until a successful execution resets the counter.
     /// </summary>
-    internal void RecordFailure(string? errorMessage)
+    internal void RecordFailure(string? errorMessage, int failureAlertThreshold)
     {
         ConsecutiveFailureCount++;
         LastErrorMessage = errorMessage?.Length > MaxErrorMessageLength
             ? $"{errorMessage.AsSpan(0, MaxErrorMessageLength)}… [truncated]"
             : errorMessage;
 
-        if (ConsecutiveFailureCount >= 3)
+        if (ConsecutiveFailureCount == failureAlertThreshold)
         {
             AddDistributedEvent(new BackgroundJobFailureThresholdExceededEto(
                 Id, JobName, ConsecutiveFailureCount, LastErrorMessage));

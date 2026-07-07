@@ -1,4 +1,3 @@
-using Granit.BackgroundJobs.Domain;
 namespace Granit.BackgroundJobs;
 
 /// <summary>
@@ -14,7 +13,7 @@ namespace Granit.BackgroundJobs;
 /// <param name="ConsecutiveFailures">Number of consecutive failures since the last success.</param>
 /// <param name="DeadLetterCount">
 /// Number of messages in the Wolverine Dead Letter Queue for this job type.
-/// Returns <c>0</c> in <see cref="JobStoreMode.InMemory"/> mode.
+/// Returns <c>0</c> when no durable messaging (<c>Granit.BackgroundJobs.Wolverine</c>) is available.
 /// </param>
 /// <param name="LastError">Error message from the last failure. Null on success.</param>
 public sealed record BackgroundJobStatus(

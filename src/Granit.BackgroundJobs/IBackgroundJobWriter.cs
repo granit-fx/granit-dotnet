@@ -1,5 +1,4 @@
 using Granit.BackgroundJobs.Domain;
-using Granit.BackgroundJobs.Options;
 namespace Granit.BackgroundJobs;
 
 /// <summary>
@@ -7,9 +6,9 @@ namespace Granit.BackgroundJobs;
 /// </summary>
 /// <remarks>
 /// All write operations (<see cref="PauseAsync"/>, <see cref="ResumeAsync"/>,
-/// <see cref="TriggerNowAsync"/>) are persisted in the
-/// <see cref="BackgroundJobsOptions.Mode"/> store and survive application restarts
-/// (in <see cref="JobStoreMode.Durable"/> mode).
+/// <see cref="TriggerNowAsync"/>) are persisted in the job store and survive application
+/// restarts when the durable EF Core store
+/// (<c>Granit.BackgroundJobs.EntityFrameworkCore</c>) is used.
 /// <para>
 /// ISO 27001 compliance: <see cref="TriggerNowAsync"/> propagates the caller's identity
 /// via the <c>X-Triggered-By</c> Wolverine envelope header, which is persisted

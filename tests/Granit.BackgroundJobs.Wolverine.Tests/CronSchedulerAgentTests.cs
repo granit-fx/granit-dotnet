@@ -28,14 +28,18 @@ public sealed class CronSchedulerAgentTests
 
         IServiceScope scope = Substitute.For<IServiceScope>();
         IServiceProvider sp = Substitute.For<IServiceProvider>();
+        sp.GetService(typeof(IBackgroundJobStoreReader)).Returns(_storeReader);
+        sp.GetService(typeof(IBackgroundJobStoreWriter)).Returns(_storeWriter);
         sp.GetService(typeof(IBackgroundJobDispatcher)).Returns(_dispatcher);
         scope.ServiceProvider.Returns(sp);
         _scopeFactory = Substitute.For<IServiceScopeFactory>();
         _scopeFactory.CreateScope().Returns(scope);
     }
 
+    // Scoped services (stores, dispatcher) are resolved from the scope — never
+    // constructor-injected into the singleton agent (captive dependency).
     private CronSchedulerAgent CreateAgent() =>
-        new(_storeReader, _storeWriter, _scopeFactory, _clock, NullLogger<CronSchedulerAgent>.Instance);
+        new(_scopeFactory, _clock, NullLogger<CronSchedulerAgent>.Instance);
 
     private static BackgroundJobDefinition MakeJob(
         string jobName,

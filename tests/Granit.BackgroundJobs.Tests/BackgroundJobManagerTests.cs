@@ -97,9 +97,9 @@ public sealed class BackgroundJobManagerTests : IDisposable
             typeof(FakeDailyReportMessage).AssemblyQualifiedName!.Split(',')[0].Trim();
 
         BackgroundJobDefinition job = MakeJob("daily-report", "0 8 * * *");
-        job.RecordFailure("timeout");
-        job.RecordFailure("timeout");
-        job.RecordFailure("timeout");
+        job.RecordFailure("timeout", 3);
+        job.RecordFailure("timeout", 3);
+        job.RecordFailure("timeout", 3);
         _storeReader.GetAllJobsAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<BackgroundJobDefinition>>([job]));
 
@@ -281,17 +281,18 @@ public sealed class BackgroundJobManagerTests : IDisposable
         // Act
         await sut.TriggerNowAsync("daily-report", cancellationToken);
 
-        // Assert
+        // Assert — carries both the audit identity and the manual-trigger marker
         await _dispatcher.Received(1).PublishAsync(
             Arg.Is<FakeDailyReportMessage>(m => m != null),
             Arg.Is<IDictionary<string, string>>(h =>
                 h.ContainsKey(BackgroundJobHeaders.TriggeredBy)
-                && h[BackgroundJobHeaders.TriggeredBy] == "user-abc"),
+                && h[BackgroundJobHeaders.TriggeredBy] == "user-abc"
+                && h.ContainsKey(BackgroundJobHeaders.ManualTrigger)),
             cancellationToken);
     }
 
     [Fact]
-    public async Task TriggerNowAsync_AnonymousUser_PublishesWithoutTriggeredByHeader()
+    public async Task TriggerNowAsync_AnonymousUser_PublishesManualTriggerWithoutTriggeredBy()
     {
         // Arrange
         BackgroundJobDefinition job = MakeJob("daily-report");
@@ -304,10 +305,13 @@ public sealed class BackgroundJobManagerTests : IDisposable
         // Act
         await sut.TriggerNowAsync("daily-report", TestContext.Current.CancellationToken);
 
-        // Assert — headers should be null for anonymous user
+        // Assert — the manual-trigger marker is always present (so the middleware never
+        // advances the chain for a manual run), but no audit identity is attached.
         await _dispatcher.Received(1).PublishAsync(
             Arg.Any<FakeDailyReportMessage>(),
-            null,
+            Arg.Is<IDictionary<string, string>>(h =>
+                h.ContainsKey(BackgroundJobHeaders.ManualTrigger)
+                && !h.ContainsKey(BackgroundJobHeaders.TriggeredBy)),
             Arg.Any<CancellationToken>());
     }
 

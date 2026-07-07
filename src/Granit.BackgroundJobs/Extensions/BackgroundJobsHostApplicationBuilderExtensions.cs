@@ -10,7 +10,6 @@ using Granit.BackgroundJobs.Queries;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.QueryEngine.Extensions;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -34,8 +33,11 @@ public static class BackgroundJobsHostApplicationBuilderExtensions
     /// <c>Granit.BackgroundJobs.Wolverine</c> package.
     /// </para>
     /// <para>
-    /// Jobs declared in the calling assembly (and any additional assemblies passed via
-    /// <paramref name="additionalAssemblies"/>) are seeded into the store on startup.
+    /// Jobs declared in the entry assembly and in <paramref name="additionalAssemblies"/>
+    /// are seeded into the store on startup. When composed through
+    /// <c>GranitBackgroundJobsModule</c>, all loaded module assemblies are passed
+    /// automatically — satellite <c>Granit.{Module}.BackgroundJobs</c> packages need
+    /// no extra registration.
     /// </para>
     /// </remarks>
     /// <param name="builder">The host application builder.</param>
@@ -60,15 +62,8 @@ public static class BackgroundJobsHostApplicationBuilderExtensions
         builder.Services.AddSingleton<IValidateOptions<BackgroundJobsOptions>,
             BackgroundJobsOptionsValidator>();
 
-        // Read options directly from IConfiguration — DI container not yet built.
-        BackgroundJobsOptions options = new();
-        builder.Configuration
-            .GetSection(BackgroundJobsOptions.SectionName)
-            .Bind(options);
-
-        // Register InMemory store as the default. When Mode = Durable, the host application
-        // must call AddGranitBackgroundJobsEntityFrameworkCore() (Granit.BackgroundJobs.EntityFrameworkCore)
-        // which replaces this registration with EfBackgroundJobStore.
+        // Register the InMemory store as the default. Granit.BackgroundJobs.EntityFrameworkCore
+        // replaces this registration with the durable EfBackgroundJobStore.
         builder.Services.AddSingleton<InMemoryBackgroundJobStore>();
         builder.Services.AddSingleton<IBackgroundJobStoreReader>(sp => sp.GetRequiredService<InMemoryBackgroundJobStore>());
         builder.Services.AddSingleton<IBackgroundJobStoreWriter>(sp => sp.GetRequiredService<InMemoryBackgroundJobStore>());
@@ -77,27 +72,31 @@ public static class BackgroundJobsHostApplicationBuilderExtensions
         builder.Services.AddScoped<IBackgroundJobReader>(sp => sp.GetRequiredService<BackgroundJobManager>());
         builder.Services.AddScoped<IBackgroundJobWriter>(sp => sp.GetRequiredService<BackgroundJobManager>());
 
-        // In-process channel dispatch (default — replaced by Granit.BackgroundJobs.Wolverine)
-        builder.Services.AddSingleton(Channel.CreateUnbounded<BackgroundJobEnvelope>());
-        builder.Services.AddSingleton<IBackgroundJobDispatcher, ChannelBackgroundJobDispatcher>();
-        builder.Services.AddSingleton<IDeadLetterQueueInspector, NullDeadLetterQueueInspector>();
-        builder.Services.AddHostedService<BackgroundJobWorker>();
-        builder.Services.AddHostedService<ChannelCronSchedulerService>();
-
-        // Discover and seed recurring jobs from all relevant assemblies.
+        // Discover recurring jobs. Invalid cron expressions fail here — at startup — rather
+        // than being silently skipped at scheduling time.
         IEnumerable<Assembly> scanAssemblies = new[] { Assembly.GetEntryAssembly()! }
             .Concat(additionalAssemblies ?? [])
             .Distinct();
 
         IReadOnlyList<RecurringJobRegistration> registrations =
             RecurringJobDiscovery.Discover(scanAssemblies);
+        RecurringJobDiscovery.ValidateCronExpressions(registrations);
 
-        // Seed jobs after the host is built — store must be resolved via a scope because
+        // The seed service MUST be registered before the worker and the scheduler: hosted
+        // services start sequentially in registration order, so the store is fully seeded
+        // before the scheduler reads it. The store is resolved via a scope because
         // IBackgroundJobStoreWriter is Scoped when the EF Core provider is used.
         builder.Services.AddHostedService(sp =>
             new BackgroundJobsSeedService(
                 sp.GetRequiredService<IServiceScopeFactory>(),
                 registrations));
+
+        // In-process channel dispatch (default — replaced by Granit.BackgroundJobs.Wolverine)
+        builder.Services.AddSingleton(Channel.CreateUnbounded<BackgroundJobEnvelope>());
+        builder.Services.AddSingleton<IBackgroundJobDispatcher, ChannelBackgroundJobDispatcher>();
+        builder.Services.AddSingleton<IDeadLetterQueueInspector, NullDeadLetterQueueInspector>();
+        builder.Services.AddHostedService<BackgroundJobWorker>();
+        builder.Services.AddHostedService<ChannelCronSchedulerService>();
 
         // Query + Export definitions (ADR-020: owned by the base module).
         builder.Services.AddQueryDefinition<BackgroundJobDefinition, BackgroundJobDefinitionQueryDefinition>();

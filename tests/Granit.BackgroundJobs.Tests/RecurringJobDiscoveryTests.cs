@@ -66,6 +66,29 @@ public sealed class RecurringJobDiscoveryTests
         // Assert
         registrations.ShouldBeEmpty();
     }
+
+    [Fact]
+    public void ValidateCronExpressions_ValidRegistrations_DoesNotThrow()
+    {
+        IReadOnlyList<RecurringJobRegistration> registrations =
+            RecurringJobDiscovery.Discover([typeof(RecurringJobDiscoveryTests).Assembly]);
+
+        Should.NotThrow(() => RecurringJobDiscovery.ValidateCronExpressions(registrations));
+    }
+
+    [Fact]
+    public void ValidateCronExpressions_InvalidCron_ThrowsWithJobName()
+    {
+        RecurringJobRegistration bad = new(
+            JobName: "broken-job",
+            CronExpression: "NOT_A_CRON",
+            MessageType: "Fake.Type, Fake");
+
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(
+            () => RecurringJobDiscovery.ValidateCronExpressions([bad]));
+        ex.Message.ShouldContain("broken-job");
+        ex.Message.ShouldContain("NOT_A_CRON");
+    }
 }
 
 // =========================================================================

@@ -1,7 +1,8 @@
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Channels;
-using Cronos;
 using Granit.BackgroundJobs.Abstractions;
+using Granit.BackgroundJobs.Diagnostics;
 using Granit.BackgroundJobs.Domain;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,12 +16,24 @@ namespace Granit.BackgroundJobs.Internal;
 /// and invokes job handlers in a DI scope. Replicates the scheduling middleware logic
 /// for the in-process dispatch path.
 /// </summary>
+/// <remarks>
+/// Handler resolution follows the Wolverine convention: a type named
+/// <c>{MessageTypeName}Handler</c> in the message's assembly, exposing a public
+/// <c>HandleAsync</c> (or <c>Handle</c>) method whose first parameter is the message.
+/// Remaining parameters are resolved from the DI scope; a trailing
+/// <see cref="CancellationToken"/> is honoured. Static handler classes are supported —
+/// instance handlers are resolved from DI or activated via
+/// <see cref="ActivatorUtilities"/>.
+/// </remarks>
 internal sealed partial class BackgroundJobWorker(
     Channel<BackgroundJobEnvelope> channel,
     IServiceScopeFactory scopeFactory,
     IClock clock,
+    BackgroundJobsMetrics metrics,
     ILogger<BackgroundJobWorker> logger) : BackgroundService
 {
+    private static readonly string[] HandlerMethodNames = ["HandleAsync", "Handle"];
+
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -41,6 +54,7 @@ internal sealed partial class BackgroundJobWorker(
     {
         RecurringJobAttribute? attr = envelope.Message.GetType()
             .GetCustomAttribute<RecurringJobAttribute>();
+        bool isManualTrigger = envelope.Headers?.ContainsKey(BackgroundJobHeaders.ManualTrigger) == true;
 
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
 
@@ -61,36 +75,62 @@ internal sealed partial class BackgroundJobWorker(
             }
         }
 
+        long startTimestamp = Stopwatch.GetTimestamp();
         try
         {
             // Invoke the handler by resolving the Wolverine-convention HandleAsync method.
             await InvokeHandlerAsync(scope.ServiceProvider, envelope.Message, cancellationToken)
                 .ConfigureAwait(false);
 
-            // On success: reschedule if recurring.
             if (attr is not null)
             {
-                await RescheduleAsync(scope.ServiceProvider, attr, envelope.Message.GetType(), cancellationToken)
-                    .ConfigureAwait(false);
+                RecordMetrics(attr.Name, "success", startTimestamp);
+
+                // A manual trigger must not advance the recurring chain — the regular
+                // occurrence stays armed (contract of IBackgroundJobWriter.TriggerNowAsync).
+                if (!isManualTrigger)
+                {
+                    await RescheduleAsync(scope.ServiceProvider, attr, cancellationToken)
+                        .ConfigureAwait(false);
+                }
             }
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             if (attr is not null)
             {
+                RecordMetrics(attr.Name, "failure", startTimestamp);
+
                 IBackgroundJobStoreWriter storeWriter =
                     scope.ServiceProvider.GetRequiredService<IBackgroundJobStoreWriter>();
                 await storeWriter.RecordExecutionFailureAsync(attr.Name, ex.Message, cancellationToken)
                     .ConfigureAwait(false);
+
+                // Keep the recurrence alive: a failed run must not stop the chain.
+                if (!isManualTrigger)
+                {
+                    await RescheduleAsync(scope.ServiceProvider, attr, cancellationToken)
+                        .ConfigureAwait(false);
+                }
             }
 
             throw;
         }
     }
 
+    private void RecordMetrics(string jobName, string status, long startTimestamp)
+    {
+        TimeSpan elapsed = Stopwatch.GetElapsedTime(startTimestamp);
+        metrics.RecordExecutionCompleted(null, jobName, status);
+        metrics.RecordExecutionDuration(null, jobName, status, elapsed);
+    }
+
     /// <summary>
-    /// Resolves the handler for the message type and invokes <c>HandleAsync(message, ct)</c>.
-    /// Wolverine convention: the handler type name = <c>{MessageTypeName}Handler</c>.
+    /// Resolves the handler for the message type and invokes its handle method.
+    /// Wolverine convention: the handler type name is <c>{MessageTypeName}Handler</c>;
+    /// the method is <c>HandleAsync</c> or <c>Handle</c> with the message as first
+    /// parameter, services from the scope for the remaining parameters, and an optional
+    /// <see cref="CancellationToken"/>.
     /// </summary>
     private static async Task InvokeHandlerAsync(
         IServiceProvider services,
@@ -98,16 +138,11 @@ internal sealed partial class BackgroundJobWorker(
         CancellationToken cancellationToken)
     {
         Type messageType = message.GetType();
-
-        // Look for a HandleAsync(TMessage, CancellationToken) method on any registered service
-        // whose type name matches the convention "{MessageTypeName}Handler".
         string expectedHandlerName = $"{messageType.Name}Handler";
 
-        // Try to resolve from DI by scanning registered services.
-        // Fallback: try the assembly of the message type.
         Type? handlerType = messageType.Assembly
             .GetTypes()
-            .FirstOrDefault(t => t.Name == expectedHandlerName && !t.IsAbstract);
+            .FirstOrDefault(t => t.Name == expectedHandlerName && !t.IsInterface && !t.IsGenericTypeDefinition);
 
         if (handlerType is null)
         {
@@ -116,25 +151,48 @@ internal sealed partial class BackgroundJobWorker(
                 $"for message type '{messageType.Name}'.");
         }
 
-        object handler = services.GetRequiredService(handlerType);
-
-        MethodInfo? method = handlerType.GetMethod("HandleAsync",
-            [messageType, typeof(CancellationToken)]);
+        MethodInfo? method = handlerType
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+            .FirstOrDefault(m => HandlerMethodNames.Contains(m.Name)
+                && m.GetParameters() is [{ } first, ..]
+                && first.ParameterType.IsAssignableFrom(messageType));
 
         if (method is null)
         {
             throw new InvalidOperationException(
-                $"Handler '{handlerType.Name}' does not have a HandleAsync({messageType.Name}, CancellationToken) method.");
+                $"Handler '{handlerType.Name}' does not have a public HandleAsync/Handle method " +
+                $"taking '{messageType.Name}' as its first parameter.");
         }
 
-        var task = (Task)method.Invoke(handler, [message, cancellationToken])!;
-        await task.ConfigureAwait(false);
+        ParameterInfo[] parameters = method.GetParameters();
+        object?[] args = new object?[parameters.Length];
+        args[0] = message;
+        for (int i = 1; i < parameters.Length; i++)
+        {
+            args[i] = parameters[i].ParameterType == typeof(CancellationToken)
+                ? cancellationToken
+                : services.GetRequiredService(parameters[i].ParameterType);
+        }
+
+        object? instance = method.IsStatic
+            ? null
+            : ActivatorUtilities.GetServiceOrCreateInstance(services, handlerType);
+
+        object? result = method.Invoke(instance, args);
+        switch (result)
+        {
+            case Task task:
+                await task.ConfigureAwait(false);
+                break;
+            case ValueTask valueTask:
+                await valueTask.ConfigureAwait(false);
+                break;
+        }
     }
 
     private async Task RescheduleAsync(
         IServiceProvider services,
         RecurringJobAttribute attr,
-        Type messageType,
         CancellationToken cancellationToken)
     {
         IBackgroundJobStoreReader storeReader =
@@ -152,39 +210,24 @@ internal sealed partial class BackgroundJobWorker(
             return;
         }
 
-        DateTimeOffset? next = ComputeNext(job.CronExpression);
+        DateTimeOffset? next = CronSchedulerHelper.ComputeNext(job.CronExpression, clock.Now);
         if (next is null)
         {
             LogNoCronOccurrence(attr.Name, job.CronExpression);
             return;
         }
 
-        object nextMessage = Activator.CreateInstance(messageType)!;
+        // Already armed for that exact occurrence (e.g. failure path ran before a retry
+        // succeeded) — do not schedule a duplicate.
+        if (job.NextExecutionAt == next)
+        {
+            return;
+        }
+
+        object nextMessage = CronSchedulerHelper.CreateMessage(job.MessageType, job.JobName);
         await dispatcher.ScheduleAsync(nextMessage, next.Value, cancellationToken).ConfigureAwait(false);
         await storeWriter.RecordNextExecutionAsync(job.JobName, next.Value, cancellationToken)
             .ConfigureAwait(false);
-    }
-
-    private DateTimeOffset? ComputeNext(string cronExpression)
-    {
-        try
-        {
-            CronExpression cron;
-            try
-            {
-                cron = CronExpression.Parse(cronExpression, CronFormat.IncludeSeconds);
-            }
-            catch (CronFormatException)
-            {
-                cron = CronExpression.Parse(cronExpression);
-            }
-
-            return cron.GetNextOccurrence(clock.Now, TimeZoneInfo.Utc);
-        }
-        catch (CronFormatException)
-        {
-            return null;
-        }
     }
 
     [LoggerMessage(Level = LogLevel.Error,

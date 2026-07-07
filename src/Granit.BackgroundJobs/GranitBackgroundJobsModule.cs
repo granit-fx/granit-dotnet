@@ -1,6 +1,4 @@
-using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Extensions;
-using Granit.BackgroundJobs.Options;
 using Granit.Guids;
 using Granit.Modularity;
 using Granit.Timing;
@@ -11,15 +9,14 @@ namespace Granit.BackgroundJobs;
 /// Granit module for recurring background jobs (provider-agnostic core).
 /// </summary>
 /// <remarks>
-/// Default registrations use in-process channel dispatch and in-memory stores.
-/// For durable, cluster-safe scheduling, add <c>Granit.BackgroundJobs.Wolverine</c>.
+/// Default registrations use in-process channel dispatch and an in-memory store —
+/// no database required; suitable for development and tests. For durable, cluster-safe
+/// scheduling add <c>Granit.BackgroundJobs.Wolverine</c>; for a persistent store add
+/// <c>Granit.BackgroundJobs.EntityFrameworkCore</c>.
 /// <para>
-/// Mode selection is driven by <see cref="BackgroundJobsOptions.Mode"/>
-/// (bound from the <c>"BackgroundJobs"</c> configuration section):
-/// <list type="bullet">
-///   <item><see cref="JobStoreMode.InMemory"/> — no DB required; suitable for development and tests.</item>
-///   <item><see cref="JobStoreMode.Durable"/> — EF Core store; requires <see cref="BackgroundJobsOptions.ConnectionString"/>.</item>
-/// </list>
+/// All loaded module assemblies are scanned for <see cref="RecurringJobAttribute"/>,
+/// so jobs declared in satellite packages (<c>Granit.{Module}.BackgroundJobs</c>)
+/// are discovered and seeded automatically.
 /// </para>
 /// </remarks>
 [DependsOn(
@@ -29,5 +26,5 @@ public sealed class GranitBackgroundJobsModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>
-        context.Builder.AddGranitBackgroundJobs();
+        context.Builder.AddGranitBackgroundJobs(context.ModuleAssemblies);
 }
