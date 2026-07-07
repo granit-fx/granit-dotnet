@@ -44,6 +44,9 @@ public sealed class TenantContextBehaviorTests : IDisposable
     private MetricCollector<long> NoTenantCollector() =>
         new(_meterFactory, WolverineMetrics.MeterName, "granit.wolverine.envelope.no_tenant");
 
+    private MetricCollector<long> HandledCollector() =>
+        new(_meterFactory, WolverineMetrics.MeterName, "granit.wolverine.messages.handled");
+
     [Fact]
     public void Before_WithValidTenantHeader_CallsChange()
     {
@@ -58,6 +61,38 @@ public sealed class TenantContextBehaviorTests : IDisposable
         behavior.Before(envelope);
 
         tenant.Received(1).Change(tenantId);
+        collector.GetMeasurementSnapshot().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Before_WithValidTenantHeader_RecordsMessageHandled()
+    {
+        var tenantId = Guid.NewGuid();
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.Change(tenantId).Returns(Substitute.For<IDisposable>());
+        TenantContextBehavior behavior = CreateBehavior(tenant);
+        using MetricCollector<long> collector = HandledCollector();
+        Envelope envelope = new() { Message = new TenantScopedMessage() };
+        envelope.Headers[OutgoingContextMiddleware.TenantIdHeader] = tenantId.ToString();
+
+        behavior.Before(envelope);
+
+        IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
+        snapshot.ShouldHaveSingleItem();
+        snapshot[0].Tags["tenant_id"].ShouldBe(tenantId.ToString());
+        snapshot[0].Tags["message_type"].ShouldBe(nameof(TenantScopedMessage));
+    }
+
+    [Fact]
+    public void Before_WithMissingHeader_DoesNotRecordMessageHandled()
+    {
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        TenantContextBehavior behavior = CreateBehavior(tenant);
+        using MetricCollector<long> collector = HandledCollector();
+        Envelope envelope = new() { Message = new TenantScopedMessage() };
+
+        behavior.Before(envelope);
+
         collector.GetMeasurementSnapshot().ShouldBeEmpty();
     }
 

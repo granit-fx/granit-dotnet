@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentValidation;
 using Granit.Commands;
 using Granit.Diagnostics;
+using Granit.MultiTenancy;
 using Granit.Users;
 using Granit.Wolverine.Behaviors;
 using Granit.Wolverine.Diagnostics;
@@ -62,8 +63,15 @@ public static class WolverineHostApplicationBuilderExtensions
         // only exposes the bridge spans).
         GranitActivitySourceRegistry.Register("Wolverine");
 
-        // Metrics: IMeterFactory-backed counters for message throughput, retries, claim checks.
+        // Metrics: IMeterFactory-backed counters for message dispatch/handling volume
+        // and untenanted-envelope observability. Failure/retry counters come from
+        // Wolverine's native "Wolverine" meter (registered above for tracing; metrics
+        // are exposed by the OTel meter provider).
         builder.Services.TryAddSingleton<WolverineMetrics>();
+
+        // Tenant context fallback so the senders and behaviors resolve outside a
+        // full Granit host bootstrap (AddGranit* registers the same default).
+        builder.Services.TryAddSingleton<ICurrentTenant>(NullTenantContext.Instance);
 
         // Shared helper for Singleton services that need to dispatch via scoped IMessageBus.
         builder.Services.TryAddSingleton<WolverineScopedSender>();

@@ -7,6 +7,12 @@ namespace Granit.Wolverine.Diagnostics;
 /// OpenTelemetry metrics for the Wolverine messaging module.
 /// Meter: <c>Granit.Wolverine</c>.
 /// </summary>
+/// <remarks>
+/// These counters complement Wolverine's native <c>Wolverine</c> meter (execution
+/// time, dead-letter, retry counters) with Granit-specific signals: tenant-tagged
+/// dispatch/handling volume and untenanted-envelope observability. Failure and
+/// retry observability is intentionally left to the native Wolverine meter.
+/// </remarks>
 public sealed class WolverineMetrics
 {
     public const string MeterName = "Granit.Wolverine";
@@ -16,9 +22,6 @@ public sealed class WolverineMetrics
 
     private readonly Counter<long> _messagesDispatched;
     private readonly Counter<long> _messagesHandled;
-    private readonly Counter<long> _retriesExhausted;
-    private readonly Counter<long> _claimCheckStored;
-    private readonly Counter<long> _claimCheckRetrieved;
     private readonly Counter<long> _envelopeNoTenant;
 
     public WolverineMetrics(IMeterFactory meterFactory)
@@ -27,23 +30,12 @@ public sealed class WolverineMetrics
 
         _messagesDispatched = meter.CreateCounter<long>(
             "granit.wolverine.messages.dispatched",
-            description: "Number of messages dispatched via the scoped sender.");
+            description: "Number of messages dispatched via the Granit command senders "
+                + "(ICommandSender / WolverineScopedSender).");
 
         _messagesHandled = meter.CreateCounter<long>(
             "granit.wolverine.messages.handled",
-            description: "Number of messages handled with restored context (tenant + user).");
-
-        _retriesExhausted = meter.CreateCounter<long>(
-            "granit.wolverine.retries.exhausted",
-            description: "Number of messages that exhausted all retry attempts.");
-
-        _claimCheckStored = meter.CreateCounter<long>(
-            "granit.wolverine.claimcheck.stored",
-            description: "Number of payloads stored via the claim check pattern.");
-
-        _claimCheckRetrieved = meter.CreateCounter<long>(
-            "granit.wolverine.claimcheck.retrieved",
-            description: "Number of payloads retrieved via the claim check pattern.");
+            description: "Number of messages entering handler execution with a restored tenant context.");
 
         _envelopeNoTenant = meter.CreateCounter<long>(
             "granit.wolverine.envelope.no_tenant",
@@ -67,25 +59,6 @@ public sealed class WolverineMetrics
         {
             { TagTenantId, tenantId ?? DefaultTenant },
             { "message_type", messageType },
-        });
-
-    public void RecordRetriesExhausted(string? tenantId, string messageType) =>
-        _retriesExhausted.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-            { "message_type", messageType },
-        });
-
-    public void RecordClaimCheckStored(string? tenantId) =>
-        _claimCheckStored.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-        });
-
-    public void RecordClaimCheckRetrieved(string? tenantId) =>
-        _claimCheckRetrieved.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
         });
 
     /// <summary>

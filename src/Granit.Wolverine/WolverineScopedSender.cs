@@ -1,3 +1,5 @@
+using Granit.MultiTenancy;
+using Granit.Wolverine.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Wolverine;
 
@@ -9,8 +11,12 @@ namespace Granit.Wolverine;
 /// <remarks>
 /// <see cref="IMessageBus"/> is Scoped, so Singleton services cannot inject it directly.
 /// This helper creates a short-lived scope per dispatch, resolves the bus, and sends.
+/// Each dispatch is recorded on the <c>granit.wolverine.messages.dispatched</c> counter,
+/// tagged with the tenant active in the created scope (or <c>global</c>).
 /// </remarks>
-public sealed class WolverineScopedSender(IServiceScopeFactory scopeFactory)
+public sealed class WolverineScopedSender(
+    IServiceScopeFactory scopeFactory,
+    WolverineMetrics metrics)
 {
     /// <summary>
     /// Sends a command through a scoped <see cref="IMessageBus"/>.
@@ -25,5 +31,8 @@ public sealed class WolverineScopedSender(IServiceScopeFactory scopeFactory)
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
         IMessageBus bus = scope.ServiceProvider.GetRequiredService<IMessageBus>();
         await bus.SendAsync(command).ConfigureAwait(false);
+
+        ICurrentTenant? currentTenant = scope.ServiceProvider.GetService<ICurrentTenant>();
+        metrics.RecordMessageDispatched(currentTenant?.Id?.ToString());
     }
 }

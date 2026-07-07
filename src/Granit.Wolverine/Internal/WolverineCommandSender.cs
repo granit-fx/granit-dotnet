@@ -1,4 +1,6 @@
 using Granit.Commands;
+using Granit.MultiTenancy;
+using Granit.Wolverine.Diagnostics;
 using Wolverine;
 
 namespace Granit.Wolverine.Internal;
@@ -19,13 +21,22 @@ namespace Granit.Wolverine.Internal;
 /// a DI scope themselves via <c>IServiceScopeFactory.CreateAsyncScope()</c> and resolve
 /// <see cref="ICommandSender"/> inside it.
 /// </para>
+/// <para>
+/// Each dispatch is recorded on the <c>granit.wolverine.messages.dispatched</c> counter,
+/// tagged with the current tenant (or <c>global</c>).
+/// </para>
 /// </remarks>
-internal sealed class WolverineCommandSender(IMessageBus bus) : ICommandSender
+internal sealed class WolverineCommandSender(
+    IMessageBus bus,
+    WolverineMetrics metrics,
+    ICurrentTenant currentTenant) : ICommandSender
 {
     public async Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
         where TCommand : class
     {
         ArgumentNullException.ThrowIfNull(command);
+        cancellationToken.ThrowIfCancellationRequested();
         await bus.SendAsync(command).ConfigureAwait(false);
+        metrics.RecordMessageDispatched(currentTenant.Id?.ToString());
     }
 }

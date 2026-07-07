@@ -50,15 +50,6 @@ public sealed class TenantContextBehavior(
             return;
         }
 
-        if (envelope.Headers.TryGetValue(
-                Middleware.OutgoingContextMiddleware.TenantIdHeader, out string? tenantIdStr)
-            && Guid.TryParse(tenantIdStr, out Guid tenantId))
-        {
-            _scope = _currentTenant.Change(tenantId);
-            return;
-        }
-
-        // Envelope without tenant header — observability only.
         // Prefer the runtime CLR type when available; Wolverine's `envelope.MessageType`
         // uses a wire-format identifier that is not always resolvable across assemblies.
         Type? messageType = envelope.Message?.GetType()
@@ -67,6 +58,16 @@ public sealed class TenantContextBehavior(
             ?? envelope.MessageType
             ?? "(unknown)";
 
+        if (envelope.Headers.TryGetValue(
+                Middleware.OutgoingContextMiddleware.TenantIdHeader, out string? tenantIdStr)
+            && Guid.TryParse(tenantIdStr, out Guid tenantId))
+        {
+            _scope = _currentTenant.Change(tenantId);
+            _metrics.RecordMessageHandled(tenantIdStr, messageTypeName);
+            return;
+        }
+
+        // Envelope without tenant header — observability only.
         bool isCrossTenant = messageType is not null
             && Attribute.IsDefined(messageType, typeof(CrossTenantMessageAttribute), inherit: false);
 
