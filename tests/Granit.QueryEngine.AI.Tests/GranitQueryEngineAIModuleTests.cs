@@ -1,6 +1,3 @@
-using Granit.Modularity;
-using Shouldly;
-
 namespace Granit.QueryEngine.AI.Tests;
 
 public sealed class GranitQueryEngineAIModuleTests
@@ -27,6 +24,6 @@ public sealed class GranitQueryEngineAIModuleTests
         attrs.ShouldNotBeEmpty();
         IEnumerable<Type> dependedTypes = attrs.SelectMany(a => a.DependedTypes);
         dependedTypes.ShouldContain(typeof(Granit.AI.GranitAIModule));
-        dependedTypes.ShouldContain(typeof(GranitQueryEngineAbstractionsModule));
+        dependedTypes.ShouldContain(typeof(GranitQueryEngineModule));
     }
 }

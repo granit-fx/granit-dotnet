@@ -3,7 +3,7 @@ using Granit.QueryEngine.Options;
 using Shouldly;
 using Xunit;
 
-namespace Granit.QueryEngine.Tests;
+namespace Granit.QueryEngine.Abstractions.Tests;
 
 public sealed class QueryDefinitionAdditionalTests
 {

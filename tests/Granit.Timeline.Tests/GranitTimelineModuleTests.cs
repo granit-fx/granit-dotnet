@@ -21,14 +21,14 @@ public sealed class GranitTimelineModuleTests
     }
 
     [Fact]
-    public void Module_DependsOn_GranitQueryEngineAbstractionsModule()
+    public void Module_DependsOn_GranitQueryEngineModule()
     {
         DependsOnAttribute[] attributes = [.. typeof(GranitTimelineModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)
             .Cast<DependsOnAttribute>()];
 
         Type[] allDeps = [.. attributes.SelectMany(a => a.DependedTypes)];
-        allDeps.ShouldContain(typeof(GranitQueryEngineAbstractionsModule));
+        allDeps.ShouldContain(typeof(GranitQueryEngineModule));
     }
 
     [Fact]

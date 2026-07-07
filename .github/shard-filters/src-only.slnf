@@ -279,7 +279,6 @@
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
       "src/Granit.QueryEngine.AspNetCore/Granit.QueryEngine.AspNetCore.csproj",
       "src/Granit.QueryEngine.EntityFrameworkCore/Granit.QueryEngine.EntityFrameworkCore.csproj",
-      "src/Granit.QueryEngine/Granit.QueryEngine.csproj",
       "src/Granit.RateLimiting.Wolverine/Granit.RateLimiting.Wolverine.csproj",
       "src/Granit.RateLimiting/Granit.RateLimiting.csproj",
       "src/Granit.Scheduling.BackgroundJobs/Granit.Scheduling.BackgroundJobs.csproj",

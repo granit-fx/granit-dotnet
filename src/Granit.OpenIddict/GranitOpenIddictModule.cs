@@ -45,7 +45,7 @@ namespace Granit.OpenIddict;
     typeof(GranitHttpCookiesModule),
     typeof(GranitIdentityLocalAspNetIdentityModule),
     typeof(GranitIdentityLocalModule),
-    typeof(GranitQueryEngineAbstractionsModule),
+    typeof(GranitQueryEngineModule),
     typeof(GranitIdentityAbstractionsModule))]
 public sealed class GranitOpenIddictModule : GranitModule
 {

@@ -13,7 +13,7 @@ namespace Granit.MultiTenancy;
 /// </summary>
 [DependsOn(typeof(GranitDataExchangeAbstractionsModule))]
 [DependsOn(typeof(GranitLocalizationModule))]
-[DependsOn(typeof(GranitQueryEngineAbstractionsModule))]
+[DependsOn(typeof(GranitQueryEngineModule))]
 public sealed class GranitMultiTenancyModule : GranitModule
 {
     /// <inheritdoc/>

@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.QueryEngine\Granit.QueryEngine.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
   </ItemGroup>
 

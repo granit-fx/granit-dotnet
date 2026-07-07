@@ -16,5 +16,5 @@ namespace Granit.DataLookup.EntityFrameworkCore;
 [DependsOn(
     typeof(GranitDataLookupModule),
     typeof(GranitPersistenceEntityFrameworkCoreModule),
-    typeof(GranitQueryEngineAbstractionsModule))]
+    typeof(GranitQueryEngineModule))]
 public sealed class GranitDataLookupEntityFrameworkCoreModule : GranitModule;

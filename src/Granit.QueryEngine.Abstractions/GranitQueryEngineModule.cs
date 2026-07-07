@@ -4,17 +4,18 @@ using Granit.QueryEngine.Extensions;
 namespace Granit.QueryEngine;
 
 /// <summary>
-/// Granit module for declarative query building.
+/// Granit module for declarative query building: contracts (PagedResult, QueryRequest,
+/// QueryMetadata), the QueryDefinition fluent API, and the shared runtime seams
+/// (<c>QueryEngineOptions</c>, <c>QueryEngineMetrics</c>).
 /// </summary>
 /// <remarks>
-/// Registers the core QueryEngine infrastructure: query definition descriptors
-/// and null-object defaults for optional services (saved view store).
+/// Declarations are pure — modules that only declare query definitions pay no runtime
+/// cost beyond two <c>TryAddSingleton</c> registrations.
 /// <para>
 /// For the EF Core query engine, add <c>Granit.QueryEngine.EntityFrameworkCore</c>.
-/// For REST endpoints, add <c>Granit.QueryEngine.AspNetCore</c>.
+/// For REST endpoints, add <c>Granit.QueryEngine.Endpoints</c>.
 /// </para>
 /// </remarks>
-[DependsOn(typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitQueryEngineModule : GranitModule
 {
     /// <inheritdoc/>

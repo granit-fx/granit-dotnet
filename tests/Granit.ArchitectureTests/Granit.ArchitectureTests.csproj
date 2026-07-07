@@ -301,7 +301,6 @@
     <ProjectReference Include="..\..\src\Granit.Privacy.Regulations\Granit.Privacy.Regulations.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.Regulations.Cookies\Granit.Privacy.Regulations.Cookies.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.Vault\Granit.Privacy.Vault.csproj" />
-    <ProjectReference Include="..\..\src\Granit.QueryEngine\Granit.QueryEngine.csproj" />
     <ProjectReference Include="..\..\src\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.QueryEngine.AI\Granit.QueryEngine.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.QueryEngine.AspNetCore\Granit.QueryEngine.AspNetCore.csproj" />

@@ -84,7 +84,6 @@
         "tests/Granit.QueryEngine.Abstractions.Tests",
         "tests/Granit.QueryEngine.AspNetCore.Tests",
         "tests/Granit.QueryEngine.EntityFrameworkCore.Tests",
-        "tests/Granit.QueryEngine.Tests",
         "tests/Granit.Templating.Endpoints.Tests",
         "tests/Granit.Templating.EntityFrameworkCore.Tests",
         "tests/Granit.Templating.Mjml.Tests",

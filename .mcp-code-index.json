@@ -343,7 +343,7 @@
         "Granit.Http.Abstractions",
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
-        "Granit.QueryEngine",
+        "Granit.QueryEngine.Abstractions",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Timing",
         "Granit.Validation",
@@ -771,7 +771,7 @@
         "Granit.DataExchange.Abstractions",
         "Granit.Events",
         "Granit.Guids",
-        "Granit.QueryEngine",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing",
         "Granit.Validation"
       ],
@@ -1353,7 +1353,7 @@
         "Granit.Authorization",
         "Granit.Identity",
         "Granit.IpGeolocation",
-        "Granit.QueryEngine",
+        "Granit.QueryEngine.Abstractions",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Identity.Abstractions",
         "Granit.Validation",
@@ -2405,14 +2405,6 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.QueryEngine",
-      "deps": [
-        "Granit",
-        "Granit.QueryEngine.Abstractions"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.QueryEngine.AI",
       "deps": [
         "Granit.AI",
@@ -2436,7 +2428,7 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.Entities.Abstractions",
-        "Granit.QueryEngine",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -2444,7 +2436,7 @@
     {
       "name": "Granit.QueryEngine.EntityFrameworkCore",
       "deps": [
-        "Granit.QueryEngine",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -48792,8 +48784,8 @@
       "name": "QueryEngineMetrics",
       "fqn": "Granit.QueryEngine.Diagnostics.QueryEngineMetrics",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Diagnostics/QueryEngineMetrics.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Diagnostics/QueryEngineMetrics.cs",
       "line": 10,
       "members": []
     },
@@ -48826,8 +48818,8 @@
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.QueryEngine.Extensions.ServiceCollectionExtensions",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Extensions/ServiceCollectionExtensions.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Extensions/ServiceCollectionExtensions.cs",
       "line": 19,
       "members": [
         {
@@ -48968,21 +48960,12 @@
       "members": []
     },
     {
-      "name": "GranitQueryEngineAbstractionsModule",
-      "fqn": "Granit.QueryEngine.GranitQueryEngineAbstractionsModule",
-      "kind": "class",
-      "project": "Granit.QueryEngine.Abstractions",
-      "file": "src/Granit.QueryEngine.Abstractions/GranitQueryEngineAbstractionsModule.cs",
-      "line": 13,
-      "members": []
-    },
-    {
       "name": "GranitQueryEngineModule",
       "fqn": "Granit.QueryEngine.GranitQueryEngineModule",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/GranitQueryEngineModule.cs",
-      "line": 18,
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/GranitQueryEngineModule.cs",
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",

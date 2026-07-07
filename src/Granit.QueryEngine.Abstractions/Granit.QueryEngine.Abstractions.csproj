@@ -2,14 +2,12 @@
 
   <PropertyGroup>
     <PackageId>Granit.QueryEngine.Abstractions</PackageId>
-    <Description>Inter-module contracts for Granit.QueryEngine: declarative QueryDefinition base class, builders, descriptors (Column/Filter/Group/Quick/Date), and DTOs (PagedResult, QueryRequest, QueryMetadata). Reference this package from any module that declares queries; reference Granit.QueryEngine only from hosts that execute them.</Description>
+    <Description>Contracts and core services for Granit.QueryEngine: declarative QueryDefinition base class, builders, descriptors (Column/Filter/Group/Quick/Date), DTOs (PagedResult, QueryRequest, QueryMetadata), QueryEngineOptions and metrics. Reference this package from any module that declares queries; hosts that execute them add Granit.QueryEngine.EntityFrameworkCore.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.QueryEngine.Abstractions.Tests" />
-    <InternalsVisibleTo Include="Granit.QueryEngine" />
-    <InternalsVisibleTo Include="Granit.QueryEngine.Tests" />
     <InternalsVisibleTo Include="Granit.QueryEngine.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.QueryEngine.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="Granit.QueryEngine.AspNetCore" />

@@ -11,7 +11,7 @@ namespace Granit.Workflow;
 /// and domain events for state changes.
 /// </summary>
 [DependsOn(
-    typeof(GranitQueryEngineAbstractionsModule),
+    typeof(GranitQueryEngineModule),
     typeof(GranitTimingModule),
     typeof(GranitWorkflowAbstractionsModule))]
 public sealed class GranitWorkflowModule : GranitModule
