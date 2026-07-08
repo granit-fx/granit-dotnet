@@ -320,7 +320,6 @@
       "tests/Granit.Browsing.PuppeteerSharp.Tests/Granit.Browsing.PuppeteerSharp.Tests.csproj",
       "tests/Granit.Browsing.Tests/Granit.Browsing.Tests.csproj",
       "tests/Granit.Bundle.Tests/Granit.Bundle.Tests.csproj",
-      "tests/Granit.Caching.FusionCache.Tests/Granit.Caching.FusionCache.Tests.csproj",
       "tests/Granit.Caching.StackExchangeRedis.Tests/Granit.Caching.StackExchangeRedis.Tests.csproj",
       "tests/Granit.Caching.Tests.Integration/Granit.Caching.Tests.Integration.csproj",
       "tests/Granit.Caching.Tests/Granit.Caching.Tests.csproj",

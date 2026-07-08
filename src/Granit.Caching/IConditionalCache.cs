@@ -18,6 +18,13 @@ namespace Granit.Caching;
 ///     (registered by <c>Granit.Caching.StackExchangeRedis</c>).</item>
 /// </list>
 /// </para>
+/// <para>
+/// Keys are logical: implementations automatically namespace them as
+/// <c>{KeyPrefix}:cond:t:{tenantId|host}:{key}</c> (same app prefix and tenant isolation
+/// as <c>IFusionCache</c> entries). Callers must NOT re-encode the application namespace
+/// or the current tenant into the key; tenant-independent keys require an ambient
+/// tenant-free context (the tenant segment is read from <c>ICurrentTenant</c> at call time).
+/// </para>
 /// </remarks>
 public interface IConditionalCache
 {

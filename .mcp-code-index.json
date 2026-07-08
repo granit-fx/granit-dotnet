@@ -15741,34 +15741,6 @@
       ]
     },
     {
-      "name": "CachingMetrics",
-      "fqn": "Granit.Caching.Diagnostics.CachingMetrics",
-      "kind": "class",
-      "project": "Granit.Caching",
-      "file": "src/Granit.Caching/Diagnostics/CachingMetrics.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "RecordMiss",
-          "kind": "method",
-          "signature": "RecordMiss(string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordFailSafeActivated",
-          "kind": "method",
-          "signature": "RecordFailSafeActivated(string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordFactoryTimeout",
-          "kind": "method",
-          "signature": "RecordFactoryTimeout(string? tenantId, string timeoutType)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
       "name": "CachingServiceCollectionExtensions",
       "fqn": "Granit.Caching.Extensions.CachingServiceCollectionExtensions",
       "kind": "class",
@@ -15828,7 +15800,7 @@
       "kind": "interface",
       "project": "Granit.Caching",
       "file": "src/Granit.Caching/IConditionalCache.cs",
-      "line": 22,
+      "line": 29,
       "members": [
         {
           "name": "DeleteAsync",
@@ -18841,6 +18813,22 @@
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitMeterRegistry",
+      "fqn": "Granit.Diagnostics.GranitMeterRegistry",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Diagnostics/GranitMeterRegistry.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Register",
+          "kind": "method",
+          "signature": "Register(string meterName)",
           "returnType": "void"
         }
       ]

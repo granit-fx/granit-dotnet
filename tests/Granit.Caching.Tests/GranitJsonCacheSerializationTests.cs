@@ -7,7 +7,7 @@ using Shouldly;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
 
-namespace Granit.Caching.FusionCache.Tests;
+namespace Granit.Caching.Tests;
 
 /// <summary>
 /// Proves the cache L2 serializer is domain-aware once the canonical Granit JSON converters are

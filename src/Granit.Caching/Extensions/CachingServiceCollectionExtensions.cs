@@ -1,8 +1,8 @@
 using System.Text.Json;
-using Granit.Caching.Diagnostics;
 using Granit.Caching.Internal;
 using Granit.Caching.MultiTenancy;
 using Granit.Caching.Options;
+using Granit.Diagnostics;
 using Granit.Json;
 using Granit.MultiTenancy;
 using Granit.Timing.Extensions;
@@ -36,6 +36,12 @@ public static class CachingServiceCollectionExtensions
     /// For L2 Redis + backplane, add <c>Granit.Caching.StackExchangeRedis</c> which upgrades
     /// the FusionCache instance with <c>WithRegisteredDistributedCache()</c> and a Redis backplane.
     /// </para>
+    /// <para>
+    /// Tenant isolation caveat: <c>IFusionCache</c> keys are transparently prefixed per tenant,
+    /// but <c>Clear()</c>/<c>ClearAsync()</c> are tenant-agnostic — they wipe entries of ALL
+    /// tenants (FusionCache has no per-prefix clear). Prefer <c>RemoveByTag</c> with
+    /// tenant-scoped tags for selective invalidation in multi-tenant hosts.
+    /// </para>
     /// </remarks>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
@@ -56,7 +62,13 @@ public static class CachingServiceCollectionExtensions
 
         // No-op encryptor by default (replaced by AesCacheValueEncryptor if EncryptValues=true)
         services.TryAddSingleton<ICacheValueEncryptor, NullCacheValueEncryptor>();
-        services.TryAddSingleton<CachingMetrics>();
+
+        // Shared key composition for IConditionalCache implementations: every key is
+        // namespaced with {KeyPrefix}:cond:t:{tenant|host}: so conditional entries get the
+        // same app + tenant isolation as IFusionCache keys (which go through
+        // TenantAwareFusionCache + FusionCache's CacheKeyPrefix) instead of landing at the
+        // Redis root where two apps sharing an instance could collide.
+        services.TryAddSingleton<ConditionalCacheKeyComposer>();
 
         // In-memory conditional cache by default (replaced by RedisConditionalCache via Granit.Caching.StackExchangeRedis)
         services.TryAddSingleton<IConditionalCache, Internal.InMemoryConditionalCache>();
@@ -77,6 +89,18 @@ public static class CachingServiceCollectionExtensions
         // Register FusionCache with L1 in-memory + SystemTextJson serialization
         services.AddFusionCache()
             .WithSystemTextJsonSerializer();
+
+        // FusionCache emits its OTel signals natively from the core package, but under its own
+        // namespace — the "Granit.*" wildcard and Granit source registrations never subscribe
+        // them, so without these lines no cache metric or trace is exported at all. Name-based
+        // registration (rather than referencing ZiggyCreatures.FusionCache.OpenTelemetry and
+        // Granit.Observability) keeps the heavy OTel exporter stack out of this package's
+        // dependency graph. Levels mirror the companion package defaults: traces for the
+        // top-level + distributed (L2) operations, metrics for the top-level cache only —
+        // per-level meters (memory/distributed/backplane) are too chatty for a default.
+        GranitActivitySourceRegistry.Register(FusionCacheDiagnostics.ActivitySourceName);
+        GranitActivitySourceRegistry.Register(FusionCacheDiagnostics.ActivitySourceNameDistributedLevel);
+        GranitMeterRegistry.Register(FusionCacheDiagnostics.MeterName);
 
         // Deferred configuration: resolve options at runtime to configure FusionCache defaults
         services.AddOptions<FusionCacheOptions>()

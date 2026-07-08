@@ -131,7 +131,6 @@
         "tests/Granit.Browsing.Playwright.Tests",
         "tests/Granit.Browsing.PuppeteerSharp.Tests",
         "tests/Granit.Browsing.Tests",
-        "tests/Granit.Caching.FusionCache.Tests",
         "tests/Granit.Caching.StackExchangeRedis.Tests",
         "tests/Granit.Caching.Tests",
         "tests/Granit.Caching.Vault.Tests",

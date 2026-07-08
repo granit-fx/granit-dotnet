@@ -9,8 +9,12 @@ namespace Granit.Caching.Internal;
 /// <remarks>
 /// Data does not survive process restarts. TTL expiration is checked lazily on read
 /// and periodically cleaned up during <see cref="SetIfAbsentAsync{T}"/> calls.
+/// Keys are namespaced by <see cref="ConditionalCacheKeyComposer"/> (app prefix + tenant
+/// segment) so tenants sharing a process cannot observe each other's entries.
 /// </remarks>
-internal sealed class InMemoryConditionalCache(TimeProvider timeProvider) : IConditionalCache
+internal sealed class InMemoryConditionalCache(
+    TimeProvider timeProvider,
+    ConditionalCacheKeyComposer keyComposer) : IConditionalCache
 {
     private readonly ConcurrentDictionary<string, (object? Value, DateTimeOffset ExpiresAt)> _store = new();
     private readonly Lock _lock = new();
@@ -18,6 +22,8 @@ internal sealed class InMemoryConditionalCache(TimeProvider timeProvider) : ICon
     /// <inheritdoc/>
     public Task<bool> SetIfAbsentAsync<T>(string key, T value, TimeSpan ttl, CancellationToken cancellationToken)
     {
+        key = keyComposer.Compose(key);
+
         lock (_lock)
         {
             Cleanup();
@@ -36,6 +42,8 @@ internal sealed class InMemoryConditionalCache(TimeProvider timeProvider) : ICon
     /// <inheritdoc/>
     public Task<bool> SetIfPresentAsync<T>(string key, T value, TimeSpan ttl, CancellationToken cancellationToken)
     {
+        key = keyComposer.Compose(key);
+
         lock (_lock)
         {
             if (_store.TryGetValue(key, out (object? Value, DateTimeOffset ExpiresAt) existing) && timeProvider.GetUtcNow() < existing.ExpiresAt)
@@ -51,6 +59,8 @@ internal sealed class InMemoryConditionalCache(TimeProvider timeProvider) : ICon
     /// <inheritdoc/>
     public Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken)
     {
+        key = keyComposer.Compose(key);
+
         if (_store.TryGetValue(key, out (object? Value, DateTimeOffset ExpiresAt) tuple))
         {
             if (timeProvider.GetUtcNow() < tuple.ExpiresAt)
@@ -67,7 +77,7 @@ internal sealed class InMemoryConditionalCache(TimeProvider timeProvider) : ICon
     /// <inheritdoc/>
     public Task DeleteAsync(string key, CancellationToken cancellationToken)
     {
-        _store.TryRemove(key, out _);
+        _store.TryRemove(keyComposer.Compose(key), out _);
         return Task.CompletedTask;
     }
 

@@ -2,13 +2,12 @@
 
   <PropertyGroup>
     <PackageId>Granit.Caching</PackageId>
-    <Description>FusionCache-based caching for Granit. Provides IFusionCache with L1 in-memory cache, fail-safe, factory timeouts, eager refresh, AES-256-CBC encryption, and native OpenTelemetry. Add Granit.Caching.StackExchangeRedis for L2 Redis + backplane.</Description>
+    <Description>FusionCache-based caching for Granit. Provides IFusionCache with L1 in-memory cache, fail-safe, factory timeouts, eager refresh, AES-256-GCM encryption, and native OpenTelemetry. Add Granit.Caching.StackExchangeRedis for L2 Redis + backplane.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Caching.Tests" />
-    <InternalsVisibleTo Include="Granit.Caching.FusionCache.Tests" />
     <InternalsVisibleTo Include="Granit.Caching.StackExchangeRedis" />
     <InternalsVisibleTo Include="Granit.Http.Idempotency.Tests" />
   </ItemGroup>
@@ -22,15 +21,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
     <PackageReference Include="ZiggyCreatures.FusionCache" />
     <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" />
-    <PackageReference Include="ZiggyCreatures.FusionCache.OpenTelemetry" />
-    <!--
-      Forces the central OpenTelemetry.Api floor (1.15.*) to win against the exact
-      transitive pin in ZiggyCreatures.FusionCache.OpenTelemetry 2.6.0 (which
-      requests OpenTelemetry.Api 1.14.0 — flagged by GHSA-g94r-2vxg-569j as a
-      moderate-severity vulnerability and broken by NU1902-as-error in CI).
-      Remove once Ziggy bumps its dependency.
-    -->
-    <PackageReference Include="OpenTelemetry.Api" />
   </ItemGroup>
 
   <ItemGroup>

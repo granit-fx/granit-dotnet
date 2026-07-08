@@ -1,6 +1,8 @@
 using Granit.Caching.Internal;
+using Granit.Caching.Options;
 using Granit.Http.Idempotency.Internal;
 using Granit.Http.Idempotency.Models;
+using Granit.MultiTenancy;
 using Granit.Testing.Fakes;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
@@ -15,7 +17,11 @@ public sealed class ConditionalCacheIdempotencyStoreTests
 
     public ConditionalCacheIdempotencyStoreTests()
     {
-        InMemoryConditionalCache cache = new(_timeProvider);
+        InMemoryConditionalCache cache = new(
+            _timeProvider,
+            new ConditionalCacheKeyComposer(
+                Microsoft.Extensions.Options.Options.Create(new CachingOptions()),
+                NullTenantContext.Instance));
         _store = new ConditionalCacheIdempotencyStore(cache, NullLogger<ConditionalCacheIdempotencyStore>.Instance);
     }
 

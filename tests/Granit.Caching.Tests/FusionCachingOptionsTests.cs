@@ -2,7 +2,7 @@ using Granit.Caching.Options;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Caching.FusionCache.Tests;
+namespace Granit.Caching.Tests;
 
 public sealed class FusionCachingOptionsTests
 {

@@ -46,22 +46,20 @@ internal sealed class EncryptingFusionCacheSerializer(
     }
 
     /// <inheritdoc/>
-    public ValueTask<byte[]> SerializeAsync<T>(T? obj, CancellationToken token = default)
+    public async ValueTask<byte[]> SerializeAsync<T>(T? obj, CancellationToken token = default)
     {
-        byte[] serialized = _inner.Serialize(obj);
-        byte[] result = CacheEncryptionResolver.ShouldEncrypt(typeof(T), _options)
+        byte[] serialized = await _inner.SerializeAsync(obj, token).ConfigureAwait(false);
+        return CacheEncryptionResolver.ShouldEncrypt(typeof(T), _options)
             ? _encryptor.Encrypt(serialized)
             : serialized;
-        return new ValueTask<byte[]>(result);
     }
 
     /// <inheritdoc/>
-    public ValueTask<T?> DeserializeAsync<T>(byte[] data, CancellationToken token = default)
+    public async ValueTask<T?> DeserializeAsync<T>(byte[] data, CancellationToken token = default)
     {
         byte[] plain = CacheEncryptionResolver.ShouldEncrypt(typeof(T), _options)
             ? _encryptor.Decrypt(data)
             : data;
-        T? result = _inner.Deserialize<T>(plain);
-        return new ValueTask<T?>(result);
+        return await _inner.DeserializeAsync<T>(plain, token).ConfigureAwait(false);
     }
 }

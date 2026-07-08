@@ -127,7 +127,6 @@
       "tests/Granit.Browsing.Playwright.Tests/Granit.Browsing.Playwright.Tests.csproj",
       "tests/Granit.Browsing.PuppeteerSharp.Tests/Granit.Browsing.PuppeteerSharp.Tests.csproj",
       "tests/Granit.Browsing.Tests/Granit.Browsing.Tests.csproj",
-      "tests/Granit.Caching.FusionCache.Tests/Granit.Caching.FusionCache.Tests.csproj",
       "tests/Granit.Caching.StackExchangeRedis.Tests/Granit.Caching.StackExchangeRedis.Tests.csproj",
       "tests/Granit.Caching.Tests/Granit.Caching.Tests.csproj",
       "tests/Granit.Caching.Vault.Tests/Granit.Caching.Vault.Tests.csproj",

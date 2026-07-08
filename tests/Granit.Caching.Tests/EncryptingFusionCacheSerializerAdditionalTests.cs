@@ -6,7 +6,7 @@ using Xunit;
 using ZiggyCreatures.Caching.Fusion.Serialization;
 using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
 
-namespace Granit.Caching.FusionCache.Tests;
+namespace Granit.Caching.Tests;
 
 public sealed class EncryptingFusionCacheSerializerAdditionalTests
 {

@@ -167,7 +167,7 @@ public static partial class RedisCachingServiceCollectionExtensions
     /// <param name="name">Check name. Defaults to <c>"redis"</c>.</param>
     /// <param name="degradedThreshold">Latency above which the check returns Degraded. Defaults to 100 ms.</param>
     /// <param name="failureStatus">Status on failure. Defaults to <see cref="HealthStatus.Unhealthy"/>.</param>
-    /// <param name="timeout">Check timeout. Defaults to 5 seconds.</param>
+    /// <param name="timeout">Check timeout. Defaults to 10 seconds (framework health check convention).</param>
     public static IHealthChecksBuilder AddGranitRedisHealthCheck(
         this IHealthChecksBuilder builder,
         string name = "redis",
@@ -194,6 +194,6 @@ public static partial class RedisCachingServiceCollectionExtensions
             sp => sp.GetRequiredService<RedisHealthCheck>(),
             failureStatus,
             ["readiness", "startup"],
-            timeout ?? TimeSpan.FromSeconds(5)));
+            timeout ?? TimeSpan.FromSeconds(10)));
     }
 }

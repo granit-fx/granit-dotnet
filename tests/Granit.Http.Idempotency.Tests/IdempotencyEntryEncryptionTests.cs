@@ -93,7 +93,11 @@ public sealed class IdempotencyEntryEncryptionTests
     {
         // The L1 in-memory conditional cache holds live object graphs; [CacheEncrypted] is a no-op
         // there. Proof: the exact same instance comes back out (no serialize/encrypt round trip).
-        var l1 = new InMemoryConditionalCache(TimeProvider.System);
+        var l1 = new InMemoryConditionalCache(
+            TimeProvider.System,
+            new ConditionalCacheKeyComposer(
+                Microsoft.Extensions.Options.Options.Create(new CachingOptions()),
+                Granit.MultiTenancy.NullTenantContext.Instance));
         IdempotencyEntry entry = SampleCompletedEntry();
 
         bool added = await l1.SetIfAbsentAsync("k", entry, TimeSpan.FromMinutes(5), CancellationToken.None);

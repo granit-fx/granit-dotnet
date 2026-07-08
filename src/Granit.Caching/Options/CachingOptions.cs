@@ -11,8 +11,10 @@ public sealed class CachingOptions
     public const string SectionName = "Cache";
 
     /// <summary>
-    /// Prefix applied to all cache keys.
-    /// Final format: <c>{KeyPrefix}:{CacheName}:{userKey}</c>.
+    /// Application namespace prefix applied to all cache keys.
+    /// Final formats: <c>{KeyPrefix}:t:{tenantId|host}:{userKey}</c> for <c>IFusionCache</c>
+    /// entries (tenant segment added by the tenant-aware decorator) and
+    /// <c>{KeyPrefix}:cond:t:{tenantId|host}:{userKey}</c> for <c>IConditionalCache</c> entries.
     /// Default: <c>"dd"</c>.
     /// </summary>
     public string KeyPrefix { get; set; } = "dd";
