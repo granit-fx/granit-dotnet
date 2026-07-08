@@ -48989,10 +48989,16 @@
       "line": 7,
       "members": [
         {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
           "name": "ModuleOf",
           "kind": "method",
           "signature": "ModuleOf(Type entityType)",
-          "returnType": "string Name { get; } Type EntityType { get; } string ModuleName { get; } string"
+          "returnType": "string"
         }
       ]
     },
@@ -49248,6 +49254,12 @@
           "kind": "property",
           "signature": "Type? LocalizationResourceType",
           "returnType": "Type?"
+        },
+        {
+          "name": "RequiredPermission",
+          "kind": "property",
+          "signature": "string? RequiredPermission",
+          "returnType": "string?"
         },
         {
           "name": "GetFilterGroups",

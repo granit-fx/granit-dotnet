@@ -124,6 +124,31 @@ public sealed partial class NamingHomogeneityTests
     }
 
     /// <summary>
+    /// No src <b>package</b> (project directory) may carry the <c>.AspNetCore</c> suffix: the
+    /// framework's HTTP-integration surface convention is <c>.Endpoints</c>. This closes the gap
+    /// that let <c>Granit.QueryEngine.AspNetCore</c> live for a while as the sole outlier among
+    /// ~35 <c>.Endpoints</c> modules (#2952). Sub-namespaces / folders named <c>AspNetCore</c>
+    /// inside a base package (e.g. <c>Granit.Validation/AspNetCore/</c>) are a deliberate
+    /// convention for ASP.NET-touching helpers and are unaffected — this rule targets the
+    /// package name only.
+    /// </summary>
+    [Fact]
+    public void No_src_package_should_use_the_AspNetCore_suffix()
+    {
+        List<string> violations =
+            [.. Directory.EnumerateDirectories(SrcRoot)
+                .Select(Path.GetFileName)
+                .OfType<string>()
+                .Where(name => name.StartsWith("Granit.", StringComparison.Ordinal)
+                    && name.EndsWith(".AspNetCore", StringComparison.Ordinal))];
+
+        violations.ShouldBeEmpty(
+            "HTTP-integration packages use the '.Endpoints' suffix, never '.AspNetCore'. " +
+            "Rename the package (folder, .csproj, PackageId, module class, namespaces) to " +
+            "'.Endpoints'. Violators: " + string.Join(", ", violations));
+    }
+
+    /// <summary>
     /// Extracts the file-scoped or first block-scoped namespace from a C# file.
     /// Returns <c>null</c> if no namespace declaration is found.
     /// </summary>
