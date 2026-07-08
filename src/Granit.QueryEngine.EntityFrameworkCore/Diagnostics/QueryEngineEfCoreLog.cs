@@ -44,4 +44,10 @@ internal static partial class QueryEngineEfCoreLog
         Message = "Substring filter (contains/startsWith/endsWith) on field '{Field}' of non-string type {ColumnType} is ignored — EF Core cannot translate LIKE over a value-object/non-string column. See issue #2767.")]
     public static partial void SubstringFilterOnNonStringColumnIgnored(
         ILogger logger, string field, string columnType);
+
+    [LoggerMessage(
+        EventId = 8205,
+        Level = LogLevel.Warning,
+        Message = "A query definition enables cursor pagination but QueryEngineOptions.CursorHmacKey is not configured — cursors are unsigned and forgeable (CWE-565). Configure a Base64 256-bit key in production. This warning is emitted once per process.")]
+    public static partial void UnsignedCursorPagination(ILogger logger);
 }

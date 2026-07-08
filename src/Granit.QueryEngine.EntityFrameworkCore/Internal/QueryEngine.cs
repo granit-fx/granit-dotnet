@@ -43,9 +43,8 @@ internal sealed class QueryEngine<TEntity>(
         ResolveSearchStrategy(definition, searchStrategy, serviceProvider);
     private readonly QueryEngineMetrics? _metrics = metrics;
     private readonly ICurrentTenant? _currentTenant = currentTenant;
-    private readonly byte[]? _cursorHmacKey = !string.IsNullOrEmpty(engineOptions.Value.CursorHmacKey)
-        ? Convert.FromBase64String(engineOptions.Value.CursorHmacKey)
-        : null;
+    private readonly byte[]? _cursorHmacKey =
+        ResolveCursorHmacKey(engineOptions.Value, definition.GetBuilder(), logger);
 
     /// <inheritdoc/>
     public async Task<PagedResult<TEntity>> ExecuteAsync(
@@ -373,6 +372,35 @@ internal sealed class QueryEngine<TEntity>(
     }
 
     /// <summary>
+    /// Decodes the configured HMAC key for cursor signing, or returns <see langword="null"/>
+    /// (unsigned cursors) when none is configured. When a definition enables cursor pagination
+    /// but no key is set, emits a single process-wide warning: unsigned cursors are forgeable
+    /// (CWE-565), so production hosts should configure <c>QueryEngineOptions.CursorHmacKey</c>.
+    /// A per-process random default is deliberately NOT used — it would break keyset pagination
+    /// across replicas and restarts (a cursor signed by one replica must verify on another).
+    /// </summary>
+    private static byte[]? ResolveCursorHmacKey(
+        QueryEngineOptions options,
+        QueryDefinitionBuilder<TEntity> builder,
+        ILogger logger)
+    {
+        if (!string.IsNullOrEmpty(options.CursorHmacKey))
+        {
+            return Convert.FromBase64String(options.CursorHmacKey);
+        }
+
+        if (builder.CursorPropertyName is not null && !CursorSigningWarning.Emitted)
+        {
+            // Volatile check-then-set: at worst two threads both log once during a startup
+            // race — acceptable for a one-time advisory, and never per-request steady state.
+            CursorSigningWarning.Emitted = true;
+            QueryEngineEfCoreLog.UnsignedCursorPagination(logger);
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// Resolves the effective global search strategy. A type declared via
     /// <c>QueryDefinitionBuilder.UseSearchStrategy&lt;T&gt;()</c> wins: it is resolved from DI
     /// when registered, otherwise activated with constructor injection. Without a declared
@@ -561,4 +589,14 @@ internal sealed class QueryEngine<TEntity>(
         _metrics.RecordQueryExecuted(tenantId, EntityTypeName, mode);
         _metrics.RecordQueryDuration(tenantId, EntityTypeName, mode, elapsed);
     }
+}
+
+/// <summary>
+/// Process-wide latch so the "unsigned cursor pagination" advisory is logged at most once,
+/// regardless of how many closed <c>QueryEngine&lt;TEntity&gt;</c> types exist (a static field in
+/// a generic type is per-closed-type, hence this non-generic holder).
+/// </summary>
+file static class CursorSigningWarning
+{
+    internal static volatile bool Emitted;
 }
