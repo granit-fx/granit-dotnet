@@ -63,6 +63,15 @@ public abstract class QueryDefinition<TEntity> : IQueryDefinitionDescriptor wher
     public virtual Type? LocalizationResourceType => null;
 
     /// <summary>
+    /// Optional permission the caller must hold to execute this query over HTTP and to see it in
+    /// the query catalogue. Three-segment format <c>[Group].[Resource].[Action]</c> — must resolve
+    /// to a declared <c>PermissionDefinition</c>. When <c>null</c> (the default), the query is
+    /// gated by authentication only. Override to require a permission (least privilege, ISO 27001
+    /// A.9.4).
+    /// </summary>
+    public virtual string? RequiredPermission => null;
+
+    /// <summary>
     /// Configures the query definition using the fluent builder.
     /// Called once at startup.
     /// </summary>

@@ -96,4 +96,38 @@ public sealed class QueryDefinitionAggregateGuardTests
         Should.Throw<ArgumentException>(() =>
             builder.Aggregate(o => o.Amount, AggregateFunction.Sum, " "));
     }
+
+    private sealed class OrderQuery : QueryDefinition<Order>
+    {
+        public override string Name => "Test.Orders";
+
+        protected override void Configure(QueryDefinitionBuilder<Order> builder) =>
+            builder.Column(o => o.Reference);
+    }
+
+    private sealed class PermissionedOrderQuery : QueryDefinition<Order>
+    {
+        public override string Name => "Test.PermissionedOrders";
+
+        public override string? RequiredPermission => "Orders.Orders.Read";
+
+        protected override void Configure(QueryDefinitionBuilder<Order> builder) =>
+            builder.Column(o => o.Reference);
+    }
+
+    [Fact]
+    public void RequiredPermission_defaults_to_null()
+    {
+        IQueryDefinitionDescriptor query = new OrderQuery();
+
+        query.RequiredPermission.ShouldBeNull();
+    }
+
+    [Fact]
+    public void RequiredPermission_override_is_surfaced_through_the_descriptor()
+    {
+        IQueryDefinitionDescriptor query = new PermissionedOrderQuery();
+
+        query.RequiredPermission.ShouldBe("Orders.Orders.Read");
+    }
 }

@@ -92,9 +92,21 @@ public static class QueryEndpointRouteBuilderExtensions
             group.WithTags(options.TagName);
         }
 
+        // Resolve the definition once at setup time (also consulted below for projection).
+        QueryDefinition<TEntity>? definition = endpoints.ServiceProvider
+            .GetService<QueryDefinition<TEntity>>();
+
+        // Authorization precedence: an explicit host-supplied AuthorizationPolicy wins; otherwise
+        // the definition's declared RequiredPermission gates the group via the dynamic permission
+        // policy (403 when the caller lacks it); otherwise the default authentication gate applies
+        // unless the host opted into anonymous access.
         if (options.AuthorizationPolicy is not null)
         {
             group.RequireAuthorization(options.AuthorizationPolicy);
+        }
+        else if (definition?.RequiredPermission is { } requiredPermission)
+        {
+            group.RequireAuthorization(requiredPermission);
         }
         else if (!options.AllowAnonymous)
         {
@@ -103,11 +115,10 @@ public static class QueryEndpointRouteBuilderExtensions
 
         if (options.IncludeListEndpoint)
         {
-            // Resolve the query definition once at setup time. When it declares a projection,
-            // dispatch to a generic helper that wires GET / to the typed ExecuteAsync<TDto>
-            // overload. Reflection is used exclusively here (setup) — never per request.
-            QueryDefinition<TEntity>? definitionForProjection = endpoints.ServiceProvider
-                .GetService<QueryDefinition<TEntity>>();
+            // When the definition declares a projection, dispatch to a generic helper that wires
+            // GET / to the typed ExecuteAsync<TDto> overload. Reflection is used exclusively here
+            // (setup) — never per request.
+            QueryDefinition<TEntity>? definitionForProjection = definition;
 
             Type? projectionType = definitionForProjection?.GetProjectionType();
             LambdaExpression? projectionExpression = definitionForProjection?.GetProjectionExpression();

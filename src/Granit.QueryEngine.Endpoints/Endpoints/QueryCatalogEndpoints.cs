@@ -1,3 +1,4 @@
+using Granit.Authorization;
 using Granit.Entities;
 using Granit.QueryEngine.Endpoints.Dtos;
 using Granit.QueryEngine.Endpoints.Internal;
@@ -31,9 +32,9 @@ internal static class QueryCatalogEndpoints
     {
         group.MapGet("/catalog", ListCatalog)
             .WithName("ListQueryCatalog")
-            .WithSummary("Lists every registered QueryDefinition.")
+            .WithSummary("Lists every registered QueryDefinition the caller may see.")
             .WithDescription(
-                "Returns the full query catalogue surfaced by IQueryDefinitionRegistry so a "
+                "Returns the query catalogue surfaced by IQueryDefinitionRegistry so a "
                 + "dashboard editor can offer a dropdown of queries instead of a free-text "
                 + "queryName. Entries are ordered by owning module, then by name, so the editor "
                 + "can group them under module headings. Each entry carries the wire identifier, "
@@ -41,18 +42,21 @@ internal static class QueryCatalogEndpoints
                 + "display key when registered, else Query:{Name}), and "
                 + "— when a MapGranitQuery route exposes it — the resolved base path of its list "
                 + "endpoint. Registration and routing are decoupled: a query registered without a "
-                + "mapped route is returned with a null base path rather than a forged URL.")
+                + "mapped route is returned with a null base path rather than a forged URL. "
+                + "Queries that declare a RequiredPermission are omitted for callers who lack it.")
             .Produces<IReadOnlyList<QueryCatalogEntryResponse>>();
 
         return group;
     }
 
-    private static Ok<IReadOnlyList<QueryCatalogEntryResponse>> ListCatalog(
+    private static async Task<Ok<IReadOnlyList<QueryCatalogEntryResponse>>> ListCatalog(
         [FromServices] IQueryDefinitionRegistry registry,
         [FromServices] EndpointDataSource endpointDataSource,
         [FromServices] LinkGenerator linkGenerator,
         [FromServices] IEnumerable<IEntityDefinitionDescriptor> entityDescriptors,
-        HttpContext httpContext)
+        HttpContext httpContext,
+        CancellationToken cancellationToken,
+        [FromServices] IPermissionChecker? permissionChecker = null)
     {
         // Resolve each List-tagged endpoint's URL via LinkGenerator so route parameters
         // (e.g. /api/v{version:apiVersion}/patients) are substituted into the path.
@@ -84,10 +88,45 @@ internal static class QueryCatalogEndpoints
 
         Dictionary<Type, string> entityDisplayKeys = BuildEntityDisplayKeyIndex(entityDescriptors);
 
+        IReadOnlyList<IQueryDefinitionDescriptor> visible = await FilterByPermissionAsync(
+            registry.GetAll(), permissionChecker, cancellationToken).ConfigureAwait(false);
+
         return TypedResults.Ok(QueryCatalogProjection.Project(
-            registry.GetAll(),
+            visible,
             routeIndex,
             descriptor => ResolveLabelKey(descriptor, entityDisplayKeys)));
+    }
+
+    /// <summary>
+    /// Drops catalogue entries whose <see cref="IQueryDefinitionDescriptor.RequiredPermission"/>
+    /// the caller does not hold. Queries with no declared permission are always visible. When no
+    /// <see cref="IPermissionChecker"/> is registered (authorization not wired), every query is
+    /// returned — matching the authenticated-only default of the catalogue gate. The distinct
+    /// required permissions are resolved in a single batched <see cref="IPermissionChecker.GetGrantedAsync"/>
+    /// call rather than one check per entry.
+    /// </summary>
+    private static async Task<IReadOnlyList<IQueryDefinitionDescriptor>> FilterByPermissionAsync(
+        IEnumerable<IQueryDefinitionDescriptor> descriptors,
+        IPermissionChecker? permissionChecker,
+        CancellationToken cancellationToken)
+    {
+        List<IQueryDefinitionDescriptor> all = [.. descriptors];
+
+        List<string> required =
+            [.. all.Select(d => d.RequiredPermission).OfType<string>().Distinct(StringComparer.Ordinal)];
+
+        if (required.Count == 0 || permissionChecker is null)
+        {
+            return all;
+        }
+
+        IReadOnlyList<string> granted = await permissionChecker
+            .GetGrantedAsync(required, cancellationToken)
+            .ConfigureAwait(false);
+        HashSet<string> grantedSet = [.. granted];
+
+        return [.. all.Where(d =>
+            d.RequiredPermission is null || grantedSet.Contains(d.RequiredPermission))];
     }
 
     /// <summary>

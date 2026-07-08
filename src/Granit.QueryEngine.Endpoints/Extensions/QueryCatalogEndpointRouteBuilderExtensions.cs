@@ -31,9 +31,10 @@ public static class QueryCatalogEndpointRouteBuilderExtensions
         RouteGroupBuilder group = endpoints.MapGranitGroup(prefix)
             .WithTags("Query Engine");
 
-        // Authenticated-only gate: the catalogue exposes query identifiers and base paths
-        // (metadata, not row data), mirroring the per-query list endpoints' default. The
-        // descriptors carry no PermissionGroup, so there is nothing to filter per-item on.
+        // Authenticated-only gate on the endpoint: the catalogue exposes query identifiers and
+        // base paths (metadata, not row data), mirroring the per-query list endpoints' default.
+        // Per-item authorization is applied inside the handler — a query that declares a
+        // RequiredPermission is omitted for callers who lack it (see ListCatalog).
         group.RequireAuthorization();
 
         group.MapQueryCatalogEndpoints();

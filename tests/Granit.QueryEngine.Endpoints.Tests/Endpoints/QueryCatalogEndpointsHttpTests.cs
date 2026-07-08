@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Granit.Authorization;
 using Granit.Entities;
 using Granit.QueryEngine.Endpoints.Dtos;
 using Granit.QueryEngine.Endpoints.Extensions;
@@ -129,6 +130,63 @@ public sealed class QueryCatalogEndpointsHttpTests
             .GetAsync("/catalog", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    private static Task<GranitEndpointTestHost> StartWithPermissionedQueryAsync(
+        IReadOnlyList<string> grantedPermissions) =>
+        GranitEndpointTestHost.StartAsync(
+            configureServices: services =>
+            {
+                services.AddAuthorizationBuilder();
+                services.AddQueryDefinition<RoutedEntity, RoutedQueryDefinition>();
+                services.AddQueryDefinition<UnroutedEntity, PermissionedQueryDefinition>();
+                services.TryAddSingleton<IQueryDefinitionRegistry, QueryDefinitionRegistry>();
+                services.AddSingleton<IPermissionChecker>(new StubPermissionChecker(grantedPermissions));
+            },
+            configureEndpoints: app => app.MapGranitQueryCatalog());
+
+    [Fact]
+    public async Task Catalog_omits_a_permissioned_query_the_caller_cannot_access()
+    {
+        await using GranitEndpointTestHost host = await StartWithPermissionedQueryAsync(grantedPermissions: []);
+
+        List<QueryCatalogEntryResponse>? body = await host.CreateAuthenticatedClient()
+            .GetFromJsonAsync<List<QueryCatalogEntryResponse>>("/catalog", TestContext.Current.CancellationToken);
+
+        body!.Select(e => e.Name).ShouldBe(["Test.Routed"]);
+    }
+
+    [Fact]
+    public async Task Catalog_includes_a_permissioned_query_when_the_caller_is_granted()
+    {
+        await using GranitEndpointTestHost host =
+            await StartWithPermissionedQueryAsync(grantedPermissions: ["Test.Things.Read"]);
+
+        List<QueryCatalogEntryResponse>? body = await host.CreateAuthenticatedClient()
+            .GetFromJsonAsync<List<QueryCatalogEntryResponse>>("/catalog", TestContext.Current.CancellationToken);
+
+        body!.Select(e => e.Name).ShouldBe(["Test.Permissioned", "Test.Routed"]);
+    }
+
+    private sealed class PermissionedQueryDefinition : QueryDefinition<UnroutedEntity>
+    {
+        public override string Name => "Test.Permissioned";
+
+        public override string? RequiredPermission => "Test.Things.Read";
+
+        protected override void Configure(QueryDefinitionBuilder<UnroutedEntity> builder) =>
+            builder.Column(e => e.Name);
+    }
+
+    private sealed class StubPermissionChecker(IReadOnlyList<string> granted) : IPermissionChecker
+    {
+        public Task<bool> IsGrantedAsync(string permissionName, CancellationToken cancellationToken = default) =>
+            Task.FromResult(granted.Contains(permissionName));
+
+        public Task<IReadOnlyList<string>> GetGrantedAsync(
+            IReadOnlyList<string> permissionNames, CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<string>>(
+                [.. permissionNames.Where(granted.Contains)]);
     }
 
     private sealed class RoutedEntity

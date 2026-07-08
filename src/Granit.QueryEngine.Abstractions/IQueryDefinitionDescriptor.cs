@@ -25,6 +25,15 @@ public interface IQueryDefinitionDescriptor
     string ModuleName { get; }
 
     /// <summary>
+    /// Optional permission the caller must hold to execute this query over HTTP and to see it in
+    /// the query catalogue. Three-segment format <c>[Group].[Resource].[Action]</c> — must resolve
+    /// to a declared <c>PermissionDefinition</c>. When <see langword="null"/> (the default), the
+    /// query is gated by authentication only. Enforced by <c>MapGranitQuery</c> (403 when the
+    /// caller lacks the permission) and used to filter the query catalogue per caller.
+    /// </summary>
+    string? RequiredPermission => null;
+
+    /// <summary>
     /// Derives the owning module name from an entity type: its assembly's simple name with the
     /// framework <c>Granit.</c> prefix stripped (so <c>Granit.Auditing</c> → <c>Auditing</c> and
     /// <c>Granit.Identity.Local</c> → <c>Identity.Local</c>). A non-framework assembly name is
