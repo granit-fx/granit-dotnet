@@ -18781,7 +18781,7 @@
       "kind": "class",
       "project": "Granit",
       "file": "src/Granit/Diagnostics/LogRedaction.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "Email",
@@ -22133,6 +22133,15 @@
           "returnType": "Task<IHostApplicationBuilder>"
         }
       ]
+    },
+    {
+      "name": "GranitProviderOptionsServiceCollectionExtensions",
+      "fqn": "Granit.Extensions.GranitProviderOptionsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Extensions/GranitProviderOptionsServiceCollectionExtensions.cs",
+      "line": 18,
+      "members": []
     },
     {
       "name": "FeatureCacheInvalidationHandler",
@@ -26217,6 +26226,22 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpResponseMessageExtensions",
+      "fqn": "Granit.Http.Resilience.Extensions.GranitHttpResponseMessageExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Resilience",
+      "file": "src/Granit.Http.Resilience/Extensions/GranitHttpResponseMessageExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "EnsureGranitSuccessAsync",
+          "kind": "method",
+          "signature": "EnsureGranitSuccessAsync(this HttpResponseMessage response, ILogger logger, string providerName, string? endpoint = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
