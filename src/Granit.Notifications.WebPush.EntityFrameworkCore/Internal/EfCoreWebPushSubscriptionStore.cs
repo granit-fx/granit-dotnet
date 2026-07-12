@@ -54,10 +54,10 @@ internal sealed class EfCoreWebPushSubscriptionStore(
         cancellationToken);
 
     /// <inheritdoc />
-    public Task RemoveSubscriptionAsync(string endpoint, Guid? tenantId, CancellationToken cancellationToken = default) =>
+    public Task RemoveSubscriptionAsync(string userId, string endpoint, Guid? tenantId, CancellationToken cancellationToken = default) =>
         WriteAsync(async db =>
             await db.WebPushSubscriptions
-                .Where(s => s.Endpoint == endpoint && s.TenantId == tenantId)
+                .Where(s => s.UserId == userId && s.Endpoint == endpoint && s.TenantId == tenantId)
                 .ExecuteDeleteAsync(cancellationToken)
                 .ConfigureAwait(false),
             cancellationToken);

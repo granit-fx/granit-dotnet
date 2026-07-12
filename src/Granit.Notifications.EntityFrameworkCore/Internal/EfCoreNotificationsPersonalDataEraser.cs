@@ -11,22 +11,24 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 internal sealed class EfCoreNotificationsPersonalDataEraser(
     IDbContextFactory<NotificationsDbContext> contextFactory) : INotificationsPersonalDataEraser
 {
-    public async Task EraseUserDataAsync(
+    public async Task<int> EraseUserDataAsync(
         string userId, Guid? tenantId, CancellationToken cancellationToken = default)
     {
         await using NotificationsDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        await db.UserNotifications
+        int affected = await db.UserNotifications
             .Where(n => n.RecipientUserId == userId && n.TenantId == tenantId)
             .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
 
-        await db.Preferences
+        affected += await db.Preferences
             .Where(p => p.UserId == userId && p.TenantId == tenantId)
             .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
 
-        await db.Subscriptions
+        affected += await db.Subscriptions
             .Where(s => s.UserId == userId && s.TenantId == tenantId)
             .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
+
+        return affected;
     }
 }

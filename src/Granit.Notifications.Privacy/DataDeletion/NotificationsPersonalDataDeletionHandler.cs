@@ -41,13 +41,14 @@ public class NotificationsPersonalDataDeletionHandler
         ArgumentNullException.ThrowIfNull(currentTenant);
 
         Guid? tenantId = @event.TenantId ?? currentTenant.Id;
-        await eraser.EraseUserDataAsync(@event.UserId.ToString(), tenantId, cancellationToken).ConfigureAwait(false);
+        int affectedRecords = await eraser
+            .EraseUserDataAsync(@event.UserId.ToString(), tenantId, cancellationToken).ConfigureAwait(false);
 
         return new PersonalDataDeletedEto(
             @event.RequestId,
             NotificationsPrivacyDataProvider.ProviderName,
             DeletionAction.PhysicalDelete,
-            AffectedRecords: 0,
+            affectedRecords,
             Details: null,
             @event.TenantId);
     }

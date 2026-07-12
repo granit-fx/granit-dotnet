@@ -27,7 +27,11 @@ internal sealed partial class LlmNotificationContentGenerator(
         NotificationsAIOptions config = options.Value;
 
         string culture = context.Culture ?? "en";
-        string dataJson = context.Data.ValueKind != JsonValueKind.Undefined
+
+        // GDPR gate: the Data payload may carry personal data. It only reaches the model
+        // when the host explicitly opted in — otherwise the LLM works from the notification
+        // type, severity and culture alone.
+        string dataJson = config.AllowPersonalDataInPrompts && context.Data.ValueKind != JsonValueKind.Undefined
             ? context.Data.GetRawText()
             : "{}";
 
