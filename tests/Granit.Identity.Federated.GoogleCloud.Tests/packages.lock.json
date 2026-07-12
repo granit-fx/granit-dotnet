@@ -352,9 +352,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
-          "OpenTelemetry.Api": "[1.16.*, )",
           "ZiggyCreatures.FusionCache": "[2.*, )",
-          "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
@@ -467,8 +465,8 @@
       "FirebaseAdmin": {
         "type": "CentralTransitive",
         "requested": "[3.*, )",
-        "resolved": "3.5.0",
-        "contentHash": "NL9dWvrGCbgu3VxumjpHXgHsagQswntJNLtgVIgTF/y2ro6e6UpvFuZrlfjsMTzRXJEXqnse3U5rN/6HC5TlFA==",
+        "resolved": "3.6.0",
+        "contentHash": "aP8UWyQYACDOZqnHN9WB77TS0DlB8kVj8/HB7evUaAhAgPJQ9y4NmISJ3kkYkWBG5va3PHvYN5H+ZDBhABSEFQ==",
         "dependencies": {
           "Google.Api.Gax.Rest": "4.13.1",
           "Google.Apis.Auth": "1.73.0"
@@ -562,12 +560,6 @@
           "Microsoft.Extensions.Primitives": "10.0.9"
         }
       },
-      "OpenTelemetry.Api": {
-        "type": "CentralTransitive",
-        "requested": "[1.16.*, )",
-        "resolved": "1.16.0",
-        "contentHash": "WZP8Eb6vZTeNqeV+fjBitc7iefBoTHIhaWorqg/h/YiQBlcQJu0bICuTqKV0XRyjiE0eWs80yLlnUtHAFSkFWA=="
-      },
       "SmartFormat": {
         "type": "CentralTransitive",
         "requested": "[3.*, )",
@@ -584,16 +576,6 @@
         "contentHash": "BCe+/SkwQZfaMpq2ZGDZB2pyx6BdGnP+zxqjMM/5K+4PBuH6hljZeIqH4KVzQ26khSbPsQ7IiYZl0Fve4OZOog==",
         "dependencies": {
           "Microsoft.Extensions.Caching.Memory": "10.0.1"
-        }
-      },
-      "ZiggyCreatures.FusionCache.OpenTelemetry": {
-        "type": "CentralTransitive",
-        "requested": "[2.*, )",
-        "resolved": "2.6.0",
-        "contentHash": "q917DogvL6Y9GamCLz6n/diC56sWUI3rvIuoZsqW7fyw7toWjcVDtSs/5mN8Weafbaj86RQSV5Q5Ysrm1ueJKQ==",
-        "dependencies": {
-          "OpenTelemetry.Api": "1.14.0",
-          "ZiggyCreatures.FusionCache": "2.6.0"
         }
       },
       "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": {

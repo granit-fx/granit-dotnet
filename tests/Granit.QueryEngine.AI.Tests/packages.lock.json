@@ -218,11 +218,6 @@
           "System.CodeDom": "6.0.0"
         }
       },
-      "System.Numerics.Tensors": {
-        "type": "Transitive",
-        "resolved": "10.0.9",
-        "contentHash": "Rb71S3gggYVwEce9ugNw91vbr4vC4gThtx/imSJtLBW3AupEKujJPPQL6xF9q0DcNm6+z7hnYk7XqXaUpA4wDg=="
-      },
       "xunit.analyzers": {
         "type": "Transitive",
         "resolved": "1.27.0",
@@ -308,15 +303,6 @@
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
         }
       },
-      "granit.ai.tools": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.AI": "[0.1.0-dev, )",
-          "Microsoft.Extensions.AI": "[10.*, )",
-          "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
-        }
-      },
       "granit.authorization": {
         "type": "Project",
         "dependencies": {
@@ -337,9 +323,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
-          "OpenTelemetry.Api": "[1.16.*, )",
           "ZiggyCreatures.FusionCache": "[2.*, )",
-          "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
@@ -402,7 +386,6 @@
         "type": "Project",
         "dependencies": {
           "Granit.AI": "[0.1.0-dev, )",
-          "Granit.AI.Tools": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
@@ -431,19 +414,6 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "Microsoft.Extensions.AI": {
-        "type": "CentralTransitive",
-        "requested": "[10.*, )",
-        "resolved": "10.7.0",
-        "contentHash": "r8z4uyPq0kTk4+jH92/hPshf3HNUXKOQ9axJwp57QFz43G45BG4DNYpVE0vuSan1dI69LtWx9ttF0Z2ibnghNg==",
-        "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.7.0",
-          "Microsoft.Extensions.Caching.Abstractions": "10.0.9",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.9",
-          "Microsoft.Extensions.Logging.Abstractions": "10.0.9",
-          "System.Numerics.Tensors": "10.0.9"
         }
       },
       "Microsoft.Extensions.AI.Abstractions": {
@@ -535,12 +505,6 @@
           "Microsoft.Extensions.Primitives": "10.0.9"
         }
       },
-      "OpenTelemetry.Api": {
-        "type": "CentralTransitive",
-        "requested": "[1.16.*, )",
-        "resolved": "1.16.0",
-        "contentHash": "WZP8Eb6vZTeNqeV+fjBitc7iefBoTHIhaWorqg/h/YiQBlcQJu0bICuTqKV0XRyjiE0eWs80yLlnUtHAFSkFWA=="
-      },
       "ZiggyCreatures.FusionCache": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
@@ -548,16 +512,6 @@
         "contentHash": "BCe+/SkwQZfaMpq2ZGDZB2pyx6BdGnP+zxqjMM/5K+4PBuH6hljZeIqH4KVzQ26khSbPsQ7IiYZl0Fve4OZOog==",
         "dependencies": {
           "Microsoft.Extensions.Caching.Memory": "10.0.1"
-        }
-      },
-      "ZiggyCreatures.FusionCache.OpenTelemetry": {
-        "type": "CentralTransitive",
-        "requested": "[2.*, )",
-        "resolved": "2.6.0",
-        "contentHash": "q917DogvL6Y9GamCLz6n/diC56sWUI3rvIuoZsqW7fyw7toWjcVDtSs/5mN8Weafbaj86RQSV5Q5Ysrm1ueJKQ==",
-        "dependencies": {
-          "OpenTelemetry.Api": "1.14.0",
-          "ZiggyCreatures.FusionCache": "2.6.0"
         }
       },
       "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": {

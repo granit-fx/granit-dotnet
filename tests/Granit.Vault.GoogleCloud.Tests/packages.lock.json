@@ -475,9 +475,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
-          "OpenTelemetry.Api": "[1.16.*, )",
           "ZiggyCreatures.FusionCache": "[2.*, )",
-          "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
@@ -525,8 +523,8 @@
       "Google.Cloud.Kms.V1": {
         "type": "CentralTransitive",
         "requested": "[3.*, )",
-        "resolved": "3.24.0",
-        "contentHash": "ZKiL+HWnCM49uiUxnotE2M83LXGSBDEDzeA7tWBxQ6HugSb4th/KvlmSfebhwecJ6BgzF9zS2a1DPBteiC77YQ==",
+        "resolved": "3.25.0",
+        "contentHash": "tlRxgVAJHBx3pfhKytbpdlEASePFJTeU1oS3ZR/9VtXLgSysaVPFHgo+OKEkz21X47sxCVqXlK1flx+xfofqXw==",
         "dependencies": {
           "Google.Api.Gax.Grpc": "[4.13.1, 5.0.0)",
           "Google.Cloud.Iam.V1": "[3.5.0, 4.0.0)",
@@ -640,12 +638,6 @@
           "Microsoft.Extensions.Primitives": "10.0.9"
         }
       },
-      "OpenTelemetry.Api": {
-        "type": "CentralTransitive",
-        "requested": "[1.16.*, )",
-        "resolved": "1.16.0",
-        "contentHash": "WZP8Eb6vZTeNqeV+fjBitc7iefBoTHIhaWorqg/h/YiQBlcQJu0bICuTqKV0XRyjiE0eWs80yLlnUtHAFSkFWA=="
-      },
       "ZiggyCreatures.FusionCache": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
@@ -653,16 +645,6 @@
         "contentHash": "BCe+/SkwQZfaMpq2ZGDZB2pyx6BdGnP+zxqjMM/5K+4PBuH6hljZeIqH4KVzQ26khSbPsQ7IiYZl0Fve4OZOog==",
         "dependencies": {
           "Microsoft.Extensions.Caching.Memory": "10.0.1"
-        }
-      },
-      "ZiggyCreatures.FusionCache.OpenTelemetry": {
-        "type": "CentralTransitive",
-        "requested": "[2.*, )",
-        "resolved": "2.6.0",
-        "contentHash": "q917DogvL6Y9GamCLz6n/diC56sWUI3rvIuoZsqW7fyw7toWjcVDtSs/5mN8Weafbaj86RQSV5Q5Ysrm1ueJKQ==",
-        "dependencies": {
-          "OpenTelemetry.Api": "1.14.0",
-          "ZiggyCreatures.FusionCache": "2.6.0"
         }
       },
       "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": {

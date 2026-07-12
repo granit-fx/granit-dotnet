@@ -537,7 +537,7 @@
           "Granit.BlobStorage": "[0.1.0-dev, )",
           "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.Http.RateLimiting": "[0.1.0-dev, )",
-          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Endpoints": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
@@ -553,9 +553,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
-          "OpenTelemetry.Api": "[1.16.*, )",
           "ZiggyCreatures.FusionCache": "[2.*, )",
-          "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
@@ -645,13 +643,6 @@
           "SmartFormat": "[3.*, )"
         }
       },
-      "granit.queryengine": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
-        }
-      },
       "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {
@@ -659,13 +650,13 @@
           "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
         }
       },
-      "granit.queryengine.aspnetcore": {
+      "granit.queryengine.endpoints": {
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Entities.Abstractions": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
@@ -891,17 +882,11 @@
         "resolved": "2.7.5",
         "contentHash": "0FA67RSnRM4tcBKqiqVu/HPdZ9+QOKbmeRjxRUGTCjPU4C0bmUhd97Dso7Yild5P7nOV6GxJ2xrK0Kv/O9xp0w=="
       },
-      "OpenTelemetry.Api": {
-        "type": "CentralTransitive",
-        "requested": "[1.16.*, )",
-        "resolved": "1.16.0",
-        "contentHash": "WZP8Eb6vZTeNqeV+fjBitc7iefBoTHIhaWorqg/h/YiQBlcQJu0bICuTqKV0XRyjiE0eWs80yLlnUtHAFSkFWA=="
-      },
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.16.10",
-        "contentHash": "dJsam1uxJ+h6YzaqDGjja1y3miyBd4VDumMwwow03yJapiRp3OtV5lMaOUvp8w5b16gAflYyvfj7HDL+0X2Rqw=="
+        "resolved": "2.16.11",
+        "contentHash": "Sa7aHHX3x6qJo/nCOf0MPTi+Nl8tihiEDqWw7mRMajFn6KKElZyM4CP4C6ptUBPFfBWN61dvYcuMe8yWJaeYsA=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",
@@ -930,16 +915,6 @@
         "contentHash": "BCe+/SkwQZfaMpq2ZGDZB2pyx6BdGnP+zxqjMM/5K+4PBuH6hljZeIqH4KVzQ26khSbPsQ7IiYZl0Fve4OZOog==",
         "dependencies": {
           "Microsoft.Extensions.Caching.Memory": "10.0.1"
-        }
-      },
-      "ZiggyCreatures.FusionCache.OpenTelemetry": {
-        "type": "CentralTransitive",
-        "requested": "[2.*, )",
-        "resolved": "2.6.0",
-        "contentHash": "q917DogvL6Y9GamCLz6n/diC56sWUI3rvIuoZsqW7fyw7toWjcVDtSs/5mN8Weafbaj86RQSV5Q5Ysrm1ueJKQ==",
-        "dependencies": {
-          "OpenTelemetry.Api": "1.14.0",
-          "ZiggyCreatures.FusionCache": "2.6.0"
         }
       },
       "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": {
