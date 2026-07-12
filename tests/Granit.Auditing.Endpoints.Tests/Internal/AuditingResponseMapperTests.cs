@@ -84,7 +84,7 @@ public sealed class AuditingResponseMapperTests
         response.EntityChanges.ShouldHaveSingleItem();
         AuditEntityChangeResponse entityChange = response.EntityChanges[0];
         entityChange.EntityType.ShouldBe("Patient");
-        entityChange.ChangeType.ShouldBe("Modified");
+        entityChange.ChangeType.ShouldBe(AuditChangeType.Modified);
         entityChange.PropertyChanges.ShouldHaveSingleItem();
         entityChange.PropertyChanges[0].PropertyName.ShouldBe("Email");
         entityChange.PropertyChanges[0].OriginalValue.ShouldBe("old@test.com");

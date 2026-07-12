@@ -18,10 +18,16 @@ namespace Granit.Auditing.EntityFrameworkCore.Interceptors;
 /// service provider on each <c>SaveChanges</c> call.
 /// </para>
 /// <para>
-/// <b>Two-phase capture:</b>
+/// <b>Three-phase pipeline:</b>
 /// <list type="number">
-///   <item><c>SavingChangesAsync</c>: snapshots ChangeTracker entries (before save).</item>
-///   <item><c>SavedChangesAsync</c>: publishes the captured batch (after successful commit).</item>
+///   <item><c>SavingChanges(Async)</c>: snapshots ChangeTracker entries and stages the
+///   mapped <c>AuditEntry</c> — into the host context's own transaction when the host
+///   model maps the audit entities (embedded mode), otherwise held for post-commit
+///   standalone persistence.</item>
+///   <item><c>SavedChanges(Async)</c>: completes the staged entry (metrics, or the
+///   standalone save through the isolated <c>AuditingDbContext</c>).</item>
+///   <item><c>SaveChangesFailed(Async)</c>: drops the staged entry and detaches the
+///   embedded audit graph so a business retry on the same scope cannot double-write.</item>
 /// </list>
 /// </para>
 /// <para>
@@ -37,18 +43,18 @@ public sealed class AuditingChangeTrackingInterceptor : SaveChangesInterceptor, 
         DbContextEventData eventData,
         InterceptionResult<int> result)
     {
-        CaptureChanges(eventData.Context);
+        CaptureChangesAsync(eventData.Context).AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
         return base.SavingChanges(eventData, result);
     }
 
     /// <inheritdoc/>
-    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
+    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
         DbContextEventData eventData,
         InterceptionResult<int> result,
         CancellationToken cancellationToken = default)
     {
-        CaptureChanges(eventData.Context);
-        return base.SavingChangesAsync(eventData, result, cancellationToken);
+        await CaptureChangesAsync(eventData.Context, cancellationToken).ConfigureAwait(false);
+        return await base.SavingChangesAsync(eventData, result, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -56,7 +62,7 @@ public sealed class AuditingChangeTrackingInterceptor : SaveChangesInterceptor, 
         SaveChangesCompletedEventData eventData,
         int result)
     {
-        PublishCapturedChanges(eventData.Context).AsTask().GetAwaiter().GetResult();
+        CompleteCapturedChangesAsync(eventData.Context).AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
         return base.SavedChanges(eventData, result);
     }
 
@@ -66,40 +72,95 @@ public sealed class AuditingChangeTrackingInterceptor : SaveChangesInterceptor, 
         int result,
         CancellationToken cancellationToken = default)
     {
-        await PublishCapturedChanges(eventData.Context, cancellationToken).ConfigureAwait(false);
+        await CompleteCapturedChangesAsync(eventData.Context, cancellationToken).ConfigureAwait(false);
         return await base.SavedChangesAsync(eventData, result, cancellationToken).ConfigureAwait(false);
     }
 
-    private static void CaptureChanges(DbContext? context)
+    /// <inheritdoc/>
+    public override void SaveChangesFailed(DbContextErrorEventData eventData)
     {
-        if (context is null)
-        {
-            return;
-        }
-
-        ChangeTrackingCaptureService? captureService =
-            ((IInfrastructure<IServiceProvider>)context).Instance
-            .GetService<ChangeTrackingCaptureService>();
-
-        captureService?.Capture(context);
+        DropCapturedChanges(eventData.Context);
+        base.SaveChangesFailed(eventData);
     }
 
-    private static async ValueTask PublishCapturedChanges(
+    /// <inheritdoc/>
+    public override Task SaveChangesFailedAsync(
+        DbContextErrorEventData eventData,
+        CancellationToken cancellationToken = default)
+    {
+        DropCapturedChanges(eventData.Context);
+        return base.SaveChangesFailedAsync(eventData, cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// EF Core routes <c>DbUpdateConcurrencyException</c> through this hook, NOT through
+    /// <c>SaveChangesFailed</c> — without it, the staged audit graph would survive a
+    /// concurrency failure and a business retry on the same scope would double-write.
+    /// </remarks>
+    public override InterceptionResult ThrowingConcurrencyException(
+        ConcurrencyExceptionEventData eventData,
+        InterceptionResult result)
+    {
+        DropCapturedChanges(eventData.Context);
+        return base.ThrowingConcurrencyException(eventData, result);
+    }
+
+    /// <inheritdoc/>
+    public override ValueTask<InterceptionResult> ThrowingConcurrencyExceptionAsync(
+        ConcurrencyExceptionEventData eventData,
+        InterceptionResult result,
+        CancellationToken cancellationToken = default)
+    {
+        DropCapturedChanges(eventData.Context);
+        return base.ThrowingConcurrencyExceptionAsync(eventData, result, cancellationToken);
+    }
+
+    private static async ValueTask CaptureChangesAsync(
         DbContext? context,
         CancellationToken cancellationToken = default)
     {
-        if (context is null)
-        {
-            return;
-        }
-
-        ChangeTrackingCaptureService? captureService =
-            ((IInfrastructure<IServiceProvider>)context).Instance
-            .GetService<ChangeTrackingCaptureService>();
-
+        ChangeTrackingCaptureService? captureService = ResolveCaptureService(context);
         if (captureService is not null)
         {
-            await captureService.PublishAsync(cancellationToken).ConfigureAwait(false);
+            await captureService.CaptureAsync(context!, cancellationToken).ConfigureAwait(false);
         }
+    }
+
+    private static async ValueTask CompleteCapturedChangesAsync(
+        DbContext? context,
+        CancellationToken cancellationToken = default)
+    {
+        ChangeTrackingCaptureService? captureService = ResolveCaptureService(context);
+        if (captureService is not null)
+        {
+            await captureService.OnSavedAsync(context!, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private static void DropCapturedChanges(DbContext? context) =>
+        ResolveCaptureService(context)?.OnSaveFailed(context!);
+
+    private static ChangeTrackingCaptureService? ResolveCaptureService(DbContext? context)
+    {
+        if (context is null)
+        {
+            return null;
+        }
+
+        // EF Core's internal service provider does NOT resolve application services on its
+        // own: the MEDI GetService<T>() below only sees EF-internal registrations. The
+        // fallback through CoreOptionsExtension.ApplicationServiceProvider is what actually
+        // reaches the scoped capture service registered in the host container (wired by
+        // UseApplicationServiceProvider in UseGranitInterceptors) — the same chain EF's own
+        // context.GetService<T>() walks, made null-tolerant so contexts without the auditing
+        // registration degrade to a no-op instead of throwing.
+        IServiceProvider internalProvider = ((IInfrastructure<IServiceProvider>)context).Instance;
+
+        return internalProvider.GetService<ChangeTrackingCaptureService>()
+            ?? internalProvider.GetService<IDbContextOptions>()
+                ?.FindExtension<CoreOptionsExtension>()
+                ?.ApplicationServiceProvider
+                ?.GetService<ChangeTrackingCaptureService>();
     }
 }

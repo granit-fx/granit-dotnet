@@ -7,6 +7,8 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Auditing.Endpoints.Extensions;
 
@@ -32,7 +34,9 @@ public static class AuditingEndpointRouteBuilderExtensions
         this IEndpointRouteBuilder endpoints,
         Action<AuditingEndpointsOptions>? configure = null)
     {
-        AuditingEndpointsOptions options = new();
+        AuditingEndpointsOptions options = endpoints.ServiceProvider
+            .GetService<IOptions<AuditingEndpointsOptions>>()?.Value
+            ?? new AuditingEndpointsOptions();
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints

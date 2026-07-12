@@ -1,8 +1,12 @@
 {
   "culture": "pl",
   "texts": {
-    "AuditingEndpoints:Workspace.Item": "Audit log",
-    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "AuditingEndpoints:Workspace.Item": "Dziennik audytu",
+    "AuditingEndpoints:Workspace.Section": "Audyt",
+    "Granit:Auditing:Endpoints:CorrelationIdInvalid": "Identyfikator korelacji musi mieć od 1 do 256 znaków.",
+    "Granit:Auditing:Endpoints:EntryNotFound": "Nie znaleziono wpisu dziennika audytu.",
+    "Granit:Auditing:Endpoints:PathParamTooLong": "Parametry ścieżki nie mogą przekraczać 256 znaków.",
+    "Granit:Auditing:Endpoints:UserIdRequired": "Parametr ścieżki userId nie może być pusty.",
     "Permission:Auditing.AuditEntries.Manage": "Zarządzanie wpisami dziennika audytu (pseudonimizacja, RODO art. 17)",
     "Permission:Auditing.AuditEntries.Read": "Wyświetlanie wpisów dziennika audytu (ścieżka audytu ISO 27001)",
     "PermissionGroup:Auditing": "Dziennik audytu"

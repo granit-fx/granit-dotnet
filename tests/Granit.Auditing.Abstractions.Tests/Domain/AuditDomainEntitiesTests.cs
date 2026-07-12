@@ -1,5 +1,6 @@
 using Granit.Auditing.Attributes;
 using Granit.Auditing.Domain;
+using Granit.Domain;
 using Shouldly;
 using Xunit;
 
@@ -9,7 +10,7 @@ namespace Granit.Auditing.Abstractions.Tests.Domain;
 /// Guards that audit domain entities carry [AuditIgnore] so they are skipped
 /// by AuditingChangeTrackingInterceptor when AuditingDbContext saves them.
 /// Without this attribute, saving an AuditEntry triggers the interceptor again,
-/// which calls StrictAuditingPublisher, which saves another AuditEntry — infinite recursion.
+/// which stages another AuditEntry through the persistence pipeline — infinite recursion.
 /// </summary>
 public sealed class AuditDomainEntitiesTests
 {
@@ -20,6 +21,10 @@ public sealed class AuditDomainEntitiesTests
     [Fact]
     public void AuditEntityChange_HasAuditIgnoreAttribute() =>
         typeof(AuditEntityChange).IsDefined(typeof(AuditIgnoreAttribute), inherit: false).ShouldBeTrue();
+
+    [Fact]
+    public void AuditEntityChange_IsMultiTenant() =>
+        typeof(IMultiTenant).IsAssignableFrom(typeof(AuditEntityChange)).ShouldBeTrue();
 
     [Fact]
     public void AuditPropertyChange_HasAuditIgnoreAttribute() =>

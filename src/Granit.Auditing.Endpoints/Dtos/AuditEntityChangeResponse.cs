@@ -1,3 +1,5 @@
+using Granit.Auditing.Domain;
+
 namespace Granit.Auditing.Endpoints.Dtos;
 
 /// <summary>
@@ -10,5 +12,5 @@ namespace Granit.Auditing.Endpoints.Dtos;
 public sealed record AuditEntityChangeResponse(
     string EntityType,
     string EntityId,
-    string ChangeType,
+    AuditChangeType ChangeType,
     IReadOnlyList<AuditPropertyChangeResponse> PropertyChanges);

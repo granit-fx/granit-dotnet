@@ -1,8 +1,12 @@
 {
   "culture": "zh",
   "texts": {
-    "AuditingEndpoints:Workspace.Item": "Audit log",
-    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "AuditingEndpoints:Workspace.Item": "审计日志",
+    "AuditingEndpoints:Workspace.Section": "审计",
+    "Granit:Auditing:Endpoints:CorrelationIdInvalid": "关联 ID 的长度必须在 1 到 256 个字符之间。",
+    "Granit:Auditing:Endpoints:EntryNotFound": "未找到该审计日志条目。",
+    "Granit:Auditing:Endpoints:PathParamTooLong": "路径参数不得超过 256 个字符。",
+    "Granit:Auditing:Endpoints:UserIdRequired": "路径参数 userId 不能为空。",
     "Permission:Auditing.AuditEntries.Manage": "管理审计日志条目（假名化，GDPR 第 17 条）",
     "Permission:Auditing.AuditEntries.Read": "查看审计日志条目（ISO 27001 审计跟踪）",
     "PermissionGroup:Auditing": "审计日志"

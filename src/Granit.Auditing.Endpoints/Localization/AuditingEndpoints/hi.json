@@ -1,8 +1,12 @@
 {
   "culture": "hi",
   "texts": {
-    "AuditingEndpoints:Workspace.Item": "Audit log",
-    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "AuditingEndpoints:Workspace.Item": "ऑडिट लॉग",
+    "AuditingEndpoints:Workspace.Section": "ऑडिटिंग",
+    "Granit:Auditing:Endpoints:CorrelationIdInvalid": "सहसंबंध ID 1 से 256 वर्णों के बीच होनी चाहिए।",
+    "Granit:Auditing:Endpoints:EntryNotFound": "ऑडिट लॉग प्रविष्टि नहीं मिली।",
+    "Granit:Auditing:Endpoints:PathParamTooLong": "पथ पैरामीटर 256 वर्णों से अधिक नहीं होने चाहिए।",
+    "Granit:Auditing:Endpoints:UserIdRequired": "पथ पैरामीटर userId खाली नहीं होना चाहिए।",
     "Permission:Auditing.AuditEntries.Manage": "ऑडिट लॉग प्रविष्टियाँ प्रबंधित करें (छद्मनामीकरण, GDPR अनु. 17)",
     "Permission:Auditing.AuditEntries.Read": "ऑडिट लॉग प्रविष्टियाँ देखें (ISO 27001 ऑडिट ट्रेल)",
     "PermissionGroup:Auditing": "ऑडिट लॉग"

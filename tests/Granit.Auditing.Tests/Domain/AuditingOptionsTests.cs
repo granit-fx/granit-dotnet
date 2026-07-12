@@ -12,25 +12,43 @@ public sealed class AuditingOptionsTests
     {
         AuditingOptions options = new();
 
-        options.PersistenceMode.ShouldBe(AuditPersistenceMode.Strict);
+        options.MinimumRetention.ShouldBe(TimeSpan.FromDays(1095));
         options.EnablePropertyTracking.ShouldBeTrue();
         options.CleanupBatchSize.ShouldBe(10_000);
-        options.ConfigurationChangeRetention.ShouldBe(TimeSpan.FromDays(2555));
-        options.DataMutationRetention.ShouldBe(TimeSpan.FromDays(365));
-        options.DataAccessRetention.ShouldBe(TimeSpan.FromDays(90));
-        options.AccessDeniedRetention.ShouldBe(TimeSpan.FromDays(2555));
-        options.PrivilegedAccessRetention.ShouldBe(TimeSpan.FromDays(2555));
+        options.PseudonymizeOnErasure.ShouldBeTrue();
+        options.PseudonymizationSalt.ShouldBeNull();
+        options.Retention[AuditCategory.ConfigurationChange].ShouldBe(TimeSpan.FromDays(2555));
+        options.Retention[AuditCategory.DataMutation].ShouldBe(TimeSpan.FromDays(1095));
+        options.Retention[AuditCategory.DataAccess].ShouldBe(TimeSpan.FromDays(1095));
+        options.Retention[AuditCategory.AccessDenied].ShouldBe(TimeSpan.FromDays(2555));
+        options.Retention[AuditCategory.PrivilegedAccess].ShouldBe(TimeSpan.FromDays(2555));
     }
 
     [Theory]
     [InlineData(AuditCategory.ConfigurationChange, 2555)]
-    [InlineData(AuditCategory.DataMutation, 365)]
-    [InlineData(AuditCategory.DataAccess, 90)]
+    [InlineData(AuditCategory.DataMutation, 1095)]
+    [InlineData(AuditCategory.DataAccess, 1095)]
     [InlineData(AuditCategory.AccessDenied, 2555)]
     [InlineData(AuditCategory.PrivilegedAccess, 2555)]
     public void GetRetention_ReturnsCorrectDefault(AuditCategory category, int expectedDays)
     {
         AuditingOptions options = new();
+
+        TimeSpan retention = options.GetRetention(category);
+
+        retention.ShouldBe(TimeSpan.FromDays(expectedDays));
+    }
+
+    [Theory]
+    [InlineData(AuditCategory.ConfigurationChange, 2555)]
+    [InlineData(AuditCategory.DataMutation, 1095)]
+    [InlineData(AuditCategory.DataAccess, 1095)]
+    [InlineData(AuditCategory.AccessDenied, 2555)]
+    [InlineData(AuditCategory.PrivilegedAccess, 2555)]
+    public void GetRetention_CategoryAbsentFromDictionary_FallsBackToBuiltInDefault(AuditCategory category, int expectedDays)
+    {
+        AuditingOptions options = new();
+        options.Retention.Clear();
 
         TimeSpan retention = options.GetRetention(category);
 

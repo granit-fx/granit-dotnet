@@ -1,8 +1,12 @@
 {
   "culture": "de",
   "texts": {
-    "AuditingEndpoints:Workspace.Item": "Audit log",
-    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "AuditingEndpoints:Workspace.Item": "Prüfprotokoll",
+    "AuditingEndpoints:Workspace.Section": "Auditierung",
+    "Granit:Auditing:Endpoints:CorrelationIdInvalid": "Die Korrelations-ID muss zwischen 1 und 256 Zeichen lang sein.",
+    "Granit:Auditing:Endpoints:EntryNotFound": "Der Prüfprotokolleintrag wurde nicht gefunden.",
+    "Granit:Auditing:Endpoints:PathParamTooLong": "Pfadparameter dürfen 256 Zeichen nicht überschreiten.",
+    "Granit:Auditing:Endpoints:UserIdRequired": "Der Pfadparameter userId darf nicht leer sein.",
     "Permission:Auditing.AuditEntries.Manage": "Prüfprotokolleinträge verwalten (Pseudonymisierung, DSGVO Art. 17)",
     "Permission:Auditing.AuditEntries.Read": "Prüfprotokolleinträge anzeigen (ISO 27001-Prüfpfad)",
     "PermissionGroup:Auditing": "Prüfprotokoll"

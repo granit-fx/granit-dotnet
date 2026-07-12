@@ -1,3 +1,4 @@
+using Granit.Auditing.Endpoints.Internal;
 using Granit.Auditing.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +14,13 @@ namespace Granit.Auditing.Endpoints.Endpoints;
 internal static class AuditingManagementEndpoints
 {
     /// <summary>Maps audit log management endpoints to the given route group.</summary>
+    /// <remarks>
+    /// Authorization is deliberately <b>stacked</b>: the parent group already requires
+    /// <c>Auditing.AuditEntries.Read</c> and this endpoint adds
+    /// <c>Auditing.AuditEntries.Manage</c> — ASP.NET evaluates both (AND), so the effective
+    /// requirement is Read <b>and</b> Manage. Intentional: an operator who may pseudonymize
+    /// must also be able to review the trail they are scrubbing.
+    /// </remarks>
     public static RouteGroupBuilder MapAuditingManagementEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/pseudonymize/{userId}", PseudonymizeAsync)
@@ -34,12 +42,16 @@ internal static class AuditingManagementEndpoints
     private static async Task<Results<NoContent, ProblemHttpResult>> PseudonymizeAsync(
         string userId,
         [FromServices] IAuditingCleaner cleaner,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(userId))
         {
             return TypedResults.Problem(
-                detail: "The userId path parameter must not be empty.",
+                detail: AuditingEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Auditing:Endpoints:UserIdRequired",
+                    "The userId path parameter must not be empty."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 

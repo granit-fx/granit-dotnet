@@ -14,7 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.Auditing\Granit.Auditing.csproj" />
     <ProjectReference Include="..\Granit.Features\Granit.Features.csproj" />
-    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Settings\Granit.Settings.csproj" />
   </ItemGroup>
 

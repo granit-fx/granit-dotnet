@@ -1,8 +1,12 @@
 {
   "culture": "cs",
   "texts": {
-    "AuditingEndpoints:Workspace.Item": "Audit log",
-    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "AuditingEndpoints:Workspace.Item": "Auditní protokol",
+    "AuditingEndpoints:Workspace.Section": "Audit",
+    "Granit:Auditing:Endpoints:CorrelationIdInvalid": "Korelační ID musí mít 1 až 256 znaků.",
+    "Granit:Auditing:Endpoints:EntryNotFound": "Záznam auditního protokolu nebyl nalezen.",
+    "Granit:Auditing:Endpoints:PathParamTooLong": "Parametry cesty nesmí překročit 256 znaků.",
+    "Granit:Auditing:Endpoints:UserIdRequired": "Parametr cesty userId nesmí být prázdný.",
     "Permission:Auditing.AuditEntries.Manage": "Spravovat položky protokolu auditu (pseudonymizace, GDPR čl. 17)",
     "Permission:Auditing.AuditEntries.Read": "Zobrazit položky protokolu auditu (auditní stopa ISO 27001)",
     "PermissionGroup:Auditing": "Protokol auditu"

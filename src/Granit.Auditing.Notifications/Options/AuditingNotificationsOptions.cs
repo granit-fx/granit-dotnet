@@ -17,7 +17,7 @@ namespace Granit.Auditing.Notifications.Options;
 /// <see cref="AuditCategory.ConfigurationChange"/> alerting; production typically
 /// reserves it for <see cref="AuditCategory.AccessDenied"/>).
 /// </remarks>
-public sealed class AuditNotificationOptions
+public sealed class AuditingNotificationsOptions
 {
     /// <summary>Configuration section name.</summary>
     public const string SectionName = "Auditing:Notifications";

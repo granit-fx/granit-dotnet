@@ -1,8 +1,12 @@
 {
   "culture": "sv",
   "texts": {
-    "AuditingEndpoints:Workspace.Item": "Audit log",
-    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "AuditingEndpoints:Workspace.Item": "Granskningslogg",
+    "AuditingEndpoints:Workspace.Section": "Granskning",
+    "Granit:Auditing:Endpoints:CorrelationIdInvalid": "Korrelations-ID:t måste vara mellan 1 och 256 tecken.",
+    "Granit:Auditing:Endpoints:EntryNotFound": "Granskningsloggposten hittades inte.",
+    "Granit:Auditing:Endpoints:PathParamTooLong": "Sökvägsparametrar får inte överstiga 256 tecken.",
+    "Granit:Auditing:Endpoints:UserIdRequired": "Sökvägsparametern userId får inte vara tom.",
     "Permission:Auditing.AuditEntries.Manage": "Hantera granskningslogginlägg (pseudonymisering, GDPR art. 17)",
     "Permission:Auditing.AuditEntries.Read": "Visa granskningslogginlägg (ISO 27001-revisionsspår)",
     "PermissionGroup:Auditing": "Granskningslogg"

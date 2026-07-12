@@ -1,11 +1,16 @@
 using Granit.Auditing.Endpoints.Internal;
+using Granit.Auditing.Endpoints.Options;
 using Granit.Auditing.Endpoints.Workspaces;
+using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
+using Granit.QueryEngine.Endpoints;
 using Granit.Validation;
 using Granit.Workspaces;
 using Granit.Workspaces.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Auditing.Endpoints;
 
@@ -20,7 +25,9 @@ namespace Granit.Auditing.Endpoints;
 /// </remarks>
 [DependsOn(
     typeof(GranitAuditingModule),
+    typeof(GranitAuthorizationModule),
     typeof(GranitHttpApiDocumentationModule),
+    typeof(GranitQueryEngineEndpointsModule),
     typeof(GranitValidationModule),
     typeof(GranitWorkspacesAbstractionsModule))]
 public sealed class GranitAuditingEndpointsModule : GranitModule
@@ -30,5 +37,14 @@ public sealed class GranitAuditingEndpointsModule : GranitModule
     {
         context.Services.AddLocalizationResource<AuditingEndpointsLocalizationResource>();
         context.Services.AddFeatureProvider<AuditingFeatureProvider>();
+
+        context.Services
+            .AddOptions<AuditingEndpointsOptions>()
+            .BindConfiguration(AuditingEndpointsOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        context.Services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<ISchemaExampleProvider, AuditingSchemaExampleProvider>());
     }
 }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Auditing</PackageId>
-    <Description>Audit trail runtime for ISO 27001 compliance: async/strict persistence pipeline, retention cleanup, diagnostics, and the declarative query/export definitions. Contracts and the audit domain model live in Granit.Auditing.Abstractions.</Description>
+    <Description>Audit trail runtime for ISO 27001 compliance: durable persistence pipeline, retention cleanup, diagnostics, and the declarative query/export definitions. Contracts and the audit domain model live in Granit.Auditing.Abstractions.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -25,7 +25,6 @@
     <ProjectReference Include="..\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
-    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
   </ItemGroup>
 
 </Project>

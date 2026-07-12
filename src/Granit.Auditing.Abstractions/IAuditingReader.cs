@@ -48,10 +48,14 @@ public interface IAuditingReader
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retrieves all audit log entries matching a distributed tracing correlation ID.
+    /// Retrieves audit log entries matching a distributed tracing correlation ID,
+    /// paginated and ordered from most recent — a hot correlation id can reference an
+    /// unbounded number of entries.
     /// </summary>
-    Task<List<AuditEntry>> GetByCorrelationIdAsync(
+    Task<PagedResult<AuditEntry>> GetByCorrelationIdAsync(
         string correlationId,
+        int page = 1,
+        int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default);
 
     /// <summary>

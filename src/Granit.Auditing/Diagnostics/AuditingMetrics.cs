@@ -1,7 +1,5 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
-using System.Threading.Channels;
-using Granit.Auditing.Messages;
 
 namespace Granit.Auditing.Diagnostics;
 
@@ -13,7 +11,14 @@ public sealed class AuditingMetrics
 {
     public const string MeterName = "Granit.Auditing";
 
+    /// <summary>Persistence-mode tag value: audit rows ride the host transaction.</summary>
+    public const string EmbeddedMode = "embedded";
+
+    /// <summary>Persistence-mode tag value: audit rows use the isolated AuditingDbContext.</summary>
+    public const string StandaloneMode = "standalone";
+
     private const string TenantIdTag = "tenant_id";
+    private const string ModeTag = "mode";
     private const string GlobalTenant = "global";
 
     private readonly Counter<long> _entriesPersisted;
@@ -21,10 +26,9 @@ public sealed class AuditingMetrics
     private readonly Counter<long> _entriesPseudonymized;
     private readonly Counter<long> _captureErrors;
     private readonly Histogram<double> _persistenceDuration;
-    private readonly Counter<long> _persistenceRetries;
-    private readonly Histogram<int> _batchSize;
+    private readonly Histogram<int> _entityChangeCount;
 
-    public AuditingMetrics(IMeterFactory meterFactory, Channel<AuditingBatch> channel)
+    public AuditingMetrics(IMeterFactory meterFactory)
     {
         Meter meter = meterFactory.Create(MeterName);
 
@@ -34,7 +38,7 @@ public sealed class AuditingMetrics
 
         _entriesPurged = meter.CreateCounter<long>(
             "granit.auditing.entry.purged",
-            description: "Number of audit entries purged by the cleanup worker.");
+            description: "Number of audit entries purged by the retention cleanup job.");
 
         _entriesPseudonymized = meter.CreateCounter<long>(
             "granit.auditing.entry.pseudonymized",
@@ -47,22 +51,12 @@ public sealed class AuditingMetrics
         _persistenceDuration = meter.CreateHistogram<double>(
             "granit.auditing.persistence.duration",
             unit: "ms",
-            description: "Duration of audit batch persistence operations.");
+            description: "Duration of audit entry persistence, tagged by pipeline mode.");
 
-        _persistenceRetries = meter.CreateCounter<long>(
-            "granit.auditing.persistence.retries",
-            description: "Number of audit persistence retry attempts.");
-
-        _batchSize = meter.CreateHistogram<int>(
-            "granit.auditing.batch.size",
+        _entityChangeCount = meter.CreateHistogram<int>(
+            "granit.auditing.entry.entity_changes",
             unit: "{changes}",
-            description: "Number of entity changes per audit batch.");
-
-        meter.CreateObservableGauge(
-            "granit.auditing.channel.depth",
-            () => channel.Reader.Count,
-            unit: "{batches}",
-            description: "Current number of audit batches waiting in the async persistence channel.");
+            description: "Number of entity changes per persisted audit entry.");
     }
 
     public void RecordPersisted(long count, string? tenantId) =>
@@ -90,20 +84,15 @@ public sealed class AuditingMetrics
             { TenantIdTag, tenantId ?? GlobalTenant },
         });
 
-    public void RecordPersistenceDuration(double elapsedMs, string? tenantId) =>
+    public void RecordPersistenceDuration(double elapsedMs, string? tenantId, string mode) =>
         _persistenceDuration.Record(elapsedMs, new TagList
         {
             { TenantIdTag, tenantId ?? GlobalTenant },
+            { ModeTag, mode },
         });
 
-    public void RecordPersistenceRetry(string? tenantId) =>
-        _persistenceRetries.Add(1, new TagList
-        {
-            { TenantIdTag, tenantId ?? GlobalTenant },
-        });
-
-    public void RecordBatchSize(int entityChangeCount, string? tenantId) =>
-        _batchSize.Record(entityChangeCount, new TagList
+    public void RecordEntityChangeCount(int entityChangeCount, string? tenantId) =>
+        _entityChangeCount.Record(entityChangeCount, new TagList
         {
             { TenantIdTag, tenantId ?? GlobalTenant },
         });

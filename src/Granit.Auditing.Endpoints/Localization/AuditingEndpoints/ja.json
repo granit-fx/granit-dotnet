@@ -1,8 +1,12 @@
 {
   "culture": "ja",
   "texts": {
-    "AuditingEndpoints:Workspace.Item": "Audit log",
-    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "AuditingEndpoints:Workspace.Item": "監査ログ",
+    "AuditingEndpoints:Workspace.Section": "監査",
+    "Granit:Auditing:Endpoints:CorrelationIdInvalid": "相関 ID は 1 ～ 256 文字である必要があります。",
+    "Granit:Auditing:Endpoints:EntryNotFound": "監査ログエントリが見つかりませんでした。",
+    "Granit:Auditing:Endpoints:PathParamTooLong": "パスパラメーターは 256 文字を超えてはなりません。",
+    "Granit:Auditing:Endpoints:UserIdRequired": "パスパラメーター userId は空にできません。",
     "Permission:Auditing.AuditEntries.Manage": "監査ログエントリを管理（仮名化、GDPR 第17条）",
     "Permission:Auditing.AuditEntries.Read": "監査ログエントリを表示（ISO 27001 監査証跡）",
     "PermissionGroup:Auditing": "監査ログ"

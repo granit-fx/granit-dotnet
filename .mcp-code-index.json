@@ -237,8 +237,7 @@
         "Granit.Auditing.Abstractions",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
-        "Granit.QueryEngine.Abstractions",
-        "Granit.Timing"
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -263,7 +262,6 @@
       "deps": [
         "Granit.Auditing",
         "Granit.Features",
-        "Granit.Guids",
         "Granit.Settings"
       ],
       "framework": "net10.0"
@@ -7968,7 +7966,7 @@
       "kind": "class",
       "project": "Granit.Auditing",
       "file": "src/Granit.Auditing/Diagnostics/AuditingMetrics.cs",
-      "line": 12,
+      "line": 10,
       "members": [
         {
           "name": "RecordPurged",
@@ -7991,19 +7989,13 @@
         {
           "name": "RecordPersistenceDuration",
           "kind": "method",
-          "signature": "RecordPersistenceDuration(double elapsedMs, string? tenantId)",
+          "signature": "RecordPersistenceDuration(double elapsedMs, string? tenantId, string mode)",
           "returnType": "void"
         },
         {
-          "name": "RecordPersistenceRetry",
+          "name": "RecordEntityChangeCount",
           "kind": "method",
-          "signature": "RecordPersistenceRetry(string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordBatchSize",
-          "kind": "method",
-          "signature": "RecordBatchSize(int entityChangeCount, string? tenantId)",
+          "signature": "RecordEntityChangeCount(int entityChangeCount, string? tenantId)",
           "returnType": "void"
         }
       ]
@@ -8032,7 +8024,7 @@
       "kind": "class",
       "project": "Granit.Auditing.Abstractions",
       "file": "src/Granit.Auditing.Abstractions/Domain/AuditEntityChange.cs",
-      "line": 10,
+      "line": 16,
       "members": [
         {
           "name": "AuditEntryId",
@@ -8077,15 +8069,6 @@
       ]
     },
     {
-      "name": "AuditPersistenceMode",
-      "fqn": "Granit.Auditing.Domain.AuditPersistenceMode",
-      "kind": "enum",
-      "project": "Granit.Auditing.Abstractions",
-      "file": "src/Granit.Auditing.Abstractions/Domain/AuditPersistenceMode.cs",
-      "line": 6,
-      "members": []
-    },
-    {
       "name": "AuditPropertyChange",
       "fqn": "Granit.Auditing.Domain.AuditPropertyChange",
       "kind": "class",
@@ -8125,7 +8108,7 @@
       "kind": "record",
       "project": "Granit.Auditing.Endpoints",
       "file": "src/Granit.Auditing.Endpoints/Dtos/AuditEntityChangeResponse.cs",
-      "line": 10,
+      "line": 12,
       "members": []
     },
     {
@@ -8134,7 +8117,7 @@
       "kind": "record",
       "project": "Granit.Auditing.Endpoints",
       "file": "src/Granit.Auditing.Endpoints/Dtos/AuditEntryDetailResponse.cs",
-      "line": 16,
+      "line": 18,
       "members": []
     },
     {
@@ -8152,7 +8135,7 @@
       "kind": "class",
       "project": "Granit.Auditing.Endpoints",
       "file": "src/Granit.Auditing.Endpoints/Extensions/AuditingEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "MapGranitAuditing",
@@ -8163,28 +8146,12 @@
       ]
     },
     {
-      "name": "AuditingHealthChecksBuilderExtensions",
-      "fqn": "Granit.Auditing.Endpoints.Extensions.AuditingHealthChecksBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Auditing.Endpoints",
-      "file": "src/Granit.Auditing.Endpoints/Extensions/AuditingHealthChecksBuilderExtensions.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "AddGranitAuditingChannelHealthCheck",
-          "kind": "method",
-          "signature": "AddGranitAuditingChannelHealthCheck(this IHealthChecksBuilder builder, string name = \"auditing-channel\", HealthStatus? failureStatus = null, IEnumerable<string>? tags = null, TimeSpan? timeout = null)",
-          "returnType": "IHealthChecksBuilder"
-        }
-      ]
-    },
-    {
       "name": "GranitAuditingEndpointsModule",
       "fqn": "Granit.Auditing.Endpoints.GranitAuditingEndpointsModule",
       "kind": "class",
       "project": "Granit.Auditing.Endpoints",
       "file": "src/Granit.Auditing.Endpoints/GranitAuditingEndpointsModule.cs",
-      "line": 26,
+      "line": 33,
       "members": [
         {
           "name": "ConfigureServices",
@@ -8249,7 +8216,7 @@
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
       "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditingEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 22,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitAuditingEntityFrameworkCore",
@@ -8265,12 +8232,18 @@
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
       "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditingModelBuilderExtensions.cs",
-      "line": 10,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureAuditingModule",
           "kind": "method",
           "signature": "ConfigureAuditingModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        },
+        {
+          "name": "ConfigureAuditingModule",
+          "kind": "method",
+          "signature": "ConfigureAuditingModule(this ModelBuilder modelBuilder, bool excludeFromMigrations)",
           "returnType": "ModelBuilder"
         }
       ]
@@ -8322,7 +8295,7 @@
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
       "file": "src/Granit.Auditing.EntityFrameworkCore/Interceptors/AuditingChangeTrackingInterceptor.cs",
-      "line": 33,
+      "line": 39,
       "members": [
         {
           "name": "SavingChanges",
@@ -8338,7 +8311,7 @@
       "kind": "record",
       "project": "Granit.Auditing.Abstractions",
       "file": "src/Granit.Auditing.Abstractions/Events/AuditEntryPersistedEto.cs",
-      "line": 16,
+      "line": 23,
       "members": []
     },
     {
@@ -8411,7 +8384,7 @@
       "kind": "class",
       "project": "Granit.Auditing",
       "file": "src/Granit.Auditing/Extensions/AuditingServiceCollectionExtensions.cs",
-      "line": 21,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitAuditing",
@@ -8422,34 +8395,27 @@
       ]
     },
     {
+      "name": "GranitAuditingAbstractionsModule",
+      "fqn": "Granit.Auditing.GranitAuditingAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.Auditing.Abstractions",
+      "file": "src/Granit.Auditing.Abstractions/GranitAuditingAbstractionsModule.cs",
+      "line": 18,
+      "members": []
+    },
+    {
       "name": "GranitAuditingModule",
       "fqn": "Granit.Auditing.GranitAuditingModule",
       "kind": "class",
       "project": "Granit.Auditing",
       "file": "src/Granit.Auditing/GranitAuditingModule.cs",
-      "line": 21,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "IAuditBatchPersister",
-      "fqn": "Granit.Auditing.IAuditBatchPersister",
-      "kind": "interface",
-      "project": "Granit.Auditing.Abstractions",
-      "file": "src/Granit.Auditing.Abstractions/IAuditBatchPersister.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "PersistAsync",
-          "kind": "method",
-          "signature": "PersistAsync(AuditingBatch batch, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
         }
       ]
     },
@@ -8482,22 +8448,6 @@
           "kind": "method",
           "signature": "GetAliases(string logicalEntityType)",
           "returnType": "IReadOnlySet<string>"
-        }
-      ]
-    },
-    {
-      "name": "IAuditEntryPublisher",
-      "fqn": "Granit.Auditing.IAuditEntryPublisher",
-      "kind": "interface",
-      "project": "Granit.Auditing.Abstractions",
-      "file": "src/Granit.Auditing.Abstractions/IAuditEntryPublisher.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "PublishAsync",
-          "kind": "method",
-          "signature": "PublishAsync(AuditingBatch batch, CancellationToken cancellationToken = default)",
-          "returnType": "ValueTask"
         }
       ]
     },
@@ -8552,8 +8502,8 @@
         {
           "name": "GetByCorrelationIdAsync",
           "kind": "method",
-          "signature": "GetByCorrelationIdAsync(string correlationId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<List<AuditEntry>>"
+          "signature": "GetByCorrelationIdAsync(string correlationId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PagedResult<AuditEntry>>"
         },
         {
           "name": "GetByUserAsync",
@@ -8670,17 +8620,17 @@
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(AuditEntryPersistedEto evt, INotificationPublisher publisher, IOptions<AuditNotificationOptions> options, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(AuditEntryPersistedEto evt, INotificationPublisher publisher, IOptions<AuditingNotificationsOptions> options, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
     },
     {
-      "name": "AuditNotificationOptions",
-      "fqn": "Granit.Auditing.Notifications.Options.AuditNotificationOptions",
+      "name": "AuditingNotificationsOptions",
+      "fqn": "Granit.Auditing.Notifications.Options.AuditingNotificationsOptions",
       "kind": "class",
       "project": "Granit.Auditing.Notifications",
-      "file": "src/Granit.Auditing.Notifications/Options/AuditNotificationOptions.cs",
+      "file": "src/Granit.Auditing.Notifications/Options/AuditingNotificationsOptions.cs",
       "line": 20,
       "members": [
         {
@@ -8700,10 +8650,10 @@
       "line": 10,
       "members": [
         {
-          "name": "PersistenceMode",
-          "kind": "property",
-          "signature": "AuditPersistenceMode PersistenceMode",
-          "returnType": "AuditPersistenceMode"
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(1095)",
+          "returnType": "TimeSpan MinimumRetention { get; set; } = TimeSpan."
         },
         {
           "name": "EnablePropertyTracking",
@@ -8712,40 +8662,22 @@
           "returnType": "bool"
         },
         {
-          "name": "FromDays",
+          "name": "new",
           "kind": "method",
-          "signature": "FromDays(2555)",
-          "returnType": "TimeSpan ConfigurationChangeRetention { get; set; } = TimeSpan."
+          "signature": "new()",
+          "returnType": "Dictionary<AuditCategory, TimeSpan> Retention { get; set; } ="
         },
         {
-          "name": "FromDays",
-          "kind": "method",
-          "signature": "FromDays(365)",
-          "returnType": "TimeSpan DataMutationRetention { get; set; } = TimeSpan."
-        },
-        {
-          "name": "FromDays",
-          "kind": "method",
-          "signature": "FromDays(90)",
-          "returnType": "TimeSpan DataAccessRetention { get; set; } = TimeSpan."
-        },
-        {
-          "name": "FromDays",
-          "kind": "method",
-          "signature": "FromDays(2555)",
-          "returnType": "TimeSpan AccessDeniedRetention { get; set; } = TimeSpan."
-        },
-        {
-          "name": "FromDays",
-          "kind": "method",
-          "signature": "FromDays(2555)",
-          "returnType": "TimeSpan PrivilegedAccessRetention { get; set; } = TimeSpan."
+          "name": "PseudonymizeOnErasure",
+          "kind": "property",
+          "signature": "bool PseudonymizeOnErasure",
+          "returnType": "bool"
         },
         {
           "name": "FromMinutes",
           "kind": "method",
           "signature": "FromMinutes(30)",
-          "returnType": "TimeSpan CacheEntryTtl { get; set; } = TimeSpan."
+          "returnType": "string? PseudonymizationSalt { get; set; } public TimeSpan CacheEntryTtl { get; set; } = TimeSpan."
         },
         {
           "name": "FromMinutes",
@@ -8757,12 +8689,6 @@
           "name": "CleanupBatchSize",
           "kind": "property",
           "signature": "int CleanupBatchSize",
-          "returnType": "int"
-        },
-        {
-          "name": "ChannelCapacity",
-          "kind": "property",
-          "signature": "int ChannelCapacity",
           "returnType": "int"
         },
         {
@@ -8779,13 +8705,13 @@
       "kind": "class",
       "project": "Granit.Auditing.Privacy",
       "file": "src/Granit.Auditing.Privacy/DataDeletion/AuditingPersonalDataDeletionHandler.cs",
-      "line": 33,
+      "line": 35,
       "members": [
         {
-          "name": "Handle",
+          "name": "HandleAsync",
           "kind": "method",
-          "signature": "Handle(PersonalDataDeletionRequestedEto @event)",
-          "returnType": "PersonalDataDeletedEto"
+          "signature": "HandleAsync(PersonalDataDeletionRequestedEto @event, IAuditingCleaner cleaner, IOptions<AuditingOptions> options, CancellationToken cancellationToken)",
+          "returnType": "Task<PersonalDataDeletedEto>"
         }
       ]
     },

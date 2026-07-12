@@ -1,8 +1,12 @@
 {
   "culture": "tr",
   "texts": {
-    "AuditingEndpoints:Workspace.Item": "Audit log",
-    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "AuditingEndpoints:Workspace.Item": "Denetim günlüğü",
+    "AuditingEndpoints:Workspace.Section": "Denetim",
+    "Granit:Auditing:Endpoints:CorrelationIdInvalid": "Korelasyon kimliği 1 ile 256 karakter arasında olmalıdır.",
+    "Granit:Auditing:Endpoints:EntryNotFound": "Denetim günlüğü kaydı bulunamadı.",
+    "Granit:Auditing:Endpoints:PathParamTooLong": "Yol parametreleri 256 karakteri aşmamalıdır.",
+    "Granit:Auditing:Endpoints:UserIdRequired": "userId yol parametresi boş olmamalıdır.",
     "Permission:Auditing.AuditEntries.Manage": "Denetim günlüğü kayıtlarını yönet (takma adlandırma, KVKK md. 17)",
     "Permission:Auditing.AuditEntries.Read": "Denetim günlüğü kayıtlarını görüntüle (ISO 27001 denetim izi)",
     "PermissionGroup:Auditing": "Denetim günlüğü"

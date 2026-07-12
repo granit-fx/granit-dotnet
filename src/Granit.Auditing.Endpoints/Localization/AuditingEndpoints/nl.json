@@ -1,8 +1,12 @@
 {
   "culture": "nl",
   "texts": {
-    "AuditingEndpoints:Workspace.Item": "Audit log",
+    "AuditingEndpoints:Workspace.Item": "Auditlogboek",
     "AuditingEndpoints:Workspace.Section": "Auditing",
+    "Granit:Auditing:Endpoints:CorrelationIdInvalid": "De correlatie-ID moet tussen 1 en 256 tekens bevatten.",
+    "Granit:Auditing:Endpoints:EntryNotFound": "De auditlogvermelding is niet gevonden.",
+    "Granit:Auditing:Endpoints:PathParamTooLong": "Padparameters mogen niet langer zijn dan 256 tekens.",
+    "Granit:Auditing:Endpoints:UserIdRequired": "De padparameter userId mag niet leeg zijn.",
     "Permission:Auditing.AuditEntries.Manage": "Auditlogboekregistraties beheren (pseudonimisering, AVG art. 17)",
     "Permission:Auditing.AuditEntries.Read": "Auditlogboekregistraties bekijken (ISO 27001-auditspoor)",
     "PermissionGroup:Auditing": "Auditlogboek"

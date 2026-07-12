@@ -1,24 +1,20 @@
 using Granit.Auditing.Domain;
-using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Auditing.EntityFrameworkCore.Internal.Services;
 
 /// <summary>
 /// EF Core implementation of <see cref="IAuditingWriter"/> for persisting
 /// explicit audit log entries (login events, access denied, config changes).
+/// Delegates to the <see cref="AuditPersistencePipeline"/> so explicit writes emit the
+/// same <c>AuditEntryPersistedEto</c> and metrics as interceptor-captured entries.
 /// </summary>
-internal sealed class EfCoreAuditingWriter(
-    IDbContextFactory<AuditingDbContext> dbContextFactory) : IAuditingWriter
+internal sealed class EfCoreAuditingWriter(AuditPersistencePipeline pipeline) : IAuditingWriter
 {
     /// <inheritdoc/>
-    public async Task WriteAsync(AuditEntry entry, CancellationToken cancellationToken = default)
+    /// <remarks>The entry's <c>Id</c> is populated on return.</remarks>
+    public Task WriteAsync(AuditEntry entry, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(entry);
-
-        await using AuditingDbContext dbContext = await dbContextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        dbContext.AuditEntries.Add(entry);
-        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return pipeline.PersistAsync(entry, cancellationToken);
     }
 }

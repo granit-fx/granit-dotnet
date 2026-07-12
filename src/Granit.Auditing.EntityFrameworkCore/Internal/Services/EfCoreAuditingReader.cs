@@ -44,6 +44,7 @@ internal sealed class EfCoreAuditingReader(
             .Include(e => e.EntityChanges)
                 .ThenInclude(ec => ec.PropertyChanges)
             .AsSplitQuery()
+            .AsNoTracking()
             .FirstOrDefaultAsync(e => e.Id == id, cancellationToken)
             .ConfigureAwait(false);
 
@@ -195,8 +196,10 @@ internal sealed class EfCoreAuditingReader(
     }
 
     /// <inheritdoc/>
-    public async Task<List<AuditEntry>> GetByCorrelationIdAsync(
+    public async Task<PagedResult<AuditEntry>> GetByCorrelationIdAsync(
         string correlationId,
+        int page = 1,
+        int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(correlationId);
@@ -211,7 +214,7 @@ internal sealed class EfCoreAuditingReader(
             .Where(e => e.CorrelationId == correlationId)
             .OrderByDescending(e => e.Timestamp)
             .AsNoTracking()
-            .ToListAsync(cancellationToken)
+            .ToPagedResultAsync(page, pageSize, cancellationToken)
             .ConfigureAwait(false);
     }
 

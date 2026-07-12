@@ -1,8 +1,12 @@
 {
   "culture": "it",
   "texts": {
-    "AuditingEndpoints:Workspace.Item": "Audit log",
-    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "AuditingEndpoints:Workspace.Item": "Registro di audit",
+    "AuditingEndpoints:Workspace.Section": "Audit",
+    "Granit:Auditing:Endpoints:CorrelationIdInvalid": "L'ID di correlazione deve contenere tra 1 e 256 caratteri.",
+    "Granit:Auditing:Endpoints:EntryNotFound": "La voce del registro di audit non è stata trovata.",
+    "Granit:Auditing:Endpoints:PathParamTooLong": "I parametri di percorso non devono superare i 256 caratteri.",
+    "Granit:Auditing:Endpoints:UserIdRequired": "Il parametro di percorso userId non deve essere vuoto.",
     "Permission:Auditing.AuditEntries.Manage": "Gestire le voci del registro di audit (pseudonimizzazione, GDPR art. 17)",
     "Permission:Auditing.AuditEntries.Read": "Visualizzare le voci del registro di audit (traccia di audit ISO 27001)",
     "PermissionGroup:Auditing": "Registro di audit"

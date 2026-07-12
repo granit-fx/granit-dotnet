@@ -12,9 +12,13 @@ namespace Granit.Auditing.EntityFrameworkCore.Internal;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This DbContext must <b>NOT</b> have <c>AuditingChangeTrackingInterceptor</c>
-/// registered — doing so would cause infinite recursion (interceptor captures changes,
-/// writes to channel, worker persists to this DbContext, which triggers the interceptor again).
+/// Used by the standalone persistence path (hosts whose audited context does not map the
+/// audit entities), explicit <c>IAuditingWriter</c> writes, and the read/cleanup services.
+/// The audit entities all carry <c>[AuditIgnore]</c>, so the capture interceptor sees only
+/// empty batches on this context — no recursion. This context owns the audit-table DDL by
+/// default; a host context that maps the entities via
+/// <c>ConfigureAuditingModule(excludeFromMigrations: true)</c> shares the tables without
+/// emitting duplicate migrations.
 /// </para>
 /// <para>
 /// Compatible with SQL Server and PostgreSQL.

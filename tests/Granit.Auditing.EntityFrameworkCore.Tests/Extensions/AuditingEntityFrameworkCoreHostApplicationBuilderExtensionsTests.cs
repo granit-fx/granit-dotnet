@@ -3,24 +3,24 @@
 // ====================================================================================
 // Verifies:
 //   - AddGranitAuditingEntityFrameworkCore registers all expected services
-//   - Publisher factory resolves async vs strict mode correctly
+//   - AuditPersistencePipeline replaces the deleted channel/publisher/persister stack
 //   - Returns builder for chaining
 //   - TryAdd semantics for metrics and IHttpContextAccessor
 // =============================================================================
 
-using System.Threading.Channels;
 using Granit.Auditing.Diagnostics;
 using Granit.Auditing.EntityFrameworkCore.Extensions;
 using Granit.Auditing.EntityFrameworkCore.Interceptors;
 using Granit.Auditing.EntityFrameworkCore.Internal.Services;
 using Granit.Auditing.Extensions;
-using Granit.Auditing.Internal.Services;
-using Granit.Auditing.Messages;
+using Granit.Events;
+using Granit.Guids.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -37,6 +37,12 @@ public sealed class AuditingEntityFrameworkCoreHostApplicationBuilderExtensionsT
         _builder.Services.AddMetrics();
         _builder.Services.AddLogging();
         _builder.Services.AddSingleton(TimeProvider.System);
+
+        // Real hosts wire these via the module system (GranitPersistenceModule /
+        // GranitGuidsModule) — the persistence pipeline depends on
+        // IIntegrationEventDispatcher and IGuidGenerator.
+        _builder.Services.AddSingleton(Substitute.For<IIntegrationEventDispatcher>());
+        _builder.Services.AddGranitGuids();
 
         _builder.Services.AddGranitAuditing();
         _builder.AddGranitAuditingEntityFrameworkCore(
@@ -81,13 +87,13 @@ public sealed class AuditingEntityFrameworkCoreHostApplicationBuilderExtensionsT
     }
 
     [Fact]
-    public void Registers_Channel_AsSingleton()
+    public void Registers_AuditPersistencePipeline_AsScoped()
     {
         ServiceDescriptor? descriptor = _builder.Services
-            .FirstOrDefault(d => d.ServiceType == typeof(Channel<AuditingBatch>));
+            .FirstOrDefault(d => d.ServiceType == typeof(AuditPersistencePipeline));
 
         descriptor.ShouldNotBeNull();
-        descriptor.Lifetime.ShouldBe(ServiceLifetime.Singleton);
+        descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
     }
 
     [Fact]
@@ -110,47 +116,6 @@ public sealed class AuditingEntityFrameworkCoreHostApplicationBuilderExtensionsT
         descriptor.ShouldNotBeNull();
         descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
         descriptor.ImplementationType.ShouldBe(typeof(EfCoreAuditingWriter));
-    }
-
-    [Fact]
-    public void Registers_ChannelAuditingPublisher_AsScoped()
-    {
-        ServiceDescriptor? descriptor = _builder.Services
-            .FirstOrDefault(d => d.ServiceType == typeof(ChannelAuditingPublisher));
-
-        descriptor.ShouldNotBeNull();
-        descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
-    }
-
-    [Fact]
-    public void Registers_StrictAuditingPublisher_AsScoped()
-    {
-        ServiceDescriptor? descriptor = _builder.Services
-            .FirstOrDefault(d => d.ServiceType == typeof(StrictAuditingPublisher));
-
-        descriptor.ShouldNotBeNull();
-        descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
-    }
-
-    [Fact]
-    public void Registers_IAuditEntryPublisher_AsScoped()
-    {
-        ServiceDescriptor? descriptor = _builder.Services
-            .FirstOrDefault(d => d.ServiceType == typeof(IAuditEntryPublisher));
-
-        descriptor.ShouldNotBeNull();
-        descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
-    }
-
-    [Fact]
-    public void Registers_IAuditBatchPersister_AsScoped()
-    {
-        ServiceDescriptor? descriptor = _builder.Services
-            .FirstOrDefault(d => d.ServiceType == typeof(IAuditBatchPersister));
-
-        descriptor.ShouldNotBeNull();
-        descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
-        descriptor.ImplementationType.ShouldBe(typeof(EfCoreAuditBatchPersister));
     }
 
     [Fact]
@@ -226,11 +191,13 @@ public sealed class AuditingEntityFrameworkCoreHostApplicationBuilderExtensionsT
     }
 
     [Fact]
-    public void Resolves_Channel()
+    public void Resolves_AuditPersistencePipeline()
     {
-        Channel<AuditingBatch> channel = _sp.GetRequiredService<Channel<AuditingBatch>>();
+        using IServiceScope scope = _sp.CreateScope();
+        AuditPersistencePipeline pipeline = scope.ServiceProvider
+            .GetRequiredService<AuditPersistencePipeline>();
 
-        channel.ShouldNotBeNull();
+        pipeline.ShouldNotBeNull();
     }
 
     // =========================================================================
@@ -255,6 +222,26 @@ public sealed class AuditingEntityFrameworkCoreHostApplicationBuilderExtensionsT
             .Count(d => d.ServiceType == typeof(AuditingMetrics));
 
         metricsCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void CallingTwice_DoesNotDuplicatePipeline()
+    {
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+        builder.Services.AddMetrics();
+        builder.Services.AddLogging();
+        builder.Services.AddSingleton(TimeProvider.System);
+
+        builder.Services.AddGranitAuditing();
+        builder.AddGranitAuditingEntityFrameworkCore(
+            o => o.UseInMemoryDatabase("dup-pipeline-1"));
+        builder.AddGranitAuditingEntityFrameworkCore(
+            o => o.UseInMemoryDatabase("dup-pipeline-2"));
+
+        int pipelineCount = builder.Services
+            .Count(d => d.ServiceType == typeof(AuditPersistencePipeline));
+
+        pipelineCount.ShouldBe(1);
     }
 
     [Fact]

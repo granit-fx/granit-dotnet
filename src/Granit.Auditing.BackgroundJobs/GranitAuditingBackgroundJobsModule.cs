@@ -12,8 +12,8 @@ namespace Granit.Auditing.BackgroundJobs;
 /// multi-replica deployment purges expired entries exactly once per schedule.
 /// </summary>
 [DependsOn(
-    typeof(GranitBackgroundJobsModule),
-    typeof(GranitAuditingEntityFrameworkCoreModule))]
+    typeof(GranitAuditingEntityFrameworkCoreModule),
+    typeof(GranitBackgroundJobsModule))]
 public sealed class GranitAuditingBackgroundJobsModule : GranitModule
 {
     /// <inheritdoc/>

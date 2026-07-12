@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -10,6 +11,7 @@ using Granit.Auditing.Messages;
 using Granit.Auditing.Options;
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timing;
 using Granit.Users;
@@ -21,15 +23,21 @@ using Microsoft.Extensions.Options;
 namespace Granit.Auditing.EntityFrameworkCore.Internal.Services;
 
 /// <summary>
-/// Scoped service that captures EF Core ChangeTracker state and holds it until
-/// persistence is requested. The interceptor delegates all stateful work here
+/// Scoped service that captures EF Core ChangeTracker state and stages it through the
+/// <see cref="AuditPersistencePipeline"/>. The interceptor delegates all stateful work here
 /// to avoid concurrency issues (interceptors can be singleton-scoped).
 /// </summary>
+/// <remarks>
+/// Staged state is keyed by <c>DbContext.ContextId.InstanceId</c> so nested saves (the
+/// standalone fallback persisting through the isolated <see cref="AuditingDbContext"/>
+/// re-enters this service) and multi-context scopes cannot cross-contaminate.
+/// </remarks>
 internal sealed partial class ChangeTrackingCaptureService(
     IClock clock,
     ICurrentUserService currentUserService,
     ICurrentTenant currentTenant,
-    IAuditEntryPublisher publisher,
+    AuditPersistencePipeline pipeline,
+    IGuidGenerator guidGenerator,
     IOptions<AuditingOptions> options,
     AuditingMetrics metrics,
     Microsoft.AspNetCore.Http.IHttpContextAccessor? httpContextAccessor,
@@ -43,21 +51,106 @@ internal sealed partial class ChangeTrackingCaptureService(
 
     private static readonly ConcurrentDictionary<Type, EntityAuditMetadata> MetadataCache = new();
 
+    /// <summary>One-shot degraded-mode warning per host context type (process-wide).</summary>
+    private static readonly ConcurrentDictionary<Type, byte> StandaloneWarnedContexts = new();
+
     private const string SensitiveMask = "***";
     private const int MaxIpAddressLength = 45;
     private const int MaxUserAgentLength = 500;
 
-    private AuditingBatch? _capturedBatch;
+    private readonly Dictionary<Guid, StagedAudit> _staged = [];
 
     /// <summary>
-    /// Captures the current ChangeTracker state into an <see cref="AuditingBatch"/>.
-    /// Call from <c>SavingChangesAsync</c>.
+    /// Captures the current ChangeTracker state, maps it to an <see cref="AuditEntry"/> and
+    /// stages it: into the host context's own transaction when the host model maps the audit
+    /// entities (embedded mode), otherwise held for post-commit standalone persistence.
+    /// Call from <c>SavingChanges(Async)</c>.
     /// </summary>
-    public void Capture(DbContext context)
+    public async ValueTask CaptureAsync(DbContext context, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        using System.Diagnostics.Activity? activity = AuditingActivitySource.Source.StartActivity(AuditingActivitySource.Capture);
+        // Defensive: a previous save on this context that failed without the failure hook
+        // firing must never leak its staged entry into this save.
+        _staged.Remove(context.ContextId.InstanceId);
+
+        AuditingBatch? batch = Capture(context);
+        if (batch is null)
+        {
+            return;
+        }
+
+        AuditEntry entry = AuditingBatchMapper.ToEntity(batch, guidGenerator);
+        bool embedded = context.Model.FindEntityType(typeof(AuditEntry)) is not null;
+
+        if (embedded)
+        {
+            await pipeline.StageAsync(context, entry, cancellationToken).ConfigureAwait(false);
+        }
+        else if (StandaloneWarnedContexts.TryAdd(context.GetType(), 0))
+        {
+            LogStandaloneMode(context.GetType().Name);
+        }
+
+        _staged[context.ContextId.InstanceId] = new StagedAudit(entry, embedded, Stopwatch.GetTimestamp());
+    }
+
+    /// <summary>
+    /// Completes the staged entry after a successful save: records metrics (embedded mode)
+    /// or persists through the isolated <see cref="AuditingDbContext"/> (standalone mode).
+    /// Call from <c>SavedChanges(Async)</c>.
+    /// </summary>
+    public async ValueTask OnSavedAsync(DbContext context, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        if (!_staged.Remove(context.ContextId.InstanceId, out StagedAudit? staged))
+        {
+            return;
+        }
+
+        if (staged.Embedded)
+        {
+            pipeline.OnCommitted(staged.Entry, Stopwatch.GetElapsedTime(staged.StartTimestamp));
+            return;
+        }
+
+        await pipeline.PersistAsync(staged.Entry, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Drops the staged entry after a failed save. In embedded mode the audit graph is also
+    /// detached from the host ChangeTracker — without this, a business retry on the same
+    /// scope (e.g. after <c>DbUpdateConcurrencyException</c>) would re-save the stale audit
+    /// rows on top of the fresh capture. Call from <c>SaveChangesFailed(Async)</c>.
+    /// </summary>
+    public void OnSaveFailed(DbContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        if (!_staged.Remove(context.ContextId.InstanceId, out StagedAudit? staged) || !staged.Embedded)
+        {
+            return;
+        }
+
+        // Snapshot the navigations before detaching: detaching a child triggers EF
+        // relationship fixup, which removes it from the very collection being iterated.
+        foreach (AuditEntityChange entityChange in staged.Entry.EntityChanges.ToList())
+        {
+            foreach (AuditPropertyChange propertyChange in entityChange.PropertyChanges.ToList())
+            {
+                context.Entry(propertyChange).State = EntityState.Detached;
+            }
+
+            context.Entry(entityChange).State = EntityState.Detached;
+        }
+
+        context.Entry(staged.Entry).State = EntityState.Detached;
+    }
+
+    private AuditingBatch? Capture(DbContext context)
+    {
+        using Activity? activity = AuditingActivitySource.Source.StartActivity(AuditingActivitySource.Capture);
         activity?.SetTag("tenant_id", currentTenant.IsAvailable ? currentTenant.Id?.ToString() ?? "global" : "global");
 
         try
@@ -94,13 +187,12 @@ internal sealed partial class ChangeTrackingCaptureService(
 
             if (entityChanges.Count == 0)
             {
-                _capturedBatch = null;
-                return;
+                return null;
             }
 
             Microsoft.AspNetCore.Http.HttpContext? httpContext = httpContextAccessor?.HttpContext;
 
-            _capturedBatch = new AuditingBatch(
+            AuditingBatch batch = new(
                 Timestamp: clock.Now,
                 UserId: currentUserService.UserId ?? "system",
                 UserName: currentUserService.UserName,
@@ -111,32 +203,17 @@ internal sealed partial class ChangeTrackingCaptureService(
                 CorrelationId: System.Diagnostics.Activity.Current?.Id,
                 EntityChanges: entityChanges);
 
-            activity?.SetTag("audit.category", _capturedBatch.Category.ToString());
+            activity?.SetTag("audit.category", batch.Category.ToString());
             activity?.SetTag("audit.entity_change_count", entityChanges.Count);
+
+            return batch;
         }
         catch (Exception ex)
         {
             LogCaptureError(ex);
             metrics.RecordCaptureError(currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null);
-            _capturedBatch = null;
+            return null;
         }
-    }
-
-    /// <summary>
-    /// Publishes the previously captured batch. Call from <c>SavedChangesAsync</c>
-    /// only if save succeeded.
-    /// </summary>
-    public async ValueTask PublishAsync(CancellationToken cancellationToken = default)
-    {
-        if (_capturedBatch is null)
-        {
-            return;
-        }
-
-        AuditingBatch batch = _capturedBatch;
-        _capturedBatch = null;
-
-        await publisher.PublishAsync(batch, cancellationToken).ConfigureAwait(false);
     }
 
     private static EntityAuditMetadata GetOrCreateMetadata(Type entityType) =>
@@ -287,6 +364,16 @@ internal sealed partial class ChangeTrackingCaptureService(
     [LoggerMessage(Level = LogLevel.Error,
         Message = "Failed to capture audit change tracking data")]
     private partial void LogCaptureError(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Audit persistence for {ContextType} runs in standalone mode — the audit row is written after the business commit, in its own transaction (not atomic). Map the audit tables into the context via modelBuilder.ConfigureAuditingModule() for atomic auditing.")]
+    private partial void LogStandaloneMode(string contextType);
+
+    /// <summary>
+    /// A captured audit entry awaiting save completion: staged into the host transaction
+    /// (embedded) or pending standalone persistence after the host commit.
+    /// </summary>
+    private sealed record StagedAudit(AuditEntry Entry, bool Embedded, long StartTimestamp);
 
     /// <summary>
     /// Cached audit metadata for an entity type: whether the type is ignored,

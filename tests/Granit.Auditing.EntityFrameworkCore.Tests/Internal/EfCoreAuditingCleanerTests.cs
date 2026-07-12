@@ -1,6 +1,7 @@
 using Granit.Auditing.Domain;
 using Granit.Auditing.EntityFrameworkCore.Internal;
 using Granit.Auditing.EntityFrameworkCore.Internal.Services;
+using Granit.Auditing.Options;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -75,7 +76,7 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
         }
 
         IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingCleaner cleaner = new(factory, NullLogger<EfCoreAuditingCleaner>.Instance);
+        EfCoreAuditingCleaner cleaner = new(factory, Microsoft.Extensions.Options.Options.Create(new AuditingOptions()), NullLogger<EfCoreAuditingCleaner>.Instance);
 
         int count = await cleaner.PseudonymizeByUserAsync(
             "user-to-erase", TestContext.Current.CancellationToken);
@@ -84,7 +85,7 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
 
         // Verify pseudonymized entries.
         await using AuditingDbContext verifyCtx = new(_dbOptions, GranitDesignTime.CurrentTenant);
-        string expectedHash = EfCoreAuditingCleaner.HashUserId("user-to-erase");
+        string expectedHash = EfCoreAuditingCleaner.HashUserId("user-to-erase", salt: null);
 
         List<AuditEntry> pseudonymized = await verifyCtx.AuditEntries
             .Where(e => e.UserId == expectedHash)
@@ -111,7 +112,7 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
     public async Task PseudonymizeByUserAsync_NoMatchingEntries_ReturnsZero()
     {
         IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingCleaner cleaner = new(factory, NullLogger<EfCoreAuditingCleaner>.Instance);
+        EfCoreAuditingCleaner cleaner = new(factory, Microsoft.Extensions.Options.Options.Create(new AuditingOptions()), NullLogger<EfCoreAuditingCleaner>.Instance);
 
         int count = await cleaner.PseudonymizeByUserAsync(
             "nonexistent-user", TestContext.Current.CancellationToken);
@@ -126,7 +127,7 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
     public async Task PseudonymizeByUserAsync_InvalidUserId_Throws(string? userId)
     {
         IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingCleaner cleaner = new(factory, NullLogger<EfCoreAuditingCleaner>.Instance);
+        EfCoreAuditingCleaner cleaner = new(factory, Microsoft.Extensions.Options.Options.Create(new AuditingOptions()), NullLogger<EfCoreAuditingCleaner>.Instance);
 
         await Should.ThrowAsync<ArgumentException>(() =>
             cleaner.PseudonymizeByUserAsync(userId!, TestContext.Current.CancellationToken));
@@ -135,8 +136,8 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
     [Fact]
     public void HashUserId_ProducesDeterministicSha256()
     {
-        string hash1 = EfCoreAuditingCleaner.HashUserId("user-42");
-        string hash2 = EfCoreAuditingCleaner.HashUserId("user-42");
+        string hash1 = EfCoreAuditingCleaner.HashUserId("user-42", salt: null);
+        string hash2 = EfCoreAuditingCleaner.HashUserId("user-42", salt: null);
 
         hash1.ShouldBe(hash2);
         hash1.ShouldStartWith("sha256:");
@@ -146,10 +147,64 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
     [Fact]
     public void HashUserId_DifferentInputs_ProduceDifferentHashes()
     {
-        string hash1 = EfCoreAuditingCleaner.HashUserId("user-1");
-        string hash2 = EfCoreAuditingCleaner.HashUserId("user-2");
+        string hash1 = EfCoreAuditingCleaner.HashUserId("user-1", salt: null);
+        string hash2 = EfCoreAuditingCleaner.HashUserId("user-2", salt: null);
 
         hash1.ShouldNotBe(hash2);
+    }
+
+    [Fact]
+    public void HashUserId_WithSalt_DiffersFromUnsalted()
+    {
+        string unsalted = EfCoreAuditingCleaner.HashUserId("user-42", salt: null);
+        string salted = EfCoreAuditingCleaner.HashUserId("user-42", salt: "pepper");
+
+        salted.ShouldNotBe(unsalted);
+        salted.ShouldStartWith("sha256:");
+    }
+
+    [Fact]
+    public void HashUserId_EmptySalt_MatchesLegacyUnsaltedValue()
+    {
+        // salt null/empty must converge on the legacy unsalted hash — repeated
+        // pseudonymizations of the same user must produce the same value.
+        string nullSalt = EfCoreAuditingCleaner.HashUserId("user-42", salt: null);
+        string emptySalt = EfCoreAuditingCleaner.HashUserId("user-42", salt: "");
+
+        emptySalt.ShouldBe(nullSalt);
+    }
+
+    [Fact]
+    public async Task PseudonymizeByUserAsync_UsesConfiguredSalt()
+    {
+        await using (AuditingDbContext seedCtx = new(_dbOptions, GranitDesignTime.CurrentTenant))
+        {
+            seedCtx.AuditEntries.Add(new AuditEntry
+            {
+                Id = Guid.NewGuid(),
+                Timestamp = DateTimeOffset.UtcNow,
+                UserId = "salted-user",
+                UserName = "Salty Doe",
+                Category = AuditCategory.DataMutation,
+            });
+            await seedCtx.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        AuditingOptions options = new() { PseudonymizationSalt = "pepper" };
+        EfCoreAuditingCleaner cleaner = new(
+            factory,
+            Microsoft.Extensions.Options.Options.Create(options),
+            NullLogger<EfCoreAuditingCleaner>.Instance);
+
+        int count = await cleaner.PseudonymizeByUserAsync("salted-user", TestContext.Current.CancellationToken);
+        count.ShouldBe(1);
+
+        await using AuditingDbContext verifyCtx = new(_dbOptions, GranitDesignTime.CurrentTenant);
+        string expectedHash = EfCoreAuditingCleaner.HashUserId("salted-user", salt: "pepper");
+        AuditEntry? pseudonymized = await verifyCtx.AuditEntries
+            .FirstOrDefaultAsync(e => e.UserId == expectedHash, TestContext.Current.CancellationToken);
+        pseudonymized.ShouldNotBeNull();
     }
 
     [Fact]
@@ -171,7 +226,7 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
         }
 
         IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingCleaner cleaner = new(factory, NullLogger<EfCoreAuditingCleaner>.Instance);
+        EfCoreAuditingCleaner cleaner = new(factory, Microsoft.Extensions.Options.Options.Create(new AuditingOptions()), NullLogger<EfCoreAuditingCleaner>.Instance);
 
         int firstPass = await cleaner.PseudonymizeByUserAsync(
             "user-to-erase", TestContext.Current.CancellationToken);

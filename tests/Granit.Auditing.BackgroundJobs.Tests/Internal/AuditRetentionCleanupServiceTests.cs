@@ -1,9 +1,7 @@
 using System.Diagnostics.Metrics;
-using System.Threading.Channels;
 using Granit.Auditing.BackgroundJobs.Internal;
 using Granit.Auditing.Diagnostics;
 using Granit.Auditing.Domain;
-using Granit.Auditing.Messages;
 using Granit.Auditing.Options;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +24,7 @@ public sealed class AuditRetentionCleanupServiceTests : IDisposable
 
     public AuditRetentionCleanupServiceTests()
     {
-        _metrics = new AuditingMetrics(_meterFactory, Channel.CreateUnbounded<AuditingBatch>());
+        _metrics = new AuditingMetrics(_meterFactory);
         _clock.Now.Returns(DateTimeOffset.UnixEpoch.AddYears(50));
 
         IServiceProvider sp = Substitute.For<IServiceProvider>();

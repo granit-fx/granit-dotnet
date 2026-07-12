@@ -36,6 +36,7 @@ internal static class AuditingBatchMapper
             {
                 Id = guidGenerator.Create(),
                 AuditEntryId = entry.Id,
+                TenantId = batch.TenantId,
                 EntityType = entitySnapshot.EntityType,
                 EntityId = entitySnapshot.EntityId,
                 ChangeType = entitySnapshot.ChangeType,

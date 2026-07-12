@@ -1,4 +1,6 @@
 using Granit.Auditing.Extensions;
+using Granit.DataExchange;
+using Granit.Guids;
 using Granit.Modularity;
 using Granit.QueryEngine;
 
@@ -17,7 +19,11 @@ namespace Granit.Auditing;
 /// For EF Core persistence, add <c>Granit.Auditing.EntityFrameworkCore</c>.
 /// For admin endpoints, add <c>Granit.Auditing.Endpoints</c>.
 /// </remarks>
-[DependsOn(typeof(GranitQueryEngineAbstractionsModule))]
+[DependsOn(
+    typeof(GranitAuditingAbstractionsModule),
+    typeof(GranitDataExchangeAbstractionsModule),
+    typeof(GranitGuidsModule),
+    typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitAuditingModule : GranitModule
 {
     /// <inheritdoc/>

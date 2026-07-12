@@ -1,7 +1,4 @@
 {
   "culture": "pt-BR",
-  "texts": {
-    "AuditingEndpoints:Workspace.Item": "Audit log",
-    "AuditingEndpoints:Workspace.Section": "Auditing"
-  }
+  "texts": {}
 }

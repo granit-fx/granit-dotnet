@@ -41,8 +41,8 @@ internal static class AuditingReadEndpoints
         group.MapGet("/correlation/{correlationId}", GetByCorrelationIdAsync)
             .WithName("GetAuditEntriesByCorrelationId")
             .WithSummary("Returns audit entries matching a distributed tracing correlation ID.")
-            .WithDescription("Returns all audit log entries that share the given correlation ID, ordered by timestamp descending. This is essential for distributed tracing investigation — correlating audit events across multiple services or operations that belong to the same logical transaction. The correlation ID is limited to 256 characters.")
-            .Produces<List<AuditEntryDetailResponse>>()
+            .WithDescription("Returns the audit log entries that share the given correlation ID, paginated and ordered by timestamp descending. This is essential for distributed tracing investigation — correlating audit events across multiple services or operations that belong to the same logical transaction. The correlation ID is limited to 256 characters.")
+            .Produces<PagedResult<AuditEntryResponse>>()
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         return group;
@@ -51,6 +51,7 @@ internal static class AuditingReadEndpoints
     private static async Task<Results<Ok<AuditEntryDetailResponse>, ProblemHttpResult>> GetByIdAsync(
         Guid id,
         [FromServices] IAuditingReader reader,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         AuditEntry? entry = await reader
@@ -59,31 +60,47 @@ internal static class AuditingReadEndpoints
         if (entry is null)
         {
             return TypedResults.Problem(
-                detail: $"Audit log entry '{id}' not found.",
+                detail: AuditingEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Auditing:Endpoints:EntryNotFound",
+                    "The audit log entry was not found."),
                 statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(AuditingResponseMapper.ToDetailResponse(entry));
     }
 
-    private static async Task<Results<Ok<List<AuditEntryDetailResponse>>, ProblemHttpResult>> GetByCorrelationIdAsync(
+    private static async Task<Results<Ok<PagedResult<AuditEntryResponse>>, ProblemHttpResult>> GetByCorrelationIdAsync(
         string correlationId,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
         [FromServices] IAuditingReader reader,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         const int maxCorrelationIdLength = 256;
         if (string.IsNullOrWhiteSpace(correlationId) || correlationId.Length > maxCorrelationIdLength)
         {
             return TypedResults.Problem(
-                detail: $"Correlation ID must be between 1 and {maxCorrelationIdLength} characters.",
+                detail: AuditingEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Auditing:Endpoints:CorrelationIdInvalid",
+                    "The correlation ID must be between 1 and 256 characters."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        List<AuditEntry> entries = await reader
-            .GetByCorrelationIdAsync(correlationId, cancellationToken).ConfigureAwait(false);
+        PagedResult<AuditEntry> result = await reader
+            .GetByCorrelationIdAsync(
+                correlationId,
+                page ?? 1,
+                Math.Clamp(pageSize ?? QueryEngineDefaults.DefaultPageSize, 1, QueryEngineDefaults.MaxPageSize),
+                cancellationToken)
+            .ConfigureAwait(false);
 
-        List<AuditEntryDetailResponse> mapped = entries
-            .ConvertAll(AuditingResponseMapper.ToDetailResponse);
+        PagedResult<AuditEntryResponse> mapped = new(
+            result.Items.Select(AuditingResponseMapper.ToSummaryResponse).ToList(),
+            result.TotalCount,
+            result.HasMore);
 
         return TypedResults.Ok(mapped);
     }
@@ -94,13 +111,17 @@ internal static class AuditingReadEndpoints
         [FromQuery] int? page,
         [FromQuery] int? pageSize,
         [FromServices] IAuditingReader reader,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         const int maxPathParamLength = 256;
         if (entityType.Length > maxPathParamLength || entityId.Length > maxPathParamLength)
         {
             return TypedResults.Problem(
-                detail: $"Path parameters must not exceed {maxPathParamLength} characters.",
+                detail: AuditingEndpointMessages.Localize(
+                    httpContext,
+                    "Granit:Auditing:Endpoints:PathParamTooLong",
+                    "Path parameters must not exceed 256 characters."),
                 statusCode: StatusCodes.Status400BadRequest);
         }
 

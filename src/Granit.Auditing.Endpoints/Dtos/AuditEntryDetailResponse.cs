@@ -1,3 +1,5 @@
+using Granit.Auditing.Domain;
+
 namespace Granit.Auditing.Endpoints.Dtos;
 
 /// <summary>
@@ -18,7 +20,7 @@ public sealed record AuditEntryDetailResponse(
     DateTimeOffset Timestamp,
     string UserId,
     string? UserName,
-    string Category,
+    AuditCategory Category,
     string? IpAddress,
     string? UserAgent,
     Guid? TenantId,

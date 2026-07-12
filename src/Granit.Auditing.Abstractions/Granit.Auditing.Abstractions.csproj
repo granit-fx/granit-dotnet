@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Auditing.Abstractions</PackageId>
-    <Description>Inter-module contracts for Granit.Auditing: the audit trail domain model (AuditEntry, AuditEntityChange, AuditPropertyChange, AuditCategory, AuditChangeType, AuditPersistenceMode), read/write/cleanup/publish contracts (IAuditingReader, IAuditingWriter, IAuditingCleaner, IAuditEntryPublisher, IAuditBatchPersister), the timeline aggregation contracts (IAuditChildResolver, IAuditEntityTypeAliasProvider, AuditEntityRef, AuditChildScope), the bus messages (AuditingBatch + snapshots), the AuditEntryPersistedEto integration event, and AuditIgnoreAttribute. Pull this package to emit or read audit entries without taking a dependency on the Granit.Auditing runtime (workers, query/export definitions, DI wiring).</Description>
+    <Description>Inter-module contracts for Granit.Auditing: the audit trail domain model (AuditEntry, AuditEntityChange, AuditPropertyChange, AuditCategory, AuditChangeType), read/write/cleanup contracts (IAuditingReader, IAuditingWriter, IAuditingCleaner), the timeline aggregation contracts (IAuditChildResolver, IAuditEntityTypeAliasProvider, AuditEntityRef, AuditChildScope), the capture messages (AuditingBatch + snapshots), the AuditEntryPersistedEto integration event, and AuditIgnoreAttribute. Pull this package to emit or read audit entries without taking a dependency on the Granit.Auditing runtime (query/export definitions, DI wiring).</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

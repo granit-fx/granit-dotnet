@@ -15,8 +15,8 @@ public sealed class AnomalyDetectedHandlerTests
     public async Task HandleAsync_AlertableCategory_PublishesNotificationToSubscribers()
     {
         INotificationPublisher publisher = Substitute.For<INotificationPublisher>();
-        IOptions<AuditNotificationOptions> options = Microsoft.Extensions.Options.Options.Create(
-            new AuditNotificationOptions { AlertableCategories = [AuditCategory.AccessDenied] });
+        IOptions<AuditingNotificationsOptions> options = Microsoft.Extensions.Options.Options.Create(
+            new AuditingNotificationsOptions { AlertableCategories = [AuditCategory.AccessDenied] });
         var entryId = Guid.NewGuid();
         DateTimeOffset occurredAt = DateTimeOffset.UtcNow;
         var tenantId = Guid.NewGuid();
@@ -46,8 +46,8 @@ public sealed class AnomalyDetectedHandlerTests
     public async Task HandleAsync_NonAlertableCategory_DoesNotPublish()
     {
         INotificationPublisher publisher = Substitute.For<INotificationPublisher>();
-        IOptions<AuditNotificationOptions> options = Microsoft.Extensions.Options.Options.Create(
-            new AuditNotificationOptions { AlertableCategories = [AuditCategory.AccessDenied] });
+        IOptions<AuditingNotificationsOptions> options = Microsoft.Extensions.Options.Options.Create(
+            new AuditingNotificationsOptions { AlertableCategories = [AuditCategory.AccessDenied] });
         AuditEntryPersistedEto evt = new(
             Id: Guid.NewGuid(),
             Timestamp: DateTimeOffset.UtcNow,
@@ -68,8 +68,8 @@ public sealed class AnomalyDetectedHandlerTests
     public async Task HandleAsync_GlobalScope_TenantIdIsNull()
     {
         INotificationPublisher publisher = Substitute.For<INotificationPublisher>();
-        IOptions<AuditNotificationOptions> options = Microsoft.Extensions.Options.Options.Create(
-            new AuditNotificationOptions { AlertableCategories = [AuditCategory.ConfigurationChange] });
+        IOptions<AuditingNotificationsOptions> options = Microsoft.Extensions.Options.Options.Create(
+            new AuditingNotificationsOptions { AlertableCategories = [AuditCategory.ConfigurationChange] });
         AuditEntryPersistedEto evt = new(
             Id: Guid.NewGuid(),
             Timestamp: DateTimeOffset.UtcNow,

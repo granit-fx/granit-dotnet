@@ -1,38 +1,45 @@
 // =============================================================================
-// ChangeTrackingCaptureServiceTests - Change tracking capture and publish
+// ChangeTrackingCaptureServiceTests - Change tracking capture and persistence
 // =============================================================================
-// Verifies:
+// Verifies (standalone mode — host context does not map the audit entities, so
+// CaptureAsync holds a pending entry and OnSavedAsync persists it through the
+// real AuditPersistencePipeline into a Sqlite-backed AuditingDbContext):
 //   - Capture skips entities in Unchanged/Detached state
 //   - Capture skips entities with [AuditIgnore]
 //   - Capture records Added, Modified, Deleted entities
 //   - Capture detects soft-delete transitions
 //   - PropertyTracking disabled skips property snapshots
-//   - PublishAsync sends captured batch to publisher
-//   - PublishAsync is no-op when nothing was captured
-//   - SerializeValue handles null, string, DateTime, Guid, enum, complex object
-//   - Truncation truncates long strings
+//   - OnSavedAsync persists the captured entry and dispatches AuditEntryPersistedEto
+//   - OnSavedAsync is a no-op when nothing was captured or when called twice
+//   - OnSaveFailed drops the staged entry
+//   - SerializeValue handles string, Guid, bool, int
 //   - Value protection: mask, omit, hash strategies
-//   - Error handling records metric and clears batch
 // =============================================================================
 
 using System.Diagnostics.Metrics;
-using System.Threading.Channels;
 using Granit.Auditing.Attributes;
 using Granit.Auditing.Diagnostics;
 using Granit.Auditing.Domain;
+using Granit.Auditing.EntityFrameworkCore.Internal;
 using Granit.Auditing.EntityFrameworkCore.Internal.Services;
-using Granit.Auditing.Messages;
+using Granit.Auditing.Events;
 using Granit.Auditing.Options;
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Events;
+using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Granit.Users;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
 using Xunit;
+
+#pragma warning disable EF1001 // Internal EF Core API usage — required to test internal DbContext
 
 namespace Granit.Auditing.EntityFrameworkCore.Tests.Internal;
 
@@ -41,10 +48,13 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly ICurrentUserService _currentUserService = Substitute.For<ICurrentUserService>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
-    private readonly IAuditEntryPublisher _publisher = Substitute.For<IAuditEntryPublisher>();
+    private readonly IIntegrationEventDispatcher _eventDispatcher = Substitute.For<IIntegrationEventDispatcher>();
     private readonly AuditingOptions _options = new() { EnablePropertyTracking = true };
     private readonly IMeterFactory _meterFactory;
     private readonly AuditingMetrics _metrics;
+    private readonly SimpleGuidGenerator _guidGenerator = new();
+    private readonly SqliteConnection _connection;
+    private readonly DbContextOptions<AuditingDbContext> _auditDbOptions;
     private readonly DbContext _dbContext;
 
     public ChangeTrackingCaptureServiceTests()
@@ -55,7 +65,18 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _currentTenant.IsAvailable.Returns(false);
 
         _meterFactory = new TestMeterFactory();
-        _metrics = new AuditingMetrics(_meterFactory, Channel.CreateUnbounded<AuditingBatch>());
+        _metrics = new AuditingMetrics(_meterFactory);
+
+        // SQLite in-memory with a shared connection — real isolated audit store.
+        _connection = new SqliteConnection("DataSource=:memory:");
+        _connection.Open();
+        _auditDbOptions = new DbContextOptionsBuilder<AuditingDbContext>()
+            .UseSqlite(_connection)
+            .Options;
+        using (AuditingDbContext ctx = new(_auditDbOptions, GranitDesignTime.CurrentTenant))
+        {
+            ctx.Database.EnsureCreated();
+        }
 
         _dbContext = CreateInMemoryDbContext();
     }
@@ -63,6 +84,7 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
     public void Dispose()
     {
         _dbContext.Dispose();
+        _connection.Dispose();
         (_meterFactory as IDisposable)?.Dispose();
     }
 
@@ -78,16 +100,13 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TestEntity { Id = 1, Name = "New" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges.Count == 1 &&
-                b.EntityChanges[0].ChangeType == AuditChangeType.Created &&
-                b.EntityChanges[0].EntityType == "TestEntity"),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.Count.ShouldBe(1);
+        entry.EntityChanges.First().ChangeType.ShouldBe(AuditChangeType.Created);
+        entry.EntityChanges.First().EntityType.ShouldBe("TestEntity");
     }
 
     [Fact]
@@ -102,15 +121,11 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Remove(entity);
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges.Count == 1 &&
-                b.EntityChanges[0].ChangeType == AuditChangeType.Deleted),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.ShouldHaveSingleItem().ChangeType.ShouldBe(AuditChangeType.Deleted);
     }
 
     [Fact]
@@ -125,15 +140,11 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         entity.Name = "Updated";
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges.Count == 1 &&
-                b.EntityChanges[0].ChangeType == AuditChangeType.Modified),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.ShouldHaveSingleItem().ChangeType.ShouldBe(AuditChangeType.Modified);
     }
 
     [Fact]
@@ -148,13 +159,10 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         // Entity is now Unchanged — no modifications
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
-        // Assert — no batch should be published
-        await _publisher.DidNotReceive().PublishAsync(
-            Arg.Any<AuditingBatch>(),
-            Arg.Any<CancellationToken>());
+        // Assert — nothing should be persisted
+        (await GetPersistedEntriesAsync()).ShouldBeEmpty();
     }
 
     [Fact]
@@ -165,13 +173,10 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new IgnoredEntity { Id = 1, Secret = "hidden" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.DidNotReceive().PublishAsync(
-            Arg.Any<AuditingBatch>(),
-            Arg.Any<CancellationToken>());
+        (await GetPersistedEntriesAsync()).ShouldBeEmpty();
     }
 
     [Fact]
@@ -186,19 +191,15 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         entity.IsDeleted = true;
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges.Count == 1 &&
-                b.EntityChanges[0].ChangeType == AuditChangeType.SoftDeleted),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.ShouldHaveSingleItem().ChangeType.ShouldBe(AuditChangeType.SoftDeleted);
     }
 
     // -------------------------------------------------------------------------
-    // Capture — batch metadata
+    // Capture — entry metadata
     // -------------------------------------------------------------------------
 
     [Fact]
@@ -209,15 +210,12 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TestEntity { Id = 1, Name = "New" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.UserId == "test-user" &&
-                b.UserName == "Test User"),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.UserId.ShouldBe("test-user");
+        entry.UserName.ShouldBe("Test User");
     }
 
     [Fact]
@@ -229,13 +227,11 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TestEntity { Id = 1, Name = "New" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b => b.UserId == "system"),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.UserId.ShouldBe("system");
     }
 
     [Fact]
@@ -248,13 +244,11 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TestEntity { Id = 1, Name = "New" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b => b.Timestamp == fixedTime),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.Timestamp.ShouldBe(fixedTime);
     }
 
     [Fact]
@@ -269,13 +263,11 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TestEntity { Id = 1, Name = "New" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b => b.TenantId == tenantId),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -288,13 +280,11 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TestEntity { Id = 1, Name = "New" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b => b.TenantId == null),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -305,12 +295,35 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TestEntity { Id = 1, Name = "New" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b => b.Category == AuditCategory.DataMutation),
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.Category.ShouldBe(AuditCategory.DataMutation);
+    }
+
+    // -------------------------------------------------------------------------
+    // OnSavedAsync — integration event dispatch
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task OnSavedAsync_StandaloneMode_DispatchesAuditEntryPersistedEto()
+    {
+        // Arrange
+        ChangeTrackingCaptureService service = CreateService();
+        _dbContext.Add(new TestEntity { Id = 1, Name = "New" });
+
+        // Act
+        await CaptureAndCompleteAsync(service, _dbContext);
+
+        // Assert
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        await _eventDispatcher.Received(1).DispatchAsync(
+            Arg.Is<IReadOnlyList<IIntegrationEvent>>(events =>
+                events.Count == 1 &&
+                events[0] is AuditEntryPersistedEto &&
+                ((AuditEntryPersistedEto)events[0]).Id == entry.Id &&
+                ((AuditEntryPersistedEto)events[0]).EntityChangeCount == 1),
             Arg.Any<CancellationToken>());
     }
 
@@ -331,14 +344,11 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         entity.Name = "Updated";
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Count > 0),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.Count.ShouldBeGreaterThan(0);
     }
 
     [Fact]
@@ -354,14 +364,11 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         entity.Name = "Updated";
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Count == 0),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.ShouldBeEmpty();
     }
 
     [Fact]
@@ -373,17 +380,14 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TestEntity { Id = 1, Name = "Brand New" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Any(p =>
-                    p.PropertyName == "Name" &&
-                    p.OriginalValue == null &&
-                    p.NewValue == "Brand New")),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.ShouldContain(p =>
+            p.PropertyName == "Name" &&
+            p.OriginalValue == null &&
+            p.NewValue == "Brand New");
     }
 
     [Fact]
@@ -399,17 +403,14 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Remove(entity);
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Any(p =>
-                    p.PropertyName == "Name" &&
-                    p.OriginalValue == "ToDelete" &&
-                    p.NewValue == null)),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.ShouldContain(p =>
+            p.PropertyName == "Name" &&
+            p.OriginalValue == "ToDelete" &&
+            p.NewValue == null);
     }
 
     [Fact]
@@ -426,15 +427,12 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         // Description stays the same
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Any(p => p.PropertyName == "Name") &&
-                !b.EntityChanges[0].PropertyChanges.Any(p => p.PropertyName == "Description")),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.ShouldContain(p => p.PropertyName == "Name");
+        entry.EntityChanges.First().PropertyChanges.ShouldNotContain(p => p.PropertyName == "Description");
     }
 
     // -------------------------------------------------------------------------
@@ -450,15 +448,12 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new SensitiveEntity { Id = 1, Email = "secret@example.com" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Any(p =>
-                    p.PropertyName == "Email" && p.NewValue == "***")),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.ShouldContain(p =>
+            p.PropertyName == "Email" && p.NewValue == "***");
     }
 
     [Fact]
@@ -470,15 +465,12 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new SensitiveEntity { Id = 1, Password = "super-secret" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Any(p =>
-                    p.PropertyName == "Password" && p.NewValue == null)),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.ShouldContain(p =>
+            p.PropertyName == "Password" && p.NewValue == null);
     }
 
     [Fact]
@@ -490,17 +482,14 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new SensitiveEntity { Id = 1, ExternalId = "ext-123" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Any(p =>
-                    p.PropertyName == "ExternalId" &&
-                    p.NewValue != null &&
-                    p.NewValue.StartsWith("sha256:", StringComparison.Ordinal))),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.ShouldContain(p =>
+            p.PropertyName == "ExternalId" &&
+            p.NewValue != null &&
+            p.NewValue.StartsWith("sha256:", StringComparison.Ordinal));
     }
 
     // -------------------------------------------------------------------------
@@ -516,15 +505,12 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new PropertyIgnoredEntity { Id = 1, Name = "Visible", InternalNotes = "Hidden" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Any(p => p.PropertyName == "Name") &&
-                !b.EntityChanges[0].PropertyChanges.Any(p => p.PropertyName == "InternalNotes")),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.ShouldContain(p => p.PropertyName == "Name");
+        entry.EntityChanges.First().PropertyChanges.ShouldNotContain(p => p.PropertyName == "InternalNotes");
     }
 
     [Fact]
@@ -535,15 +521,11 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new PropertyIgnoredEntity { Id = 1, Name = "Visible", InternalNotes = "Hidden" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert — entity is captured (only class-level [AuditIgnore] skips entirely)
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges.Count == 1 &&
-                b.EntityChanges[0].EntityType == "PropertyIgnoredEntity"),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.ShouldHaveSingleItem().EntityType.ShouldBe("PropertyIgnoredEntity");
     }
 
     [Fact]
@@ -560,15 +542,12 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         entity.InternalNotes = "Note2";
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert — Name change is captured, InternalNotes is excluded
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Any(p => p.PropertyName == "Name") &&
-                !b.EntityChanges[0].PropertyChanges.Any(p => p.PropertyName == "InternalNotes")),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.ShouldContain(p => p.PropertyName == "Name");
+        entry.EntityChanges.First().PropertyChanges.ShouldNotContain(p => p.PropertyName == "InternalNotes");
     }
 
     // -------------------------------------------------------------------------
@@ -584,20 +563,18 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         ChangeTrackingCaptureService service = CreateService();
 
         _dbContext.Add(new PropertyIgnoredEntity { Id = 1, Name = "First", InternalNotes = "Secret1" });
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Second capture with a fresh DbContext entry
         await using DbContext secondContext = CreateInMemoryDbContext();
         secondContext.Add(new PropertyIgnoredEntity { Id = 2, Name = "Second", InternalNotes = "Secret2" });
-        service.Capture(secondContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, secondContext);
 
         // Assert — both captures should exclude InternalNotes
-        await _publisher.Received(2).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                !b.EntityChanges[0].PropertyChanges.Any(p => p.PropertyName == "InternalNotes")),
-            Arg.Any<CancellationToken>());
+        List<AuditEntry> entries = await GetPersistedEntriesAsync();
+        entries.Count.ShouldBe(2);
+        entries.ShouldAllBe(e =>
+            !e.EntityChanges.First().PropertyChanges.Any(p => p.PropertyName == "InternalNotes"));
     }
 
     // -------------------------------------------------------------------------
@@ -613,15 +590,12 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TestEntity { Id = 1, Name = "HelloWorld" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Any(p =>
-                    p.PropertyName == "Name" && p.NewValue == "HelloWorld")),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.ShouldContain(p =>
+            p.PropertyName == "Name" && p.NewValue == "HelloWorld");
     }
 
     [Fact]
@@ -634,15 +608,12 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TypedEntity { Id = 1, GuidProp = guidValue });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Any(p =>
-                    p.PropertyName == "GuidProp" && p.NewValue == guidValue.ToString())),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.ShouldContain(p =>
+            p.PropertyName == "GuidProp" && p.NewValue == guidValue.ToString());
     }
 
     [Fact]
@@ -654,15 +625,12 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TypedEntity { Id = 1, Activated = true });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Any(p =>
-                    p.PropertyName == "Activated" && p.NewValue == "True")),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.ShouldContain(p =>
+            p.PropertyName == "Activated" && p.NewValue == "True");
     }
 
     [Fact]
@@ -674,15 +642,12 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TypedEntity { Id = 1, IntProp = 42 });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].PropertyChanges.Any(p =>
-                    p.PropertyName == "IntProp" && p.NewValue == "42")),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().PropertyChanges.ShouldContain(p =>
+            p.PropertyName == "IntProp" && p.NewValue == "42");
     }
 
     // -------------------------------------------------------------------------
@@ -697,14 +662,11 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TestEntity { Id = 42, Name = "WithId" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b =>
-                b.EntityChanges[0].EntityId == "42"),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.First().EntityId.ShouldBe("42");
     }
 
     // -------------------------------------------------------------------------
@@ -720,78 +682,139 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _dbContext.Add(new TestEntity { Id = 2, Name = "Second" });
 
         // Act
-        service.Capture(_dbContext);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await CaptureAndCompleteAsync(service, _dbContext);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Is<AuditingBatch>(b => b.EntityChanges.Count == 2),
-            Arg.Any<CancellationToken>());
+        AuditEntry entry = (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
+        entry.EntityChanges.Count.ShouldBe(2);
     }
 
     // -------------------------------------------------------------------------
-    // PublishAsync — idempotency
+    // OnSavedAsync — idempotency
     // -------------------------------------------------------------------------
 
     [Fact]
-    public async Task PublishAsync_WithNothingCaptured_DoesNotPublish()
+    public async Task OnSavedAsync_WithNothingCaptured_DoesNotPersist()
     {
         // Arrange
         ChangeTrackingCaptureService service = CreateService();
 
-        // Act — no Capture call
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        // Act — no CaptureAsync call
+        await service.OnSavedAsync(_dbContext, TestContext.Current.CancellationToken);
 
         // Assert
-        await _publisher.DidNotReceive().PublishAsync(
-            Arg.Any<AuditingBatch>(),
+        (await GetPersistedEntriesAsync()).ShouldBeEmpty();
+        await _eventDispatcher.DidNotReceive().DispatchAsync(
+            Arg.Any<IReadOnlyList<IIntegrationEvent>>(),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task PublishAsync_CalledTwice_OnlyPublishesOnce()
+    public async Task OnSavedAsync_CalledTwice_OnlyPersistsOnce()
     {
         // Arrange
         ChangeTrackingCaptureService service = CreateService();
         _dbContext.Add(new TestEntity { Id = 1, Name = "Once" });
-        service.Capture(_dbContext);
+        await service.CaptureAsync(_dbContext, TestContext.Current.CancellationToken);
 
         // Act
-        await service.PublishAsync(TestContext.Current.CancellationToken);
-        await service.PublishAsync(TestContext.Current.CancellationToken);
+        await service.OnSavedAsync(_dbContext, TestContext.Current.CancellationToken);
+        await service.OnSavedAsync(_dbContext, TestContext.Current.CancellationToken);
 
         // Assert
-        await _publisher.Received(1).PublishAsync(
-            Arg.Any<AuditingBatch>(),
-            Arg.Any<CancellationToken>());
+        (await GetPersistedEntriesAsync()).ShouldHaveSingleItem();
     }
 
     // -------------------------------------------------------------------------
-    // Capture — null context guard
+    // OnSaveFailed — staged state is dropped
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void Capture_NullContext_ThrowsArgumentNullException()
+    public async Task OnSaveFailed_DropsStagedEntry()
+    {
+        // Arrange
+        ChangeTrackingCaptureService service = CreateService();
+        _dbContext.Add(new TestEntity { Id = 1, Name = "Doomed" });
+        await service.CaptureAsync(_dbContext, TestContext.Current.CancellationToken);
+
+        // Act — host save failed, then a subsequent completion must not persist
+        service.OnSaveFailed(_dbContext);
+        await service.OnSavedAsync(_dbContext, TestContext.Current.CancellationToken);
+
+        // Assert
+        (await GetPersistedEntriesAsync()).ShouldBeEmpty();
+    }
+
+    // -------------------------------------------------------------------------
+    // Null context guards
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task CaptureAsync_NullContext_ThrowsArgumentNullException()
     {
         ChangeTrackingCaptureService service = CreateService();
 
-        Should.Throw<ArgumentNullException>(() => service.Capture(null!));
+        await Should.ThrowAsync<ArgumentNullException>(
+            async () => await service.CaptureAsync(null!, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task OnSavedAsync_NullContext_ThrowsArgumentNullException()
+    {
+        ChangeTrackingCaptureService service = CreateService();
+
+        await Should.ThrowAsync<ArgumentNullException>(
+            async () => await service.OnSavedAsync(null!, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public void OnSaveFailed_NullContext_ThrowsArgumentNullException()
+    {
+        ChangeTrackingCaptureService service = CreateService();
+
+        Should.Throw<ArgumentNullException>(() => service.OnSaveFailed(null!));
     }
 
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 
-    private ChangeTrackingCaptureService CreateService() =>
-        new(
+    private ChangeTrackingCaptureService CreateService()
+    {
+        AuditPersistencePipeline pipeline = new(
+            new TestAuditDbContextFactory(_auditDbOptions),
+            _eventDispatcher,
+            _guidGenerator,
+            _metrics,
+            NullLogger<AuditPersistencePipeline>.Instance);
+
+        return new ChangeTrackingCaptureService(
             _clock,
             _currentUserService,
             _currentTenant,
-            _publisher,
+            pipeline,
+            _guidGenerator,
             Microsoft.Extensions.Options.Options.Create(_options),
             _metrics,
             httpContextAccessor: null,
             NullLogger<ChangeTrackingCaptureService>.Instance);
+    }
+
+    private static async Task CaptureAndCompleteAsync(ChangeTrackingCaptureService service, DbContext context)
+    {
+        await service.CaptureAsync(context, TestContext.Current.CancellationToken);
+        await service.OnSavedAsync(context, TestContext.Current.CancellationToken);
+    }
+
+    private async Task<List<AuditEntry>> GetPersistedEntriesAsync()
+    {
+        await using AuditingDbContext ctx = new(_auditDbOptions, GranitDesignTime.CurrentTenant);
+        return await ctx.AuditEntries
+            .IgnoreQueryFilters()
+            .Include(e => e.EntityChanges)
+            .ThenInclude(c => c.PropertyChanges)
+            .ToListAsync(TestContext.Current.CancellationToken);
+    }
 
     private static TestDbContext CreateInMemoryDbContext()
     {
@@ -799,6 +822,12 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
         return new TestDbContext(options);
+    }
+
+    private sealed class TestAuditDbContextFactory(DbContextOptions<AuditingDbContext> options)
+        : IDbContextFactory<AuditingDbContext>
+    {
+        public AuditingDbContext CreateDbContext() => new(options, GranitDesignTime.CurrentTenant);
     }
 
     private sealed class TestMeterFactory : IMeterFactory

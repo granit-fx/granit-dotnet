@@ -59,10 +59,12 @@ public static class DbContextOptionsBuilderExtensions
         // since this is by design (modular architecture with isolated persistence).
         options.ConfigureWarnings(w => w.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning));
 
-        // Bridge the EF Core internal SP to the application SP so interceptors that
-        // resolve scoped services at SaveChanges time (e.g. AuditingChangeTrackingInterceptor
-        // → ChangeTrackingCaptureService) can reach them via
-        // ((IInfrastructure<IServiceProvider>)context).Instance.GetService<T>().
+        // Expose the application SP to interceptors that resolve scoped services at
+        // SaveChanges time (e.g. AuditingChangeTrackingInterceptor →
+        // ChangeTrackingCaptureService). EF's internal provider never resolves
+        // application services directly — interceptors must walk
+        // CoreOptionsExtension.ApplicationServiceProvider (the chain EF's own
+        // context.GetService<T>() uses), and this call is what populates it.
         // EF Core's own AddDbContextFactory wires this automatically; the Granit
         // custom factories (SharedDatabase / TenantPerSchema / TenantPerDatabase)
         // build options manually, so without this call the lookup returns null and

@@ -1,3 +1,4 @@
+using Granit.Auditing.Domain;
 using Granit.Auditing.Options;
 using Microsoft.Extensions.Options;
 using Shouldly;
@@ -20,55 +21,74 @@ public sealed class AuditingOptionsValidatorTests
     }
 
     [Theory]
-    [InlineData(0)]
-    [InlineData(-1)]
-    public void Validate_NegativeOrZeroConfigurationChangeRetention_Fails(double days)
+    [InlineData(AuditCategory.ConfigurationChange, 0)]
+    [InlineData(AuditCategory.ConfigurationChange, -1)]
+    [InlineData(AuditCategory.DataMutation, 0)]
+    [InlineData(AuditCategory.DataMutation, -1)]
+    [InlineData(AuditCategory.DataAccess, 0)]
+    [InlineData(AuditCategory.DataAccess, -1)]
+    [InlineData(AuditCategory.AccessDenied, 0)]
+    [InlineData(AuditCategory.AccessDenied, -1)]
+    [InlineData(AuditCategory.PrivilegedAccess, 0)]
+    [InlineData(AuditCategory.PrivilegedAccess, -1)]
+    public void Validate_NegativeOrZeroRetention_Fails(AuditCategory category, double days)
     {
-        AuditingOptions options = new() { ConfigurationChangeRetention = TimeSpan.FromDays(days) };
+        AuditingOptions options = new();
+        options.Retention[category] = TimeSpan.FromDays(days);
 
         ValidateOptionsResult result = _validator.Validate(null, options);
 
         result.Failed.ShouldBeTrue();
-        result.FailureMessage.ShouldContain(nameof(AuditingOptions.ConfigurationChangeRetention));
+        result.FailureMessage.ShouldContain(category.ToString());
+    }
+
+    [Theory]
+    [InlineData(AuditCategory.ConfigurationChange)]
+    [InlineData(AuditCategory.DataMutation)]
+    [InlineData(AuditCategory.DataAccess)]
+    [InlineData(AuditCategory.AccessDenied)]
+    [InlineData(AuditCategory.PrivilegedAccess)]
+    public void Validate_RetentionBelowMinimumRetentionFloor_Fails(AuditCategory category)
+    {
+        AuditingOptions options = new();
+        options.Retention[category] = options.MinimumRetention - TimeSpan.FromDays(1);
+
+        ValidateOptionsResult result = _validator.Validate(null, options);
+
+        result.Failed.ShouldBeTrue();
+        result.FailureMessage.ShouldContain(category.ToString());
+        result.FailureMessage.ShouldContain(nameof(AuditingOptions.MinimumRetention));
+    }
+
+    [Fact]
+    public void Validate_LoweredMinimumRetention_AllowsShorterCategoryRetention()
+    {
+        AuditingOptions options = new()
+        {
+            MinimumRetention = TimeSpan.FromDays(30),
+        };
+        options.Retention[AuditCategory.DataAccess] = TimeSpan.FromDays(90);
+
+        ValidateOptionsResult result = _validator.Validate(null, options);
+
+        result.Succeeded.ShouldBeTrue();
     }
 
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
-    public void Validate_NegativeOrZeroDataMutationRetention_Fails(double days)
+    [InlineData(0.5)]
+    public void Validate_MinimumRetentionBelowOneDay_Fails(double days)
     {
-        AuditingOptions options = new() { DataMutationRetention = TimeSpan.FromDays(days) };
+        AuditingOptions options = new()
+        {
+            MinimumRetention = TimeSpan.FromDays(days),
+        };
 
         ValidateOptionsResult result = _validator.Validate(null, options);
 
         result.Failed.ShouldBeTrue();
-        result.FailureMessage.ShouldContain(nameof(AuditingOptions.DataMutationRetention));
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-1)]
-    public void Validate_NegativeOrZeroDataAccessRetention_Fails(double days)
-    {
-        AuditingOptions options = new() { DataAccessRetention = TimeSpan.FromDays(days) };
-
-        ValidateOptionsResult result = _validator.Validate(null, options);
-
-        result.Failed.ShouldBeTrue();
-        result.FailureMessage.ShouldContain(nameof(AuditingOptions.DataAccessRetention));
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-1)]
-    public void Validate_NegativeOrZeroAccessDeniedRetention_Fails(double days)
-    {
-        AuditingOptions options = new() { AccessDeniedRetention = TimeSpan.FromDays(days) };
-
-        ValidateOptionsResult result = _validator.Validate(null, options);
-
-        result.Failed.ShouldBeTrue();
-        result.FailureMessage.ShouldContain(nameof(AuditingOptions.AccessDeniedRetention));
+        result.FailureMessage.ShouldContain(nameof(AuditingOptions.MinimumRetention));
     }
 
     [Theory]
@@ -100,29 +120,28 @@ public sealed class AuditingOptionsValidatorTests
     [Fact]
     public void Validate_MultipleInvalidValues_ReportsAllFailures()
     {
-        AuditingOptions options = new()
-        {
-            ConfigurationChangeRetention = TimeSpan.Zero,
-            DataMutationRetention = TimeSpan.FromDays(-1),
-        };
+        AuditingOptions options = new();
+        options.Retention[AuditCategory.ConfigurationChange] = TimeSpan.Zero;
+        options.Retention[AuditCategory.DataMutation] = TimeSpan.FromDays(-1);
 
         ValidateOptionsResult result = _validator.Validate(null, options);
 
         result.Failed.ShouldBeTrue();
-        result.FailureMessage.ShouldContain(nameof(AuditingOptions.ConfigurationChangeRetention));
-        result.FailureMessage.ShouldContain(nameof(AuditingOptions.DataMutationRetention));
+        result.FailureMessage.ShouldContain(nameof(AuditCategory.ConfigurationChange));
+        result.FailureMessage.ShouldContain(nameof(AuditCategory.DataMutation));
     }
 
     [Fact]
-    public void Validate_MinimumRetentionOneDay_Succeeds()
+    public void Validate_AllRetentionsAtLoweredMinimum_Succeeds()
     {
         AuditingOptions options = new()
         {
-            ConfigurationChangeRetention = TimeSpan.FromDays(1),
-            DataMutationRetention = TimeSpan.FromDays(1),
-            DataAccessRetention = TimeSpan.FromDays(1),
-            AccessDeniedRetention = TimeSpan.FromDays(1),
+            MinimumRetention = TimeSpan.FromDays(1),
         };
+        foreach (AuditCategory category in Enum.GetValues<AuditCategory>())
+        {
+            options.Retention[category] = TimeSpan.FromDays(1);
+        }
 
         ValidateOptionsResult result = _validator.Validate(null, options);
 
@@ -132,10 +151,8 @@ public sealed class AuditingOptionsValidatorTests
     [Fact]
     public void Validate_RetentionJustBelowMinimum_Fails()
     {
-        AuditingOptions options = new()
-        {
-            DataMutationRetention = TimeSpan.FromDays(1) - TimeSpan.FromTicks(1),
-        };
+        AuditingOptions options = new();
+        options.Retention[AuditCategory.DataMutation] = options.MinimumRetention - TimeSpan.FromTicks(1);
 
         ValidateOptionsResult result = _validator.Validate(null, options);
 

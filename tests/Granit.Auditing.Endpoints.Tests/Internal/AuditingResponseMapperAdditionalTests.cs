@@ -158,9 +158,9 @@ public sealed class AuditingResponseMapperAdditionalTests
 
         AuditEntryDetailResponse response = AuditingResponseMapper.ToDetailResponse(entry);
 
-        response.EntityChanges[0].ChangeType.ShouldBe("Created");
-        response.EntityChanges[1].ChangeType.ShouldBe("Modified");
-        response.EntityChanges[2].ChangeType.ShouldBe("Deleted");
-        response.EntityChanges[3].ChangeType.ShouldBe("SoftDeleted");
+        response.EntityChanges[0].ChangeType.ShouldBe(AuditChangeType.Created);
+        response.EntityChanges[1].ChangeType.ShouldBe(AuditChangeType.Modified);
+        response.EntityChanges[2].ChangeType.ShouldBe(AuditChangeType.Deleted);
+        response.EntityChanges[3].ChangeType.ShouldBe(AuditChangeType.SoftDeleted);
     }
 }

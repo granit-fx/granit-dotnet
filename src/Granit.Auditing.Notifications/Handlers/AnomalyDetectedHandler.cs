@@ -37,14 +37,14 @@ public class AnomalyDetectedHandler
     public static async Task HandleAsync(
         AuditEntryPersistedEto evt,
         INotificationPublisher publisher,
-        IOptions<AuditNotificationOptions> options,
+        IOptions<AuditingNotificationsOptions> options,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(evt);
         ArgumentNullException.ThrowIfNull(publisher);
         ArgumentNullException.ThrowIfNull(options);
 
-        AuditNotificationOptions configured = options.Value;
+        AuditingNotificationsOptions configured = options.Value;
         if (!configured.AlertableCategories.Contains(evt.Category))
         {
             return;

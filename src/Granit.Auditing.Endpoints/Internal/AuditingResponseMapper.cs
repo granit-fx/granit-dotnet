@@ -29,7 +29,7 @@ internal static class AuditingResponseMapper
             entry.Timestamp,
             entry.UserId,
             entry.UserName,
-            entry.Category.ToString(),
+            entry.Category,
             entry.IpAddress,
             entry.UserAgent,
             entry.TenantId,
@@ -40,7 +40,7 @@ internal static class AuditingResponseMapper
         new(
             change.EntityType,
             change.EntityId,
-            change.ChangeType.ToString(),
+            change.ChangeType,
             change.PropertyChanges.Select(ToPropertyChangeResponse).ToList());
 
     private static AuditPropertyChangeResponse ToPropertyChangeResponse(AuditPropertyChange change) =>

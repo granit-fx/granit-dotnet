@@ -20,7 +20,7 @@ namespace Granit.Auditing.Notifications;
 /// Operating model: the bridge subscribes to the firehose
 /// <see cref="Auditing.Events.AuditEntryPersistedEto"/> and filters down to a
 /// small, configurable set of <see cref="Auditing.Domain.AuditCategory"/> values
-/// (see <see cref="AuditNotificationOptions"/>). This keeps the auditing core free
+/// (see <see cref="AuditingNotificationsOptions"/>). This keeps the auditing core free
 /// of any "is this entry interesting?" policy — the policy lives in configuration
 /// where the SOC owns it.
 /// </remarks>
@@ -47,8 +47,8 @@ public sealed class GranitAuditingNotificationsModule : GranitModule
         // surfaces a misconfigured AlertableCategories list at boot rather than at
         // first event, which matters: a typo here means the SOC silently stops
         // receiving alerts.
-        context.Services.AddOptions<AuditNotificationOptions>()
-            .BindConfiguration(AuditNotificationOptions.SectionName)
+        context.Services.AddOptions<AuditingNotificationsOptions>()
+            .BindConfiguration(AuditingNotificationsOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

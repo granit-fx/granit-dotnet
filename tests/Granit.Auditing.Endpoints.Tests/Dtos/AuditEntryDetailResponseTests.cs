@@ -1,3 +1,4 @@
+using Granit.Auditing.Domain;
 using Granit.Auditing.Endpoints.Dtos;
 using Shouldly;
 using Xunit;
@@ -14,7 +15,7 @@ public sealed class AuditEntryDetailResponseTests
             DateTimeOffset.UtcNow,
             "user-1",
             null,
-            "DataMutation",
+            AuditCategory.DataMutation,
             null,
             null,
             null,

@@ -3,6 +3,10 @@
   "texts": {
     "AuditingEndpoints:Workspace.Item": "Journal d'audit",
     "AuditingEndpoints:Workspace.Section": "Audit",
+    "Granit:Auditing:Endpoints:CorrelationIdInvalid": "L'identifiant de corrélation doit contenir entre 1 et 256 caractères.",
+    "Granit:Auditing:Endpoints:EntryNotFound": "L'entrée du journal d'audit est introuvable.",
+    "Granit:Auditing:Endpoints:PathParamTooLong": "Les paramètres de chemin ne doivent pas dépasser 256 caractères.",
+    "Granit:Auditing:Endpoints:UserIdRequired": "Le paramètre de chemin userId ne doit pas être vide.",
     "Permission:Auditing.AuditEntries.Manage": "Gérer les entrées du journal d'audit (pseudonymisation, RGPD art. 17)",
     "Permission:Auditing.AuditEntries.Read": "Consulter les entrées du journal d'audit (piste d'audit ISO 27001)",
     "PermissionGroup:Auditing": "Journal d'audit"

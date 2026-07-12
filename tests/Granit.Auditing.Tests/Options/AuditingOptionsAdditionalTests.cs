@@ -25,12 +25,12 @@ public sealed class AuditingOptionsAdditionalTests
     }
 
     [Fact]
-    public void GetRetention_UnknownCategory_FallsBackToDataMutation()
+    public void GetRetention_UnknownCategory_FallsBackToIsoFloorDefault()
     {
         AuditingOptions options = new();
         TimeSpan retention = options.GetRetention((AuditCategory)999);
 
-        retention.ShouldBe(options.DataMutationRetention);
+        retention.ShouldBe(TimeSpan.FromDays(1095));
     }
 
     [Fact]
@@ -38,10 +38,13 @@ public sealed class AuditingOptionsAdditionalTests
     {
         AuditingOptions options = new()
         {
-            ConfigurationChangeRetention = TimeSpan.FromDays(100),
-            DataMutationRetention = TimeSpan.FromDays(200),
-            DataAccessRetention = TimeSpan.FromDays(30),
-            AccessDeniedRetention = TimeSpan.FromDays(400),
+            Retention =
+            {
+                [AuditCategory.ConfigurationChange] = TimeSpan.FromDays(100),
+                [AuditCategory.DataMutation] = TimeSpan.FromDays(200),
+                [AuditCategory.DataAccess] = TimeSpan.FromDays(30),
+                [AuditCategory.AccessDenied] = TimeSpan.FromDays(400),
+            },
         };
 
         options.GetRetention(AuditCategory.ConfigurationChange).ShouldBe(TimeSpan.FromDays(100));

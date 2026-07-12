@@ -1,8 +1,12 @@
 {
   "culture": "pt",
   "texts": {
-    "AuditingEndpoints:Workspace.Item": "Audit log",
-    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "AuditingEndpoints:Workspace.Item": "Registo de auditoria",
+    "AuditingEndpoints:Workspace.Section": "Auditoria",
+    "Granit:Auditing:Endpoints:CorrelationIdInvalid": "O ID de correlação deve ter entre 1 e 256 caracteres.",
+    "Granit:Auditing:Endpoints:EntryNotFound": "A entrada do registo de auditoria não foi encontrada.",
+    "Granit:Auditing:Endpoints:PathParamTooLong": "Os parâmetros de caminho não devem exceder 256 caracteres.",
+    "Granit:Auditing:Endpoints:UserIdRequired": "O parâmetro de caminho userId não deve estar vazio.",
     "Permission:Auditing.AuditEntries.Manage": "Gerir entradas do registo de auditoria (pseudonimização, RGPD art. 17)",
     "Permission:Auditing.AuditEntries.Read": "Ver entradas do registo de auditoria (trilho de auditoria ISO 27001)",
     "PermissionGroup:Auditing": "Registo de auditoria"
