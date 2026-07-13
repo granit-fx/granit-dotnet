@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Notifications.MobilePush.Privacy</PackageId>
+    <Description>GDPR Art. 15 export and Art. 17 erasure for mobile push device tokens. Registers an IPrivacyDataProvider and a Wolverine deletion handler so push identifiers participate in the privacy saga.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Notifications.MobilePush.Privacy.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Notifications.MobilePush\Granit.Notifications.MobilePush.csproj" />
+    <ProjectReference Include="..\Granit.Privacy.BlobStorage\Granit.Privacy.BlobStorage.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -16,4 +16,11 @@ public interface IMobilePushTokenWriter
 
     /// <summary>Removes a device token owned by the specified user.</summary>
     Task RemoveAsync(string deviceToken, string userId, Guid? tenantId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Permanently deletes every device token owned by the user within a tenant scope
+    /// (GDPR Art. 17 bulk erasure — per-token <c>RemoveAsync</c> needs the plaintext token).
+    /// </summary>
+    /// <returns>The number of tokens physically deleted (ISO 27001 deletion evidence).</returns>
+    Task<int> EraseUserDataAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default);
 }

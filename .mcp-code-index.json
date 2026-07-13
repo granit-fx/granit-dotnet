@@ -1951,6 +1951,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Notifications.MobilePush.Privacy",
+      "deps": [
+        "Granit.Notifications.MobilePush",
+        "Granit.Privacy.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Notifications.Privacy",
       "deps": [
         "Granit.Notifications",
@@ -2046,6 +2054,14 @@
         "Granit.Notifications.EntityFrameworkCore",
         "Granit.Notifications.WebPush",
         "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Notifications.WebPush.Privacy",
+      "deps": [
+        "Granit.Notifications.WebPush",
+        "Granit.Privacy.BlobStorage"
       ],
       "framework": "net10.0"
     },
@@ -39347,6 +39363,12 @@
           "kind": "method",
           "signature": "RemoveAsync(string deviceToken, string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        },
+        {
+          "name": "EraseUserDataAsync",
+          "kind": "method",
+          "signature": "EraseUserDataAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
         }
       ]
     },
@@ -39401,6 +39423,122 @@
       "file": "src/Granit.Notifications.MobilePush/Options/MobilePushTokenHasherOptions.cs",
       "line": 8,
       "members": []
+    },
+    {
+      "name": "MobilePushPersonalDataDeletionHandler",
+      "fqn": "Granit.Notifications.MobilePush.Privacy.DataDeletion.MobilePushPersonalDataDeletionHandler",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush.Privacy",
+      "file": "src/Granit.Notifications.MobilePush.Privacy/DataDeletion/MobilePushPersonalDataDeletionHandler.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "Handle",
+          "kind": "method",
+          "signature": "Handle(PersonalDataDeletionRequestedEto @event, IMobilePushTokenWriter writer, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task<PersonalDataDeletedEto>"
+        }
+      ]
+    },
+    {
+      "name": "MobilePushExportFragment",
+      "fqn": "Granit.Notifications.MobilePush.Privacy.DataExport.MobilePushExportFragment",
+      "kind": "record",
+      "project": "Granit.Notifications.MobilePush.Privacy",
+      "file": "src/Granit.Notifications.MobilePush.Privacy/DataExport/MobilePushPrivacyDataProvider.cs",
+      "line": 83,
+      "members": []
+    },
+    {
+      "name": "MobilePushPersonalDataExportHandler",
+      "fqn": "Granit.Notifications.MobilePush.Privacy.DataExport.MobilePushPersonalDataExportHandler",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush.Privacy",
+      "file": "src/Granit.Notifications.MobilePush.Privacy/DataExport/MobilePushPersonalDataExportHandler.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PersonalDataRequestedEto request, MobilePushPrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "MobilePushPrivacyDataProvider",
+      "fqn": "Granit.Notifications.MobilePush.Privacy.DataExport.MobilePushPrivacyDataProvider",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush.Privacy",
+      "file": "src/Granit.Notifications.MobilePush.Privacy/DataExport/MobilePushPrivacyDataProvider.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "DisplayKey",
+          "kind": "property",
+          "signature": "string DisplayKey",
+          "returnType": "string"
+        },
+        {
+          "name": "FeatureName",
+          "kind": "property",
+          "signature": "string? FeatureName",
+          "returnType": "string?"
+        },
+        {
+          "name": "HasDataAsync",
+          "kind": "method",
+          "signature": "HasDataAsync(PrivacyExportContext context, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<bool>"
+        }
+      ]
+    },
+    {
+      "name": "MobilePushTokenFragment",
+      "fqn": "Granit.Notifications.MobilePush.Privacy.DataExport.MobilePushTokenFragment",
+      "kind": "record",
+      "project": "Granit.Notifications.MobilePush.Privacy",
+      "file": "src/Granit.Notifications.MobilePush.Privacy/DataExport/MobilePushPrivacyDataProvider.cs",
+      "line": 86,
+      "members": []
+    },
+    {
+      "name": "PrivacyBuilderMobilePushExtensions",
+      "fqn": "Granit.Notifications.MobilePush.Privacy.Extensions.PrivacyBuilderMobilePushExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush.Privacy",
+      "file": "src/Granit.Notifications.MobilePush.Privacy/Extensions/PrivacyBuilderMobilePushExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "AddGranitMobilePushPrivacyProvider",
+          "kind": "method",
+          "signature": "AddGranitMobilePushPrivacyProvider(this GranitPrivacyBuilder builder)",
+          "returnType": "GranitPrivacyBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsMobilePushPrivacyModule",
+      "fqn": "Granit.Notifications.MobilePush.Privacy.GranitNotificationsMobilePushPrivacyModule",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush.Privacy",
+      "file": "src/Granit.Notifications.MobilePush.Privacy/GranitNotificationsMobilePushPrivacyModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "NotificationChannels",
@@ -40554,6 +40692,12 @@
           "kind": "method",
           "signature": "RemoveSubscriptionAsync(string userId, string endpoint, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        },
+        {
+          "name": "EraseUserDataAsync",
+          "kind": "method",
+          "signature": "EraseUserDataAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
         }
       ]
     },
@@ -40582,6 +40726,122 @@
           "kind": "property",
           "signature": "string VapidPrivateKey",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "WebPushPersonalDataDeletionHandler",
+      "fqn": "Granit.Notifications.WebPush.Privacy.DataDeletion.WebPushPersonalDataDeletionHandler",
+      "kind": "class",
+      "project": "Granit.Notifications.WebPush.Privacy",
+      "file": "src/Granit.Notifications.WebPush.Privacy/DataDeletion/WebPushPersonalDataDeletionHandler.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "Handle",
+          "kind": "method",
+          "signature": "Handle(PersonalDataDeletionRequestedEto @event, IWebPushSubscriptionWriter writer, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task<PersonalDataDeletedEto>"
+        }
+      ]
+    },
+    {
+      "name": "WebPushExportFragment",
+      "fqn": "Granit.Notifications.WebPush.Privacy.DataExport.WebPushExportFragment",
+      "kind": "record",
+      "project": "Granit.Notifications.WebPush.Privacy",
+      "file": "src/Granit.Notifications.WebPush.Privacy/DataExport/WebPushPrivacyDataProvider.cs",
+      "line": 87,
+      "members": []
+    },
+    {
+      "name": "WebPushPersonalDataExportHandler",
+      "fqn": "Granit.Notifications.WebPush.Privacy.DataExport.WebPushPersonalDataExportHandler",
+      "kind": "class",
+      "project": "Granit.Notifications.WebPush.Privacy",
+      "file": "src/Granit.Notifications.WebPush.Privacy/DataExport/WebPushPersonalDataExportHandler.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PersonalDataRequestedEto request, WebPushPrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "WebPushPrivacyDataProvider",
+      "fqn": "Granit.Notifications.WebPush.Privacy.DataExport.WebPushPrivacyDataProvider",
+      "kind": "class",
+      "project": "Granit.Notifications.WebPush.Privacy",
+      "file": "src/Granit.Notifications.WebPush.Privacy/DataExport/WebPushPrivacyDataProvider.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "DisplayKey",
+          "kind": "property",
+          "signature": "string DisplayKey",
+          "returnType": "string"
+        },
+        {
+          "name": "FeatureName",
+          "kind": "property",
+          "signature": "string? FeatureName",
+          "returnType": "string?"
+        },
+        {
+          "name": "HasDataAsync",
+          "kind": "method",
+          "signature": "HasDataAsync(PrivacyExportContext context, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<bool>"
+        }
+      ]
+    },
+    {
+      "name": "WebPushSubscriptionFragment",
+      "fqn": "Granit.Notifications.WebPush.Privacy.DataExport.WebPushSubscriptionFragment",
+      "kind": "record",
+      "project": "Granit.Notifications.WebPush.Privacy",
+      "file": "src/Granit.Notifications.WebPush.Privacy/DataExport/WebPushPrivacyDataProvider.cs",
+      "line": 90,
+      "members": []
+    },
+    {
+      "name": "PrivacyBuilderWebPushExtensions",
+      "fqn": "Granit.Notifications.WebPush.Privacy.Extensions.PrivacyBuilderWebPushExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.WebPush.Privacy",
+      "file": "src/Granit.Notifications.WebPush.Privacy/Extensions/PrivacyBuilderWebPushExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "AddGranitWebPushPrivacyProvider",
+          "kind": "method",
+          "signature": "AddGranitWebPushPrivacyProvider(this GranitPrivacyBuilder builder)",
+          "returnType": "GranitPrivacyBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsWebPushPrivacyModule",
+      "fqn": "Granit.Notifications.WebPush.Privacy.GranitNotificationsWebPushPrivacyModule",
+      "kind": "class",
+      "project": "Granit.Notifications.WebPush.Privacy",
+      "file": "src/Granit.Notifications.WebPush.Privacy/GranitNotificationsWebPushPrivacyModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },

@@ -73,4 +73,13 @@ internal sealed class EfCoreMobilePushTokenStore(
                 .ConfigureAwait(false),
             cancellationToken).ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    public Task<int> EraseUserDataAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
+            await db.MobilePushTokens
+                .Where(t => t.UserId == userId && t.TenantId == tenantId)
+                .ExecuteDeleteAsync(cancellationToken)
+                .ConfigureAwait(false),
+            cancellationToken);
 }

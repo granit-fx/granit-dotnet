@@ -69,4 +69,13 @@ internal sealed class EfCoreWebPushSubscriptionStore(
         P256dh = s.P256dh,
         Auth = s.Auth,
     };
+
+    /// <inheritdoc />
+    public Task<int> EraseUserDataAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
+            await db.WebPushSubscriptions
+                .Where(s => s.UserId == userId && s.TenantId == tenantId)
+                .ExecuteDeleteAsync(cancellationToken)
+                .ConfigureAwait(false),
+            cancellationToken);
 }
