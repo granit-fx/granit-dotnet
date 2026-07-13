@@ -45,10 +45,19 @@ internal sealed class EfDeletionRequestTracker<TContext>(
     public async Task<IReadOnlyList<DeletionRequestStatus>> GetExpiredDeferredAsync(
         DateTimeOffset now, CancellationToken cancellationToken = default)
     {
-        IReadOnlyList<DeletionRequestEntity> rows = await ListAsync(
-            Spec.For<DeletionRequestEntity>()
+        // System sweep: the daily deadline-enforcer runs with no ambient tenant, so the
+        // implicit tenant filter would fail CLOSED and return only the host partition
+        // (TenantId == null), silently skipping every real tenant's expired deferred
+        // deletion — a GDPR Art. 17 gap. This is a legitimate all-tenant read, so route
+        // through QueryAcrossTenants (records granit.persistence.cross_tenant_query with
+        // origin=explicit for SOC observability). Each row carries its own TenantId, which
+        // the enforcement service re-anchors before publishing per-tenant events.
+        IReadOnlyList<DeletionRequestEntity> rows = await ReadAsync(
+            db => QueryAcrossTenants(db)
+                .AsNoTracking()
                 .Where(e => e.State == DeletionRequestState.Deferred && e.ScheduledDeletionAt <= now)
-                .OrderBy(e => e.ScheduledDeletionAt),
+                .OrderBy(e => e.ScheduledDeletionAt)
+                .ToListAsync(cancellationToken),
             cancellationToken).ConfigureAwait(false);
 
         return [.. rows.Select(Project)];
