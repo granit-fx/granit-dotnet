@@ -7,7 +7,7 @@ using Granit.Browsing.PuppeteerSharp.Options;
 using Granit.Browsing.Sandbox;
 using Granit.Events;
 using Granit.Guids;
-using Granit.Http.Security;
+using Granit.Http.UrlSafety;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

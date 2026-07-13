@@ -181,7 +181,7 @@
     <ProjectReference Include="..\..\src\Granit.Http.RateLimiting\Granit.Http.RateLimiting.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Resilience\Granit.Http.Resilience.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ResponseCompression\Granit.Http.ResponseCompression.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Http.Security\Granit.Http.Security.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.UrlSafety\Granit.Http.UrlSafety.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.SecurityHeaders\Granit.Http.SecurityHeaders.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.SecurityHeaders.Abstractions\Granit.Http.SecurityHeaders.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.SecurityHeaders.Endpoints\Granit.Http.SecurityHeaders.Endpoints.csproj" />

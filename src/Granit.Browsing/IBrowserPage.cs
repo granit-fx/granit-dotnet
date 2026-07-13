@@ -26,7 +26,7 @@ public interface IBrowserPage : IAsyncDisposable
 
     /// <summary>Navigates the page to <paramref name="url"/>.</summary>
     /// <remarks>
-    /// Providers validate the URL through <c>Granit.Http.Security.IUrlSafetyValidator</c>
+    /// Providers validate the URL through <c>Granit.Http.UrlSafety.IUrlSafetyValidator</c>
     /// before issuing the engine request. A blocked URL surfaces as
     /// <see cref="Exceptions.SandboxViolationException"/>.
     /// </remarks>

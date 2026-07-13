@@ -47,7 +47,7 @@
     <Project Path="src/Granit.Http.RateLimiting/Granit.Http.RateLimiting.csproj" />
     <Project Path="src/Granit.Http.Resilience/Granit.Http.Resilience.csproj" />
     <Project Path="src/Granit.Http.ResponseCompression/Granit.Http.ResponseCompression.csproj" />
-    <Project Path="src/Granit.Http.Security/Granit.Http.Security.csproj" />
+    <Project Path="src/Granit.Http.UrlSafety/Granit.Http.UrlSafety.csproj" />
     <Project Path="src/Granit.Http.SecurityHeaders.Abstractions/Granit.Http.SecurityHeaders.Abstractions.csproj" />
     <Project Path="src/Granit.Http.SecurityHeaders.Endpoints/Granit.Http.SecurityHeaders.Endpoints.csproj" />
     <Project Path="src/Granit.Http.SecurityHeaders/Granit.Http.SecurityHeaders.csproj" />
@@ -424,7 +424,7 @@
     <Project Path="tests/Granit.Http.RateLimiting.Tests/Granit.Http.RateLimiting.Tests.csproj" />
     <Project Path="tests/Granit.Http.Resilience.Tests/Granit.Http.Resilience.Tests.csproj" />
     <Project Path="tests/Granit.Http.ResponseCompression.Tests/Granit.Http.ResponseCompression.Tests.csproj" />
-    <Project Path="tests/Granit.Http.Security.Tests/Granit.Http.Security.Tests.csproj" />
+    <Project Path="tests/Granit.Http.UrlSafety.Tests/Granit.Http.UrlSafety.Tests.csproj" />
     <Project Path="tests/Granit.Http.SecurityHeaders.Abstractions.Tests/Granit.Http.SecurityHeaders.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Http.SecurityHeaders.Endpoints.Tests/Granit.Http.SecurityHeaders.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Http.SecurityHeaders.Tests/Granit.Http.SecurityHeaders.Tests.csproj" />

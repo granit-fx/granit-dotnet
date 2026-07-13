@@ -26,7 +26,7 @@
     <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
-    <ProjectReference Include="..\Granit.Http.Security\Granit.Http.Security.csproj" />
+    <ProjectReference Include="..\Granit.Http.UrlSafety\Granit.Http.UrlSafety.csproj" />
     <ProjectReference Include="..\Granit.IO\Granit.IO.csproj" />
     <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />

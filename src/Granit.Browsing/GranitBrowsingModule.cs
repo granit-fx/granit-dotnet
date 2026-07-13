@@ -4,7 +4,7 @@ using Granit.Browsing.Pages;
 using Granit.Browsing.Sandbox;
 using Granit.Diagnostics;
 using Granit.Guids;
-using Granit.Http.Security;
+using Granit.Http.UrlSafety;
 using Granit.IO;
 using Granit.Modularity;
 using Granit.Timing;
@@ -29,7 +29,7 @@ namespace Granit.Browsing;
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitGuidsModule),
-    typeof(GranitHttpSecurityModule),
+    typeof(GranitHttpUrlSafetyModule),
     typeof(GranitIOModule),
     typeof(GranitTimingModule))]
 public sealed class GranitBrowsingModule : GranitModule

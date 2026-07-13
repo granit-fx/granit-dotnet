@@ -29,7 +29,7 @@ public static class HttpResilienceServiceCollectionExtensions
     /// <b>SSRF posture.</b> This pipeline does <i>not</i> validate outbound destinations:
     /// it will faithfully retry whatever <c>RequestUri</c> the caller supplies. When the
     /// request URI is influenced by untrusted input, compose this client with
-    /// <c>Granit.Http.Security</c>'s SSRF protections (allowlist resolver + private-network
+    /// <c>Granit.Http.UrlSafety</c>'s SSRF protections (allowlist resolver + private-network
     /// guard) so retries cannot amplify probes against internal infrastructure.
     /// </para>
     /// </remarks>

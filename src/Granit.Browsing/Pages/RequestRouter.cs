@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Granit.Browsing.Diagnostics;
 using Granit.Events;
-using Granit.Http.Security;
+using Granit.Http.UrlSafety;
 using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;

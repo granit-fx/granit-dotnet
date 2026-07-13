@@ -6,7 +6,7 @@ using Granit.Browsing.Internal;
 using Granit.Browsing.Pages;
 using Granit.Browsing.Pool;
 using Granit.Events;
-using Granit.Http.Security;
+using Granit.Http.UrlSafety;
 using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 using BrowsingNavigationOptions = Granit.Browsing.Options.NavigationOptions;

@@ -7,7 +7,7 @@ using Granit.Browsing.Pool;
 using Granit.Browsing.Sandbox;
 using Granit.Events;
 using Granit.Guids;
-using Granit.Http.Security;
+using Granit.Http.UrlSafety;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

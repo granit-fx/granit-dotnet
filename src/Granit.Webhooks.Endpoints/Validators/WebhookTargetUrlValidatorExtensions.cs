@@ -1,6 +1,6 @@
 using System.Net;
 using FluentValidation;
-using Granit.Http.Security;
+using Granit.Http.UrlSafety;
 using Granit.Validation.Extensions;
 
 namespace Granit.Webhooks.Endpoints.Validators;
@@ -13,7 +13,7 @@ namespace Granit.Webhooks.Endpoints.Validators;
 /// <remarks>
 /// IP-range, TLD, and metadata-endpoint classification is delegated to
 /// <see cref="PrivateNetworkClassifier"/> / <see cref="ReservedTldClassifier"/> in
-/// <c>Granit.Http.Security</c>. Webhook validation keeps a thin, sync-only wrapper here
+/// <c>Granit.Http.UrlSafety</c>. Webhook validation keeps a thin, sync-only wrapper here
 /// so FluentValidation rule chains stay synchronous; the full DNS-rebinding-resistant
 /// pipeline (<see cref="IUrlSafetyValidator"/>) is applied at delivery time by
 /// <c>WebhookSsrfConnectCallback</c>.
