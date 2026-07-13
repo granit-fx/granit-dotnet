@@ -364,6 +364,7 @@
         "tests/Granit.Privacy.Regulations.Tests",
         "tests/Granit.Privacy.Tests",
         "tests/Granit.Privacy.Vault.Tests",
+        "tests/Granit.Privacy.Wolverine.Tests",
         "tests/Granit.Users.Tests",
         "tests/Granit.Vault.Aws.Tests",
         "tests/Granit.Vault.Azure.Tests",

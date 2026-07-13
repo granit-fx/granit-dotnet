@@ -51,6 +51,7 @@
       "src/Granit.Privacy.Regulations.Cookies/Granit.Privacy.Regulations.Cookies.csproj",
       "src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj",
       "src/Granit.Privacy.Vault/Granit.Privacy.Vault.csproj",
+      "src/Granit.Privacy.Wolverine/Granit.Privacy.Wolverine.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
       "src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj",
@@ -88,7 +89,8 @@
       "tests/Granit.Privacy.Regulations.Cookies.Tests/Granit.Privacy.Regulations.Cookies.Tests.csproj",
       "tests/Granit.Privacy.Regulations.Tests/Granit.Privacy.Regulations.Tests.csproj",
       "tests/Granit.Privacy.Tests/Granit.Privacy.Tests.csproj",
-      "tests/Granit.Privacy.Vault.Tests/Granit.Privacy.Vault.Tests.csproj"
+      "tests/Granit.Privacy.Vault.Tests/Granit.Privacy.Vault.Tests.csproj",
+      "tests/Granit.Privacy.Wolverine.Tests/Granit.Privacy.Wolverine.Tests.csproj"
     ]
   }
 }

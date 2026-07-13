@@ -17,7 +17,7 @@ using Wolverine.Runtime;
 using Wolverine.Runtime.Handlers;
 using Xunit;
 
-namespace Granit.Privacy.Tests;
+namespace Granit.Privacy.Wolverine.Tests;
 
 // Regression coverage for the Wolverine SagaChain `*Async` suffix bug.
 //

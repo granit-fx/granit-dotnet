@@ -28,8 +28,13 @@ public sealed class WolverineCouplingTests
         "Granit.Presence.Wolverine",
         "Granit.Privacy.BackgroundJobs.Wolverine",
         "Granit.Scheduling.BackgroundJobs",
-        // Granit.Privacy defines Wolverine Sagas for scatter-gather export/deletion
+        // Granit.Privacy's *Eto contracts carry [SagaIdentity] (correlation member RequestId
+        // matches no Wolverine naming convention) and are published by a dozen provider
+        // packages, so the attribute reference cannot move. The sagas/handlers themselves
+        // live in Granit.Privacy.Wolverine.
         "Granit.Privacy",
+        // Hosts the export/deletion sagas + legal-document cache invalidation handler.
+        "Granit.Privacy.Wolverine",
         "Granit.Wolverine.Encryption",
     };
 
