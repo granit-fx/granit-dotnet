@@ -1,7 +1,7 @@
 {
   "culture": "pl",
   "texts": {
-    "Granit:Validation:PrivacyExportTooManyScopes": "Zbyt wiele zakresów w jednym żądaniu eksportu (limit: 64).",
+    "Privacy:Validation:TooManyScopes": "Zbyt wiele zakresów w jednym żądaniu eksportu (limit: 64).",
     "Permission:Privacy.Agreements.Create": "Zaakceptowanie umowy prawnej",
     "Permission:Privacy.Agreements.Read": "Wyświetlanie dokumentów prawnych i statusu zgody",
     "Permission:Privacy.Deletions.Execute": "Żądanie usunięcia danych osobowych",

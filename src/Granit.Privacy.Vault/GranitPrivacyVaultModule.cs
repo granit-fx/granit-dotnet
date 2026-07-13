@@ -12,8 +12,9 @@ namespace Granit.Privacy.Vault;
 /// <c>GranitVaultGoogleCloudModule</c> / <c>GranitVaultAzureModule</c>, or the
 /// portable <c>SecretBackedMacService</c>.
 /// </summary>
-[DependsOn(typeof(GranitVaultModule))]
 [DependsOn(typeof(GranitPrivacyBlobStorageModule))]
+[DependsOn(typeof(GranitPrivacyModule))]
+[DependsOn(typeof(GranitVaultModule))]
 public sealed class GranitPrivacyVaultModule : GranitModule
 {
     /// <inheritdoc />

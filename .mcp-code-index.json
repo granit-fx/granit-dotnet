@@ -2322,8 +2322,7 @@
       "name": "Granit.Privacy.Auditing",
       "deps": [
         "Granit.Auditing",
-        "Granit.Privacy",
-        "Granit.Timing"
+        "Granit.Privacy"
       ],
       "framework": "net10.0"
     },
@@ -48834,7 +48833,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Vault",
       "file": "src/Granit.Privacy.Vault/GranitPrivacyVaultModule.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",

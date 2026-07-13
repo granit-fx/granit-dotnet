@@ -1,7 +1,7 @@
 {
   "culture": "fr",
   "texts": {
-    "Granit:Validation:PrivacyExportTooManyScopes": "Trop de portées demandées dans un même export (limite : 64).",
+    "Privacy:Validation:TooManyScopes": "Trop de portées demandées dans un même export (limite : 64).",
     "Permission:Privacy.Agreements.Create": "Accepter un accord légal",
     "Permission:Privacy.Agreements.Read": "Consulter les documents légaux et le statut de consentement",
     "Permission:Privacy.Deletions.Execute": "Demander la suppression des données personnelles",

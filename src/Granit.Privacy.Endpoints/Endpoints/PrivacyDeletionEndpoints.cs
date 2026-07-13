@@ -35,6 +35,7 @@ internal static class PrivacyDeletionEndpoints
                  + "A confirmation email is sent in both cases after deletion is executed. "
                  + "Do not include personally identifiable information in the Reason field.")
              .Produces<PrivacyDeletionRequestResponse>(StatusCodes.Status202Accepted)
+             .ProducesProblem(StatusCodes.Status401Unauthorized)
              .ProducesProblem(StatusCodes.Status409Conflict)
              .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
@@ -46,6 +47,7 @@ internal static class PrivacyDeletionEndpoints
                  "Cancels a deferred deletion request. Only requests in Deferred state can be "
                  + "cancelled. Returns 404 if the request is not found, 409 if already executed or cancelled.")
              .Produces(StatusCodes.Status200OK)
+             .ProducesProblem(StatusCodes.Status401Unauthorized)
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status409Conflict);
 
@@ -58,6 +60,7 @@ internal static class PrivacyDeletionEndpoints
                  + "Returns the current state (Deferred, Executed, Cancelled), scheduled deletion date, "
                  + "and timestamps. Returns 404 if the request is not found or belongs to another user.")
              .Produces<PrivacyDeletionStatusResponse>()
+             .ProducesProblem(StatusCodes.Status401Unauthorized)
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/deletions", HandleGetMyDeletionsAsync)
@@ -66,7 +69,8 @@ internal static class PrivacyDeletionEndpoints
              .WithDescription(
                  "Returns all deferred deletion requests submitted by the current user, "
                  + "ordered by most recent first. Immediate deletions are not tracked.")
-             .Produces<IReadOnlyList<PrivacyDeletionStatusResponse>>();
+             .Produces<IReadOnlyList<PrivacyDeletionStatusResponse>>()
+             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         return group;
     }
