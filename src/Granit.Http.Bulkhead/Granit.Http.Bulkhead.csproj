@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Http.Bulkhead</PackageId>
-    <Description>Per-tenant bulkhead isolation for Granit. Limits concurrent operations per tenant per resource using System.Threading.RateLimiting.ConcurrencyLimiter. ASP.NET Core endpoint filter (503 Service Unavailable) and Wolverine middleware.</Description>
+    <Description>ASP.NET Core binding for Granit.Bulkhead. Per-endpoint bulkhead filter (.RequireGranitBulkhead) limiting concurrent requests per tenant, plus RFC 7807 mapping of BulkheadRejectedException to HTTP 503 Service Unavailable.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -15,13 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Bulkhead\Granit.Bulkhead.csproj" />
     <ProjectReference Include="..\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
-    <ProjectReference Include="..\Granit.Features\Granit.Features.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Localization\**\*.json" WithCulture="false" />
   </ItemGroup>
 
 </Project>

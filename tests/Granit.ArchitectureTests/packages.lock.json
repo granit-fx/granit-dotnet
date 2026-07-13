@@ -2213,6 +2213,19 @@
           "PuppeteerSharp": "[25.*, )"
         }
       },
+      "granit.bulkhead": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Features": "[0.1.0-dev, )"
+        }
+      },
+      "granit.bulkhead.wolverine": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Bulkhead": "[0.1.0-dev, )"
+        }
+      },
       "granit.caching": {
         "type": "Project",
         "dependencies": {
@@ -2336,7 +2349,6 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.DataLookup": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
@@ -2607,8 +2619,7 @@
       "granit.http.bulkhead": {
         "type": "Project",
         "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Features": "[0.1.0-dev, )",
+          "Granit.Bulkhead": "[0.1.0-dev, )",
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )"
         }
       },
@@ -2672,7 +2683,6 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Entities.Abstractions": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.Http.RateLimiting": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
@@ -3656,7 +3666,6 @@
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.Http.RateLimiting": "[0.1.0-dev, )",
           "Granit.Presence": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
@@ -4462,8 +4471,8 @@
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.100.3",
-        "contentHash": "bHe+BZRyC/TnyPw3/l6N96V/hqtBHyjtXINVrVxVl8LTYx2fxNI1HTwknm0jslSkOiOKeHRZ/oduxMcJXBbtsg==",
+        "resolved": "4.0.101",
+        "contentHash": "4m2UR+6BQFE6f8FXqBN2vb20JhYMWGFwMkq0qqSGFN/odrHETyKXfLxj7NkEBIoXB0jNILg09hpmH2LwDV1EvQ==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.100.3, 5.0.0)"
         }

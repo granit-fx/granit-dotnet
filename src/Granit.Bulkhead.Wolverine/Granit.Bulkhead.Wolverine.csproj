@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Bulkhead.Wolverine</PackageId>
+    <Description>Wolverine binding for Granit.Bulkhead. Pipeline middleware enforcing the [Bulkhead] attribute on message types before the handler runs, throwing BulkheadRejectedException (handled by Wolverine retry policy) when the per-tenant concurrency limit is saturated.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Bulkhead.Wolverine.Tests" />
+  </ItemGroup>
+
+  <!--
+    No WolverineFx reference: the middleware is discovered by Wolverine convention
+    (public static BeforeAsync) and uses no Wolverine types, so the host's WolverineFx
+    is sufficient. This keeps the package off the Wolverine compile-time coupling
+    (WolverineCouplingTests) — same rationale as Granit.RateLimiting.Wolverine.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Bulkhead\Granit.Bulkhead.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,3 +1,4 @@
+using Granit.Bulkhead.Exceptions;
 using Granit.Http.ExceptionHandling;
 using Microsoft.AspNetCore.Http;
 

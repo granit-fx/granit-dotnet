@@ -33,6 +33,8 @@
     <Project Path="src/Granit.Http.Abstractions/Granit.Http.Abstractions.csproj" />
     <Project Path="src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj" />
     <Project Path="src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj" />
+    <Project Path="src/Granit.Bulkhead/Granit.Bulkhead.csproj" />
+    <Project Path="src/Granit.Bulkhead.Wolverine/Granit.Bulkhead.Wolverine.csproj" />
     <Project Path="src/Granit.Http.Bulkhead/Granit.Http.Bulkhead.csproj" />
     <Project Path="src/Granit.Http.Cookies.CookieConsent/Granit.Http.Cookies.CookieConsent.csproj" />
     <Project Path="src/Granit.Http.Cors/Granit.Http.Cors.csproj" />
@@ -405,6 +407,8 @@
     <Project Path="tests/Granit.Http.Abstractions.Tests/Granit.Http.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Http.ApiDocumentation.Tests/Granit.Http.ApiDocumentation.Tests.csproj" />
     <Project Path="tests/Granit.Http.ApiVersioning.Tests/Granit.Http.ApiVersioning.Tests.csproj" />
+    <Project Path="tests/Granit.Bulkhead.Tests/Granit.Bulkhead.Tests.csproj" />
+    <Project Path="tests/Granit.Bulkhead.Wolverine.Tests/Granit.Bulkhead.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Http.Bulkhead.Tests/Granit.Http.Bulkhead.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.CookieConsent.Tests/Granit.Http.Cookies.CookieConsent.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cors.Tests/Granit.Http.Cors.Tests.csproj" />

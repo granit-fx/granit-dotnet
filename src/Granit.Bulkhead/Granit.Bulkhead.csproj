@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Bulkhead</PackageId>
+    <Description>Framework-pure, per-tenant bulkhead isolation core for Granit. Limits concurrent operations per tenant per resource using System.Threading.RateLimiting.ConcurrencyLimiter, with plan-based quotas via Granit.Features. Transport-agnostic — use Granit.Http.Bulkhead for the ASP.NET Core filter and Granit.Bulkhead.Wolverine for the messaging middleware.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Bulkhead.Tests" />
+    <InternalsVisibleTo Include="Granit.Bulkhead.Wolverine" />
+    <InternalsVisibleTo Include="Granit.Http.Bulkhead" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Features\Granit.Features.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" WithCulture="false" />
+  </ItemGroup>
+
+</Project>

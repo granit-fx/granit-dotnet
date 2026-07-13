@@ -164,6 +164,8 @@
     <ProjectReference Include="..\..\src\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ApiVersioning\Granit.Http.ApiVersioning.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Bulkhead\Granit.Bulkhead.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Bulkhead.Wolverine\Granit.Bulkhead.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Bulkhead\Granit.Http.Bulkhead.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Cookies\Granit.Http.Cookies.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Cookies.CookieConsent\Granit.Http.Cookies.CookieConsent.csproj" />
