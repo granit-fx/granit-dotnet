@@ -283,7 +283,6 @@
     <Project Path="src/Granit.Auditing.Privacy/Granit.Auditing.Privacy.csproj" />
     <Project Path="src/Granit.Auditing/Granit.Auditing.csproj" />
     <Project Path="src/Granit.Http.Cookies.Endpoints/Granit.Http.Cookies.Endpoints.csproj" />
-    <Project Path="src/Granit.Http.Cookies.Klaro/Granit.Http.Cookies.Klaro.csproj" />
     <Project Path="src/Granit.Http.Cookies/Granit.Http.Cookies.csproj" />
     <Project Path="src/Granit.Privacy.AI/Granit.Privacy.AI.csproj" />
     <Project Path="src/Granit.Privacy.Auditing/Granit.Privacy.Auditing.csproj" />
@@ -674,7 +673,6 @@
     <Project Path="tests/Granit.Auditing.Privacy.Tests/Granit.Auditing.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Auditing.Tests/Granit.Auditing.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Endpoints.Tests/Granit.Http.Cookies.Endpoints.Tests.csproj" />
-    <Project Path="tests/Granit.Http.Cookies.Klaro.Tests/Granit.Http.Cookies.Klaro.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Tests/Granit.Http.Cookies.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.AI.Tests/Granit.Privacy.AI.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Auditing.Tests/Granit.Privacy.Auditing.Tests.csproj" />

@@ -1198,13 +1198,6 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Http.Cookies.Klaro",
-      "deps": [
-        "Granit.Http.Cookies"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.Http.Cors",
       "deps": [
         "Granit"
@@ -25010,22 +25003,6 @@
       "members": []
     },
     {
-      "name": "CookieConsentServiceCollectionExtensions",
-      "fqn": "Granit.Http.Cookies.CookieConsent.Extensions.CookieConsentServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Http.Cookies.CookieConsent",
-      "file": "src/Granit.Http.Cookies.CookieConsent/Extensions/CookieConsentServiceCollectionExtensions.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "AddGranitCookiesCookieConsent",
-          "kind": "method",
-          "signature": "AddGranitCookiesCookieConsent(this IServiceCollection services)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
       "name": "GranitCookiesBuilderExtensions",
       "fqn": "Granit.Http.Cookies.CookieConsent.Extensions.GranitCookiesBuilderExtensions",
       "kind": "class",
@@ -25278,7 +25255,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/GranitHttpCookiesModule.cs",
-      "line": 14,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -25439,70 +25416,6 @@
           "kind": "method",
           "signature": "GetByCategory(CookieCategory category)",
           "returnType": "IReadOnlyList<ThirdPartyServiceDefinition>"
-        }
-      ]
-    },
-    {
-      "name": "GranitCookiesBuilderExtensions",
-      "fqn": "Granit.Http.Cookies.Klaro.Extensions.GranitCookiesBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Http.Cookies.Klaro",
-      "file": "src/Granit.Http.Cookies.Klaro/Extensions/GranitCookiesBuilderExtensions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "UseKlaro",
-          "kind": "method",
-          "signature": "UseKlaro(this GranitCookiesBuilder builder)",
-          "returnType": "GranitCookiesBuilder"
-        }
-      ]
-    },
-    {
-      "name": "KlaroServiceCollectionExtensions",
-      "fqn": "Granit.Http.Cookies.Klaro.Extensions.KlaroServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Http.Cookies.Klaro",
-      "file": "src/Granit.Http.Cookies.Klaro/Extensions/KlaroServiceCollectionExtensions.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "AddGranitCookiesKlaro",
-          "kind": "method",
-          "signature": "AddGranitCookiesKlaro(this IServiceCollection services)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitHttpCookiesKlaroModule",
-      "fqn": "Granit.Http.Cookies.Klaro.GranitHttpCookiesKlaroModule",
-      "kind": "class",
-      "project": "Granit.Http.Cookies.Klaro",
-      "file": "src/Granit.Http.Cookies.Klaro/GranitHttpCookiesKlaroModule.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "KlaroOptions",
-      "fqn": "Granit.Http.Cookies.Klaro.Options.KlaroOptions",
-      "kind": "class",
-      "project": "Granit.Http.Cookies.Klaro",
-      "file": "src/Granit.Http.Cookies.Klaro/Options/KlaroOptions.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "CookieName",
-          "kind": "property",
-          "signature": "string CookieName",
-          "returnType": "string"
         }
       ]
     },

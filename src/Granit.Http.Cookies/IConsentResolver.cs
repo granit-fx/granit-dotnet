@@ -4,7 +4,7 @@ namespace Granit.Http.Cookies;
 
 /// <summary>
 /// Resolves whether consent has been granted for a given cookie category.
-/// Applications provide their own implementation (Klaro, Axeptio, Cookiebot, native, etc.).
+/// Applications provide their own implementation (@cookieconsent/core via Granit.Http.Cookies.CookieConsent, Axeptio, Cookiebot, native, etc.).
 /// </summary>
 public interface IConsentResolver
 {
