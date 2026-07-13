@@ -13,7 +13,7 @@ Part of the [granit](https://granit-fx.dev) framework.
 | `Granit.Notifications.EntityFrameworkCore` | EF Core persistence |
 | `Granit.Notifications.Endpoints` | Minimal API endpoints |
 | `Granit.Notifications.Email` | Email channel abstractions |
-| `Granit.Notifications.Email.Smtp` | SMTP email provider |
+| `Granit.Notifications.Smtp` | SMTP email provider |
 | `Granit.Notifications.SignalR` | Real-time SignalR channel |
 
 ## Installation

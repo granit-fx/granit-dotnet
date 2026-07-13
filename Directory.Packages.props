@@ -167,7 +167,7 @@
     <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="4.*" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.*" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.*" />
-    <!-- OAuth2 service-account token minting for the FCM HTTP v1 API (Granit.Notifications.MobilePush.GoogleFcm). -->
+    <!-- OAuth2 service-account token minting for the FCM HTTP v1 API (Granit.Notifications.GoogleFcm). -->
     <PackageVersion Include="Google.Apis.Auth" Version="1.*" />
     <PackageVersion Include="Microsoft.Azure.NotificationHubs" Version="4.*" />
     <PackageVersion Include="MailKit" Version="4.*" />

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Notifications.AwsSns</PackageId>
+    <Description>AWS SNS provider for Granit.Notifications: SMS delivery (ISmsSender) and mobile push via platform endpoints (IMobilePushSender), both keyed "AwsSns".</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Notifications.AwsSns.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.SimpleNotificationService" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Notifications.MobilePush\Granit.Notifications.MobilePush.csproj" />
+    <ProjectReference Include="..\Granit.Notifications.Sms\Granit.Notifications.Sms.csproj" />
+  </ItemGroup>
+
+</Project>

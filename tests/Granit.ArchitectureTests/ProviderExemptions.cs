@@ -11,67 +11,56 @@ internal static class ProviderExemptions
     /// <summary>Provider modules not yet self-registering in <c>ConfigureServices</c> — phase 1b (#2961).</summary>
     public static readonly HashSet<string> SelfRegistrationPending = new(StringComparer.Ordinal)
     {
-        "Granit.Notifications.Brevo",                 // empty-bodied module; manual AddGranitNotificationsBrevo() required
-        "Granit.Notifications.Email.Smtp",            // empty-bodied module — trap: EmailChannelOptions.Provider defaults to "Smtp"
-        "Granit.Notifications.MobilePush.GoogleFcm",  // empty-bodied module; manual AddGranitNotificationsMobilePushGoogleFcm() required
-        "Granit.Notifications.Twilio",                // empty-bodied module
-        "Granit.Notifications.Zulip",                 // empty-bodied module
+        "Granit.Notifications.Brevo",      // empty-bodied module; manual AddGranitNotificationsBrevo() required
+        "Granit.Notifications.GoogleFcm",  // empty-bodied module; manual AddGranitNotificationsGoogleFcm() required
+        "Granit.Notifications.Smtp",       // empty-bodied module — trap: EmailChannelOptions.Provider defaults to "Smtp"
+        "Granit.Notifications.Twilio",     // empty-bodied module
+        "Granit.Notifications.Zulip",      // empty-bodied module
     };
 
     /// <summary>Providers without a registered ActivitySource — phase 1b (#2961).</summary>
     public static readonly HashSet<string> ActivitySourcePending = new(StringComparer.Ordinal)
     {
-        "Granit.Notifications.Brevo",                 // no OTel spans on send
-        "Granit.Notifications.Email.Smtp",            // no OTel spans on send
-        "Granit.Notifications.MobilePush.GoogleFcm",  // no OTel spans on send
-        "Granit.Notifications.Twilio",                // no OTel spans on send
-        "Granit.Notifications.Zulip",                 // no OTel spans on send
+        "Granit.Notifications.Brevo",      // no OTel spans on send
+        "Granit.Notifications.GoogleFcm",  // no OTel spans on send
+        "Granit.Notifications.Smtp",       // no OTel spans on send
+        "Granit.Notifications.Twilio",     // no OTel spans on send
+        "Granit.Notifications.Zulip",      // no OTel spans on send
     };
 
     /// <summary>Providers without a health check — phase 1b (#2961).</summary>
     public static readonly HashSet<string> HealthCheckPending = new(StringComparer.Ordinal)
     {
-        "Granit.Notifications.MobilePush.GoogleFcm",  // only mobile-push provider without one (AwsSns/Anh have config probes)
+        "Granit.Notifications.GoogleFcm",  // only mobile-push provider without one (AwsSns/AzureNotificationHubs have config probes)
     };
 
-    /// <summary>Providers still nested under a channel package — renamed/merged in phase 2 (#2960).</summary>
-    public static readonly HashSet<string> PlacementPending = new(StringComparer.Ordinal)
-    {
-        "Granit.Notifications.Email.AwsSes",                          // → Granit.Notifications.AwsSes
-        "Granit.Notifications.Email.AzureCommunicationServices",      // → merged into Granit.Notifications.AzureCommunicationServices
-        "Granit.Notifications.Email.Scaleway",                        // → Granit.Notifications.Scaleway
-        "Granit.Notifications.Email.SendGrid",                        // → Granit.Notifications.SendGrid
-        "Granit.Notifications.Email.Smtp",                            // → Granit.Notifications.Smtp
-        "Granit.Notifications.MobilePush.AwsSns",                     // → merged into Granit.Notifications.AwsSns
-        "Granit.Notifications.MobilePush.AzureNotificationHubs",      // → Granit.Notifications.AzureNotificationHubs
-        "Granit.Notifications.MobilePush.GoogleFcm",                  // → Granit.Notifications.GoogleFcm
-        "Granit.Notifications.Sms.AwsSns",                            // → merged into Granit.Notifications.AwsSns
-        "Granit.Notifications.Sms.AzureCommunicationServices",        // → merged into Granit.Notifications.AzureCommunicationServices
-    };
+    /// <summary>
+    /// Providers nested under a channel package. Emptied by phase 2 (#2960) — the placement
+    /// rule is now fully enforced; new providers must be top-level from day one.
+    /// </summary>
+    public static readonly HashSet<string> PlacementPending = new(StringComparer.Ordinal);
 
     /// <summary>Providers whose options validation is a no-op — phase 1b (#2961).</summary>
     public static readonly HashSet<string> ValidationPending = new(StringComparer.Ordinal)
     {
-        "Granit.Notifications.Email.Smtp",  // ValidateOnStart() without ValidateDataAnnotations() and no IValidateOptions
+        "Granit.Notifications.Smtp",  // ValidateOnStart() without ValidateDataAnnotations() and no IValidateOptions
     };
 
     /// <summary>Providers without a SectionName assertion test — phase 1b (#2961).</summary>
     public static readonly HashSet<string> SectionNameTestPending = new(StringComparer.Ordinal)
     {
-        "Granit.Notifications.Email.AwsSes",                      // only *OptionsValidatorTests exist
-        "Granit.Notifications.Email.AzureCommunicationServices",  // only *OptionsValidatorTests exist
-        "Granit.Notifications.MobilePush.AwsSns",                 // no options test asserting the section path
-        "Granit.Notifications.Sms.AwsSns",                        // no options test asserting the section path
-        "Granit.Notifications.Sms.AzureCommunicationServices",    // no options test asserting the section path
+        "Granit.Notifications.AwsSes",                      // only *OptionsValidatorTests exist
+        "Granit.Notifications.AwsSns",                      // merged test project has no SectionName assertions yet
+        "Granit.Notifications.AzureCommunicationServices",  // merged test project has no SectionName assertions yet
     };
 
     /// <summary>Providers whose module [DependsOn] omits direct module references — phase 1b (#2961).</summary>
     public static readonly HashSet<string> DependsOnPending = new(StringComparer.Ordinal)
     {
-        "Granit.Notifications.Brevo",           // missing GranitDiagnosticsModule (direct ref via HttpServiceHealthCheckBase)
-        "Granit.Notifications.Email.Scaleway",  // missing GranitDiagnosticsModule
-        "Granit.Notifications.Email.SendGrid",  // missing GranitDiagnosticsModule
-        "Granit.Notifications.Twilio",          // missing GranitDiagnosticsModule
-        "Granit.Notifications.Zulip",           // missing GranitDiagnosticsModule
+        "Granit.Notifications.Brevo",     // missing GranitDiagnosticsModule (direct ref via HttpServiceHealthCheckBase)
+        "Granit.Notifications.Scaleway",  // missing GranitDiagnosticsModule
+        "Granit.Notifications.SendGrid",  // missing GranitDiagnosticsModule
+        "Granit.Notifications.Twilio",    // missing GranitDiagnosticsModule
+        "Granit.Notifications.Zulip",     // missing GranitDiagnosticsModule
     };
 }

@@ -1844,6 +1844,36 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Notifications.AwsSes",
+      "deps": [
+        "Granit.Notifications.Email"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Notifications.AwsSns",
+      "deps": [
+        "Granit.Notifications.MobilePush",
+        "Granit.Notifications.Sms"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Notifications.AzureCommunicationServices",
+      "deps": [
+        "Granit.Notifications.Email",
+        "Granit.Notifications.Sms"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Notifications.AzureNotificationHubs",
+      "deps": [
+        "Granit.Notifications.MobilePush"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Notifications.Brevo",
       "deps": [
         "Granit.Diagnostics",
@@ -1860,45 +1890,6 @@
         "Granit.Html.AngleSharp",
         "Granit.Notifications.Abstractions",
         "Granit.Templating"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Notifications.Email.AwsSes",
-      "deps": [
-        "Granit.Notifications.Email"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Notifications.Email.AzureCommunicationServices",
-      "deps": [
-        "Granit.Notifications.Email"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Notifications.Email.Scaleway",
-      "deps": [
-        "Granit.Diagnostics",
-        "Granit.Http.Resilience",
-        "Granit.Notifications.Email"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Notifications.Email.SendGrid",
-      "deps": [
-        "Granit.Diagnostics",
-        "Granit.Http.Resilience",
-        "Granit.Notifications.Email"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Notifications.Email.Smtp",
-      "deps": [
-        "Granit.Notifications.Email"
       ],
       "framework": "net10.0"
     },
@@ -1924,23 +1915,18 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Notifications.GoogleFcm",
+      "deps": [
+        "Granit.Http.Resilience",
+        "Granit.Notifications.MobilePush",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Notifications.MobilePush",
       "deps": [
         "Granit.Notifications.Abstractions"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Notifications.MobilePush.AwsSns",
-      "deps": [
-        "Granit.Notifications.MobilePush"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Notifications.MobilePush.AzureNotificationHubs",
-      "deps": [
-        "Granit.Notifications.MobilePush"
       ],
       "framework": "net10.0"
     },
@@ -1964,19 +1950,28 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Notifications.MobilePush.GoogleFcm",
-      "deps": [
-        "Granit.Http.Resilience",
-        "Granit.Notifications.MobilePush",
-        "Granit.Timing"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.Notifications.Privacy",
       "deps": [
         "Granit.Notifications",
         "Granit.Privacy.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Notifications.Scaleway",
+      "deps": [
+        "Granit.Diagnostics",
+        "Granit.Http.Resilience",
+        "Granit.Notifications.Email"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Notifications.SendGrid",
+      "deps": [
+        "Granit.Diagnostics",
+        "Granit.Http.Resilience",
+        "Granit.Notifications.Email"
       ],
       "framework": "net10.0"
     },
@@ -1995,16 +1990,9 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Notifications.Sms.AwsSns",
+      "name": "Granit.Notifications.Smtp",
       "deps": [
-        "Granit.Notifications.Sms"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Notifications.Sms.AzureCommunicationServices",
-      "deps": [
-        "Granit.Notifications.Sms"
+        "Granit.Notifications.Email"
       ],
       "framework": "net10.0"
     },
@@ -38004,6 +37992,316 @@
       ]
     },
     {
+      "name": "SesEmailServiceCollectionExtensions",
+      "fqn": "Granit.Notifications.AwsSes.Extensions.SesEmailServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.AwsSes",
+      "file": "src/Granit.Notifications.AwsSes/Extensions/SesEmailServiceCollectionExtensions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "AddGranitNotificationsAwsSes",
+          "kind": "method",
+          "signature": "AddGranitNotificationsAwsSes(this IServiceCollection services, Action<AwsSesOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsAwsSesModule",
+      "fqn": "Granit.Notifications.AwsSes.GranitNotificationsAwsSesModule",
+      "kind": "class",
+      "project": "Granit.Notifications.AwsSes",
+      "file": "src/Granit.Notifications.AwsSes/GranitNotificationsAwsSesModule.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AwsSesOptions",
+      "fqn": "Granit.Notifications.AwsSes.Options.AwsSesOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.AwsSes",
+      "file": "src/Granit.Notifications.AwsSes/Options/AwsSesOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Region",
+          "kind": "property",
+          "signature": "string Region",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSenderEmail",
+          "kind": "property",
+          "signature": "string? DefaultSenderEmail",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsAwsSnsModule",
+      "fqn": "Granit.Notifications.AwsSns.GranitNotificationsAwsSnsModule",
+      "kind": "class",
+      "project": "Granit.Notifications.AwsSns",
+      "file": "src/Granit.Notifications.AwsSns/GranitNotificationsAwsSnsModule.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AwsSnsMobilePushServiceCollectionExtensions",
+      "fqn": "Granit.Notifications.AwsSns.MobilePush.Extensions.AwsSnsMobilePushServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.AwsSns",
+      "file": "src/Granit.Notifications.AwsSns/MobilePush/Extensions/AwsSnsMobilePushServiceCollectionExtensions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "AddGranitNotificationsAwsSnsMobilePush",
+          "kind": "method",
+          "signature": "AddGranitNotificationsAwsSnsMobilePush(this IServiceCollection services, Action<AwsSnsMobilePushOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "AwsSnsMobilePushOptions",
+      "fqn": "Granit.Notifications.AwsSns.MobilePush.Options.AwsSnsMobilePushOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.AwsSns",
+      "file": "src/Granit.Notifications.AwsSns/MobilePush/Options/AwsSnsMobilePushOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Region",
+          "kind": "property",
+          "signature": "string Region",
+          "returnType": "string"
+        },
+        {
+          "name": "PlatformApplicationArn",
+          "kind": "property",
+          "signature": "string PlatformApplicationArn",
+          "returnType": "string"
+        },
+        {
+          "name": "AccessKeyId",
+          "kind": "property",
+          "signature": "string? AccessKeyId",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "SnsSmsServiceCollectionExtensions",
+      "fqn": "Granit.Notifications.AwsSns.Sms.Extensions.SnsSmsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.AwsSns",
+      "file": "src/Granit.Notifications.AwsSns/Sms/Extensions/SnsSmsServiceCollectionExtensions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "AddGranitNotificationsAwsSnsSms",
+          "kind": "method",
+          "signature": "AddGranitNotificationsAwsSnsSms(this IServiceCollection services, Action<AwsSnsSmsOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "AwsSnsSmsOptions",
+      "fqn": "Granit.Notifications.AwsSns.Sms.Options.AwsSnsSmsOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.AwsSns",
+      "file": "src/Granit.Notifications.AwsSns/Sms/Options/AwsSnsSmsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Region",
+          "kind": "property",
+          "signature": "string Region",
+          "returnType": "string"
+        },
+        {
+          "name": "SenderId",
+          "kind": "property",
+          "signature": "string? SenderId",
+          "returnType": "string?"
+        },
+        {
+          "name": "OriginationNumber",
+          "kind": "property",
+          "signature": "string? OriginationNumber",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "AcsEmailServiceCollectionExtensions",
+      "fqn": "Granit.Notifications.AzureCommunicationServices.Email.Extensions.AcsEmailServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.AzureCommunicationServices",
+      "file": "src/Granit.Notifications.AzureCommunicationServices/Email/Extensions/AcsEmailServiceCollectionExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitNotificationsAcsEmail",
+          "kind": "method",
+          "signature": "AddGranitNotificationsAcsEmail(this IServiceCollection services, Action<AcsEmailOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "AcsEmailOptions",
+      "fqn": "Granit.Notifications.AzureCommunicationServices.Email.Options.AcsEmailOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.AzureCommunicationServices",
+      "file": "src/Granit.Notifications.AzureCommunicationServices/Email/Options/AcsEmailOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "ConnectionString",
+          "kind": "property",
+          "signature": "string? ConnectionString",
+          "returnType": "string?"
+        },
+        {
+          "name": "DefaultSenderName",
+          "kind": "property",
+          "signature": "string? DefaultSenderName",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsAzureCommunicationServicesModule",
+      "fqn": "Granit.Notifications.AzureCommunicationServices.GranitNotificationsAzureCommunicationServicesModule",
+      "kind": "class",
+      "project": "Granit.Notifications.AzureCommunicationServices",
+      "file": "src/Granit.Notifications.AzureCommunicationServices/GranitNotificationsAzureCommunicationServicesModule.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AcsSmsServiceCollectionExtensions",
+      "fqn": "Granit.Notifications.AzureCommunicationServices.Sms.Extensions.AcsSmsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.AzureCommunicationServices",
+      "file": "src/Granit.Notifications.AzureCommunicationServices/Sms/Extensions/AcsSmsServiceCollectionExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitNotificationsAcsSms",
+          "kind": "method",
+          "signature": "AddGranitNotificationsAcsSms(this IServiceCollection services, Action<AcsSmsOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "AcsSmsOptions",
+      "fqn": "Granit.Notifications.AzureCommunicationServices.Sms.Options.AcsSmsOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.AzureCommunicationServices",
+      "file": "src/Granit.Notifications.AzureCommunicationServices/Sms/Options/AcsSmsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "ConnectionString",
+          "kind": "property",
+          "signature": "string? ConnectionString",
+          "returnType": "string?"
+        },
+        {
+          "name": "TimeoutSeconds",
+          "kind": "property",
+          "signature": "int TimeoutSeconds",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "AzureNotificationHubsServiceCollectionExtensions",
+      "fqn": "Granit.Notifications.AzureNotificationHubs.Extensions.AzureNotificationHubsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.AzureNotificationHubs",
+      "file": "src/Granit.Notifications.AzureNotificationHubs/Extensions/AzureNotificationHubsServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitNotificationsAzureNotificationHubs",
+          "kind": "method",
+          "signature": "AddGranitNotificationsAzureNotificationHubs(this IServiceCollection services, Action<AzureNotificationHubsOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsAzureNotificationHubsModule",
+      "fqn": "Granit.Notifications.AzureNotificationHubs.GranitNotificationsAzureNotificationHubsModule",
+      "kind": "class",
+      "project": "Granit.Notifications.AzureNotificationHubs",
+      "file": "src/Granit.Notifications.AzureNotificationHubs/GranitNotificationsAzureNotificationHubsModule.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AzureNotificationHubsOptions",
+      "fqn": "Granit.Notifications.AzureNotificationHubs.Options.AzureNotificationHubsOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.AzureNotificationHubs",
+      "file": "src/Granit.Notifications.AzureNotificationHubs/Options/AzureNotificationHubsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "ConnectionString",
+          "kind": "property",
+          "signature": "string ConnectionString",
+          "returnType": "string"
+        },
+        {
+          "name": "HubName",
+          "kind": "property",
+          "signature": "string HubName",
+          "returnType": "string"
+        },
+        {
+          "name": "TimeoutSeconds",
+          "kind": "property",
+          "signature": "int TimeoutSeconds",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
       "name": "BrevoNotificationsServiceCollectionExtensions",
       "fqn": "Granit.Notifications.Brevo.Extensions.BrevoNotificationsServiceCollectionExtensions",
       "kind": "class",
@@ -38236,114 +38534,6 @@
       "members": []
     },
     {
-      "name": "SesEmailServiceCollectionExtensions",
-      "fqn": "Granit.Notifications.Email.AwsSes.Extensions.SesEmailServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.AwsSes",
-      "file": "src/Granit.Notifications.Email.AwsSes/Extensions/SesEmailServiceCollectionExtensions.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "AddGranitNotificationsEmailAwsSes",
-          "kind": "method",
-          "signature": "AddGranitNotificationsEmailAwsSes(this IServiceCollection services, Action<AwsSesOptions>? configure = null)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitNotificationsEmailAwsSesModule",
-      "fqn": "Granit.Notifications.Email.AwsSes.GranitNotificationsEmailAwsSesModule",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.AwsSes",
-      "file": "src/Granit.Notifications.Email.AwsSes/GranitNotificationsEmailAwsSesModule.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "AwsSesOptions",
-      "fqn": "Granit.Notifications.Email.AwsSes.Options.AwsSesOptions",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.AwsSes",
-      "file": "src/Granit.Notifications.Email.AwsSes/Options/AwsSesOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Region",
-          "kind": "property",
-          "signature": "string Region",
-          "returnType": "string"
-        },
-        {
-          "name": "DefaultSenderEmail",
-          "kind": "property",
-          "signature": "string? DefaultSenderEmail",
-          "returnType": "string?"
-        }
-      ]
-    },
-    {
-      "name": "AcsEmailServiceCollectionExtensions",
-      "fqn": "Granit.Notifications.Email.AzureCommunicationServices.Extensions.AcsEmailServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.AzureCommunicationServices",
-      "file": "src/Granit.Notifications.Email.AzureCommunicationServices/Extensions/AcsEmailServiceCollectionExtensions.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "AddGranitNotificationsEmailAcs",
-          "kind": "method",
-          "signature": "AddGranitNotificationsEmailAcs(this IServiceCollection services, Action<AcsEmailOptions>? configure = null)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitNotificationsEmailAzureCommunicationServicesModule",
-      "fqn": "Granit.Notifications.Email.AzureCommunicationServices.GranitNotificationsEmailAzureCommunicationServicesModule",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.AzureCommunicationServices",
-      "file": "src/Granit.Notifications.Email.AzureCommunicationServices/GranitNotificationsEmailAzureCommunicationServicesModule.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "AcsEmailOptions",
-      "fqn": "Granit.Notifications.Email.AzureCommunicationServices.Options.AcsEmailOptions",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.AzureCommunicationServices",
-      "file": "src/Granit.Notifications.Email.AzureCommunicationServices/Options/AcsEmailOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "ConnectionString",
-          "kind": "property",
-          "signature": "string? ConnectionString",
-          "returnType": "string?"
-        },
-        {
-          "name": "DefaultSenderName",
-          "kind": "property",
-          "signature": "string? DefaultSenderName",
-          "returnType": "string?"
-        }
-      ]
-    },
-    {
       "name": "EmailMessage",
       "fqn": "Granit.Notifications.Email.EmailMessage",
       "kind": "record",
@@ -38427,221 +38617,6 @@
           "kind": "property",
           "signature": "string DefaultSenderName",
           "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "ScalewayEmailServiceCollectionExtensions",
-      "fqn": "Granit.Notifications.Email.Scaleway.Extensions.ScalewayEmailServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.Scaleway",
-      "file": "src/Granit.Notifications.Email.Scaleway/Extensions/ScalewayEmailServiceCollectionExtensions.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "AddGranitNotificationsEmailScaleway",
-          "kind": "method",
-          "signature": "AddGranitNotificationsEmailScaleway(this IServiceCollection services, Action<ScalewayEmailOptions>? configure = null)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitNotificationsEmailScalewayModule",
-      "fqn": "Granit.Notifications.Email.Scaleway.GranitNotificationsEmailScalewayModule",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.Scaleway",
-      "file": "src/Granit.Notifications.Email.Scaleway/GranitNotificationsEmailScalewayModule.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "ScalewayEmailOptions",
-      "fqn": "Granit.Notifications.Email.Scaleway.Options.ScalewayEmailOptions",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.Scaleway",
-      "file": "src/Granit.Notifications.Email.Scaleway/Options/ScalewayEmailOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "SecretKey",
-          "kind": "property",
-          "signature": "string SecretKey",
-          "returnType": "string"
-        },
-        {
-          "name": "ProjectId",
-          "kind": "property",
-          "signature": "string ProjectId",
-          "returnType": "string"
-        },
-        {
-          "name": "DefaultSenderEmail",
-          "kind": "property",
-          "signature": "string DefaultSenderEmail",
-          "returnType": "string"
-        },
-        {
-          "name": "DefaultSenderName",
-          "kind": "property",
-          "signature": "string DefaultSenderName",
-          "returnType": "string"
-        },
-        {
-          "name": "Region",
-          "kind": "property",
-          "signature": "string Region",
-          "returnType": "string"
-        },
-        {
-          "name": "BaseUrl",
-          "kind": "property",
-          "signature": "string BaseUrl",
-          "returnType": "string"
-        },
-        {
-          "name": "TimeoutSeconds",
-          "kind": "property",
-          "signature": "int TimeoutSeconds",
-          "returnType": "int"
-        }
-      ]
-    },
-    {
-      "name": "SendGridEmailServiceCollectionExtensions",
-      "fqn": "Granit.Notifications.Email.SendGrid.Extensions.SendGridEmailServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.SendGrid",
-      "file": "src/Granit.Notifications.Email.SendGrid/Extensions/SendGridEmailServiceCollectionExtensions.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "AddGranitNotificationsEmailSendGrid",
-          "kind": "method",
-          "signature": "AddGranitNotificationsEmailSendGrid(this IServiceCollection services, Action<SendGridEmailOptions>? configure = null)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitNotificationsEmailSendGridModule",
-      "fqn": "Granit.Notifications.Email.SendGrid.GranitNotificationsEmailSendGridModule",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.SendGrid",
-      "file": "src/Granit.Notifications.Email.SendGrid/GranitNotificationsEmailSendGridModule.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "SendGridEmailOptions",
-      "fqn": "Granit.Notifications.Email.SendGrid.Options.SendGridEmailOptions",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.SendGrid",
-      "file": "src/Granit.Notifications.Email.SendGrid/Options/SendGridEmailOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "ApiKey",
-          "kind": "property",
-          "signature": "string ApiKey",
-          "returnType": "string"
-        },
-        {
-          "name": "DefaultSenderEmail",
-          "kind": "property",
-          "signature": "string DefaultSenderEmail",
-          "returnType": "string"
-        },
-        {
-          "name": "DefaultSenderName",
-          "kind": "property",
-          "signature": "string DefaultSenderName",
-          "returnType": "string"
-        },
-        {
-          "name": "BaseUrl",
-          "kind": "property",
-          "signature": "string BaseUrl",
-          "returnType": "string"
-        },
-        {
-          "name": "TimeoutSeconds",
-          "kind": "property",
-          "signature": "int TimeoutSeconds",
-          "returnType": "int"
-        }
-      ]
-    },
-    {
-      "name": "SmtpEmailServiceCollectionExtensions",
-      "fqn": "Granit.Notifications.Email.Smtp.Extensions.SmtpEmailServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.Smtp",
-      "file": "src/Granit.Notifications.Email.Smtp/Extensions/SmtpEmailServiceCollectionExtensions.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "AddGranitNotificationsEmailSmtp",
-          "kind": "method",
-          "signature": "AddGranitNotificationsEmailSmtp(this IServiceCollection services, Action<SmtpOptions>? configure = null)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitNotificationsEmailSmtpModule",
-      "fqn": "Granit.Notifications.Email.Smtp.GranitNotificationsEmailSmtpModule",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.Smtp",
-      "file": "src/Granit.Notifications.Email.Smtp/GranitNotificationsEmailSmtpModule.cs",
-      "line": 13,
-      "members": []
-    },
-    {
-      "name": "SmtpOptions",
-      "fqn": "Granit.Notifications.Email.Smtp.Options.SmtpOptions",
-      "kind": "class",
-      "project": "Granit.Notifications.Email.Smtp",
-      "file": "src/Granit.Notifications.Email.Smtp/Options/SmtpOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Host",
-          "kind": "property",
-          "signature": "string Host",
-          "returnType": "string"
-        },
-        {
-          "name": "Port",
-          "kind": "property",
-          "signature": "int Port",
-          "returnType": "int"
-        },
-        {
-          "name": "UseSsl",
-          "kind": "property",
-          "signature": "bool UseSsl",
-          "returnType": "bool"
-        },
-        {
-          "name": "DefaultSenderEmail",
-          "kind": "property",
-          "signature": "string? DefaultSenderEmail",
-          "returnType": "string?"
         }
       ]
     },
@@ -38913,6 +38888,65 @@
       ]
     },
     {
+      "name": "GoogleFcmMobilePushServiceCollectionExtensions",
+      "fqn": "Granit.Notifications.GoogleFcm.Extensions.GoogleFcmMobilePushServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.GoogleFcm",
+      "file": "src/Granit.Notifications.GoogleFcm/Extensions/GoogleFcmMobilePushServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitNotificationsGoogleFcm",
+          "kind": "method",
+          "signature": "AddGranitNotificationsGoogleFcm(this IServiceCollection services, Action<GoogleFcmOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsGoogleFcmModule",
+      "fqn": "Granit.Notifications.GoogleFcm.GranitNotificationsGoogleFcmModule",
+      "kind": "class",
+      "project": "Granit.Notifications.GoogleFcm",
+      "file": "src/Granit.Notifications.GoogleFcm/GranitNotificationsGoogleFcmModule.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "GoogleFcmOptions",
+      "fqn": "Granit.Notifications.GoogleFcm.Options.GoogleFcmOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.GoogleFcm",
+      "file": "src/Granit.Notifications.GoogleFcm/Options/GoogleFcmOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "ProjectId",
+          "kind": "property",
+          "signature": "string ProjectId",
+          "returnType": "string"
+        },
+        {
+          "name": "ServiceAccountJson",
+          "kind": "property",
+          "signature": "string ServiceAccountJson",
+          "returnType": "string"
+        },
+        {
+          "name": "BaseAddress",
+          "kind": "property",
+          "signature": "string BaseAddress",
+          "returnType": "string"
+        },
+        {
+          "name": "TimeoutSeconds",
+          "kind": "property",
+          "signature": "int TimeoutSeconds",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
       "name": "GranitNotificationsAbstractionsModule",
       "fqn": "Granit.Notifications.GranitNotificationsAbstractionsModule",
       "kind": "class",
@@ -39019,126 +39053,6 @@
           "kind": "property",
           "signature": "required string NotificationTypeName",
           "returnType": "required string"
-        }
-      ]
-    },
-    {
-      "name": "AwsSnsMobilePushServiceCollectionExtensions",
-      "fqn": "Granit.Notifications.MobilePush.AwsSns.Extensions.AwsSnsMobilePushServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Notifications.MobilePush.AwsSns",
-      "file": "src/Granit.Notifications.MobilePush.AwsSns/Extensions/AwsSnsMobilePushServiceCollectionExtensions.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "AddGranitNotificationsMobilePushAwsSns",
-          "kind": "method",
-          "signature": "AddGranitNotificationsMobilePushAwsSns(this IServiceCollection services, Action<AwsSnsMobilePushOptions>? configure = null)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitNotificationsMobilePushAwsSnsModule",
-      "fqn": "Granit.Notifications.MobilePush.AwsSns.GranitNotificationsMobilePushAwsSnsModule",
-      "kind": "class",
-      "project": "Granit.Notifications.MobilePush.AwsSns",
-      "file": "src/Granit.Notifications.MobilePush.AwsSns/GranitNotificationsMobilePushAwsSnsModule.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "AwsSnsMobilePushOptions",
-      "fqn": "Granit.Notifications.MobilePush.AwsSns.Options.AwsSnsMobilePushOptions",
-      "kind": "class",
-      "project": "Granit.Notifications.MobilePush.AwsSns",
-      "file": "src/Granit.Notifications.MobilePush.AwsSns/Options/AwsSnsMobilePushOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Region",
-          "kind": "property",
-          "signature": "string Region",
-          "returnType": "string"
-        },
-        {
-          "name": "PlatformApplicationArn",
-          "kind": "property",
-          "signature": "string PlatformApplicationArn",
-          "returnType": "string"
-        },
-        {
-          "name": "AccessKeyId",
-          "kind": "property",
-          "signature": "string? AccessKeyId",
-          "returnType": "string?"
-        }
-      ]
-    },
-    {
-      "name": "AzureNotificationHubsServiceCollectionExtensions",
-      "fqn": "Granit.Notifications.MobilePush.AzureNotificationHubs.Extensions.AzureNotificationHubsServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Notifications.MobilePush.AzureNotificationHubs",
-      "file": "src/Granit.Notifications.MobilePush.AzureNotificationHubs/Extensions/AzureNotificationHubsServiceCollectionExtensions.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "AddGranitNotificationsMobilePushAzureNotificationHubs",
-          "kind": "method",
-          "signature": "AddGranitNotificationsMobilePushAzureNotificationHubs(this IServiceCollection services, Action<AzureNotificationHubsOptions>? configure = null)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitNotificationsMobilePushAzureNotificationHubsModule",
-      "fqn": "Granit.Notifications.MobilePush.AzureNotificationHubs.GranitNotificationsMobilePushAzureNotificationHubsModule",
-      "kind": "class",
-      "project": "Granit.Notifications.MobilePush.AzureNotificationHubs",
-      "file": "src/Granit.Notifications.MobilePush.AzureNotificationHubs/GranitNotificationsMobilePushAzureNotificationHubsModule.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "AzureNotificationHubsOptions",
-      "fqn": "Granit.Notifications.MobilePush.AzureNotificationHubs.Options.AzureNotificationHubsOptions",
-      "kind": "class",
-      "project": "Granit.Notifications.MobilePush.AzureNotificationHubs",
-      "file": "src/Granit.Notifications.MobilePush.AzureNotificationHubs/Options/AzureNotificationHubsOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "ConnectionString",
-          "kind": "property",
-          "signature": "string ConnectionString",
-          "returnType": "string"
-        },
-        {
-          "name": "HubName",
-          "kind": "property",
-          "signature": "string HubName",
-          "returnType": "string"
-        },
-        {
-          "name": "TimeoutSeconds",
-          "kind": "property",
-          "signature": "int TimeoutSeconds",
-          "returnType": "int"
         }
       ]
     },
@@ -39298,65 +39212,6 @@
           "kind": "method",
           "signature": "AddGranitNotificationsMobilePush(this IServiceCollection services, Action<MobilePushChannelOptions>? configure = null)",
           "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GoogleFcmMobilePushServiceCollectionExtensions",
-      "fqn": "Granit.Notifications.MobilePush.GoogleFcm.Extensions.GoogleFcmMobilePushServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Notifications.MobilePush.GoogleFcm",
-      "file": "src/Granit.Notifications.MobilePush.GoogleFcm/Extensions/GoogleFcmMobilePushServiceCollectionExtensions.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "AddGranitNotificationsMobilePushGoogleFcm",
-          "kind": "method",
-          "signature": "AddGranitNotificationsMobilePushGoogleFcm(this IServiceCollection services, Action<GoogleFcmOptions>? configure = null)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitNotificationsMobilePushGoogleFcmModule",
-      "fqn": "Granit.Notifications.MobilePush.GoogleFcm.GranitNotificationsMobilePushGoogleFcmModule",
-      "kind": "class",
-      "project": "Granit.Notifications.MobilePush.GoogleFcm",
-      "file": "src/Granit.Notifications.MobilePush.GoogleFcm/GranitNotificationsMobilePushGoogleFcmModule.cs",
-      "line": 18,
-      "members": []
-    },
-    {
-      "name": "GoogleFcmOptions",
-      "fqn": "Granit.Notifications.MobilePush.GoogleFcm.Options.GoogleFcmOptions",
-      "kind": "class",
-      "project": "Granit.Notifications.MobilePush.GoogleFcm",
-      "file": "src/Granit.Notifications.MobilePush.GoogleFcm/Options/GoogleFcmOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "ProjectId",
-          "kind": "property",
-          "signature": "string ProjectId",
-          "returnType": "string"
-        },
-        {
-          "name": "ServiceAccountJson",
-          "kind": "property",
-          "signature": "string ServiceAccountJson",
-          "returnType": "string"
-        },
-        {
-          "name": "BaseAddress",
-          "kind": "property",
-          "signature": "string BaseAddress",
-          "returnType": "string"
-        },
-        {
-          "name": "TimeoutSeconds",
-          "kind": "property",
-          "signature": "int TimeoutSeconds",
-          "returnType": "int"
         }
       ]
     },
@@ -39737,6 +39592,162 @@
       "members": []
     },
     {
+      "name": "ScalewayEmailServiceCollectionExtensions",
+      "fqn": "Granit.Notifications.Scaleway.Extensions.ScalewayEmailServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.Scaleway",
+      "file": "src/Granit.Notifications.Scaleway/Extensions/ScalewayEmailServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitNotificationsScaleway",
+          "kind": "method",
+          "signature": "AddGranitNotificationsScaleway(this IServiceCollection services, Action<ScalewayEmailOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsScalewayModule",
+      "fqn": "Granit.Notifications.Scaleway.GranitNotificationsScalewayModule",
+      "kind": "class",
+      "project": "Granit.Notifications.Scaleway",
+      "file": "src/Granit.Notifications.Scaleway/GranitNotificationsScalewayModule.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ScalewayEmailOptions",
+      "fqn": "Granit.Notifications.Scaleway.Options.ScalewayEmailOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.Scaleway",
+      "file": "src/Granit.Notifications.Scaleway/Options/ScalewayEmailOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "SecretKey",
+          "kind": "property",
+          "signature": "string SecretKey",
+          "returnType": "string"
+        },
+        {
+          "name": "ProjectId",
+          "kind": "property",
+          "signature": "string ProjectId",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSenderEmail",
+          "kind": "property",
+          "signature": "string DefaultSenderEmail",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSenderName",
+          "kind": "property",
+          "signature": "string DefaultSenderName",
+          "returnType": "string"
+        },
+        {
+          "name": "Region",
+          "kind": "property",
+          "signature": "string Region",
+          "returnType": "string"
+        },
+        {
+          "name": "BaseUrl",
+          "kind": "property",
+          "signature": "string BaseUrl",
+          "returnType": "string"
+        },
+        {
+          "name": "TimeoutSeconds",
+          "kind": "property",
+          "signature": "int TimeoutSeconds",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "SendGridEmailServiceCollectionExtensions",
+      "fqn": "Granit.Notifications.SendGrid.Extensions.SendGridEmailServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.SendGrid",
+      "file": "src/Granit.Notifications.SendGrid/Extensions/SendGridEmailServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitNotificationsSendGrid",
+          "kind": "method",
+          "signature": "AddGranitNotificationsSendGrid(this IServiceCollection services, Action<SendGridEmailOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsSendGridModule",
+      "fqn": "Granit.Notifications.SendGrid.GranitNotificationsSendGridModule",
+      "kind": "class",
+      "project": "Granit.Notifications.SendGrid",
+      "file": "src/Granit.Notifications.SendGrid/GranitNotificationsSendGridModule.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "SendGridEmailOptions",
+      "fqn": "Granit.Notifications.SendGrid.Options.SendGridEmailOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.SendGrid",
+      "file": "src/Granit.Notifications.SendGrid/Options/SendGridEmailOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "ApiKey",
+          "kind": "property",
+          "signature": "string ApiKey",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSenderEmail",
+          "kind": "property",
+          "signature": "string DefaultSenderEmail",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSenderName",
+          "kind": "property",
+          "signature": "string DefaultSenderName",
+          "returnType": "string"
+        },
+        {
+          "name": "BaseUrl",
+          "kind": "property",
+          "signature": "string BaseUrl",
+          "returnType": "string"
+        },
+        {
+          "name": "TimeoutSeconds",
+          "kind": "property",
+          "signature": "int TimeoutSeconds",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
       "name": "SignalRNotificationsServiceCollectionExtensions",
       "fqn": "Granit.Notifications.SignalR.Extensions.SignalRNotificationsServiceCollectionExtensions",
       "kind": "class",
@@ -39799,120 +39810,6 @@
           "kind": "property",
           "signature": "Guid NotificationId",
           "returnType": "Guid"
-        }
-      ]
-    },
-    {
-      "name": "SnsSmsServiceCollectionExtensions",
-      "fqn": "Granit.Notifications.Sms.AwsSns.Extensions.SnsSmsServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Notifications.Sms.AwsSns",
-      "file": "src/Granit.Notifications.Sms.AwsSns/Extensions/SnsSmsServiceCollectionExtensions.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "AddGranitNotificationsSmsAwsSns",
-          "kind": "method",
-          "signature": "AddGranitNotificationsSmsAwsSns(this IServiceCollection services, Action<AwsSnsSmsOptions>? configure = null)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitNotificationsSmsAwsSnsModule",
-      "fqn": "Granit.Notifications.Sms.AwsSns.GranitNotificationsSmsAwsSnsModule",
-      "kind": "class",
-      "project": "Granit.Notifications.Sms.AwsSns",
-      "file": "src/Granit.Notifications.Sms.AwsSns/GranitNotificationsSmsAwsSnsModule.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "AwsSnsSmsOptions",
-      "fqn": "Granit.Notifications.Sms.AwsSns.Options.AwsSnsSmsOptions",
-      "kind": "class",
-      "project": "Granit.Notifications.Sms.AwsSns",
-      "file": "src/Granit.Notifications.Sms.AwsSns/Options/AwsSnsSmsOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Region",
-          "kind": "property",
-          "signature": "string Region",
-          "returnType": "string"
-        },
-        {
-          "name": "SenderId",
-          "kind": "property",
-          "signature": "string? SenderId",
-          "returnType": "string?"
-        },
-        {
-          "name": "OriginationNumber",
-          "kind": "property",
-          "signature": "string? OriginationNumber",
-          "returnType": "string?"
-        }
-      ]
-    },
-    {
-      "name": "AcsSmsServiceCollectionExtensions",
-      "fqn": "Granit.Notifications.Sms.AzureCommunicationServices.Extensions.AcsSmsServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Notifications.Sms.AzureCommunicationServices",
-      "file": "src/Granit.Notifications.Sms.AzureCommunicationServices/Extensions/AcsSmsServiceCollectionExtensions.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "AddGranitNotificationsSmsAcs",
-          "kind": "method",
-          "signature": "AddGranitNotificationsSmsAcs(this IServiceCollection services, Action<AcsSmsOptions>? configure = null)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitNotificationsSmsAcsModule",
-      "fqn": "Granit.Notifications.Sms.AzureCommunicationServices.GranitNotificationsSmsAcsModule",
-      "kind": "class",
-      "project": "Granit.Notifications.Sms.AzureCommunicationServices",
-      "file": "src/Granit.Notifications.Sms.AzureCommunicationServices/GranitNotificationsSmsAcsModule.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "AcsSmsOptions",
-      "fqn": "Granit.Notifications.Sms.AzureCommunicationServices.Options.AcsSmsOptions",
-      "kind": "class",
-      "project": "Granit.Notifications.Sms.AzureCommunicationServices",
-      "file": "src/Granit.Notifications.Sms.AzureCommunicationServices/Options/AcsSmsOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "ConnectionString",
-          "kind": "property",
-          "signature": "string? ConnectionString",
-          "returnType": "string?"
-        },
-        {
-          "name": "TimeoutSeconds",
-          "kind": "property",
-          "signature": "int TimeoutSeconds",
-          "returnType": "int"
         }
       ]
     },
@@ -39981,6 +39878,65 @@
       "file": "src/Granit.Notifications.Sms/SmsMessage.cs",
       "line": 4,
       "members": []
+    },
+    {
+      "name": "SmtpEmailServiceCollectionExtensions",
+      "fqn": "Granit.Notifications.Smtp.Extensions.SmtpEmailServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.Smtp",
+      "file": "src/Granit.Notifications.Smtp/Extensions/SmtpEmailServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitNotificationsSmtp",
+          "kind": "method",
+          "signature": "AddGranitNotificationsSmtp(this IServiceCollection services, Action<SmtpOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsSmtpModule",
+      "fqn": "Granit.Notifications.Smtp.GranitNotificationsSmtpModule",
+      "kind": "class",
+      "project": "Granit.Notifications.Smtp",
+      "file": "src/Granit.Notifications.Smtp/GranitNotificationsSmtpModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "SmtpOptions",
+      "fqn": "Granit.Notifications.Smtp.Options.SmtpOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.Smtp",
+      "file": "src/Granit.Notifications.Smtp/Options/SmtpOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Host",
+          "kind": "property",
+          "signature": "string Host",
+          "returnType": "string"
+        },
+        {
+          "name": "Port",
+          "kind": "property",
+          "signature": "int Port",
+          "returnType": "int"
+        },
+        {
+          "name": "UseSsl",
+          "kind": "property",
+          "signature": "bool UseSsl",
+          "returnType": "bool"
+        },
+        {
+          "name": "DefaultSenderEmail",
+          "kind": "property",
+          "signature": "string? DefaultSenderEmail",
+          "returnType": "string?"
+        }
+      ]
     },
     {
       "name": "SseNotificationEndpoints",

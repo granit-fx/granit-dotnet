@@ -22,7 +22,7 @@ least one provider that supplies a keyed `IEmailSender`:
 
 ```csharp
 context.Services.AddGranitNotificationsEmail();
-context.Services.AddGranitNotificationsEmailSmtp(); // keyed "Smtp" (the default)
+context.Services.AddGranitNotificationsSmtp(); // keyed "Smtp" (the default)
 // or context.Services.AddGranitNotificationsBrevo(); // keyed "Brevo"
 ```
 

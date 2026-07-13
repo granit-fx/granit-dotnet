@@ -429,10 +429,10 @@
         "dependencies": {
           "Granit.Notifications": "[0.1.0-dev, )",
           "Granit.Notifications.Email": "[0.1.0-dev, )",
-          "Granit.Notifications.Email.Smtp": "[0.1.0-dev, )",
           "Granit.Notifications.Endpoints": "[0.1.0-dev, )",
           "Granit.Notifications.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Granit.Notifications.SignalR": "[0.1.0-dev, )"
+          "Granit.Notifications.SignalR": "[0.1.0-dev, )",
+          "Granit.Notifications.Smtp": "[0.1.0-dev, )"
         }
       },
       "granit.caching": {
@@ -622,14 +622,6 @@
           "Granit.Templating": "[0.1.0-dev, )"
         }
       },
-      "granit.notifications.email.smtp": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Notifications.Email": "[0.1.0-dev, )",
-          "MailKit": "[4.*, )",
-          "MimeKit": "[4.*, )"
-        }
-      },
       "granit.notifications.endpoints": {
         "type": "Project",
         "dependencies": {
@@ -656,6 +648,14 @@
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
           "MessagePack": "[2.5.*, )",
           "Microsoft.AspNetCore.SignalR.StackExchangeRedis": "[10.*, )"
+        }
+      },
+      "granit.notifications.smtp": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Notifications.Email": "[0.1.0-dev, )",
+          "MailKit": "[4.*, )",
+          "MimeKit": "[4.*, )"
         }
       },
       "granit.observability": {

@@ -206,8 +206,8 @@ Example: `Granit.Foo.Bar.Baz` → `"Foo:Bar:Baz"`.
   `BlobStorage`, `Cache`, `Bff`, …). Any compound concept MUST be hierarchical.
 - [ ] **Aligned with namespace** — a sub-project under `Granit.Foo.Bar` should
   bind to `"Foo:Bar"`, never invent a new root (`"AzureCommunicationServices:Email"`
-  for `Granit.Notifications.Email.AzureCommunicationServices` is wrong — should be
-  `"Notifications:Email:AzureCommunicationServices"`).
+  for `Granit.Notifications.AzureCommunicationServices.Email` is wrong — should be
+  `"Notifications:AzureCommunicationServices:Email"`).
 - [ ] **No collision** — two `Options` classes never share the same SectionName
   string. ASP.NET allows a section to host both bound properties AND child
   sub-sections, but two distinct Options classes pointing at the same path

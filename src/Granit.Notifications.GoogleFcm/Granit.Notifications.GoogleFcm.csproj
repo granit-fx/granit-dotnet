@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Notifications.GoogleFcm</PackageId>
+    <Description>Firebase Cloud Messaging (FCM) provider for Granit.Notifications.MobilePush. Sends push notifications via FCM HTTP v1 API.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Notifications.GoogleFcm.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Apis.Auth" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Http.Resilience\Granit.Http.Resilience.csproj" />
+    <ProjectReference Include="..\Granit.Notifications.MobilePush\Granit.Notifications.MobilePush.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+  </ItemGroup>
+
+</Project>

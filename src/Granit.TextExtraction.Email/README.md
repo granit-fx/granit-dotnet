@@ -78,7 +78,7 @@ Body resolution:
 
 - **MimeKit** — MIT (Jeffrey Stedfast). Already listed in
   [`THIRD-PARTY-NOTICES.md`](../../THIRD-PARTY-NOTICES.md) (consumed by
-  `Granit.Notifications.Email.Smtp`).
+  `Granit.Notifications.Smtp`).
 
 ## Documentation
 

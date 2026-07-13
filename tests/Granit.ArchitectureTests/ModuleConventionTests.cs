@@ -26,7 +26,5 @@ public sealed class ModuleConventionTests
             typeof(ModuleConventionTests).Assembly,
             typeof(GranitModule),
             "Granit.",
-            "Module",
-            // "AzureCommunicationServices" → "Acs": full name is too long for ergonomic use.
-            "GranitNotificationsSmsAcsModule");
+            "Module");
 }

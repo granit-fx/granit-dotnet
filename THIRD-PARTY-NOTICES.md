@@ -9,7 +9,7 @@ covered by their own license notices, restored from NuGet by the consumer
 (Granit packages do not redistribute their binaries).
 
 Last updated: 2026-07-12 (added Google.Apis.Auth 1.75.0, Apache-2.0 — OAuth 2.0
-service-account token minting for FCM HTTP v1 in `Granit.Notifications.MobilePush.GoogleFcm`;
+service-account token minting for FCM HTTP v1 in `Granit.Notifications.GoogleFcm`;
 corrected the stale FirebaseAdmin consumer reference to `Granit.Identity.Federated.GoogleCloud`).
 Prior: 2026-07-04 (added Roslynator.Analyzers 4.15.0, Apache-2.0 — dev-time
 code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06-30 (global NuGet version refresh via `dotnet restore --force-evaluate`; aligned the OpenTelemetry instrumentation packages on 1.16.*; added three previously unlisted direct dependencies — DnsClient, Microsoft.Extensions.ApiDescription.Server, Npgsql.OpenTelemetry; removed dead central entries (packages referenced by no project, including modules migrated to granit-business); recomputed the license summary; notable bumps: WolverineFx 6.16.0, DocumentFormat.OpenXml 3.5.1, Scalar.AspNetCore 2.16.6, Anthropic 12.32.0, AWSSDK 4.0.100, Microsoft.\* 10.0.9 / 10.7.0, MailKit / MimeKit 4.17.0)
@@ -311,13 +311,13 @@ Europe (S3-compatible object storage, S3-compatible API).
 ### AWSSDK.SimpleEmailV2
 
 This SDK provides an email delivery channel via Amazon SES. It is used by the
-`Granit.Notifications.Email.AwsSes` package as an alternative to the SMTP channel.
+`Granit.Notifications.AwsSes` package as an alternative to the SMTP channel.
 
 ### AWSSDK.SimpleNotificationService
 
-This SDK is used by the `Granit.Notifications.Push.Aws` package to send mobile
-push notifications via Amazon SNS as an alternative to Firebase Cloud Messaging
-and Azure Notification Hubs.
+This SDK is used by the `Granit.Notifications.AwsSns` package to send SMS and
+mobile push notifications via Amazon SNS (push as an alternative to Firebase
+Cloud Messaging and Azure Notification Hubs).
 
 ### AWSSDK.CognitoIdentityProvider
 
@@ -351,8 +351,8 @@ Storage providers.
 
 ### Azure.Communication.Email / Azure.Communication.Sms
 
-These SDKs are used by the `Granit.Notifications.Email.AzureCommunicationServices`
-and `Granit.Notifications.Sms.AzureCommunicationServices` packages to send emails
+These SDKs are used by the `Granit.Notifications.AzureCommunicationServices`
+package (Email and SMS capabilities) to send emails
 and SMS via Azure Communication Services.
 
 ### FirebaseAdmin
@@ -362,7 +362,7 @@ Firebase Authentication user administration.
 
 ### Google.Apis.Auth
 
-This library is used by the `Granit.Notifications.MobilePush.GoogleFcm` package to
+This library is used by the `Granit.Notifications.GoogleFcm` package to
 mint OAuth 2.0 service-account access tokens for the FCM HTTP v1 API
 (scope `firebase.messaging`). License: Apache-2.0.
 
@@ -392,7 +392,7 @@ ipinfo.io library is compiled or redistributed (HTTP calls via
 
 ### Microsoft.Azure.NotificationHubs
 
-This SDK is used by the `Granit.Notifications.MobilePush.AzureNotificationHubs`
+This SDK is used by the `Granit.Notifications.AzureNotificationHubs`
 package to send mobile push notifications (FCM, APNS) via Azure Notification Hubs.
 
 ### Microsoft.Playwright
@@ -404,7 +404,7 @@ is redistributed with the framework.
 
 ### MimeKit
 
-This package is used by `Granit.Notifications.Email.Smtp` to build MIME messages
+This package is used by `Granit.Notifications.Smtp` to build MIME messages
 and by `Granit.TextExtraction.Email` to extract text from `.eml` files (RFC822).
 The version is pinned to 4.16.0 via `Directory.Packages.props` to fix the
 GHSA-g7hc-96xr-gvvx vulnerability (CVE affecting versions < 4.15.1) and to align

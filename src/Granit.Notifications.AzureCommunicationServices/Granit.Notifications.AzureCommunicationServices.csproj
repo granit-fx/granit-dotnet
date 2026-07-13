@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Notifications.AzureCommunicationServices</PackageId>
+    <Description>Azure Communication Services provider for Granit.Notifications: email (IEmailSender) and SMS (ISmsSender) delivery, both keyed "AzureCommunicationServices".</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Notifications.AzureCommunicationServices.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Communication.Email" />
+    <PackageReference Include="Azure.Communication.Sms" />
+    <PackageReference Include="Azure.Identity" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Notifications.Email\Granit.Notifications.Email.csproj" />
+    <ProjectReference Include="..\Granit.Notifications.Sms\Granit.Notifications.Sms.csproj" />
+  </ItemGroup>
+
+</Project>

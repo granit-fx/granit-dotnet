@@ -9,7 +9,7 @@ namespace Granit.ArchitectureTests;
 
 /// <summary>
 /// Locks the canonical notification-provider template (reference implementation:
-/// <c>Granit.Notifications.MobilePush.AwsSns</c>). A provider package — any
+/// the MobilePush capability of <c>Granit.Notifications.AwsSns</c>). A provider package — any
 /// <c>Granit.Notifications.*</c> assembly implementing a channel <c>I*Sender</c>
 /// interface — must ship:
 /// <list type="bullet">

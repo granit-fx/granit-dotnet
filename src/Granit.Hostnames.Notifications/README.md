@@ -22,4 +22,4 @@ builder.AddGranitModule<GranitHostnamesNotificationsModule>();
 ```
 
 Requires `Granit.Notifications.Abstractions` and an `INotificationPublisher` implementation
-(e.g. `Granit.Notifications.Email.Smtp`) to be registered separately.
+(e.g. `Granit.Notifications.Smtp`) to be registered separately.

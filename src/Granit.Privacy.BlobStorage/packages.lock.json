@@ -267,8 +267,8 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.17.2",
-        "contentHash": "50n1ObhnfCyy2/nJfJSCYFjcs6RsVbtjpT5uzS7ZjnruQo+JRJeLhpsuF5ovR0R53MAS6wGrbJcs0xPWjj3bhA==",
+        "resolved": "6.17.3",
+        "contentHash": "sj0uRB5gLWRsGqszp5vN+OwHklJo+70hqhJPwpSrPgJdRFGeFjSFZ87iz6DiiWTGcpPaIupjrys/toI9VTN/Og==",
         "dependencies": {
           "JasperFx": "2.27.0",
           "JasperFx.Events": "2.27.0",
