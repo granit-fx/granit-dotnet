@@ -29,6 +29,15 @@ namespace Granit.Caching;
 public interface IConditionalCache
 {
     /// <summary>
+    /// <see langword="true"/> when entries are visible to every replica of the
+    /// application (shared backend such as Redis); <see langword="false"/> for
+    /// per-process implementations. Consumers whose correctness depends on
+    /// cluster-wide atomicity (idempotency, distributed locks) use this to
+    /// refuse silent single-instance operation outside Development.
+    /// </summary>
+    bool IsDistributed { get; }
+
+    /// <summary>
     /// Atomically sets the value only if the key does <b>not</b> already exist (SET NX).
     /// </summary>
     /// <typeparam name="T">Value type (must be JSON-serializable for the Redis implementation).</typeparam>

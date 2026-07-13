@@ -55,6 +55,10 @@ public sealed class ConditionalCacheKeyComposerTests
     }
 
     [Fact]
+    public void InMemoryConditionalCache_IsNotDistributed() =>
+        new InMemoryConditionalCache(TimeProvider.System, CreateSut()).IsDistributed.ShouldBeFalse();
+
+    [Fact]
     public async Task InMemoryConditionalCache_IsolatesTenants_OnSameLogicalKey()
     {
         var cache = new InMemoryConditionalCache(TimeProvider.System, CreateSut());

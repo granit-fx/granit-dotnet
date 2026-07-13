@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Http.ODataExposure.Tests.Integration;
@@ -66,7 +67,10 @@ internal sealed class ODataTestApp : IAsyncDisposable
         Action<ODataEntitySetBuilder<Invoice>>? configureEntitySet,
         int? rateLimitPermitLimit)
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        // Development: single-instance TestServer — the rate-limiting in-memory
+        // counter-store startup guard must not trip on it.
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(
+            new WebApplicationOptions { EnvironmentName = Environments.Development });
         builder.WebHost.UseTestServer();
 
         SqlCaptureSink sqlCapture = new();

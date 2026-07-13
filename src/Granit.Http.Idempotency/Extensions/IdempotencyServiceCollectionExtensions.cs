@@ -69,6 +69,9 @@ public static class IdempotencyServiceCollectionExtensions
         // are resolved from the request scope via IMiddlewareFactory.
         services.AddTransient<IdempotencyMiddleware>();
 
+        // Fail loud at startup when the resolved store is per-process outside Development.
+        services.AddHostedService<IdempotencyStartupGuard>();
+
         return services;
     }
 }
