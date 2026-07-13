@@ -10,11 +10,11 @@ public sealed class LegalDocumentRegistryTests
     private readonly LegalDocumentRegistry _sut = new();
 
     [Fact]
-    public void Register_AddsDocument()
+    public async Task Register_AddsDocument()
     {
         _sut.Register(new LegalDocumentDefinition("privacy-policy", "1.0.0", "Privacy Policy"));
 
-        _sut.GetDefinition("privacy-policy").ShouldNotBeNull();
+        (await _sut.GetDefinitionAsync("privacy-policy", TestContext.Current.CancellationToken)).ShouldNotBeNull();
     }
 
     [Fact]
@@ -28,24 +28,24 @@ public sealed class LegalDocumentRegistryTests
     }
 
     [Fact]
-    public void GetDefinition_UnknownDocument_ReturnsNull() =>
-        _sut.GetDefinition("unknown").ShouldBeNull();
+    public async Task GetDefinitionAsync_UnknownDocument_ReturnsNull() =>
+        (await _sut.GetDefinitionAsync("unknown", TestContext.Current.CancellationToken)).ShouldBeNull();
 
     [Fact]
-    public void GetDefinition_IsCaseInsensitive()
+    public async Task GetDefinitionAsync_IsCaseInsensitive()
     {
         _sut.Register(new LegalDocumentDefinition("Privacy-Policy", "1.0.0", "Privacy Policy"));
 
-        _sut.GetDefinition("privacy-policy").ShouldNotBeNull();
+        (await _sut.GetDefinitionAsync("privacy-policy", TestContext.Current.CancellationToken)).ShouldNotBeNull();
     }
 
     [Fact]
-    public void GetAll_ReturnsAllRegistered()
+    public async Task GetAllAsync_ReturnsAllRegistered()
     {
         _sut.Register(new LegalDocumentDefinition("privacy-policy", "1.0.0", "Privacy Policy"));
         _sut.Register(new LegalDocumentDefinition("terms", "1.0.0", "Terms of Service"));
 
-        _sut.GetAll().Count.ShouldBe(2);
+        (await _sut.GetAllAsync(TestContext.Current.CancellationToken)).Count.ShouldBe(2);
     }
 
     [Fact]
@@ -57,20 +57,20 @@ public sealed class LegalDocumentRegistryTests
     }
 
     [Fact]
-    public void GetAll_Empty_ReturnsEmptyList()
+    public async Task GetAllAsync_Empty_ReturnsEmptyList()
     {
-        IReadOnlyList<LegalDocumentDefinition> result = _sut.GetAll();
+        IReadOnlyList<LegalDocumentDefinition> result = await _sut.GetAllAsync(TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
     }
 
     [Fact]
-    public void GetDefinition_ReturnsCorrectDefinition()
+    public async Task GetDefinitionAsync_ReturnsCorrectDefinition()
     {
         LegalDocumentDefinition definition = new("privacy-policy", "2.1.0", "Privacy Policy v2.1");
         _sut.Register(definition);
 
-        LegalDocumentDefinition? result = _sut.GetDefinition("privacy-policy");
+        LegalDocumentDefinition? result = await _sut.GetDefinitionAsync("privacy-policy", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result!.CurrentVersion.ShouldBe("2.1.0");

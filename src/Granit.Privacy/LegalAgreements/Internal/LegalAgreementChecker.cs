@@ -12,7 +12,8 @@ internal sealed class LegalAgreementChecker(
     /// <inheritdoc/>
     public async Task<bool> HasAcceptedLatestAsync(Guid userId, string documentId, CancellationToken cancellationToken = default)
     {
-        LegalDocumentDefinition? definition = documentRegistry.GetDefinition(documentId);
+        LegalDocumentDefinition? definition = await documentRegistry
+            .GetDefinitionAsync(documentId, cancellationToken).ConfigureAwait(false);
         if (definition is null)
         {
             return false;
