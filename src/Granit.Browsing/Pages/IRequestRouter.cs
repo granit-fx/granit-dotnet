@@ -10,7 +10,7 @@ namespace Granit.Browsing.Pages;
 /// subscribers by funnelling every request through one router.
 /// </para>
 /// <para>
-/// Re-validates the host via <c>Granit.Http.Security.IUrlSafetyValidator</c> on every
+/// Re-validates the host via <c>Granit.Http.UrlSafety.IUrlSafetyValidator</c> on every
 /// intercepted request, defeating DNS-rebinding SSRF between navigation and fetch time.
 /// </para>
 /// </remarks>

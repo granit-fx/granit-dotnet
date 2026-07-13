@@ -6,7 +6,7 @@ using Granit.Browsing.Playwright.Options;
 using Granit.Browsing.Sandbox;
 using Granit.Events;
 using Granit.Guids;
-using Granit.Http.Security;
+using Granit.Http.UrlSafety;
 using Granit.IO.Extensions;
 using Granit.MultiTenancy;
 using Granit.Timing.Extensions;

@@ -35,7 +35,7 @@ public enum SandboxViolationKind
     /// <summary>The host resolves to a private / loopback / link-local / cloud-metadata address while <see cref="IBrowserSandboxProfile.BlockPrivateNetworks"/> is set.</summary>
     PrivateNetworkBlocked,
 
-    /// <summary>Wraps an <see cref="Granit.Http.Security.UrlSafetyResult"/> violation surfaced by <see cref="Granit.Http.Security.IUrlSafetyValidator"/>.</summary>
+    /// <summary>Wraps an <see cref="Granit.Http.UrlSafety.UrlSafetyResult"/> violation surfaced by <see cref="Granit.Http.UrlSafety.IUrlSafetyValidator"/>.</summary>
     UrlSafetyViolation,
 
     /// <summary>A caller attempted to bypass CSP while <see cref="IBrowserSandboxProfile.ForceCsp"/> is set.</summary>

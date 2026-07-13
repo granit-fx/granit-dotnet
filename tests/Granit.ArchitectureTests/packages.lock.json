@@ -2191,7 +2191,7 @@
           "Granit": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Http.Security": "[0.1.0-dev, )",
+          "Granit.Http.UrlSafety": "[0.1.0-dev, )",
           "Granit.IO": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
@@ -2724,13 +2724,6 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.http.security": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.MultiTenancy": "[0.1.0-dev, )"
-        }
-      },
       "granit.http.securityheaders": {
         "type": "Project",
         "dependencies": {
@@ -2747,6 +2740,12 @@
           "Granit.Diagnostics.Endpoints": "[0.1.0-dev, )",
           "Granit.Http.SecurityHeaders": "[0.1.0-dev, )",
           "Granit.Http.SecurityHeaders.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.urlsafety": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.identity": {
@@ -4252,7 +4251,7 @@
           "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.Resilience": "[0.1.0-dev, )",
-          "Granit.Http.Security": "[0.1.0-dev, )",
+          "Granit.Http.UrlSafety": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"

@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
-using Granit.Http.Security;
+using Granit.Http.UrlSafety;
 
 namespace Granit.Webhooks.Internal;
 

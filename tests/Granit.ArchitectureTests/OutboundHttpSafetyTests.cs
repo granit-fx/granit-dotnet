@@ -12,7 +12,7 @@ namespace Granit.ArchitectureTests;
 /// <remarks>
 /// <list type="bullet">
 ///   <item><b>R-SSRF-1:</b> any package emitting outbound user-controlled URLs MUST reference
-///   <c>Granit.Http.Security</c>.</item>
+///   <c>Granit.Http.UrlSafety</c>.</item>
 ///   <item><b>R-SSRF-3:</b> no source code may call <c>Dns.GetHostEntry</c> / <c>GetHostEntryAsync</c>
 ///   (triggers reverse-PTR; use <c>GetHostAddressesAsync</c> instead).</item>
 /// </list>
@@ -26,7 +26,7 @@ public sealed class OutboundHttpSafetyTests
 
     /// <summary>
     /// R-SSRF-1 — packages that emit outbound user-controlled URLs must reference
-    /// <c>Granit.Http.Security</c>. The reference makes the SSRF blocklist and
+    /// <c>Granit.Http.UrlSafety</c>. The reference makes the SSRF blocklist and
     /// <c>IUrlSafetyValidator</c> available without each consumer reinventing the rule set.
     /// </summary>
     /// <remarks>
@@ -45,11 +45,11 @@ public sealed class OutboundHttpSafetyTests
         var doc = XDocument.Load(csprojPath);
         bool referenced = doc.Descendants("ProjectReference")
             .Select(e => e.Attribute("Include")?.Value ?? string.Empty)
-            .Any(r => r.Contains("Granit.Http.Security.csproj", StringComparison.Ordinal)
+            .Any(r => r.Contains("Granit.Http.UrlSafety.csproj", StringComparison.Ordinal)
                   && !r.Contains("Granit.Http.SecurityHeaders", StringComparison.Ordinal));
 
         referenced.ShouldBeTrue(
-            $"{projectName} emits outbound user-controlled URLs and must reference Granit.Http.Security " +
+            $"{projectName} emits outbound user-controlled URLs and must reference Granit.Http.UrlSafety " +
             "so it can use IUrlSafetyValidator / PrivateNetworkClassifier instead of inventing local rules.");
     }
 

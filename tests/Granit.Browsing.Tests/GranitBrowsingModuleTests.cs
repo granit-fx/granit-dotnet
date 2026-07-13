@@ -1,5 +1,5 @@
 using Granit.Browsing.Sandbox;
-using Granit.Http.Security;
+using Granit.Http.UrlSafety;
 using Granit.IO;
 using Granit.Modularity;
 using Shouldly;
@@ -18,14 +18,14 @@ public sealed class GranitBrowsingModuleTests
         typeof(GranitBrowsingModule).IsAssignableTo(typeof(GranitModule)).ShouldBeTrue();
 
     [Fact]
-    public void Module_DependsOn_HttpSecurity()
+    public void Module_DependsOn_HttpUrlSafety()
     {
         DependsOnAttribute attr = typeof(GranitBrowsingModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), inherit: false)
             .Cast<DependsOnAttribute>()
             .Single();
 
-        attr.DependedTypes.ShouldContain(typeof(GranitHttpSecurityModule));
+        attr.DependedTypes.ShouldContain(typeof(GranitHttpUrlSafetyModule));
     }
 
     [Fact]
