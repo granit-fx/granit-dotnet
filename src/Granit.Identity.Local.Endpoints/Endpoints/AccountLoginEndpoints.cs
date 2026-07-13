@@ -5,7 +5,6 @@ using Granit.Auditing.Domain;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Events;
-using Granit.Http.Timing;
 using Granit.Identity.Endpoints;
 using Granit.Identity.Endpoints.Options;
 using Granit.Identity.Local.Diagnostics;
@@ -103,7 +102,7 @@ internal static partial class AccountLoginEndpoints
         // + DB writes for lockout counter). The floor is randomized per request
         // (500-700ms) so an attacker cannot fingerprint a fixed threshold.
         await using var floor = MinimumResponseTimeGuard.Begin(
-            MinResponseFloorMs, MaxResponseFloorMs);
+            MinResponseFloorMs, MaxResponseFloorMs, cancellationToken);
 
         using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
             IdentityLocalActivitySource.UserAuthentication);

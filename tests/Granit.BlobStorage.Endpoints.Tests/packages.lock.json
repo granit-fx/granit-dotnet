@@ -535,7 +535,7 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.BlobStorage": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
+          "Granit.Http.Idempotency.Abstractions": "[0.1.0-dev, )",
           "Granit.Http.RateLimiting": "[0.1.0-dev, )",
           "Granit.QueryEngine.Endpoints": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
@@ -594,9 +594,6 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
-      "granit.http.abstractions": {
-        "type": "Project"
-      },
       "granit.http.apidocumentation": {
         "type": "Project",
         "dependencies": {
@@ -620,6 +617,9 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
         }
+      },
+      "granit.http.idempotency.abstractions": {
+        "type": "Project"
       },
       "granit.http.ratelimiting": {
         "type": "Project",

@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using Granit.Entities;
-using Granit.Http.Idempotency.Attributes;
+using Granit.Http.Idempotency;
 using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.Extensions;

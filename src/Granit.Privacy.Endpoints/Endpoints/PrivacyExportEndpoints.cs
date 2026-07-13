@@ -1,5 +1,5 @@
 using Granit.Guids;
-using Granit.Http.Idempotency.Attributes;
+using Granit.Http.Idempotency;
 using Granit.Http.RateLimiting.AspNetCore;
 using Granit.MultiTenancy;
 using Granit.Privacy.DataExport;

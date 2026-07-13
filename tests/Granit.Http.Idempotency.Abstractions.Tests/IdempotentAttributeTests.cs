@@ -1,9 +1,7 @@
-using Granit.Http.Idempotency.Abstractions;
-using Granit.Http.Idempotency.Attributes;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Http.Abstractions.Tests;
+namespace Granit.Http.Idempotency.Abstractions.Tests;
 
 /// <summary>
 /// Validates <see cref="IdempotentAttribute"/> defaults and <see cref="IIdempotencyMetadata"/> contract.

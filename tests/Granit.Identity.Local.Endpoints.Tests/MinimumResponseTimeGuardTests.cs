@@ -1,9 +1,9 @@
 using System.Diagnostics;
-using Granit.Http.Timing;
+using Granit.Identity.Local.Endpoints.Internal;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Http.Abstractions.Tests;
+namespace Granit.Identity.Local.Endpoints.Tests;
 
 /// <summary>
 /// Validates <see cref="MinimumResponseTimeGuard"/> argument checks and timing-padding behavior.
@@ -12,16 +12,16 @@ public sealed class MinimumResponseTimeGuardTests
 {
     [Fact]
     public void Begin_with_negative_minimum_throws() =>
-        Should.Throw<ArgumentOutOfRangeException>(() => MinimumResponseTimeGuard.Begin(-1, 10));
+        Should.Throw<ArgumentOutOfRangeException>(() => MinimumResponseTimeGuard.Begin(-1, 10, TestContext.Current.CancellationToken));
 
     [Fact]
     public void Begin_with_maximum_less_than_minimum_throws() =>
-        Should.Throw<ArgumentOutOfRangeException>(() => MinimumResponseTimeGuard.Begin(10, 5));
+        Should.Throw<ArgumentOutOfRangeException>(() => MinimumResponseTimeGuard.Begin(10, 5, TestContext.Current.CancellationToken));
 
     [Fact]
     public void Begin_with_equal_minimum_and_maximum_is_allowed()
     {
-        var guard = MinimumResponseTimeGuard.Begin(0, 0);
+        var guard = MinimumResponseTimeGuard.Begin(0, 0, TestContext.Current.CancellationToken);
 
         guard.ShouldBeOfType<MinimumResponseTimeGuard>();
     }
@@ -32,7 +32,7 @@ public sealed class MinimumResponseTimeGuardTests
         const int floorMs = 200;
 
         long start = Stopwatch.GetTimestamp();
-        await using (var guard = MinimumResponseTimeGuard.Begin(floorMs, floorMs))
+        await using (var guard = MinimumResponseTimeGuard.Begin(floorMs, floorMs, TestContext.Current.CancellationToken))
         {
             // No work — should still take at least floorMs.
         }
@@ -49,7 +49,7 @@ public sealed class MinimumResponseTimeGuardTests
         const int handlerWorkMs = 120;
 
         long start = Stopwatch.GetTimestamp();
-        await using (var guard = MinimumResponseTimeGuard.Begin(floorMs, floorMs))
+        await using (var guard = MinimumResponseTimeGuard.Begin(floorMs, floorMs, TestContext.Current.CancellationToken))
         {
             await Task.Delay(handlerWorkMs, TestContext.Current.CancellationToken);
         }
@@ -70,7 +70,7 @@ public sealed class MinimumResponseTimeGuardTests
         for (int i = 0; i < 5; i++)
         {
             long start = Stopwatch.GetTimestamp();
-            await using (var guard = MinimumResponseTimeGuard.Begin(minMs, maxMs))
+            await using (var guard = MinimumResponseTimeGuard.Begin(minMs, maxMs, TestContext.Current.CancellationToken))
             {
                 // No work.
             }

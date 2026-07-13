@@ -276,16 +276,16 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.http.abstractions": {
-        "type": "Project"
-      },
       "granit.http.idempotency": {
         "type": "Project",
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
+          "Granit.Http.Idempotency.Abstractions": "[0.1.0-dev, )",
           "Microsoft.IO.RecyclableMemoryStream": "[3.*, )"
         }
+      },
+      "granit.http.idempotency.abstractions": {
+        "type": "Project"
       },
       "granit.testing": {
         "type": "Project",

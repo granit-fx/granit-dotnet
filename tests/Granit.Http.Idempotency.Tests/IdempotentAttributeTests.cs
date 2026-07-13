@@ -1,5 +1,3 @@
-using Granit.Http.Idempotency.Abstractions;
-using Granit.Http.Idempotency.Attributes;
 using Shouldly;
 using Xunit;
 

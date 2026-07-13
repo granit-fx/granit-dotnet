@@ -1,7 +1,7 @@
 using Granit.Authorization;
 using Granit.Authorization.Domain;
 using Granit.Entities;
-using Granit.Http.Idempotency.Attributes;
+using Granit.Http.Idempotency;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;

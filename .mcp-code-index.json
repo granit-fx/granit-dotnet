@@ -338,7 +338,7 @@
       "name": "Granit.Authentication.ApiKeys.Endpoints",
       "deps": [
         "Granit.Authentication.ApiKeys",
-        "Granit.Http.Abstractions",
+        "Granit.Http.Idempotency.Abstractions",
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.QueryEngine.Abstractions",
@@ -664,7 +664,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.BlobStorage",
-        "Granit.Http.Abstractions",
+        "Granit.Http.Idempotency.Abstractions",
         "Granit.Http.RateLimiting",
         "Granit.QueryEngine.Endpoints",
         "Granit.Validation",
@@ -1151,11 +1151,6 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Http.Abstractions",
-      "deps": [],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.Http.ApiDocumentation",
       "deps": [
         "Granit.Http.ApiVersioning",
@@ -1234,8 +1229,13 @@
       "name": "Granit.Http.Idempotency",
       "deps": [
         "Granit.Caching",
-        "Granit.Http.Abstractions"
+        "Granit.Http.Idempotency.Abstractions"
       ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Http.Idempotency.Abstractions",
+      "deps": [],
       "framework": "net10.0"
     },
     {
@@ -1521,7 +1521,7 @@
         "Granit.Authentication.External",
         "Granit.Authorization",
         "Granit.Caching",
-        "Granit.Http.Abstractions",
+        "Granit.Http.Idempotency.Abstractions",
         "Granit.Http.ApiDocumentation",
         "Granit.Http.SecurityHeaders",
         "Granit.Identity.Endpoints",
@@ -2186,7 +2186,7 @@
         "Granit.Auditing",
         "Granit.Authorization",
         "Granit.Caching",
-        "Granit.Http.Abstractions",
+        "Granit.Http.Idempotency.Abstractions",
         "Granit.Http.ApiDocumentation",
         "Granit.OpenIddict",
         "Granit.OpenIddict.Server",
@@ -2377,7 +2377,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.Guids",
-        "Granit.Http.Abstractions",
+        "Granit.Http.Idempotency.Abstractions",
         "Granit.Http.ApiDocumentation",
         "Granit.Http.Cookies",
         "Granit.Http.RateLimiting",
@@ -2922,7 +2922,7 @@
       "name": "Granit.Webhooks.Endpoints",
       "deps": [
         "Granit.Authorization",
-        "Granit.Http.Abstractions",
+        "Granit.Http.Idempotency.Abstractions",
         "Granit.QueryEngine.Endpoints",
         "Granit.Validation",
         "Granit.Webhooks",
@@ -25713,15 +25713,6 @@
       "members": []
     },
     {
-      "name": "IIdempotencyMetadata",
-      "fqn": "Granit.Http.Idempotency.Abstractions.IIdempotencyMetadata",
-      "kind": "interface",
-      "project": "Granit.Http.Abstractions",
-      "file": "src/Granit.Http.Abstractions/Idempotency/Abstractions/IIdempotencyMetadata.cs",
-      "line": 7,
-      "members": []
-    },
-    {
       "name": "IIdempotencyStore",
       "fqn": "Granit.Http.Idempotency.Abstractions.IIdempotencyStore",
       "kind": "interface",
@@ -25752,28 +25743,6 @@
           "kind": "method",
           "signature": "DeleteAsync(string key, CancellationToken cancellationToken)",
           "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IdempotentAttribute",
-      "fqn": "Granit.Http.Idempotency.Attributes.IdempotentAttribute",
-      "kind": "class",
-      "project": "Granit.Http.Abstractions",
-      "file": "src/Granit.Http.Abstractions/Idempotency/Attributes/IdempotentAttribute.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "Required",
-          "kind": "property",
-          "signature": "bool Required",
-          "returnType": "bool"
-        },
-        {
-          "name": "CompletedTtlSeconds",
-          "kind": "property",
-          "signature": "int CompletedTtlSeconds",
-          "returnType": "int"
         }
       ]
     },
@@ -25850,6 +25819,37 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IIdempotencyMetadata",
+      "fqn": "Granit.Http.Idempotency.IIdempotencyMetadata",
+      "kind": "interface",
+      "project": "Granit.Http.Idempotency.Abstractions",
+      "file": "src/Granit.Http.Idempotency.Abstractions/IIdempotencyMetadata.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "IdempotentAttribute",
+      "fqn": "Granit.Http.Idempotency.IdempotentAttribute",
+      "kind": "class",
+      "project": "Granit.Http.Idempotency.Abstractions",
+      "file": "src/Granit.Http.Idempotency.Abstractions/IdempotentAttribute.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Required",
+          "kind": "property",
+          "signature": "bool Required",
+          "returnType": "bool"
+        },
+        {
+          "name": "CompletedTtlSeconds",
+          "kind": "property",
+          "signature": "int CompletedTtlSeconds",
+          "returnType": "int"
         }
       ]
     },
@@ -27213,15 +27213,6 @@
           "returnType": "string?"
         }
       ]
-    },
-    {
-      "name": "MinimumResponseTimeGuard",
-      "fqn": "Granit.Http.Timing.MinimumResponseTimeGuard",
-      "kind": "struct",
-      "project": "Granit.Http.Abstractions",
-      "file": "src/Granit.Http.Abstractions/Timing/MinimumResponseTimeGuard.cs",
-      "line": 26,
-      "members": []
     },
     {
       "name": "IOMetrics",

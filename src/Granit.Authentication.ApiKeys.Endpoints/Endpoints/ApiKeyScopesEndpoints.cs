@@ -1,6 +1,6 @@
 using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Authorization;
-using Granit.Http.Idempotency.Attributes;
+using Granit.Http.Idempotency;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

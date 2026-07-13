@@ -2,8 +2,7 @@ using System.Diagnostics;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Events;
-using Granit.Http.Idempotency.Attributes;
-using Granit.Http.Timing;
+using Granit.Http.Idempotency;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;
@@ -119,7 +118,7 @@ internal static class AccountPasswordEndpoints
         // and writes an outbox row, a miss returns immediately. Reuse the login
         // bounds so /login and /forgot-password present the same surface.
         await using var floor = MinimumResponseTimeGuard.Begin(
-            AccountLoginEndpoints.MinResponseFloorMs, AccountLoginEndpoints.MaxResponseFloorMs);
+            AccountLoginEndpoints.MinResponseFloorMs, AccountLoginEndpoints.MaxResponseFloorMs, cancellationToken);
 
         using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
             IdentityLocalActivitySource.PasswordReset);

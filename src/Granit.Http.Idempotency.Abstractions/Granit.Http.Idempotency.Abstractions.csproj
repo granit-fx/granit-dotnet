@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Http.Idempotency.Abstractions</PackageId>
+    <Description>Contracts for Granit HTTP idempotency: the [Idempotent] endpoint attribute and the IIdempotencyMetadata marker consumed by the Granit.Http.Idempotency middleware. Pure POCOs — no ASP.NET Core dependency, referenced by every .Endpoints package that declares idempotent routes.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+</Project>
