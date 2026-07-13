@@ -150,4 +150,49 @@ public sealed class TemplateNotificationContentRendererTests
         title.ShouldBeNull();
         body.ShouldBe("<p>Body</p>");
     }
+
+    [Fact]
+    public void ExtractAndStripTitle_StripsLeadingAutoTranslatedMarker()
+    {
+        // Machine-translated templates are stamped with a leading marker comment by
+        // scripts/translate-templates.py — it must never leak into the rendered email body.
+        (string? title, string body) = TemplateNotificationContentRenderer.ExtractAndStripTitle(
+            "<!-- AUTO-TRANSLATED (model, 2026-01-01) — REVIEW BEFORE PRODUCTION -->\n<title>Bonjour</title>\n<p>Corps</p>");
+
+        title.ShouldBe("Bonjour");
+        body.ShouldBe("<p>Corps</p>");
+    }
+
+    [Fact]
+    public void ExtractAndStripTitle_StripsMultipleLeadingComments()
+    {
+        (string? title, string body) = TemplateNotificationContentRenderer.ExtractAndStripTitle(
+            "<!-- one -->\n<!-- two -->\n<title>Hello</title>\n<p>Body</p>");
+
+        title.ShouldBe("Hello");
+        body.ShouldBe("<p>Body</p>");
+    }
+
+    [Fact]
+    public void ExtractAndStripTitle_KeepsNonCommentContentBeforeTitle()
+    {
+        // Only leading comments/whitespace are stripped — real markup before the title
+        // (unusual, but legal) is preserved.
+        (string? title, string body) = TemplateNotificationContentRenderer.ExtractAndStripTitle(
+            "<!-- marker --><meta charset=\"utf-8\"><title>Hello</title>\n<p>Body</p>");
+
+        title.ShouldBe("Hello");
+        body.ShouldBe("<meta charset=\"utf-8\"><p>Body</p>");
+    }
+
+    [Fact]
+    public void ExtractAndStripTitle_CommentsAfterTitle_StayInBody()
+    {
+        // Comments after the title (e.g. MSO conditionals) are body content, not metadata.
+        (string? title, string body) = TemplateNotificationContentRenderer.ExtractAndStripTitle(
+            "<title>Hello</title>\n<!--[if mso]><table></table><![endif]--><p>Body</p>");
+
+        title.ShouldBe("Hello");
+        body.ShouldBe("<!--[if mso]><table></table><![endif]--><p>Body</p>");
+    }
 }

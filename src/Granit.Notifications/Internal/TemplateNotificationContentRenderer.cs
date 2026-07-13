@@ -362,6 +362,10 @@ internal sealed partial class TemplateNotificationContentRenderer(
     /// the body with that tag removed. Used so the title doesn't leak into the layout's
     /// <c>&lt;mj-body&gt;</c> (where a raw <c>&lt;title&gt;</c> would either render as visible
     /// text or be silently dropped by MJML), while the subject is threaded explicitly.
+    /// Leading HTML comments before the <c>&lt;title&gt;</c> (e.g. the
+    /// <c>&lt;!-- AUTO-TRANSLATED --&gt;</c> marker stamped by
+    /// <c>scripts/translate-templates.py</c>) are stripped too — same skipping as
+    /// <see cref="StartsWithMjml"/> — so template metadata never leaks into the rendered body.
     /// </summary>
     internal static (string? Title, string Body) ExtractAndStripTitle(string html)
     {
@@ -391,8 +395,41 @@ internal sealed partial class TemplateNotificationContentRenderer(
             after++;
         }
 
-        string body = html[..start] + html[after..];
+        int prefixStart = SkipLeadingCommentsAndWhitespace(html);
+        string body = prefixStart >= start
+            ? html[after..]
+            : html[prefixStart..start] + html[after..];
         return (string.IsNullOrEmpty(title) ? null : title, body);
+    }
+
+    /// <summary>
+    /// Returns the index of the first character that is neither leading whitespace nor part
+    /// of a complete leading HTML comment. Mirrors the comment-skipping in
+    /// <see cref="StartsWithMjml"/>.
+    /// </summary>
+    private static int SkipLeadingCommentsAndWhitespace(string html)
+    {
+        int pos = 0;
+        while (true)
+        {
+            while (pos < html.Length && char.IsWhiteSpace(html[pos]))
+            {
+                pos++;
+            }
+
+            if (!html.AsSpan(pos).StartsWith("<!--", StringComparison.Ordinal))
+            {
+                return pos;
+            }
+
+            int end = html.IndexOf("-->", pos, StringComparison.Ordinal);
+            if (end < 0)
+            {
+                return pos;
+            }
+
+            pos = end + 3;
+        }
     }
 
     private static partial class Log
