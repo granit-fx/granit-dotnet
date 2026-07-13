@@ -122,15 +122,15 @@ public sealed class NotificationsPrivacyDataProvider(
             yield break;
         }
 
-        var dto = new NotificationsExportDto(
+        var dto = new NotificationsExportFragment(
             UserId: context.SubjectUserId,
             ExportedInboxItems: inbox.Count,
             InboxTruncated: truncated,
             InboxLimit: NotificationsExportLimit,
             Inbox: inbox.ConvertAll(Map),
-            Preferences: preferences.Select(p => new NotificationsPreferenceDto(
+            Preferences: preferences.Select(p => new NotificationsPreferenceFragment(
                 p.NotificationTypeName, p.ChannelName, p.IsEnabled)).ToList(),
-            Subscriptions: subscriptions.Select(s => new NotificationsSubscriptionDto(
+            Subscriptions: subscriptions.Select(s => new NotificationsSubscriptionFragment(
                 s.Id, s.NotificationTypeName, s.EntityType, s.EntityId, s.CreatedAt)).ToList());
 
         yield return await fragmentBuilder
@@ -138,7 +138,7 @@ public sealed class NotificationsPrivacyDataProvider(
             .ConfigureAwait(false);
     }
 
-    private static NotificationsInboxDto Map(UserNotification notification) =>
+    private static NotificationsInboxFragment Map(UserNotification notification) =>
         new(
             notification.Id,
             notification.NotificationTypeName,
@@ -151,16 +151,16 @@ public sealed class NotificationsPrivacyDataProvider(
             notification.Data);
 }
 
-internal sealed record NotificationsExportDto(
+internal sealed record NotificationsExportFragment(
     Guid UserId,
     int ExportedInboxItems,
     bool InboxTruncated,
     int InboxLimit,
-    IReadOnlyList<NotificationsInboxDto> Inbox,
-    IReadOnlyList<NotificationsPreferenceDto> Preferences,
-    IReadOnlyList<NotificationsSubscriptionDto> Subscriptions);
+    IReadOnlyList<NotificationsInboxFragment> Inbox,
+    IReadOnlyList<NotificationsPreferenceFragment> Preferences,
+    IReadOnlyList<NotificationsSubscriptionFragment> Subscriptions);
 
-internal sealed record NotificationsInboxDto(
+internal sealed record NotificationsInboxFragment(
     Guid Id,
     string NotificationTypeName,
     string Severity,
@@ -171,12 +171,12 @@ internal sealed record NotificationsInboxDto(
     string? RelatedEntityId,
     JsonElement Data);
 
-internal sealed record NotificationsPreferenceDto(
+internal sealed record NotificationsPreferenceFragment(
     string NotificationTypeName,
     string ChannelName,
     bool IsEnabled);
 
-internal sealed record NotificationsSubscriptionDto(
+internal sealed record NotificationsSubscriptionFragment(
     Guid Id,
     string? NotificationTypeName,
     string? EntityType,

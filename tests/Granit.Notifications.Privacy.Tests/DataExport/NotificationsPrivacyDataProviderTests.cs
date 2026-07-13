@@ -135,12 +135,12 @@ public sealed class NotificationsPrivacyDataProviderTests
         _subscriptionReader.GetUserSubscriptionsAsync(userId.ToString(), null, Arg.Any<CancellationToken>())
             .Returns((IReadOnlyList<NotificationSubscription>)[]);
 
-        NotificationsExportDto? capturedDto = null;
+        NotificationsExportFragment? capturedDto = null;
         _builder.BuildJsonAsync(
             Arg.Any<PrivacyExportContext>(),
             NotificationsPrivacyDataProvider.ProviderName,
             "notifications.json",
-            Arg.Do<NotificationsExportDto>(d => capturedDto = d),
+            Arg.Do<NotificationsExportFragment>(d => capturedDto = d),
             Arg.Any<CancellationToken>())
             .Returns(StubFragment());
 

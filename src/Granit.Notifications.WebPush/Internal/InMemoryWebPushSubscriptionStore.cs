@@ -45,4 +45,15 @@ internal sealed class InMemoryWebPushSubscriptionStore : IWebPushSubscriptionRea
 
     private static string BuildKey(string userId, Guid? tenantId) =>
         tenantId.HasValue ? $"{tenantId.Value}:{userId}" : userId;
+
+    /// <inheritdoc />
+    public Task<int> EraseUserDataAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default)
+    {
+        if (_subscriptions.TryRemove(BuildKey(userId, tenantId), out List<WebPushSubscriptionInfo>? removed))
+        {
+            return Task.FromResult(removed.Count);
+        }
+
+        return Task.FromResult(0);
+    }
 }

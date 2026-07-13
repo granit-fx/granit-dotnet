@@ -250,6 +250,7 @@
     <ProjectReference Include="..\..\src\Granit.Notifications.Endpoints\Granit.Notifications.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.EntityFrameworkCore\Granit.Notifications.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.MobilePush\Granit.Notifications.MobilePush.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Notifications.MobilePush.Privacy\Granit.Notifications.MobilePush.Privacy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.AwsSns\Granit.Notifications.AwsSns.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.AzureNotificationHubs\Granit.Notifications.AzureNotificationHubs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.MobilePush.Endpoints\Granit.Notifications.MobilePush.Endpoints.csproj" />
@@ -261,6 +262,7 @@
     <ProjectReference Include="..\..\src\Granit.Notifications.Sse\Granit.Notifications.Sse.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.Twilio\Granit.Notifications.Twilio.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.WebPush\Granit.Notifications.WebPush.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Notifications.WebPush.Privacy\Granit.Notifications.WebPush.Privacy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.WebPush.Endpoints\Granit.Notifications.WebPush.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.WebPush.EntityFrameworkCore\Granit.Notifications.WebPush.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.WhatsApp\Granit.Notifications.WhatsApp.csproj" />

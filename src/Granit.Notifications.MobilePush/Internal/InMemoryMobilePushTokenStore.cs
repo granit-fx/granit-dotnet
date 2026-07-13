@@ -65,4 +65,19 @@ internal sealed class InMemoryMobilePushTokenStore(IMobilePushTokenHasher hasher
 
         return Task.CompletedTask;
     }
+
+    /// <inheritdoc />
+    public Task<int> EraseUserDataAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default)
+    {
+        int erased = 0;
+        foreach (((string hash, Guid? keyTenant), MobilePushToken token) in _tokens)
+        {
+            if (token.UserId == userId && keyTenant == tenantId && _tokens.TryRemove((hash, keyTenant), out _))
+            {
+                erased++;
+            }
+        }
+
+        return Task.FromResult(erased);
+    }
 }

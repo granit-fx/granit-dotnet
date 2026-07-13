@@ -3345,6 +3345,13 @@
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
+      "granit.notifications.mobilepush.privacy": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Notifications.MobilePush": "[0.1.0-dev, )",
+          "Granit.Privacy.BlobStorage": "[0.1.0-dev, )"
+        }
+      },
       "granit.notifications.privacy": {
         "type": "Project",
         "dependencies": {
@@ -3430,6 +3437,13 @@
           "Granit.Notifications.WebPush": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
+      "granit.notifications.webpush.privacy": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Notifications.WebPush": "[0.1.0-dev, )",
+          "Granit.Privacy.BlobStorage": "[0.1.0-dev, )"
         }
       },
       "granit.notifications.whatsapp": {

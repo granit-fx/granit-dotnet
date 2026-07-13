@@ -314,6 +314,7 @@
     <Project Path="src/Granit.Notifications.MobilePush.EntityFrameworkCore/Granit.Notifications.MobilePush.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Notifications.GoogleFcm/Granit.Notifications.GoogleFcm.csproj" />
     <Project Path="src/Granit.Notifications.MobilePush/Granit.Notifications.MobilePush.csproj" />
+    <Project Path="src/Granit.Notifications.MobilePush.Privacy/Granit.Notifications.MobilePush.Privacy.csproj" />
     <Project Path="src/Granit.Notifications.Privacy/Granit.Notifications.Privacy.csproj" />
     <Project Path="src/Granit.Notifications.SignalR/Granit.Notifications.SignalR.csproj" />
     <Project Path="src/Granit.Notifications.Sms/Granit.Notifications.Sms.csproj" />
@@ -322,6 +323,7 @@
     <Project Path="src/Granit.Notifications.WebPush.Endpoints/Granit.Notifications.WebPush.Endpoints.csproj" />
     <Project Path="src/Granit.Notifications.WebPush.EntityFrameworkCore/Granit.Notifications.WebPush.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Notifications.WebPush/Granit.Notifications.WebPush.csproj" />
+    <Project Path="src/Granit.Notifications.WebPush.Privacy/Granit.Notifications.WebPush.Privacy.csproj" />
     <Project Path="src/Granit.Notifications.WhatsApp/Granit.Notifications.WhatsApp.csproj" />
     <Project Path="src/Granit.Notifications.Wolverine/Granit.Notifications.Wolverine.csproj" />
     <Project Path="src/Granit.Notifications.Zulip/Granit.Notifications.Zulip.csproj" />
@@ -698,6 +700,7 @@
     <Project Path="tests/Granit.Notifications.MobilePush.EntityFrameworkCore.Tests/Granit.Notifications.MobilePush.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.GoogleFcm.Tests/Granit.Notifications.GoogleFcm.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.MobilePush.Tests/Granit.Notifications.MobilePush.Tests.csproj" />
+    <Project Path="tests/Granit.Notifications.MobilePush.Privacy.Tests/Granit.Notifications.MobilePush.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Privacy.Tests/Granit.Notifications.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.SignalR.Tests/Granit.Notifications.SignalR.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Sms.Tests/Granit.Notifications.Sms.Tests.csproj" />
@@ -707,6 +710,7 @@
     <Project Path="tests/Granit.Notifications.WebPush.Endpoints.Tests/Granit.Notifications.WebPush.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.WebPush.EntityFrameworkCore.Tests/Granit.Notifications.WebPush.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.WebPush.Tests/Granit.Notifications.WebPush.Tests.csproj" />
+    <Project Path="tests/Granit.Notifications.WebPush.Privacy.Tests/Granit.Notifications.WebPush.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.WhatsApp.Tests/Granit.Notifications.WhatsApp.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Wolverine.Tests/Granit.Notifications.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
