@@ -1,7 +1,9 @@
-namespace Granit.Settings.Endpoints.Internal;
+namespace Granit.Settings;
 
 /// <summary>
-/// Well-known setting names declared by the settings endpoints module.
+/// Well-known cascading setting names (User/Tenant/Global) declared by the settings
+/// endpoints module. Lives in the core package so non-HTTP modules (notification channels,
+/// sync filters) can reference the canonical names without duplicating string constants.
 /// </summary>
 /// <remarks>
 /// Public so that application modules (e.g. Keycloak sync filters) can reference

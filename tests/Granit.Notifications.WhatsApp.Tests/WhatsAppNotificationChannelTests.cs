@@ -164,4 +164,52 @@ public sealed class WhatsAppNotificationChannelTests
         OccurredAt = DateTimeOffset.UtcNow,
         Culture = culture,
     };
+
+    // ──── Settings cascade (Tenant/Global) ────
+
+    [Fact]
+    public async Task SendAsync_NoTriggerNoRecipientCulture_UsesTenantOrGlobalSetting()
+    {
+        Granit.Settings.Services.ISettingProvider settings = Substitute.For<Granit.Settings.Services.ISettingProvider>();
+        settings.GetOrNullAsync(Granit.Settings.WellKnownSettingNames.PreferredCulture, Arg.Any<CancellationToken>())
+            .Returns("nl");
+        WhatsAppNotificationChannel channel = new(_serviceProvider, _options, _recipientResolver, settings);
+        _recipientResolver.ResolveAsync("user-1", Arg.Any<CancellationToken>())
+            .Returns(new RecipientInfo { UserId = "user-1", PhoneNumber = "+3225551234" });
+
+        await channel.SendAsync(BuildContext(), TestContext.Current.CancellationToken);
+
+        await _whatsAppSender.Received(1).SendAsync(
+            Arg.Is<WhatsAppMessage>(m => m.Language == "nl"), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SendAsync_NoSettingAnywhere_FallsBackToTerminalDefaultLanguage()
+    {
+        Granit.Settings.Services.ISettingProvider settings = Substitute.For<Granit.Settings.Services.ISettingProvider>();
+        settings.GetOrNullAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((string?)null);
+        WhatsAppNotificationChannel channel = new(_serviceProvider, _options, _recipientResolver, settings);
+        _recipientResolver.ResolveAsync("user-1", Arg.Any<CancellationToken>())
+            .Returns(new RecipientInfo { UserId = "user-1", PhoneNumber = "+3225551234" });
+
+        await channel.SendAsync(BuildContext(), TestContext.Current.CancellationToken);
+
+        await _whatsAppSender.Received(1).SendAsync(
+            Arg.Is<WhatsAppMessage>(m => m.Language == "fr"), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SendAsync_RecipientCulture_TakesPrecedenceOverTenantSetting()
+    {
+        Granit.Settings.Services.ISettingProvider settings = Substitute.For<Granit.Settings.Services.ISettingProvider>();
+        settings.GetOrNullAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns("nl");
+        WhatsAppNotificationChannel channel = new(_serviceProvider, _options, _recipientResolver, settings);
+        _recipientResolver.ResolveAsync("user-1", Arg.Any<CancellationToken>())
+            .Returns(new RecipientInfo { UserId = "user-1", PhoneNumber = "+3225551234", PreferredCulture = "de" });
+
+        await channel.SendAsync(BuildContext(), TestContext.Current.CancellationToken);
+
+        await _whatsAppSender.Received(1).SendAsync(
+            Arg.Is<WhatsAppMessage>(m => m.Language == "de"), Arg.Any<CancellationToken>());
+    }
 }

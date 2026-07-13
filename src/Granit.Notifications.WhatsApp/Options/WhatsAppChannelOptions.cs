@@ -10,8 +10,10 @@ public sealed class WhatsAppChannelOptions
     public string Provider { get; set; } = string.Empty;
 
     /// <summary>
-    /// BCP-47 language sent to the provider's template API when neither the trigger nor the
-    /// recipient carries a culture. Replaces the previously hardcoded "fr".
+    /// Terminal code-level BCP-47 language, used only when the whole chain is empty:
+    /// trigger culture, recipient preferred culture (User setting), and the
+    /// <c>Granit.Localization.PreferredCulture</c> setting (Tenant/Global levels).
+    /// Replaces the previously hardcoded "fr".
     /// </summary>
     public string DefaultLanguage { get; set; } = "fr";
 }

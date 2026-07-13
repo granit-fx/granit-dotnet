@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Settings\Granit.Settings.csproj" />
   </ItemGroup>
 
 </Project>

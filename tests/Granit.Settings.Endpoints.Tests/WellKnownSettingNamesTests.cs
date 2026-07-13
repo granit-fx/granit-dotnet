@@ -1,4 +1,3 @@
-using Granit.Settings.Endpoints.Internal;
 using Shouldly;
 using Xunit;
 

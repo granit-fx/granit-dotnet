@@ -2045,7 +2045,8 @@
     {
       "name": "Granit.Notifications.WhatsApp",
       "deps": [
-        "Granit.Notifications.Abstractions"
+        "Granit.Notifications.Abstractions",
+        "Granit.Settings"
       ],
       "framework": "net10.0"
     },
@@ -50739,21 +50740,12 @@
       ]
     },
     {
-      "name": "WellKnownSettingNames",
-      "fqn": "Granit.Settings.Endpoints.Internal.WellKnownSettingNames",
-      "kind": "class",
-      "project": "Granit.Settings.Endpoints",
-      "file": "src/Granit.Settings.Endpoints/Internal/WellKnownSettingNames.cs",
-      "line": 10,
-      "members": []
-    },
-    {
       "name": "SettingsCultureMiddleware",
       "fqn": "Granit.Settings.Endpoints.Middleware.SettingsCultureMiddleware",
       "kind": "class",
       "project": "Granit.Settings.Endpoints",
       "file": "src/Granit.Settings.Endpoints/Middleware/SettingsCultureMiddleware.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "InvokeAsync",
@@ -51357,6 +51349,15 @@
       "project": "Granit.Settings",
       "file": "src/Granit.Settings/Values/SettingValue.cs",
       "line": 10,
+      "members": []
+    },
+    {
+      "name": "WellKnownSettingNames",
+      "fqn": "Granit.Settings.WellKnownSettingNames",
+      "kind": "class",
+      "project": "Granit.Settings",
+      "file": "src/Granit.Settings/WellKnownSettingNames.cs",
+      "line": 12,
       "members": []
     },
     {

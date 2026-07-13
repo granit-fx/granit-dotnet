@@ -3435,7 +3435,8 @@
       "granit.notifications.whatsapp": {
         "type": "Project",
         "dependencies": {
-          "Granit.Notifications.Abstractions": "[0.1.0-dev, )"
+          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
+          "Granit.Settings": "[0.1.0-dev, )"
         }
       },
       "granit.notifications.wolverine": {
