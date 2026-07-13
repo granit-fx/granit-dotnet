@@ -19,4 +19,10 @@ namespace Granit.Templating.Keys;
 /// </list>
 /// Tenant scoping is handled inside each <see cref="Pipeline.ITemplateResolver"/> implementation.
 /// </remarks>
-public sealed record TemplateKey(string Name, string? Culture = null);
+/// <param name="MimeType">
+/// Optional MIME-type hint (<c>"text/html"</c>, <c>"text/plain"</c>, <c>"text/markdown"</c>).
+/// <c>null</c> means the resolver's default (HTML for embedded resources). Lets one logical
+/// template name ship per-channel variants (<c>.html</c> for email, <c>.txt</c> for SMS/push,
+/// <c>.md</c> for chat).
+/// </param>
+public sealed record TemplateKey(string Name, string? Culture = null, string? MimeType = null);

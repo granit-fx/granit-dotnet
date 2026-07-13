@@ -1,4 +1,5 @@
 using Granit.Notifications.Abstractions;
+using Granit.Notifications.Rendering;
 using Granit.Notifications.Zulip.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,7 +10,8 @@ namespace Granit.Notifications.Zulip.Internal;
 internal sealed partial class ZulipNotificationChannel(
     IZulipSender sender,
     IOptions<ZulipChannelOptions> options,
-    ILogger<ZulipNotificationChannel> logger) : INotificationChannel
+    ILogger<ZulipNotificationChannel> logger,
+    INotificationContentRenderer? contentRenderer = null) : INotificationChannel
 {
     /// <inheritdoc />
     public string Name => NotificationChannels.Zulip;
@@ -19,7 +21,14 @@ internal sealed partial class ZulipNotificationChannel(
     {
         ZulipChannelOptions channelOptions = options.Value;
 
-        string content = $"**{context.NotificationTypeName}** ({context.Severity})\n\nNotification: {context.NotificationTypeName}";
+        RenderedNotificationContent? rendered = contentRenderer is null
+            ? null
+            : await contentRenderer.RenderAsync(
+                context, recipient: null, NotificationContentFormat.Markdown, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        string content = rendered is not null
+            ? $"**{rendered.Title ?? context.NotificationTypeName}**\n\n{rendered.Body}"
+            : $"**{context.NotificationTypeName}** ({context.Severity})\n\nNotification: {context.NotificationTypeName}";
 
         await sender.SendAsync(new ZulipMessage
         {

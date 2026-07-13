@@ -51,7 +51,8 @@ internal sealed class ScribanTemplateEngine(
     /// <inheritdoc/>
     public bool CanRender(TemplateDescriptor descriptor) =>
         string.Equals(descriptor.MimeType, "text/html", StringComparison.OrdinalIgnoreCase)
-        || string.Equals(descriptor.MimeType, "text/plain", StringComparison.OrdinalIgnoreCase);
+        || string.Equals(descriptor.MimeType, "text/plain", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(descriptor.MimeType, "text/markdown", StringComparison.OrdinalIgnoreCase);
 
     /// <inheritdoc/>
     public async Task<RenderedContent> RenderAsync<TData>(

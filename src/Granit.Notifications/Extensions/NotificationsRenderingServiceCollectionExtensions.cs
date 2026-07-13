@@ -1,5 +1,6 @@
 using Granit.Notifications.Internal;
 using Granit.Notifications.Rendering;
+using Granit.Templating.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -17,6 +18,11 @@ public static class NotificationsRenderingServiceCollectionExtensions
     public static IServiceCollection AddGranitNotificationContentRenderer(this IServiceCollection services)
     {
         services.TryAddSingleton<INotificationContentRenderer, TemplateNotificationContentRenderer>();
+
+        // Channel-agnostic text/markdown fallback templates (Notifications.Default.{txt,md},
+        // EN + FR baseline — other cultures via scripts/translate-templates.py).
+        services.AddEmbeddedTemplates(typeof(TemplateNotificationContentRenderer).Assembly);
+
         return services;
     }
 }
