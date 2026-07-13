@@ -31,7 +31,7 @@ internal sealed class WhatsAppNotificationChannel(
         {
             To = recipient.PhoneNumber,
             TemplateName = context.NotificationTypeName,
-            Language = context.Culture ?? recipient.PreferredCulture ?? "fr",
+            Language = context.Culture ?? recipient.PreferredCulture ?? options.Value.DefaultLanguage,
         }, cancellationToken).ConfigureAwait(false);
     }
 }

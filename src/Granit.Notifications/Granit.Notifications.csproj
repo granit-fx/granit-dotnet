@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Notifications.Tests" />
+    <InternalsVisibleTo Include="Granit.Notifications.Email.Tests" />
     <InternalsVisibleTo Include="Granit.Notifications.Wolverine" />
     <InternalsVisibleTo Include="Granit.Notifications.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.Notifications.EntityFrameworkCore.Tests" />
@@ -25,6 +26,7 @@
     <ProjectReference Include="..\Granit.Localization\Granit.Localization.csproj" />
     <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Templating\Granit.Templating.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -8,6 +8,7 @@ using Granit.Notifications.Diagnostics;
 using Granit.Notifications.Extensions;
 using Granit.Notifications.Internal;
 using Granit.QueryEngine;
+using Granit.Templating;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,6 +32,7 @@ namespace Granit.Notifications;
     typeof(GranitLocalizationModule),
     typeof(GranitNotificationsAbstractionsModule),
     typeof(GranitQueryEngineAbstractionsModule),
+    typeof(GranitTemplatingModule),
     typeof(GranitTimingModule))]
 public sealed class GranitNotificationsModule : GranitModule
 {

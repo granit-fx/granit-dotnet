@@ -10,6 +10,7 @@ using Granit.Html.AngleSharp;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Email.Internal;
 using Granit.Notifications.Email.Options;
+using Granit.Notifications.Internal;
 using Granit.Templating.Pipeline;
 using Granit.Timing;
 using Microsoft.Extensions.Configuration;
@@ -50,7 +51,9 @@ public sealed class EmailNotificationChannelTests
             new ConfigurationBuilder().Build(),
             _timezoneProvider,
             new AngleSharpHtmlToPlainTextConverter(),
-            Substitute.For<ILogger<EmailNotificationChannel>>());
+            Substitute.For<ILogger<EmailNotificationChannel>>(),
+            new TemplateNotificationContentRenderer(
+                _serviceProvider, Substitute.For<ILogger<TemplateNotificationContentRenderer>>()));
     }
 
     [Fact]
@@ -1121,6 +1124,8 @@ public sealed class EmailNotificationChannelTests
             config,
             _timezoneProvider,
             new AngleSharpHtmlToPlainTextConverter(),
-            Substitute.For<ILogger<EmailNotificationChannel>>());
+            Substitute.For<ILogger<EmailNotificationChannel>>(),
+            new TemplateNotificationContentRenderer(
+                _serviceProvider, Substitute.For<ILogger<TemplateNotificationContentRenderer>>()));
     }
 }

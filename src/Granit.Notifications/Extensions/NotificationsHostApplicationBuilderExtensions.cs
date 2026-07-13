@@ -37,6 +37,7 @@ public static class NotificationsHostApplicationBuilderExtensions
     {
         GranitActivitySourceRegistry.Register(Diagnostics.NotificationsActivitySource.Name);
         builder.Services.TryAddSingleton<NotificationsMetrics>();
+        builder.Services.AddGranitNotificationContentRenderer();
 
         // Options
         builder.Services

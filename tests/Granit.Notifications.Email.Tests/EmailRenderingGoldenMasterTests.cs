@@ -20,6 +20,7 @@ using Granit.Notifications.Abstractions;
 using Granit.Notifications.Email.Extensions;
 using Granit.Notifications.Email.Internal;
 using Granit.Notifications.Email.Options;
+using Granit.Notifications.Extensions;
 using Granit.Privacy.Notifications;
 using Granit.Templating.Extensions;
 using Granit.Templating.Mjml.Extensions;
@@ -57,6 +58,8 @@ public sealed class EmailRenderingGoldenMasterTests
         services.AddSingleton(Substitute.For<Granit.Templating.Store.IDocumentTemplateStoreReader>());
         services.AddGranitTemplatingWithScriban();
         services.AddGranitTemplatingWithMjml();
+        services.AddLogging();
+        services.AddGranitNotificationContentRenderer();
 
         // Real JSON localization so the layout's {{ t "NotificationsEmail:*" }} calls render
         // the production strings, not raw keys. The FusionCache-backed override store is
@@ -104,7 +107,8 @@ public sealed class EmailRenderingGoldenMasterTests
             sp.GetRequiredService<IConfiguration>(),
             new CurrentTimezoneProvider(),
             new AngleSharpHtmlToPlainTextConverter(),
-            new XunitRecordingLogger());
+            new XunitRecordingLogger(),
+            sp.GetRequiredService<Granit.Notifications.Rendering.INotificationContentRenderer>());
 
         await channel.SendAsync(new NotificationDeliveryContext
         {

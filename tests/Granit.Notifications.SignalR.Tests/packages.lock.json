@@ -374,6 +374,7 @@
           "Granit.Localization": "[0.1.0-dev, )",
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Templating": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Configuration.Binder": "[10.*, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
@@ -403,12 +404,38 @@
           "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
         }
       },
+      "granit.templating": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.DataLookup.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Granit.Workflow": "[0.1.0-dev, )"
+        }
+      },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
+        }
+      },
+      "granit.workflow": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Granit.Workflow.Abstractions": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
+        }
+      },
+      "granit.workflow.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "MessagePack": {

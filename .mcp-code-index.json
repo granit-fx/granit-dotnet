@@ -1823,6 +1823,7 @@
         "Granit.Localization",
         "Granit.Notifications.Abstractions",
         "Granit.QueryEngine.Abstractions",
+        "Granit.Templating",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -38895,6 +38896,22 @@
       ]
     },
     {
+      "name": "NotificationsRenderingServiceCollectionExtensions",
+      "fqn": "Granit.Notifications.Extensions.NotificationsRenderingServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications",
+      "file": "src/Granit.Notifications/Extensions/NotificationsRenderingServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitNotificationContentRenderer",
+          "kind": "method",
+          "signature": "AddGranitNotificationContentRenderer(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
       "name": "GoogleFcmMobilePushServiceCollectionExtensions",
       "fqn": "Granit.Notifications.GoogleFcm.Extensions.GoogleFcmMobilePushServiceCollectionExtensions",
       "kind": "class",
@@ -38975,7 +38992,7 @@
       "kind": "class",
       "project": "Granit.Notifications",
       "file": "src/Granit.Notifications/GranitNotificationsModule.cs",
-      "line": 35,
+      "line": 37,
       "members": [
         {
           "name": "ConfigureServices",
@@ -39610,6 +39627,56 @@
       "project": "Granit.Notifications.Abstractions",
       "file": "src/Granit.Notifications.Abstractions/RecipientInfo.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "INotificationContentRenderer",
+      "fqn": "Granit.Notifications.Rendering.INotificationContentRenderer",
+      "kind": "interface",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Rendering/INotificationContentRenderer.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "RenderAsync",
+          "kind": "method",
+          "signature": "RenderAsync(NotificationDeliveryContext context, RecipientInfo? recipient, NotificationContentFormat format, IReadOnlyDictionary<string, object?>? extraModelData = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<RenderedNotificationContent?>"
+        }
+      ]
+    },
+    {
+      "name": "NotificationContentFormat",
+      "fqn": "Granit.Notifications.Rendering.NotificationContentFormat",
+      "kind": "enum",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Rendering/NotificationContentFormat.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "NotificationDataModel",
+      "fqn": "Granit.Notifications.Rendering.NotificationDataModel",
+      "kind": "class",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Rendering/NotificationDataModel.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ToDictionary",
+          "kind": "method",
+          "signature": "ToDictionary(JsonElement element)",
+          "returnType": "Dictionary<string, object?>"
+        }
+      ]
+    },
+    {
+      "name": "RenderedNotificationContent",
+      "fqn": "Granit.Notifications.Rendering.RenderedNotificationContent",
+      "kind": "record",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Rendering/RenderedNotificationContent.cs",
+      "line": 15,
       "members": []
     },
     {
@@ -40514,6 +40581,12 @@
           "name": "Provider",
           "kind": "property",
           "signature": "string Provider",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultLanguage",
+          "kind": "property",
+          "signature": "string DefaultLanguage",
           "returnType": "string"
         }
       ]

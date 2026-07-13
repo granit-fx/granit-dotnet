@@ -3223,6 +3223,7 @@
           "Granit.Localization": "[0.1.0-dev, )",
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Templating": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
