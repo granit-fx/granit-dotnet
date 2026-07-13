@@ -68,6 +68,8 @@ public sealed class WebPushPrivacyDataProviderTests
 
         await foreach (ExportFragment _ in CreateSut().ExportAsync(Context(), TestContext.Current.CancellationToken))
         {
+            // Intentionally empty: drain the async stream so the export pipeline runs and
+            // the fragment builder captures the wire shape asserted below.
         }
 
         captured.ShouldNotBeNull();
