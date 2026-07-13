@@ -18,7 +18,7 @@ public sealed class NowGlobalContextTests
     }
 
     [Fact]
-    public void Resolve_ReturnsExpectedDateFormats()
+    public async Task Resolve_ReturnsExpectedDateFormats()
     {
         DateTimeOffset fixedTime = new(2026, 2, 27, 14, 35, 0, TimeSpan.Zero);
 
@@ -26,7 +26,7 @@ public sealed class NowGlobalContextTests
         clock.Now.Returns(fixedTime);
 
         NowGlobalContext sut = new(clock);
-        dynamic resolved = sut.Resolve();
+        dynamic resolved = await sut.ResolveAsync(TestContext.Current.CancellationToken);
 
         // Verify properties via reflection (anonymous type)
         System.Type type = resolved.GetType();
@@ -40,7 +40,7 @@ public sealed class NowGlobalContextTests
     }
 
     [Fact]
-    public void Resolve_IsoFormat_IsRoundTrippable()
+    public async Task Resolve_IsoFormat_IsRoundTrippable()
     {
         DateTimeOffset fixedTime = new(2026, 2, 27, 14, 35, 0, TimeSpan.FromHours(1));
 
@@ -48,7 +48,7 @@ public sealed class NowGlobalContextTests
         clock.Now.Returns(fixedTime);
 
         NowGlobalContext sut = new(clock);
-        dynamic resolved = sut.Resolve();
+        dynamic resolved = await sut.ResolveAsync(TestContext.Current.CancellationToken);
 
         string iso = (string)resolved.GetType().GetProperty("iso")!.GetValue(resolved)!;
         DateTimeOffset.TryParse(iso, out DateTimeOffset parsed).ShouldBeTrue();

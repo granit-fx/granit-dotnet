@@ -17,7 +17,7 @@ public sealed class PrivacyContactGlobalContextTests
             .ContextName.ShouldBe("privacy");
 
     [Fact]
-    public void Resolve_AllSettingsPresent_ProjectsAllFields()
+    public async Task Resolve_AllSettingsPresent_ProjectsAllFields()
     {
         ISettingProvider provider = StubProvider(new Dictionary<string, string?>
         {
@@ -29,7 +29,7 @@ public sealed class PrivacyContactGlobalContextTests
             [PrivacySettingNames.SupervisoryAuthorityUrl] = "https://www.autoriteprotectiondonnees.be",
         });
 
-        dynamic resolved = BuildContext(provider).Resolve();
+        dynamic resolved = await BuildContext(provider).ResolveAsync(TestContext.Current.CancellationToken);
 
         ((string)resolved.controller_name).ShouldBe("Acme Corp");
         ((string)resolved.controller_email).ShouldBe("privacy@acme.test");
@@ -40,11 +40,11 @@ public sealed class PrivacyContactGlobalContextTests
     }
 
     [Fact]
-    public void Resolve_MissingSettings_ProjectsEmptyStrings()
+    public async Task Resolve_MissingSettings_ProjectsEmptyStrings()
     {
         ISettingProvider provider = StubProvider([]);
 
-        dynamic resolved = BuildContext(provider).Resolve();
+        dynamic resolved = await BuildContext(provider).ResolveAsync(TestContext.Current.CancellationToken);
 
         ((string)resolved.controller_name).ShouldBeEmpty();
         ((string)resolved.controller_email).ShouldBeEmpty();
@@ -54,7 +54,7 @@ public sealed class PrivacyContactGlobalContextTests
     }
 
     [Fact]
-    public void Resolve_OnlyControllerSet_DpoFieldsAreEmpty()
+    public async Task Resolve_OnlyControllerSet_DpoFieldsAreEmpty()
     {
         ISettingProvider provider = StubProvider(new Dictionary<string, string?>
         {
@@ -62,7 +62,7 @@ public sealed class PrivacyContactGlobalContextTests
             [PrivacySettingNames.ControllerEmail] = "privacy@acme.test",
         });
 
-        dynamic resolved = BuildContext(provider).Resolve();
+        dynamic resolved = await BuildContext(provider).ResolveAsync(TestContext.Current.CancellationToken);
 
         ((string)resolved.controller_name).ShouldBe("Acme Corp");
         ((string)resolved.dpo_name).ShouldBeEmpty();
@@ -70,14 +70,14 @@ public sealed class PrivacyContactGlobalContextTests
     }
 
     [Fact]
-    public void Resolve_NullSettingValue_ProjectsEmptyString()
+    public async Task Resolve_NullSettingValue_ProjectsEmptyString()
     {
         ISettingProvider provider = StubProvider(new Dictionary<string, string?>
         {
             [PrivacySettingNames.ControllerName] = null,
         });
 
-        dynamic resolved = BuildContext(provider).Resolve();
+        dynamic resolved = await BuildContext(provider).ResolveAsync(TestContext.Current.CancellationToken);
 
         ((string)resolved.controller_name).ShouldBeEmpty();
     }

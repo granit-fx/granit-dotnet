@@ -1475,7 +1475,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         public string ContextName => "test";
 
-        public object Resolve() => new { FirstName = "John", Age = 42, Activated = true };
+        public Task<object> ResolveAsync(CancellationToken cancellationToken = default) => Task.FromResult<object>(new { FirstName = "John", Age = 42, Activated = true });
     }
 
     // =========================================================================

@@ -35,24 +35,24 @@ internal static class TemplatingVariablesEndpoints
     // GET /{name}/variables — Available template variables
     // -------------------------------------------------------------------------
 
-    private static Task<Results<Ok<TemplateVariablesResponse>, ProblemHttpResult>> HandleGetVariablesAsync(
+    private static async Task<Results<Ok<TemplateVariablesResponse>, ProblemHttpResult>> HandleGetVariablesAsync(
         HttpContext context,
         string name)
     {
         ProblemHttpResult? nameError = TemplatingResponseMapper.ValidateTemplateName(name);
         if (nameError is not null)
         {
-            return Task.FromResult<Results<Ok<TemplateVariablesResponse>, ProblemHttpResult>>(nameError);
+            return nameError;
         }
 
-        // Global variables — discovered by reflecting on ITemplateGlobalContext.Resolve() return types
+        // Global variables — discovered by reflecting on ITemplateGlobalContext.ResolveAsync() return types
         var globalContexts =
             context.RequestServices.GetServices<ITemplateGlobalContext>().ToList();
 
         List<TemplateVariableItemResponse> globalVariables = [];
         foreach (ITemplateGlobalContext globalContext in globalContexts)
         {
-            object resolved = globalContext.Resolve();
+            object resolved = await globalContext.ResolveAsync(context.RequestAborted).ConfigureAwait(false);
             Type resolvedType = resolved.GetType();
 
             foreach (PropertyInfo property in resolvedType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
@@ -71,7 +71,6 @@ internal static class TemplatingVariablesEndpoints
             ModelVariables: [],
             EnrichedVariables: []);
 
-        return Task.FromResult<Results<Ok<TemplateVariablesResponse>, ProblemHttpResult>>(
-            TypedResults.Ok(response));
+        return TypedResults.Ok(response);
     }
 }

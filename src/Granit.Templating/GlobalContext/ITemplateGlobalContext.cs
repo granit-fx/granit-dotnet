@@ -26,7 +26,8 @@ namespace Granit.Templating.GlobalContext;
 /// public sealed class AcmeBrandingContext : ITemplateGlobalContext
 /// {
 ///     public string ContextName => "brand";
-///     public object Resolve() => new { logo_url = "https://...", primary_color = "#..." };
+///     public Task&lt;object&gt; ResolveAsync(CancellationToken cancellationToken = default) =>
+///         Task.FromResult&lt;object&gt;(new { logo_url = "https://...", primary_color = "#..." });
 /// }
 ///
 /// services.AddSingleton&lt;ITemplateGlobalContext, AcmeBrandingContext&gt;();
@@ -44,11 +45,14 @@ public interface ITemplateGlobalContext
 
     /// <summary>
     /// Resolves and returns the context object for the current request.
-    /// Called once per render — implementations should be lightweight.
+    /// Called once per render — implementations should be lightweight. Async-first so
+    /// implementations backed by I/O (settings store, tenant URL resolution) never have
+    /// to block a thread with sync-over-async.
     /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>
     /// An object whose public properties are accessible as template variables
     /// under <see cref="ContextName"/>. Must not expose PII or secrets.
     /// </returns>
-    object Resolve();
+    Task<object> ResolveAsync(CancellationToken cancellationToken = default);
 }

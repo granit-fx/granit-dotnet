@@ -167,7 +167,7 @@ public sealed class ServiceCollectionExtensionsTests
     private sealed class FakeGlobalContext : ITemplateGlobalContext
     {
         public string ContextName => "fake";
-        public object Resolve() => new { };
+        public Task<object> ResolveAsync(CancellationToken cancellationToken = default) => Task.FromResult<object>(new { });
     }
 
     private sealed class FakeEnricher : ITemplateDataEnricher<string>

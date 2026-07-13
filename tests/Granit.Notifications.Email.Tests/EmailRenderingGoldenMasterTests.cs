@@ -188,7 +188,7 @@ public sealed class EmailRenderingGoldenMasterTests
     private sealed class EmptyPrivacyGlobalContext : Granit.Templating.GlobalContext.ITemplateGlobalContext
     {
         public string ContextName => "privacy";
-        public object Resolve() => new { dpo_email = "", controller_name = "" };
+        public Task<object> ResolveAsync(CancellationToken cancellationToken = default) => Task.FromResult<object>(new { dpo_email = "", controller_name = "" });
     }
 
     private sealed class XunitRecordingLogger : Microsoft.Extensions.Logging.ILogger<EmailNotificationChannel>

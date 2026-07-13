@@ -92,7 +92,7 @@ internal sealed class ScribanTemplateEngine(
             return parsed;
         });
 
-        TemplateContext context = BuildContext(descriptor, data, globalContexts, cancellationToken);
+        TemplateContext context = await BuildContextAsync(descriptor, data, globalContexts, cancellationToken).ConfigureAwait(false);
         string rendered = await template.RenderAsync(context).ConfigureAwait(false);
 
         return new TextRenderedContent(rendered, targetFormat)
@@ -101,7 +101,7 @@ internal sealed class ScribanTemplateEngine(
         };
     }
 
-    private TemplateContext BuildContext<TData>(
+    private async Task<TemplateContext> BuildContextAsync<TData>(
         TemplateDescriptor descriptor,
         TData data,
         IReadOnlyList<ITemplateGlobalContext> globalContexts,
@@ -130,7 +130,9 @@ internal sealed class ScribanTemplateEngine(
         foreach (ITemplateGlobalContext globalContext in globalContexts)
         {
             ScriptObject contextObj = [];
-            contextObj.Import(globalContext.Resolve(), renamer: StandardMemberRenamer.Default);
+            contextObj.Import(
+                await globalContext.ResolveAsync(cancellationToken).ConfigureAwait(false),
+                renamer: StandardMemberRenamer.Default);
             globals.SetValue(globalContext.ContextName, contextObj, readOnly: true);
         }
 

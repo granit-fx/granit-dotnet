@@ -99,7 +99,7 @@ public sealed class ScribanTemplateEngineTests
 
         ITemplateGlobalContext globalContext = Substitute.For<ITemplateGlobalContext>();
         globalContext.ContextName.Returns("ctx");
-        globalContext.Resolve().Returns(new { value = "fr-BE" });
+        globalContext.ResolveAsync(Arg.Any<CancellationToken>()).Returns(new { value = "fr-BE" });
 
         RenderedContent result = await Sut.RenderAsync(
             descriptor, new PersonModel("X", "Y"), DocumentFormat.Html,

@@ -52334,13 +52334,13 @@
       "kind": "interface",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/GlobalContext/ITemplateGlobalContext.cs",
-      "line": 36,
+      "line": 37,
       "members": [
         {
-          "name": "Resolve",
+          "name": "ResolveAsync",
           "kind": "method",
-          "signature": "Resolve()",
-          "returnType": "string ContextName { get; } object"
+          "signature": "ResolveAsync(CancellationToken cancellationToken = default)",
+          "returnType": "string ContextName { get; } Task<object>"
         }
       ]
     },

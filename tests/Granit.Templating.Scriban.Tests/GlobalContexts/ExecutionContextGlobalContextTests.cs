@@ -38,11 +38,11 @@ public sealed class ExecutionContextGlobalContextTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void Resolve_WithNoTenantRegistered_ReturnsCultureAndEmptyTenantFields()
+    public async Task Resolve_WithNoTenantRegistered_ReturnsCultureAndEmptyTenantFields()
     {
         ExecutionContextGlobalContext sut = CreateSut(BuildSp());
 
-        dynamic resolved = sut.Resolve();
+        dynamic resolved = await sut.ResolveAsync(TestContext.Current.CancellationToken);
         System.Type type = resolved.GetType();
 
         string culture = (string)type.GetProperty("culture")!.GetValue(resolved)!;
@@ -59,14 +59,14 @@ public sealed class ExecutionContextGlobalContextTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void Resolve_WithUnavailableTenant_ReturnsEmptyTenantFields()
+    public async Task Resolve_WithUnavailableTenant_ReturnsEmptyTenantFields()
     {
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(false);
 
         ExecutionContextGlobalContext sut = CreateSut(BuildSp(tenant));
 
-        dynamic resolved = sut.Resolve();
+        dynamic resolved = await sut.ResolveAsync(TestContext.Current.CancellationToken);
         System.Type type = resolved.GetType();
 
         string tenantId = (string)type.GetProperty("tenant_id")!.GetValue(resolved)!;
@@ -81,7 +81,7 @@ public sealed class ExecutionContextGlobalContextTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void Resolve_WithAvailableTenant_ReturnsTenantIdAndName()
+    public async Task Resolve_WithAvailableTenant_ReturnsTenantIdAndName()
     {
         var id = Guid.NewGuid();
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
@@ -91,7 +91,7 @@ public sealed class ExecutionContextGlobalContextTests
 
         ExecutionContextGlobalContext sut = CreateSut(BuildSp(tenant));
 
-        dynamic resolved = sut.Resolve();
+        dynamic resolved = await sut.ResolveAsync(TestContext.Current.CancellationToken);
         System.Type type = resolved.GetType();
 
         string tenantId = (string)type.GetProperty("tenant_id")!.GetValue(resolved)!;
@@ -106,7 +106,7 @@ public sealed class ExecutionContextGlobalContextTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void Resolve_WithAvailableTenantButNullId_ReturnsEmptyTenantId()
+    public async Task Resolve_WithAvailableTenantButNullId_ReturnsEmptyTenantId()
     {
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(true);
@@ -115,7 +115,7 @@ public sealed class ExecutionContextGlobalContextTests
 
         ExecutionContextGlobalContext sut = CreateSut(BuildSp(tenant));
 
-        dynamic resolved = sut.Resolve();
+        dynamic resolved = await sut.ResolveAsync(TestContext.Current.CancellationToken);
         string tenantId = (string)resolved.GetType().GetProperty("tenant_id")!.GetValue(resolved)!;
 
         tenantId.ShouldBeEmpty();
@@ -126,7 +126,7 @@ public sealed class ExecutionContextGlobalContextTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void Resolve_WithAvailableTenantButNullName_ReturnsEmptyTenantName()
+    public async Task Resolve_WithAvailableTenantButNullName_ReturnsEmptyTenantName()
     {
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(true);
@@ -135,7 +135,7 @@ public sealed class ExecutionContextGlobalContextTests
 
         ExecutionContextGlobalContext sut = CreateSut(BuildSp(tenant));
 
-        dynamic resolved = sut.Resolve();
+        dynamic resolved = await sut.ResolveAsync(TestContext.Current.CancellationToken);
         string tenantName = (string)resolved.GetType().GetProperty("tenant_name")!.GetValue(resolved)!;
 
         tenantName.ShouldBeEmpty();

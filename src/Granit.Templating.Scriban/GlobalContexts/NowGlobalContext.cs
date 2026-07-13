@@ -30,10 +30,10 @@ internal sealed class NowGlobalContext(IClock clock) : ITemplateGlobalContext
     public string ContextName => "now";
 
     /// <inheritdoc/>
-    public object Resolve()
+    public Task<object> ResolveAsync(CancellationToken cancellationToken = default)
     {
         DateTimeOffset now = _clock.Now;
-        return new
+        return Task.FromResult<object>(new
         {
             date = now.ToString("dd/MM/yyyy"),
             datetime = now.ToString("dd/MM/yyyy HH:mm"),
@@ -42,6 +42,6 @@ internal sealed class NowGlobalContext(IClock clock) : ITemplateGlobalContext
             month = now.Month.ToString("D2"),
             day = now.Day.ToString("D2"),
             time = now.ToString("HH:mm"),
-        };
+        });
     }
 }

@@ -168,7 +168,7 @@ public sealed class TextTemplateRendererAdditionalTests
 
         ITemplateGlobalContext globalCtx = Substitute.For<ITemplateGlobalContext>();
         globalCtx.ContextName.Returns("test");
-        globalCtx.Resolve().Returns(new { value = "ctx-data" });
+        globalCtx.ResolveAsync(Arg.Any<CancellationToken>()).Returns(new { value = "ctx-data" });
 
         IReadOnlyList<ITemplateGlobalContext>? capturedContexts = null;
         ITemplateEngine engine = Substitute.For<ITemplateEngine>();

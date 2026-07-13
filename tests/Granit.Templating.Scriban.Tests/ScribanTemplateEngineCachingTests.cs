@@ -104,6 +104,6 @@ public sealed class ScribanTemplateEngineCachingTests
     private sealed class TestGlobalContext(string name, object data) : ITemplateGlobalContext
     {
         public string ContextName => name;
-        public object Resolve() => data;
+        public Task<object> ResolveAsync(CancellationToken cancellationToken = default) => Task.FromResult(data);
     }
 }

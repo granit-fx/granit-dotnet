@@ -51,18 +51,17 @@ internal sealed class PrivacyContactGlobalContext(IServiceScopeFactory scopeFact
     public string ContextName => "privacy";
 
     /// <inheritdoc/>
-    public object Resolve()
+    public async Task<object> ResolveAsync(CancellationToken cancellationToken = default)
     {
         // ISettingProvider is scoped (depends on ICurrentTenant). PrivacyContactGlobalContext
         // is a singleton, so we open a short-lived scope to resolve it. The settings cache
         // makes the per-render overhead negligible after the first hit.
-        using IServiceScope scope = scopeFactory.CreateScope();
+        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
         ISettingProvider provider = scope.ServiceProvider.GetRequiredService<ISettingProvider>();
 
-        IReadOnlyList<SettingValue> values = provider
-            .GetAllAsync(AllSettings)
-            .GetAwaiter()
-            .GetResult();
+        IReadOnlyList<SettingValue> values = await provider
+            .GetAllAsync(AllSettings, cancellationToken)
+            .ConfigureAwait(false);
 
         var map = values.ToDictionary(v => v.Name, v => v.Value);
 

@@ -21,7 +21,7 @@ public sealed class AppGlobalContextTests
     }
 
     [Fact]
-    public void Resolve_ReturnsConfiguredValues()
+    public async Task Resolve_ReturnsConfiguredValues()
     {
         AppGlobalContextOptions opts = new()
         {
@@ -33,7 +33,7 @@ public sealed class AppGlobalContextTests
         IServiceScopeFactory scopeFactory = BuildScopeFactory();
         AppGlobalContext sut = new(Options.Create(opts), scopeFactory);
 
-        dynamic resolved = sut.Resolve();
+        dynamic resolved = await sut.ResolveAsync(TestContext.Current.CancellationToken);
         Type type = resolved.GetType();
 
         ((string)type.GetProperty("name")!.GetValue(resolved)!).ShouldBe("Guava Admin");
@@ -43,25 +43,25 @@ public sealed class AppGlobalContextTests
     }
 
     [Fact]
-    public void Resolve_TrimsTrailingSlashFromBaseUrl()
+    public async Task Resolve_TrimsTrailingSlashFromBaseUrl()
     {
         AppGlobalContextOptions opts = new() { BaseUrl = "https://app.example.com/" };
         IServiceScopeFactory scopeFactory = BuildScopeFactory();
         AppGlobalContext sut = new(Options.Create(opts), scopeFactory);
 
-        dynamic resolved = sut.Resolve();
+        dynamic resolved = await sut.ResolveAsync(TestContext.Current.CancellationToken);
 
         ((string)resolved.GetType().GetProperty("base_url")!.GetValue(resolved)!)
             .ShouldBe("https://app.example.com");
     }
 
     [Fact]
-    public void Resolve_DefaultOptions_ReturnsEmptyStrings()
+    public async Task Resolve_DefaultOptions_ReturnsEmptyStrings()
     {
         IServiceScopeFactory scopeFactory = BuildScopeFactory();
         AppGlobalContext sut = new(Options.Create(new AppGlobalContextOptions()), scopeFactory);
 
-        dynamic resolved = sut.Resolve();
+        dynamic resolved = await sut.ResolveAsync(TestContext.Current.CancellationToken);
         Type type = resolved.GetType();
 
         ((string)type.GetProperty("name")!.GetValue(resolved)!).ShouldBe(string.Empty);

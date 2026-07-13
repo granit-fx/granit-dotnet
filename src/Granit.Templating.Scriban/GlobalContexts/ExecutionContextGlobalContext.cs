@@ -35,7 +35,7 @@ internal sealed class ExecutionContextGlobalContext(IServiceProvider serviceProv
     public string ContextName => "context";
 
     /// <inheritdoc/>
-    public object Resolve()
+    public Task<object> ResolveAsync(CancellationToken cancellationToken = default)
     {
         CultureInfo culture = CultureInfo.CurrentCulture;
 
@@ -43,13 +43,13 @@ internal sealed class ExecutionContextGlobalContext(IServiceProvider serviceProv
         var tenant = serviceProvider.GetService(typeof(ICurrentTenant)) as ICurrentTenant;
         var timezoneProvider = serviceProvider.GetService(typeof(ICurrentTimezoneProvider)) as ICurrentTimezoneProvider;
 
-        return new
+        return Task.FromResult<object>(new
         {
             culture = culture.Name,
             culture_name = culture.DisplayName,
             timezone = timezoneProvider?.Timezone ?? string.Empty,
             tenant_id = tenant?.IsAvailable == true ? tenant.Id?.ToString() ?? string.Empty : string.Empty,
             tenant_name = tenant?.IsAvailable == true ? tenant.Name ?? string.Empty : string.Empty,
-        };
+        });
     }
 }

@@ -34,18 +34,20 @@ internal sealed class AppGlobalContext(
     public string ContextName => "app";
 
     /// <inheritdoc/>
-    public object Resolve()
+    public async Task<object> ResolveAsync(CancellationToken cancellationToken = default)
     {
         AppGlobalContextOptions opts = options.Value;
 
         // ITenantUrlResolver is scoped (depends on ITenantReader/EF Core).
         // AppGlobalContext is a singleton, so we create a short-lived scope to resolve it.
         // The resolver uses an in-memory cache so the scope + DB overhead is minimal.
-        string? resolvedUrl = null;
-        using (IServiceScope scope = scopeFactory.CreateScope())
+        string? resolvedUrl;
+        await using (AsyncServiceScope scope = scopeFactory.CreateAsyncScope())
         {
             ITenantUrlResolver? urlResolver = scope.ServiceProvider.GetService<ITenantUrlResolver>();
-            resolvedUrl = urlResolver?.ResolveBaseUrlAsync().GetAwaiter().GetResult();
+            resolvedUrl = urlResolver is null
+                ? null
+                : await urlResolver.ResolveBaseUrlAsync(cancellationToken).ConfigureAwait(false);
         }
 
         string baseUrl = !string.IsNullOrEmpty(resolvedUrl) ? resolvedUrl : opts.BaseUrl;
