@@ -1,3 +1,4 @@
+using Granit.Guids;
 using Granit.Modularity;
 using Granit.Settings;
 
@@ -9,5 +10,6 @@ namespace Granit.Privacy;
 /// an <see cref="System.Action{GranitPrivacyBuilder}"/> for data provider
 /// and legal document declarations.
 /// </summary>
+[DependsOn(typeof(GranitGuidsModule))]
 [DependsOn(typeof(GranitSettingsModule))]
 public sealed class GranitPrivacyModule : GranitModule;

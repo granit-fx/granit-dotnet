@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Privacy.BlobStorage" />
+    <InternalsVisibleTo Include="Granit.Privacy.Endpoints.Tests" />
     <InternalsVisibleTo Include="Granit.Privacy.Tests" />
   </ItemGroup>
 
@@ -37,6 +38,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Settings\Granit.Settings.csproj" />
     <ProjectReference Include="..\Granit.Workflow\Granit.Workflow.csproj" />

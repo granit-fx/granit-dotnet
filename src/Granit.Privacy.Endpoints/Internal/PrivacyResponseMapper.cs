@@ -133,4 +133,14 @@ internal static class PrivacyResponseMapper
 
         return null;
     }
+
+    /// <summary>
+    /// Captures the HTTP-layer audit metadata for an export request — the pseudonymized client
+    /// IP, user-agent, and trace correlation id — so the domain service stays HTTP-agnostic.
+    /// </summary>
+    internal static ExportRequestAuditMetadata ToExportAuditMetadata(HttpContext httpContext) =>
+        new(
+            ClientIp: PseudonymizeIpAddress(httpContext.Connection.RemoteIpAddress?.ToString()),
+            UserAgent: httpContext.Request.Headers.UserAgent.ToString(),
+            CorrelationId: httpContext.TraceIdentifier);
 }
