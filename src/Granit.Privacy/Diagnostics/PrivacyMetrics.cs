@@ -105,7 +105,7 @@ public sealed class PrivacyMetrics
             description: "Duration of IPrivacyDataProvider.HasDataAsync probes during scope visibility resolution.");
 
         _deletionDeadlineSlip = meter.CreateHistogram<double>(
-            "granit.privacy.deletion.deadline_slip",
+            "granit.privacy.deletion.deadline.slip",
             unit: "s",
             description:
                 "Seconds between a deferred deletion's scheduled deadline and its actual execution. "
