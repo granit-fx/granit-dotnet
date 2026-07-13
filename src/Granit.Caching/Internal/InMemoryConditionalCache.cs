@@ -20,6 +20,9 @@ internal sealed class InMemoryConditionalCache(
     private readonly Lock _lock = new();
 
     /// <inheritdoc/>
+    public bool IsDistributed => false;
+
+    /// <inheritdoc/>
     public Task<bool> SetIfAbsentAsync<T>(string key, T value, TimeSpan ttl, CancellationToken cancellationToken)
     {
         key = keyComposer.Compose(key);

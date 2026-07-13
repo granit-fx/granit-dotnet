@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Testing.Endpoints;
@@ -34,7 +35,11 @@ public sealed class GranitEndpointTestHost : IAsyncDisposable
         Action<WebApplication>? configureEndpoints = null,
         CancellationToken cancellationToken = default)
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        // Tests run as Development: an in-process TestServer is a single-instance
+        // scenario by construction, and the framework's multi-replica startup guards
+        // (idempotency / rate-limiting in-memory stores) must not trip on it.
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(
+            new WebApplicationOptions { EnvironmentName = Environments.Development });
         builder.WebHost.UseTestServer();
         builder.Logging.ClearProviders();
         builder.Services.AddRouting();

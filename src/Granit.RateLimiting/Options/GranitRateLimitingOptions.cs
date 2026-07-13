@@ -32,4 +32,15 @@ public sealed class GranitRateLimitingOptions
 
     /// <summary>Whether to use <c>Granit.Features</c> for plan-based quota resolution.</summary>
     public bool UseFeatureBasedQuotas { get; set; }
+
+    /// <summary>
+    /// Allows the in-memory counter store outside Development. Default: <see langword="false"/> —
+    /// the host fails at startup instead.
+    /// <para>
+    /// Per-pod counters multiply every limit by the replica count (a 100 req/s policy becomes
+    /// N×100 cluster-wide). Register a Redis <c>IConnectionMultiplexer</c> for cluster-wide
+    /// enforcement, or opt in for genuinely single-instance deployments.
+    /// </para>
+    /// </summary>
+    public bool AllowInMemoryCounterStore { get; set; }
 }

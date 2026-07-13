@@ -120,6 +120,9 @@ public static class RateLimitingServiceCollectionExtensions
         // ActivitySource registration
         GranitActivitySourceRegistry.Register(RateLimitingActivitySource.Name);
 
+        // Fail loud at startup when the counter store is per-process outside Development.
+        services.AddHostedService<RateLimitingStartupGuard>();
+
         return services;
     }
 }

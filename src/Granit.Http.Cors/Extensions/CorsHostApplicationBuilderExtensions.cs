@@ -1,6 +1,7 @@
 using Granit.Http.Cors.Internal;
 using Granit.Http.Cors.Options;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -16,8 +17,10 @@ public static class CorsHostApplicationBuilderExtensions
     /// Adds standardized CORS configuration for Granit applications.
     /// </summary>
     /// <remarks>
-    /// Reads <see cref="GranitCorsOptions"/> from the <c>"Cors"</c> configuration section
-    /// and configures ASP.NET Core CORS middleware with a default policy.
+    /// Reads <see cref="GranitCorsOptions"/> from the <c>"Http:Cors"</c> configuration section
+    /// and configures ASP.NET Core CORS middleware with a default policy. The middleware is
+    /// auto-applied at the head of the pipeline (opt out via
+    /// <see cref="GranitCorsOptions.AutoRegisterMiddleware"/>).
     /// <para>
     /// The default policy applies <see cref="CorsPolicyBuilder.AllowAnyHeader"/> and
     /// <see cref="CorsPolicyBuilder.AllowAnyMethod"/> (standard for REST APIs).
@@ -46,6 +49,10 @@ public static class CorsHostApplicationBuilderExtensions
             ConfigureCorsPolicyOptions>();
 
         builder.Services.AddCors();
+
+        // Module owns the middleware: auto-applied at pipeline head unless the host
+        // opts out (Http:Cors:AutoRegisterMiddleware=false) to control ordering.
+        builder.Services.AddTransient<IStartupFilter, CorsStartupFilter>();
 
         return builder;
     }

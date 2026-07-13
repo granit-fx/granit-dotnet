@@ -34,6 +34,15 @@ public sealed class GranitCorsOptions
     public bool AllowCredentials { get; set; }
 
     /// <summary>
+    /// Automatically applies the CORS middleware (default policy) at the start of the
+    /// pipeline via an <c>IStartupFilter</c>. Default: <see langword="true"/> — the module
+    /// owns CORS end to end; forgetting <c>UseCors()</c> previously produced a silent no-op.
+    /// Set to <see langword="false"/> to control middleware ordering manually and call
+    /// <c>app.UseCors()</c> yourself.
+    /// </summary>
+    public bool AutoRegisterMiddleware { get; set; } = true;
+
+    /// <summary>
     /// Returns <see cref="AllowedOrigins"/> with any trailing slash trimmed.
     /// The CORS spec defines an origin as a <c>scheme + host + port</c> tuple
     /// with no path, so an entry like <c>"https://app.x.com/"</c> would silently

@@ -28,6 +28,9 @@ internal sealed class RedisConditionalCache(
     private readonly CachingOptions _options = cachingOptions.Value;
 
     /// <inheritdoc/>
+    public bool IsDistributed => true;
+
+    /// <inheritdoc/>
     public async Task<bool> SetIfAbsentAsync<T>(string key, T value, TimeSpan ttl, CancellationToken cancellationToken)
     {
         RedisValue payload = Serialize(value);

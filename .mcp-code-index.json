@@ -15740,6 +15740,12 @@
       "line": 29,
       "members": [
         {
+          "name": "IsDistributed",
+          "kind": "property",
+          "signature": "bool IsDistributed",
+          "returnType": "bool"
+        },
+        {
           "name": "DeleteAsync",
           "kind": "method",
           "signature": "DeleteAsync(string key, CancellationToken cancellationToken)",
@@ -25489,7 +25495,7 @@
       "kind": "class",
       "project": "Granit.Http.Cors",
       "file": "src/Granit.Http.Cors/Extensions/CorsHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitCors",
@@ -25794,10 +25800,10 @@
       "line": 9,
       "members": [
         {
-          "name": "HeaderName",
+          "name": "AllowInMemoryStore",
           "kind": "property",
-          "signature": "string HeaderName",
-          "returnType": "string"
+          "signature": "bool AllowInMemoryStore",
+          "returnType": "bool"
         },
         {
           "name": "KeyPrefix",
@@ -52711,7 +52717,7 @@
       "kind": "class",
       "project": "Granit.Testing",
       "file": "src/Granit.Testing/Endpoints/GranitEndpointTestHost.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "CreateAuthenticatedClient",

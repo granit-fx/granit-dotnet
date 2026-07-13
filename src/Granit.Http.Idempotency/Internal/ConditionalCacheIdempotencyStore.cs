@@ -13,6 +13,12 @@ internal sealed partial class ConditionalCacheIdempotencyStore(
     IConditionalCache cache,
     ILogger<ConditionalCacheIdempotencyStore> logger) : IIdempotencyStore
 {
+    /// <summary>Whether the underlying cache is shared across replicas — see <see cref="IConditionalCache.IsDistributed"/>.</summary>
+    internal bool IsDistributed => cache.IsDistributed;
+
+    /// <summary>Backend implementation name, for the startup log.</summary>
+    internal string BackendName => cache.GetType().Name;
+
     /// <inheritdoc/>
     public Task<bool> TryAcquireAsync(string key, IdempotencyEntry entry, TimeSpan ttl, CancellationToken cancellationToken) =>
         cache.SetIfAbsentAsync(key, entry, ttl, cancellationToken);

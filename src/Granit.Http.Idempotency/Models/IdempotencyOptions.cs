@@ -4,12 +4,23 @@ namespace Granit.Http.Idempotency.Models;
 
 /// <summary>
 /// Configuration options for <see cref="Internal.IdempotencyMiddleware"/>.
-/// Bound from <c>appsettings.json</c> section <c>"Idempotency"</c>.
+/// Bound from <c>appsettings.json</c> section <c>"Http:Idempotency"</c>.
 /// </summary>
 public sealed class IdempotencyOptions
 {
     /// <summary>Configuration section name.</summary>
     public const string SectionName = "Http:Idempotency";
+
+    /// <summary>
+    /// Allows the middleware to run on a non-distributed (per-process) store outside
+    /// Development. Default: <see langword="false"/> — the host fails at startup instead.
+    /// <para>
+    /// A per-pod store silently breaks the at-most-once guarantee under multiple
+    /// replicas: the same <c>Idempotency-Key</c> routed to two pods executes the
+    /// handler twice. Only opt in for genuinely single-instance deployments.
+    /// </para>
+    /// </summary>
+    public bool AllowInMemoryStore { get; set; }
 
     /// <summary>Name of the HTTP header carrying the idempotency key. Default: <c>Idempotency-Key</c>.</summary>
     [Required]
