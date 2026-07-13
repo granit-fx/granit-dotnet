@@ -287,6 +287,7 @@
     <Project Path="src/Granit.Privacy.Auditing/Granit.Privacy.Auditing.csproj" />
     <Project Path="src/Granit.Privacy.BackgroundJobs.Wolverine/Granit.Privacy.BackgroundJobs.Wolverine.csproj" />
     <Project Path="src/Granit.Privacy.BackgroundJobs/Granit.Privacy.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.Privacy.BlobStorage.Endpoints/Granit.Privacy.BlobStorage.Endpoints.csproj" />
     <Project Path="src/Granit.Privacy.BlobStorage/Granit.Privacy.BlobStorage.csproj" />
     <Project Path="src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj" />
     <Project Path="src/Granit.Privacy.EntityFrameworkCore/Granit.Privacy.EntityFrameworkCore.csproj" />
@@ -294,6 +295,7 @@
     <Project Path="src/Granit.Privacy.Regulations.Cookies/Granit.Privacy.Regulations.Cookies.csproj" />
     <Project Path="src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj" />
     <Project Path="src/Granit.Privacy.Vault/Granit.Privacy.Vault.csproj" />
+    <Project Path="src/Granit.Privacy.Wolverine/Granit.Privacy.Wolverine.csproj" />
     <Project Path="src/Granit.Privacy/Granit.Privacy.csproj" />
   </Folder>
   <Folder Name="/src/Notifications/">
@@ -674,6 +676,7 @@
     <Project Path="tests/Granit.Privacy.Auditing.Tests/Granit.Privacy.Auditing.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.BackgroundJobs.Tests/Granit.Privacy.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.BackgroundJobs.Wolverine.Tests/Granit.Privacy.BackgroundJobs.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.Privacy.BlobStorage.Endpoints.Tests/Granit.Privacy.BlobStorage.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.BlobStorage.Tests/Granit.Privacy.BlobStorage.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Endpoints.Tests/Granit.Privacy.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.EntityFrameworkCore.Tests/Granit.Privacy.EntityFrameworkCore.Tests.csproj" />
@@ -682,6 +685,7 @@
     <Project Path="tests/Granit.Privacy.Regulations.Tests/Granit.Privacy.Regulations.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Tests/Granit.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Vault.Tests/Granit.Privacy.Vault.Tests.csproj" />
+    <Project Path="tests/Granit.Privacy.Wolverine.Tests/Granit.Privacy.Wolverine.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/Notifications/">
     <Project Path="tests/Granit.Notifications.AI.Tests/Granit.Notifications.AI.Tests.csproj" />

@@ -77,8 +77,8 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
         ExportCompletedEto evt = BuildEvent(
             requestId, userId,
             [
-                BuildSignedFragment(requestId, userId, "identity", blobA, "identity.json", "application/json"),
-                BuildSignedFragment(requestId, userId, "auditing", blobB, "audit.json", "application/json"),
+                await BuildSignedFragmentAsync(requestId, userId, "identity", blobA, "identity.json", "application/json"),
+                await BuildSignedFragmentAsync(requestId, userId, "auditing", blobB, "audit.json", "application/json"),
             ]);
 
         await CreateSut().AssembleAsync(evt, TestContext.Current.CancellationToken);
@@ -114,7 +114,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
 
         ExportCompletedEto evt = BuildEvent(
             requestId, userId,
-            [BuildSignedFragment(requestId, userId, "identity", blobA, "identity.json", "application/json")]);
+            [await BuildSignedFragmentAsync(requestId, userId, "identity", blobA, "identity.json", "application/json")]);
 
         await CreateSut().AssembleAsync(evt, TestContext.Current.CancellationToken);
 
@@ -140,7 +140,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
 
         // Verify the HMAC by feeding the payload's UTF-8 raw text back through the signer.
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payloadElement.GetRawText());
-        _hmacSigner.VerifyBytes(payloadBytes, tag).ShouldBeTrue("the assembly service must sign over the payload's raw bytes");
+        (await _hmacSigner.VerifyBytesAsync(payloadBytes, tag, TestContext.Current.CancellationToken)).ShouldBeTrue("the assembly service must sign over the payload's raw bytes");
 
         // schemaVersion stamp is mandatory — verifiers branch on it.
         payloadElement.GetProperty("schemaVersion").GetInt32().ShouldBe(1);
@@ -167,7 +167,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
 
         ExportCompletedEto evt = BuildEvent(
             requestId, userId,
-            [BuildSignedFragment(requestId, userId, "identity", blobA, "identity.json", "application/json")]);
+            [await BuildSignedFragmentAsync(requestId, userId, "identity", blobA, "identity.json", "application/json")]);
 
         await CreateSut().AssembleAsync(evt, TestContext.Current.CancellationToken);
 
@@ -243,7 +243,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
             .Returns((BlobDescriptor?)null);
         SetupManifestUpload();
 
-        ReceivedFragment fragment = BuildSignedFragment(requestId, userId, "identity", blobA, "identity.json", "application/json");
+        ReceivedFragment fragment = await BuildSignedFragmentAsync(requestId, userId, "identity", blobA, "identity.json", "application/json");
         ExportCompletedEto evt = BuildEvent(requestId, userId, [fragment]);
 
         PrivacyExportAssemblyException ex = await Should.ThrowAsync<PrivacyExportAssemblyException>(() =>
@@ -265,10 +265,10 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
         // Sign with WRONG provider name → verify will reject when the assembler
         // reconstructs parameters from fragment.ProviderName = "identity".
         DateTimeOffset expiry = _timeProvider.GetUtcNow() + TimeSpan.FromMinutes(20);
-        string forgedTag = _hmacSigner.Sign(new ExportHmacParameters(
+        string forgedTag = await _hmacSigner.SignAsync(new ExportHmacParameters(
             requestId, userId, ProviderName: "wrong-provider", FragmentKind: "staged",
             SourceContainer: PrivacyExportContainerNames.FragmentContainer,
-            SourceBlobId: blobA, EntryPath: "identity.json", ExpiresAt: expiry));
+            SourceBlobId: blobA, EntryPath: "identity.json", ExpiresAt: expiry), TestContext.Current.CancellationToken);
 
         ReceivedFragment fragment = new(
             ProviderName: "identity",
@@ -311,7 +311,7 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
         ExportCompletedEto evt = BuildEvent(
             requestId, userId,
             [
-                BuildSignedFragment(requestId, userId, "identity", blobA, "identity.json", "application/json"),
+                await BuildSignedFragmentAsync(requestId, userId, "identity", blobA, "identity.json", "application/json"),
                 emptyFragment,
             ]);
 
@@ -354,9 +354,9 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
         ExportCompletedEto evt = BuildEvent(
             requestId, userId,
             [
-                BuildSignedFragment(requestId, userId, "p0", blobs[0], "p0.bin", "application/octet-stream"),
-                BuildSignedFragment(requestId, userId, "p1", blobs[1], "p1.bin", "application/octet-stream"),
-                BuildSignedFragment(requestId, userId, "p2", blobs[2], "p2.bin", "application/octet-stream"),
+                await BuildSignedFragmentAsync(requestId, userId, "p0", blobs[0], "p0.bin", "application/octet-stream"),
+                await BuildSignedFragmentAsync(requestId, userId, "p1", blobs[1], "p1.bin", "application/octet-stream"),
+                await BuildSignedFragmentAsync(requestId, userId, "p2", blobs[2], "p2.bin", "application/octet-stream"),
             ]);
 
         GranitPrivacyOptions opts = new() { ExportShardMaxSizeMb = 1 };
@@ -390,9 +390,9 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
         ExportCompletedEto evt = BuildEvent(
             requestId, userId,
             [
-                BuildSignedFragment(requestId, userId, "p0", blobs[0], "p0.bin", "application/octet-stream"),
-                BuildSignedFragment(requestId, userId, "p1", blobs[1], "p1.bin", "application/octet-stream"),
-                BuildSignedFragment(requestId, userId, "p2", blobs[2], "p2.bin", "application/octet-stream"),
+                await BuildSignedFragmentAsync(requestId, userId, "p0", blobs[0], "p0.bin", "application/octet-stream"),
+                await BuildSignedFragmentAsync(requestId, userId, "p1", blobs[1], "p1.bin", "application/octet-stream"),
+                await BuildSignedFragmentAsync(requestId, userId, "p2", blobs[2], "p2.bin", "application/octet-stream"),
             ]);
 
         GranitPrivacyOptions opts = new() { ExportShardMaxSizeMb = 1 };
@@ -449,9 +449,9 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
         ExportCompletedEto evt = BuildEvent(
             requestId, userId,
             [
-                BuildSignedFragment(requestId, userId, "p0", blobs[0], "p0.json", "application/json"),
-                BuildSignedFragment(requestId, userId, "p1", blobs[1], "p1.json", "application/json"),
-                BuildSignedFragment(requestId, userId, "p2", blobs[2], "p2.json", "application/json"),
+                await BuildSignedFragmentAsync(requestId, userId, "p0", blobs[0], "p0.json", "application/json"),
+                await BuildSignedFragmentAsync(requestId, userId, "p1", blobs[1], "p1.json", "application/json"),
+                await BuildSignedFragmentAsync(requestId, userId, "p2", blobs[2], "p2.json", "application/json"),
             ]);
 
         await CreateSut().AssembleAsync(evt, TestContext.Current.CancellationToken);
@@ -534,13 +534,13 @@ public sealed class PrivacyExportAssemblyServiceTests : IDisposable
         return manifestBlobId;
     }
 
-    private ReceivedFragment BuildSignedFragment(
+    private async Task<ReceivedFragment> BuildSignedFragmentAsync(
         Guid requestId, Guid userId, string providerName, Guid blobId, string entryPath, string contentType)
     {
         DateTimeOffset expiry = _timeProvider.GetUtcNow() + TimeSpan.FromMinutes(20);
-        string tag = _hmacSigner.Sign(new ExportHmacParameters(
+        string tag = await _hmacSigner.SignAsync(new ExportHmacParameters(
             requestId, userId, providerName, "staged",
-            PrivacyExportContainerNames.FragmentContainer, blobId, entryPath, expiry));
+            PrivacyExportContainerNames.FragmentContainer, blobId, entryPath, expiry), TestContext.Current.CancellationToken);
 
         return new ReceivedFragment(
             ProviderName: providerName,

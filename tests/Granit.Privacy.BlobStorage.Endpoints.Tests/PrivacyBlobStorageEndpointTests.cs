@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Granit.BlobStorage;
 using Granit.BlobStorage.Options;
-using Granit.Privacy.BlobStorage.Extensions;
+using Granit.Privacy.BlobStorage.Endpoints.Extensions;
 using Granit.Privacy.DataExport;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -15,7 +15,7 @@ using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Privacy.BlobStorage.Tests.Extensions;
+namespace Granit.Privacy.BlobStorage.Endpoints.Tests;
 
 public sealed class PrivacyBlobStorageEndpointTests
 {

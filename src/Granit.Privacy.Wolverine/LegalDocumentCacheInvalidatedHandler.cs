@@ -1,13 +1,14 @@
+using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Events;
 using Granit.Privacy.LegalAgreements.Internal;
 
-namespace Granit.Privacy.LegalAgreements;
+namespace Granit.Privacy.Wolverine;
 
 /// <summary>
 /// Refreshes the <see cref="CompositeLegalDocumentRegistry"/> cache when a legal document
 /// is published or archived. Ensures all pods stay coherent in multi-instance deployments.
 /// </summary>
-public class LegalDocumentCacheInvalidatedHandler
+public sealed class LegalDocumentCacheInvalidatedHandler
 {
     public static async Task HandleAsync(
         LegalDocumentCacheInvalidatedEto evt,

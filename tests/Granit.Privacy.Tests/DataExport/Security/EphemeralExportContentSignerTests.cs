@@ -12,51 +12,51 @@ public sealed class EphemeralExportContentSignerTests
         new(NullLogger<EphemeralExportHmacSigner>.Instance);
 
     [Fact]
-    public void SignBytes_then_VerifyBytes_returns_true()
+    public async Task SignBytes_then_VerifyBytes_returns_true()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         byte[] payload = Encoding.UTF8.GetBytes("""{"schemaVersion":1,"shards":[]}""");
 
-        string tag = signer.SignBytes(payload);
-        signer.VerifyBytes(payload, tag).ShouldBeTrue();
+        string tag = await signer.SignBytesAsync(payload, TestContext.Current.CancellationToken);
+        (await signer.VerifyBytesAsync(payload, tag, TestContext.Current.CancellationToken)).ShouldBeTrue();
     }
 
     [Fact]
-    public void VerifyBytes_returns_false_when_payload_tampered_with()
+    public async Task VerifyBytes_returns_false_when_payload_tampered_with()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         byte[] original = Encoding.UTF8.GetBytes("""{"shardCount":3}""");
-        string tag = signer.SignBytes(original);
+        string tag = await signer.SignBytesAsync(original, TestContext.Current.CancellationToken);
 
         byte[] tampered = Encoding.UTF8.GetBytes("""{"shardCount":4}""");
-        signer.VerifyBytes(tampered, tag).ShouldBeFalse();
+        (await signer.VerifyBytesAsync(tampered, tag, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     [Fact]
-    public void VerifyBytes_returns_false_for_unknown_version()
+    public async Task VerifyBytes_returns_false_for_unknown_version()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         byte[] payload = Encoding.UTF8.GetBytes("anything");
-        string realTag = signer.SignBytes(payload);
+        string realTag = await signer.SignBytesAsync(payload, TestContext.Current.CancellationToken);
 
         // Swap version prefix to v99 — even if the MAC happens to be valid for v1,
         // the version mismatch must reject.
         string forged = "v99" + realTag[realTag.IndexOf(':')..];
-        signer.VerifyBytes(payload, forged).ShouldBeFalse();
+        (await signer.VerifyBytesAsync(payload, forged, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     [Fact]
-    public void VerifyBytes_returns_false_on_malformed_tag()
+    public async Task VerifyBytes_returns_false_on_malformed_tag()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         byte[] payload = Encoding.UTF8.GetBytes("data");
 
-        signer.VerifyBytes(payload, "no-colon").ShouldBeFalse();
-        signer.VerifyBytes(payload, "v1:%%%bad-base64%%%").ShouldBeFalse();
+        (await signer.VerifyBytesAsync(payload, "no-colon", TestContext.Current.CancellationToken)).ShouldBeFalse();
+        (await signer.VerifyBytesAsync(payload, "v1:%%%bad-base64%%%", TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     [Fact]
-    public void FragmentTag_and_ContentTag_dont_cross_verify()
+    public async Task FragmentTag_and_ContentTag_dont_cross_verify()
     {
         // Even though both interfaces share the same key, a fragment-identity tag
         // must not validate against a content payload of the same bytes (the
@@ -73,10 +73,10 @@ public sealed class EphemeralExportContentSignerTests
             EntryPath: "identity-local.json",
             ExpiresAt: DateTimeOffset.UtcNow.AddMinutes(30));
 
-        string fragmentTag = signer.Sign(fragmentParams);
+        string fragmentTag = await signer.SignAsync(fragmentParams, TestContext.Current.CancellationToken);
         byte[] fragmentCanonicalBytes = Encoding.UTF8.GetBytes(fragmentParams.RequestId.ToString());
 
         // Fragment tag should NOT verify when treated as a content tag over arbitrary bytes.
-        signer.VerifyBytes(fragmentCanonicalBytes, fragmentTag).ShouldBeFalse();
+        (await signer.VerifyBytesAsync(fragmentCanonicalBytes, fragmentTag, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 }

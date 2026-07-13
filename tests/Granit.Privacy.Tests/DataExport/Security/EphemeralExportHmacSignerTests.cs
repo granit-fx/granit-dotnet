@@ -34,35 +34,35 @@ public class EphemeralExportHmacSignerTests
     // ────────────────────────────────────────────────────────────────────────
 
     [Fact]
-    public void Sign_then_verify_returns_true()
+    public async Task Sign_then_verify_returns_true()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters p = SampleParameters();
 
-        string tag = signer.Sign(in p);
+        string tag = await signer.SignAsync(p, TestContext.Current.CancellationToken);
 
-        signer.Verify(in p, tag).ShouldBeTrue();
+        (await signer.VerifyAsync(p, tag, TestContext.Current.CancellationToken)).ShouldBeTrue();
     }
 
     [Fact]
-    public void Tag_starts_with_v1_prefix()
+    public async Task Tag_starts_with_v1_prefix()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters p = SampleParameters();
 
-        string tag = signer.Sign(in p);
+        string tag = await signer.SignAsync(p, TestContext.Current.CancellationToken);
 
         tag.ShouldStartWith("v1:");
     }
 
     [Fact]
-    public void Tag_is_deterministic_for_same_parameters_and_key()
+    public async Task Tag_is_deterministic_for_same_parameters_and_key()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters p = SampleParameters();
 
-        string first = signer.Sign(in p);
-        string second = signer.Sign(in p);
+        string first = await signer.SignAsync(p, TestContext.Current.CancellationToken);
+        string second = await signer.SignAsync(p, TestContext.Current.CancellationToken);
 
         first.ShouldBe(second);
     }
@@ -72,87 +72,87 @@ public class EphemeralExportHmacSignerTests
     // ────────────────────────────────────────────────────────────────────────
 
     [Fact]
-    public void Verify_rejects_when_request_id_differs()
+    public async Task Verify_rejects_when_request_id_differs()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters signed = SampleParameters();
-        string tag = signer.Sign(in signed);
+        string tag = await signer.SignAsync(signed, TestContext.Current.CancellationToken);
 
         ExportHmacParameters tampered = signed with { RequestId = Guid.NewGuid() };
 
-        signer.Verify(in tampered, tag).ShouldBeFalse();
+        (await signer.VerifyAsync(tampered, tag, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     [Fact]
-    public void Verify_rejects_when_subject_differs()
+    public async Task Verify_rejects_when_subject_differs()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters signed = SampleParameters();
-        string tag = signer.Sign(in signed);
+        string tag = await signer.SignAsync(signed, TestContext.Current.CancellationToken);
 
         ExportHmacParameters tampered = signed with { SubjectUserId = Guid.NewGuid() };
 
-        signer.Verify(in tampered, tag).ShouldBeFalse();
+        (await signer.VerifyAsync(tampered, tag, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     [Fact]
-    public void Verify_rejects_when_source_blob_id_differs()
+    public async Task Verify_rejects_when_source_blob_id_differs()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters signed = SampleParameters();
-        string tag = signer.Sign(in signed);
+        string tag = await signer.SignAsync(signed, TestContext.Current.CancellationToken);
 
         ExportHmacParameters tampered = signed with { SourceBlobId = Guid.NewGuid() };
 
-        signer.Verify(in tampered, tag).ShouldBeFalse();
+        (await signer.VerifyAsync(tampered, tag, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     [Fact]
-    public void Verify_rejects_when_entry_path_differs()
+    public async Task Verify_rejects_when_entry_path_differs()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters signed = SampleParameters(entryPath: "identity-local.json");
-        string tag = signer.Sign(in signed);
+        string tag = await signer.SignAsync(signed, TestContext.Current.CancellationToken);
 
         ExportHmacParameters tampered = signed with { EntryPath = "auditing.json" };
 
-        signer.Verify(in tampered, tag).ShouldBeFalse();
+        (await signer.VerifyAsync(tampered, tag, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     [Fact]
-    public void Verify_rejects_when_fragment_kind_differs()
+    public async Task Verify_rejects_when_fragment_kind_differs()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters signed = SampleParameters(fragmentKind: "staged");
-        string tag = signer.Sign(in signed);
+        string tag = await signer.SignAsync(signed, TestContext.Current.CancellationToken);
 
         ExportHmacParameters tampered = signed with { FragmentKind = "passthrough" };
 
-        signer.Verify(in tampered, tag).ShouldBeFalse();
+        (await signer.VerifyAsync(tampered, tag, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     [Fact]
-    public void Verify_rejects_when_source_container_differs()
+    public async Task Verify_rejects_when_source_container_differs()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters signed = SampleParameters(sourceContainer: "gdpr-exports");
-        string tag = signer.Sign(in signed);
+        string tag = await signer.SignAsync(signed, TestContext.Current.CancellationToken);
 
         ExportHmacParameters tampered = signed with { SourceContainer = "other-container" };
 
-        signer.Verify(in tampered, tag).ShouldBeFalse();
+        (await signer.VerifyAsync(tampered, tag, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     [Fact]
-    public void Verify_rejects_when_provider_name_differs()
+    public async Task Verify_rejects_when_provider_name_differs()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters signed = SampleParameters(providerName: "identity-local");
-        string tag = signer.Sign(in signed);
+        string tag = await signer.SignAsync(signed, TestContext.Current.CancellationToken);
 
         ExportHmacParameters tampered = signed with { ProviderName = "auditing" };
 
-        signer.Verify(in tampered, tag).ShouldBeFalse();
+        (await signer.VerifyAsync(tampered, tag, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     // ────────────────────────────────────────────────────────────────────────
@@ -160,11 +160,11 @@ public class EphemeralExportHmacSignerTests
     // ────────────────────────────────────────────────────────────────────────
 
     [Fact]
-    public void Verify_rejects_single_byte_flip_in_tag()
+    public async Task Verify_rejects_single_byte_flip_in_tag()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters p = SampleParameters();
-        string tag = signer.Sign(in p);
+        string tag = await signer.SignAsync(p, TestContext.Current.CancellationToken);
 
         // Flip the first char after "v1:" — base64url has a wide enough alphabet that
         // shifting by 1 stays valid syntactically but the HMAC bytes no longer match.
@@ -173,7 +173,7 @@ public class EphemeralExportHmacSignerTests
         char swapped = first == 'A' ? 'B' : 'A';
         string tampered = prefix + swapped + tag[(prefix.Length + 1)..];
 
-        signer.Verify(in p, tampered).ShouldBeFalse();
+        (await signer.VerifyAsync(p, tampered, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     [Theory]
@@ -182,33 +182,33 @@ public class EphemeralExportHmacSignerTests
     [InlineData(":payload")]
     [InlineData("v1:")]
     [InlineData("v1:not_valid_base64!")]
-    public void Verify_rejects_malformed_tag(string malformed)
+    public async Task Verify_rejects_malformed_tag(string malformed)
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters p = SampleParameters();
 
         if (string.IsNullOrEmpty(malformed))
         {
-            Should.Throw<ArgumentException>(() => signer.Verify(in p, malformed));
+            await Should.ThrowAsync<ArgumentException>(() => signer.VerifyAsync(p, malformed, TestContext.Current.CancellationToken));
         }
         else
         {
-            signer.Verify(in p, malformed).ShouldBeFalse();
+            (await signer.VerifyAsync(p, malformed, TestContext.Current.CancellationToken)).ShouldBeFalse();
         }
     }
 
     [Fact]
-    public void Verify_rejects_unknown_version_prefix()
+    public async Task Verify_rejects_unknown_version_prefix()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters p = SampleParameters();
-        string tag = signer.Sign(in p);
+        string tag = await signer.SignAsync(p, TestContext.Current.CancellationToken);
 
         // Strip the v1 prefix, replace with v2 — same payload bytes but wrong version.
         string payload = tag["v1:".Length..];
         string forged = "v2:" + payload;
 
-        signer.Verify(in p, forged).ShouldBeFalse();
+        (await signer.VerifyAsync(p, forged, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     // ────────────────────────────────────────────────────────────────────────
@@ -216,23 +216,23 @@ public class EphemeralExportHmacSignerTests
     // ────────────────────────────────────────────────────────────────────────
 
     [Fact]
-    public void Verify_rejects_expired_tag()
+    public async Task Verify_rejects_expired_tag()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters expired = SampleParameters(expiresAt: DateTimeOffset.UtcNow.AddMinutes(-1));
-        string tag = signer.Sign(in expired);
+        string tag = await signer.SignAsync(expired, TestContext.Current.CancellationToken);
 
-        signer.Verify(in expired, tag).ShouldBeFalse();
+        (await signer.VerifyAsync(expired, tag, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     [Fact]
-    public void Verify_accepts_tag_about_to_expire()
+    public async Task Verify_accepts_tag_about_to_expire()
     {
         using EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters nearExpiry = SampleParameters(expiresAt: DateTimeOffset.UtcNow.AddSeconds(5));
-        string tag = signer.Sign(in nearExpiry);
+        string tag = await signer.SignAsync(nearExpiry, TestContext.Current.CancellationToken);
 
-        signer.Verify(in nearExpiry, tag).ShouldBeTrue();
+        (await signer.VerifyAsync(nearExpiry, tag, TestContext.Current.CancellationToken)).ShouldBeTrue();
     }
 
     // ────────────────────────────────────────────────────────────────────────
@@ -240,15 +240,15 @@ public class EphemeralExportHmacSignerTests
     // ────────────────────────────────────────────────────────────────────────
 
     [Fact]
-    public void Tags_signed_by_one_signer_do_not_verify_under_another()
+    public async Task Tags_signed_by_one_signer_do_not_verify_under_another()
     {
         using EphemeralExportHmacSigner alice = CreateSigner();
         using EphemeralExportHmacSigner bob = CreateSigner();
         ExportHmacParameters p = SampleParameters();
 
-        string aliceTag = alice.Sign(in p);
+        string aliceTag = await alice.SignAsync(p, TestContext.Current.CancellationToken);
 
-        bob.Verify(in p, aliceTag).ShouldBeFalse();
+        (await bob.VerifyAsync(p, aliceTag, TestContext.Current.CancellationToken)).ShouldBeFalse();
     }
 
     // ────────────────────────────────────────────────────────────────────────
@@ -256,22 +256,22 @@ public class EphemeralExportHmacSignerTests
     // ────────────────────────────────────────────────────────────────────────
 
     [Fact]
-    public void Sign_after_dispose_throws()
+    public async Task Sign_after_dispose_throws()
     {
         EphemeralExportHmacSigner signer = CreateSigner();
         signer.Dispose();
 
-        Should.Throw<ObjectDisposedException>(() => signer.Sign(SampleParameters()));
+        await Should.ThrowAsync<ObjectDisposedException>(() => signer.SignAsync(SampleParameters(), TestContext.Current.CancellationToken));
     }
 
     [Fact]
-    public void Verify_after_dispose_throws()
+    public async Task Verify_after_dispose_throws()
     {
         EphemeralExportHmacSigner signer = CreateSigner();
         ExportHmacParameters p = SampleParameters();
         signer.Dispose();
 
-        Should.Throw<ObjectDisposedException>(() => signer.Verify(in p, "v1:foo"));
+        await Should.ThrowAsync<ObjectDisposedException>(() => signer.VerifyAsync(p, "v1:foo", TestContext.Current.CancellationToken));
     }
 
     [Fact]

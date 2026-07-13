@@ -2301,6 +2301,7 @@
       "deps": [
         "Granit",
         "Granit.DataExchange.Abstractions",
+        "Granit.Guids",
         "Granit.QueryEngine.Abstractions",
         "Granit.Settings",
         "Granit.Workflow"
@@ -2319,8 +2320,7 @@
       "name": "Granit.Privacy.Auditing",
       "deps": [
         "Granit.Auditing",
-        "Granit.Privacy",
-        "Granit.Timing"
+        "Granit.Privacy"
       ],
       "framework": "net10.0"
     },
@@ -2345,7 +2345,15 @@
       "deps": [
         "Granit.Privacy",
         "Granit.BlobStorage",
-        "Granit.IO",
+        "Granit.IO"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Privacy.BlobStorage.Endpoints",
+      "deps": [
+        "Granit.BlobStorage",
+        "Granit.Privacy",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -2409,6 +2417,14 @@
         "Granit.Privacy",
         "Granit.Privacy.BlobStorage",
         "Granit.Vault"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Privacy.Wolverine",
+      "deps": [
+        "Granit.Privacy",
+        "Granit.Wolverine"
       ],
       "framework": "net10.0"
     },
@@ -41936,7 +41952,7 @@
       "kind": "class",
       "project": "Granit.OpenApi.Generator",
       "file": "src/Granit.OpenApi.Generator/GeneratorModule.cs",
-      "line": 53,
+      "line": 54,
       "members": []
     },
     {
@@ -45724,22 +45740,53 @@
       "kind": "record",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/PrivacyExportAssemblyService.cs",
-      "line": 619,
+      "line": 621,
       "members": []
     },
     {
       "name": "PrivacyBlobStorageEndpointRouteBuilderExtensions",
-      "fqn": "Granit.Privacy.BlobStorage.Extensions.PrivacyBlobStorageEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Privacy.BlobStorage.Endpoints.Extensions.PrivacyBlobStorageEndpointRouteBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Privacy.BlobStorage",
-      "file": "src/Granit.Privacy.BlobStorage/Extensions/PrivacyBlobStorageEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "project": "Granit.Privacy.BlobStorage.Endpoints",
+      "file": "src/Granit.Privacy.BlobStorage.Endpoints/Extensions/PrivacyBlobStorageEndpointRouteBuilderExtensions.cs",
+      "line": 19,
       "members": [
         {
           "name": "MapGranitPrivacyExportDownload",
           "kind": "method",
           "signature": "MapGranitPrivacyExportDownload(this IEndpointRouteBuilder endpoints, string routePrefix = \"privacy\", string tagName = \"Privacy\")",
           "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitPrivacyBlobStorageEndpointsModule",
+      "fqn": "Granit.Privacy.BlobStorage.Endpoints.GranitPrivacyBlobStorageEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage.Endpoints",
+      "file": "src/Granit.Privacy.BlobStorage.Endpoints/GranitPrivacyBlobStorageEndpointsModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "PrivacyBlobStorageEndpointsOptions",
+      "fqn": "Granit.Privacy.BlobStorage.Endpoints.Options.PrivacyBlobStorageEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage.Endpoints",
+      "file": "src/Granit.Privacy.BlobStorage.Endpoints/Options/PrivacyBlobStorageEndpointsOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
         }
       ]
     },
@@ -45844,6 +45891,24 @@
       ]
     },
     {
+      "name": "CancelDeletionOutcome",
+      "fqn": "Granit.Privacy.DataDeletion.CancelDeletionOutcome",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/IPrivacyDeletionRequestService.cs",
+      "line": 74,
+      "members": []
+    },
+    {
+      "name": "CancelDeletionResult",
+      "fqn": "Granit.Privacy.DataDeletion.CancelDeletionResult",
+      "kind": "enum",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/IPrivacyDeletionRequestService.cs",
+      "line": 59,
+      "members": []
+    },
+    {
       "name": "DeletionAction",
       "fqn": "Granit.Privacy.DataDeletion.DeletionAction",
       "kind": "enum",
@@ -45871,30 +45936,12 @@
       "members": []
     },
     {
-      "name": "DeletionAcknowledgementTimedOutEvent",
-      "fqn": "Granit.Privacy.DataDeletion.Events.DeletionAcknowledgementTimedOutEvent",
-      "kind": "record",
-      "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/DataDeletion/Events/DeletionAcknowledgementTimedOutEvent.cs",
-      "line": 12,
-      "members": []
-    },
-    {
       "name": "DeletionCancelledEto",
       "fqn": "Granit.Privacy.DataDeletion.Events.DeletionCancelledEto",
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataDeletion/Events/DeletionCancelledEto.cs",
       "line": 10,
-      "members": []
-    },
-    {
-      "name": "DeletionDeadlineReachedEvent",
-      "fqn": "Granit.Privacy.DataDeletion.Events.DeletionDeadlineReachedEvent",
-      "kind": "record",
-      "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/DataDeletion/Events/DeletionDeadlineReachedEvent.cs",
-      "line": 9,
       "members": []
     },
     {
@@ -45921,15 +45968,6 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataDeletion/Events/DeletionReminderDueEto.cs",
-      "line": 9,
-      "members": []
-    },
-    {
-      "name": "DeletionReminderDueEvent",
-      "fqn": "Granit.Privacy.DataDeletion.Events.DeletionReminderDueEvent",
-      "kind": "record",
-      "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/DataDeletion/Events/DeletionReminderDueEvent.cs",
       "line": 9,
       "members": []
     },
@@ -46026,44 +46064,53 @@
       ]
     },
     {
-      "name": "PersonalDataDeletionSaga",
-      "fqn": "Granit.Privacy.DataDeletion.PersonalDataDeletionSaga",
-      "kind": "class",
+      "name": "IPrivacyDeletionRequestService",
+      "fqn": "Granit.Privacy.DataDeletion.IPrivacyDeletionRequestService",
+      "kind": "interface",
       "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/DataDeletion/PersonalDataDeletionSaga.cs",
-      "line": 52,
+      "file": "src/Granit.Privacy/DataDeletion/IPrivacyDeletionRequestService.cs",
+      "line": 9,
       "members": [
         {
-          "name": "Id",
-          "kind": "property",
-          "signature": "Guid Id",
-          "returnType": "Guid"
-        },
-        {
-          "name": "Reason",
-          "kind": "property",
-          "signature": "string Reason",
-          "returnType": "string"
-        },
-        {
-          "name": "RequestedAt",
-          "kind": "property",
-          "signature": "DateTimeOffset RequestedAt",
-          "returnType": "DateTimeOffset"
-        },
-        {
-          "name": "TenantId",
-          "kind": "property",
-          "signature": "Guid? TenantId",
-          "returnType": "Guid?"
-        },
-        {
-          "name": "Start",
+          "name": "RequestDeletionAsync",
           "kind": "method",
-          "signature": "Start(DeletionDeferredEto @event, IOptions<GranitPrivacyOptions> options, IMessageContext context, IDeletionRequestTrackerWriter tracker, PrivacyMetrics metrics)",
-          "returnType": "int ExpectedProviderCount { get; set; } public DateTimeOffset? DeletionStartedAt { get; set; } public Task"
+          "signature": "RequestDeletionAsync(RequestDeletionCommand command, CancellationToken cancellationToken = default)",
+          "returnType": "Task<RequestDeletionOutcome>"
+        },
+        {
+          "name": "CancelDeletionAsync",
+          "kind": "method",
+          "signature": "CancelDeletionAsync(Guid requestId, Guid userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<CancelDeletionOutcome>"
         }
       ]
+    },
+    {
+      "name": "RequestDeletionCommand",
+      "fqn": "Granit.Privacy.DataDeletion.RequestDeletionCommand",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/IPrivacyDeletionRequestService.cs",
+      "line": 29,
+      "members": []
+    },
+    {
+      "name": "RequestDeletionOutcome",
+      "fqn": "Granit.Privacy.DataDeletion.RequestDeletionOutcome",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/IPrivacyDeletionRequestService.cs",
+      "line": 53,
+      "members": []
+    },
+    {
+      "name": "RequestDeletionResult",
+      "fqn": "Granit.Privacy.DataDeletion.RequestDeletionResult",
+      "kind": "enum",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/IPrivacyDeletionRequestService.cs",
+      "line": 37,
+      "members": []
     },
     {
       "name": "IPrivacyExportAuditWriter",
@@ -46199,15 +46246,6 @@
       "members": []
     },
     {
-      "name": "ExportTimedOutEvent",
-      "fqn": "Granit.Privacy.DataExport.Events.ExportTimedOutEvent",
-      "kind": "record",
-      "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/DataExport/Events/ExportTimedOutEvent.cs",
-      "line": 9,
-      "members": []
-    },
-    {
       "name": "PersonalDataPreparedEto",
       "fqn": "Granit.Privacy.DataExport.Events.PersonalDataPreparedEto",
       "kind": "record",
@@ -46257,6 +46295,15 @@
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/IExportAssemblyCheckpointStore.cs",
       "line": 67,
+      "members": []
+    },
+    {
+      "name": "ExportRequestAuditMetadata",
+      "fqn": "Granit.Privacy.DataExport.ExportRequestAuditMetadata",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IPrivacyExportRequestService.cs",
+      "line": 39,
       "members": []
     },
     {
@@ -46484,6 +46531,22 @@
       ]
     },
     {
+      "name": "IPrivacyExportRequestService",
+      "fqn": "Granit.Privacy.DataExport.IPrivacyExportRequestService",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IPrivacyExportRequestService.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RequestExportAsync",
+          "kind": "method",
+          "signature": "RequestExportAsync(RequestExportCommand command, CancellationToken cancellationToken = default)",
+          "returnType": "Task<RequestExportOutcome>"
+        }
+      ]
+    },
+    {
       "name": "IPrivacyScopeResolver",
       "fqn": "Granit.Privacy.DataExport.IPrivacyScopeResolver",
       "kind": "interface",
@@ -46528,40 +46591,6 @@
           "kind": "method",
           "signature": "SubjectExistsInCurrentTenantAsync(Guid subjectUserId, CancellationToken cancellationToken)",
           "returnType": "Task<bool>"
-        }
-      ]
-    },
-    {
-      "name": "PersonalDataExportSaga",
-      "fqn": "Granit.Privacy.DataExport.PersonalDataExportSaga",
-      "kind": "class",
-      "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/DataExport/PersonalDataExportSaga.cs",
-      "line": 37,
-      "members": [
-        {
-          "name": "Id",
-          "kind": "property",
-          "signature": "Guid Id",
-          "returnType": "Guid"
-        },
-        {
-          "name": "PendingProviders",
-          "kind": "property",
-          "signature": "List<string> PendingProviders",
-          "returnType": "List<string>"
-        },
-        {
-          "name": "Regulation",
-          "kind": "property",
-          "signature": "string Regulation",
-          "returnType": "string"
-        },
-        {
-          "name": "Start",
-          "kind": "method",
-          "signature": "Start(PersonalDataRequestedEto @event, IPrivacyScopeResolver scopeResolver, ICurrentTenant currentTenant, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics, CancellationToken cancellationToken)",
-          "returnType": "Guid? TenantId { get; set; } public DateTimeOffset RequestedAt { get; set; } public Task<ExportCompletedEto?>"
         }
       ]
     },
@@ -46640,6 +46669,33 @@
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/ReceivedFragment.cs",
       "line": 23,
+      "members": []
+    },
+    {
+      "name": "RequestExportCommand",
+      "fqn": "Granit.Privacy.DataExport.RequestExportCommand",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IPrivacyExportRequestService.cs",
+      "line": 27,
+      "members": []
+    },
+    {
+      "name": "RequestExportOutcome",
+      "fqn": "Granit.Privacy.DataExport.RequestExportOutcome",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IPrivacyExportRequestService.cs",
+      "line": 58,
+      "members": []
+    },
+    {
+      "name": "RequestExportResult",
+      "fqn": "Granit.Privacy.DataExport.RequestExportResult",
+      "kind": "enum",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IPrivacyExportRequestService.cs",
+      "line": 45,
       "members": []
     },
     {
@@ -46723,16 +46779,16 @@
       "line": 22,
       "members": [
         {
-          "name": "SignBytes",
+          "name": "SignBytesAsync",
           "kind": "method",
-          "signature": "SignBytes(ReadOnlySpan<byte> payload)",
-          "returnType": "string"
+          "signature": "SignBytesAsync(ReadOnlyMemory<byte> payload, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
         },
         {
-          "name": "VerifyBytes",
+          "name": "VerifyBytesAsync",
           "kind": "method",
-          "signature": "VerifyBytes(ReadOnlySpan<byte> payload, string tag)",
-          "returnType": "bool"
+          "signature": "VerifyBytesAsync(ReadOnlyMemory<byte> payload, string tag, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -46745,16 +46801,16 @@
       "line": 26,
       "members": [
         {
-          "name": "Sign",
+          "name": "SignAsync",
           "kind": "method",
-          "signature": "Sign(in ExportHmacParameters parameters)",
-          "returnType": "string"
+          "signature": "SignAsync(ExportHmacParameters parameters, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
         },
         {
-          "name": "Verify",
+          "name": "VerifyAsync",
           "kind": "method",
-          "signature": "Verify(in ExportHmacParameters parameters, string tag)",
-          "returnType": "bool"
+          "signature": "VerifyAsync(ExportHmacParameters parameters, string tag, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -46764,7 +46820,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Security/IExportHmacSigner.cs",
-      "line": 59,
+      "line": 60,
       "members": []
     },
     {
@@ -47370,7 +47426,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/Extensions/PrivacyServiceCollectionExtensions.cs",
-      "line": 24,
+      "line": 26,
       "members": [
         {
           "name": "AddGranitPrivacy",
@@ -47408,7 +47464,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/GranitPrivacyModule.cs",
-      "line": 13,
+      "line": 15,
       "members": []
     },
     {
@@ -47492,6 +47548,24 @@
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/LegalAgreements/Events/LegalDocumentCacheInvalidatedEto.cs",
       "line": 10,
+      "members": []
+    },
+    {
+      "name": "LegalDocumentNotFoundException",
+      "fqn": "Granit.Privacy.LegalAgreements.Exceptions.LegalDocumentNotFoundException",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/LegalAgreements/Exceptions/LegalDocumentNotFoundException.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "LegalDocumentNotPublishableException",
+      "fqn": "Granit.Privacy.LegalAgreements.Exceptions.LegalDocumentNotPublishableException",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/LegalAgreements/Exceptions/LegalDocumentNotPublishableException.cs",
+      "line": 13,
       "members": []
     },
     {
@@ -47622,19 +47696,19 @@
       "kind": "interface",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/LegalAgreements/ILegalDocumentRegistry.cs",
-      "line": 6,
+      "line": 11,
       "members": [
         {
-          "name": "GetDefinition",
+          "name": "GetDefinitionAsync",
           "kind": "method",
-          "signature": "GetDefinition(string documentId)",
-          "returnType": "LegalDocumentDefinition?"
+          "signature": "GetDefinitionAsync(string documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<LegalDocumentDefinition?>"
         },
         {
-          "name": "GetAll",
+          "name": "GetAllAsync",
           "kind": "method",
-          "signature": "GetAll()",
-          "returnType": "IReadOnlyList<LegalDocumentDefinition>"
+          "signature": "GetAllAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<LegalDocumentDefinition>>"
         }
       ]
     },
@@ -47662,22 +47736,6 @@
           "name": "UpdateAsync",
           "kind": "method",
           "signature": "UpdateAsync(LegalDocument document, string concurrencyStamp, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "LegalDocumentCacheInvalidatedHandler",
-      "fqn": "Granit.Privacy.LegalAgreements.LegalDocumentCacheInvalidatedHandler",
-      "kind": "class",
-      "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/LegalAgreements/LegalDocumentCacheInvalidatedHandler.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(LegalDocumentCacheInvalidatedEto evt, ILegalDocumentRegistry registry, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -48822,7 +48880,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Vault",
       "file": "src/Granit.Privacy.Vault/GranitPrivacyVaultModule.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -48860,8 +48918,143 @@
       "kind": "class",
       "project": "Granit.Privacy.Vault",
       "file": "src/Granit.Privacy.Vault/VaultExportHmacSigner.cs",
-      "line": 32,
+      "line": 27,
       "members": []
+    },
+    {
+      "name": "DeletionAcknowledgementTimedOutEvent",
+      "fqn": "Granit.Privacy.Wolverine.DeletionAcknowledgementTimedOutEvent",
+      "kind": "record",
+      "project": "Granit.Privacy.Wolverine",
+      "file": "src/Granit.Privacy.Wolverine/DeletionAcknowledgementTimedOutEvent.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "DeletionDeadlineReachedEvent",
+      "fqn": "Granit.Privacy.Wolverine.DeletionDeadlineReachedEvent",
+      "kind": "record",
+      "project": "Granit.Privacy.Wolverine",
+      "file": "src/Granit.Privacy.Wolverine/DeletionDeadlineReachedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "DeletionReminderDueEvent",
+      "fqn": "Granit.Privacy.Wolverine.DeletionReminderDueEvent",
+      "kind": "record",
+      "project": "Granit.Privacy.Wolverine",
+      "file": "src/Granit.Privacy.Wolverine/DeletionReminderDueEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "ExportTimedOutEvent",
+      "fqn": "Granit.Privacy.Wolverine.ExportTimedOutEvent",
+      "kind": "record",
+      "project": "Granit.Privacy.Wolverine",
+      "file": "src/Granit.Privacy.Wolverine/ExportTimedOutEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "GranitPrivacyWolverineModule",
+      "fqn": "Granit.Privacy.Wolverine.GranitPrivacyWolverineModule",
+      "kind": "class",
+      "project": "Granit.Privacy.Wolverine",
+      "file": "src/Granit.Privacy.Wolverine/GranitPrivacyWolverineModule.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "LegalDocumentCacheInvalidatedHandler",
+      "fqn": "Granit.Privacy.Wolverine.LegalDocumentCacheInvalidatedHandler",
+      "kind": "class",
+      "project": "Granit.Privacy.Wolverine",
+      "file": "src/Granit.Privacy.Wolverine/LegalDocumentCacheInvalidatedHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(LegalDocumentCacheInvalidatedEto evt, ILegalDocumentRegistry registry, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PersonalDataDeletionSaga",
+      "fqn": "Granit.Privacy.Wolverine.PersonalDataDeletionSaga",
+      "kind": "class",
+      "project": "Granit.Privacy.Wolverine",
+      "file": "src/Granit.Privacy.Wolverine/PersonalDataDeletionSaga.cs",
+      "line": 53,
+      "members": [
+        {
+          "name": "Id",
+          "kind": "property",
+          "signature": "Guid Id",
+          "returnType": "Guid"
+        },
+        {
+          "name": "Reason",
+          "kind": "property",
+          "signature": "string Reason",
+          "returnType": "string"
+        },
+        {
+          "name": "RequestedAt",
+          "kind": "property",
+          "signature": "DateTimeOffset RequestedAt",
+          "returnType": "DateTimeOffset"
+        },
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Start",
+          "kind": "method",
+          "signature": "Start(DeletionDeferredEto @event, IOptions<GranitPrivacyOptions> options, IMessageContext context, IDeletionRequestTrackerWriter tracker, PrivacyMetrics metrics)",
+          "returnType": "int ExpectedProviderCount { get; set; } public DateTimeOffset? DeletionStartedAt { get; set; } public Task"
+        }
+      ]
+    },
+    {
+      "name": "PersonalDataExportSaga",
+      "fqn": "Granit.Privacy.Wolverine.PersonalDataExportSaga",
+      "kind": "class",
+      "project": "Granit.Privacy.Wolverine",
+      "file": "src/Granit.Privacy.Wolverine/PersonalDataExportSaga.cs",
+      "line": 38,
+      "members": [
+        {
+          "name": "Id",
+          "kind": "property",
+          "signature": "Guid Id",
+          "returnType": "Guid"
+        },
+        {
+          "name": "PendingProviders",
+          "kind": "property",
+          "signature": "List<string> PendingProviders",
+          "returnType": "List<string>"
+        },
+        {
+          "name": "Regulation",
+          "kind": "property",
+          "signature": "string Regulation",
+          "returnType": "string"
+        },
+        {
+          "name": "Start",
+          "kind": "method",
+          "signature": "Start(PersonalDataRequestedEto @event, IPrivacyScopeResolver scopeResolver, ICurrentTenant currentTenant, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics, CancellationToken cancellationToken)",
+          "returnType": "Guid? TenantId { get; set; } public DateTimeOffset RequestedAt { get; set; } public Task<ExportCompletedEto?>"
+        }
+      ]
     },
     {
       "name": "QueryEngineAIMetrics",

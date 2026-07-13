@@ -25,6 +25,7 @@ using Granit.Notifications.WebPush.Endpoints.Extensions;
 using Granit.OpenApi.Generation;
 using Granit.OpenIddict.Endpoints.Extensions;
 using Granit.Presence.Endpoints.Extensions;
+using Granit.Privacy.BlobStorage.Endpoints.Extensions;
 using Granit.Privacy.Endpoints.Discovery;
 using Granit.Privacy.Endpoints.Extensions;
 using Granit.QueryEngine.Endpoints.Extensions;
@@ -94,6 +95,7 @@ internal static class GeneratorEndpoints
             e.MapGranitPrivacy();
             e.MapGranitPrivacyGpcDiscovery();
         }),
+        new("privacy-blob-storage", e => e.MapGranitPrivacyExportDownload()),
         // Non-".Endpoints" surface: the query catalogue ships from Granit.QueryEngine.Endpoints.
         new("query-engine", e => e.MapGranitQueryCatalog()),
         new("scheduling", e => e.MapGranitScheduling()),

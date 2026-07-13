@@ -295,6 +295,7 @@
     <ProjectReference Include="..\..\src\Granit.Privacy.Auditing\Granit.Privacy.Auditing.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.BackgroundJobs\Granit.Privacy.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.BackgroundJobs.Wolverine\Granit.Privacy.BackgroundJobs.Wolverine.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Privacy.BlobStorage.Endpoints\Granit.Privacy.BlobStorage.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.BlobStorage\Granit.Privacy.BlobStorage.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.Endpoints\Granit.Privacy.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.EntityFrameworkCore\Granit.Privacy.EntityFrameworkCore.csproj" />
@@ -302,6 +303,7 @@
     <ProjectReference Include="..\..\src\Granit.Privacy.Regulations\Granit.Privacy.Regulations.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.Regulations.Cookies\Granit.Privacy.Regulations.Cookies.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.Vault\Granit.Privacy.Vault.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Privacy.Wolverine\Granit.Privacy.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.QueryEngine.AI\Granit.QueryEngine.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.QueryEngine.AI.Tools\Granit.QueryEngine.AI.Tools.csproj" />

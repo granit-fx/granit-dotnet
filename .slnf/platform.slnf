@@ -151,6 +151,7 @@
       "src/Granit.Presence.Notifications/Granit.Presence.Notifications.csproj",
       "src/Granit.Presence.Wolverine/Granit.Presence.Wolverine.csproj",
       "src/Granit.Presence/Granit.Presence.csproj",
+      "src/Granit.Privacy.BlobStorage.Endpoints/Granit.Privacy.BlobStorage.Endpoints.csproj",
       "src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj",
       "src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",

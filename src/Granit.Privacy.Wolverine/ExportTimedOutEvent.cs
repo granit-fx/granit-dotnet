@@ -1,6 +1,6 @@
 using Wolverine.Persistence.Sagas;
 
-namespace Granit.Privacy.DataExport.Events;
+namespace Granit.Privacy.Wolverine;
 
 /// <summary>
 /// Internal timeout event for the privacy export Saga.

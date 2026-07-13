@@ -1,12 +1,8 @@
-using Granit.Events;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Http.RateLimiting.AspNetCore;
 using Granit.MultiTenancy;
 using Granit.Privacy.DataExport;
-using Granit.Privacy.DataExport.Audit;
-using Granit.Privacy.DataExport.Events;
-using Granit.Privacy.Diagnostics;
 using Granit.Privacy.Endpoints.Dtos;
 using Granit.Privacy.Endpoints.Internal;
 using Granit.Privacy.Endpoints.Permissions;
@@ -34,7 +30,8 @@ internal static class PrivacyExportEndpoints
                  + "\"if you never used it, it doesn't appear\"), and the host IPrivacyScopeVisibilityPolicy. "
                  + "Use the returned ProviderName values to populate the POST /privacy/exports `Scopes` field; "
                  + "unknown / hidden scopes in that POST are silently skipped.")
-             .Produces<IReadOnlyList<PrivacyExportScopeResponse>>();
+             .Produces<IReadOnlyList<PrivacyExportScopeResponse>>()
+             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapPost("/exports/on-behalf-of", HandleRequestExportOnBehalfOfAsync)
              .RequireAuthorization(PrivacyPermissions.Exports.ExecuteOnBehalfOf)
@@ -54,7 +51,9 @@ internal static class PrivacyExportEndpoints
                  + "IPrivacySubjectValidator — a subject absent from the tenant returns 404 (same "
                  + "status as a non-existent request id, so cross-tenant existence cannot be probed).")
              .Produces<PrivacyExportRequestResponse>(StatusCodes.Status202Accepted)
+             .ProducesProblem(StatusCodes.Status401Unauthorized)
              .ProducesProblem(StatusCodes.Status404NotFound)
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapPost("/exports", HandleRequestExportAsync)
@@ -75,6 +74,8 @@ internal static class PrivacyExportEndpoints
                  + "Honours an optional `Idempotency-Key` header (Granit.Http.Idempotency) so accidental "
                  + "double-clicks don't spawn two scatter-gather sagas.")
              .Produces<PrivacyExportRequestResponse>(StatusCodes.Status202Accepted)
+             .ProducesProblem(StatusCodes.Status401Unauthorized)
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapGet("/exports/{requestId:guid}", HandleGetExportStatusAsync)
@@ -87,6 +88,7 @@ internal static class PrivacyExportEndpoints
                  + "the archive blob reference when available, and any missing providers. "
                  + "Returns 404 if the request ID is not found or belongs to another user.")
              .Produces<PrivacyExportStatusResponse>()
+             .ProducesProblem(StatusCodes.Status401Unauthorized)
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/exports", HandleGetMyExportsAsync)
@@ -95,7 +97,8 @@ internal static class PrivacyExportEndpoints
              .WithDescription(
                  "Returns all export requests submitted by the current user, ordered by most recent first. "
                  + "Each entry includes the request state, timestamps, and archive reference when available.")
-             .Produces<IReadOnlyList<PrivacyExportStatusResponse>>();
+             .Produces<IReadOnlyList<PrivacyExportStatusResponse>>()
+             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapPrivacyExportDownloadEndpoints();
 
@@ -106,13 +109,7 @@ internal static class PrivacyExportEndpoints
         [FromBody] PrivacyExportRequest? body,
         HttpContext httpContext,
         [FromServices] ICurrentUserService currentUser,
-        [FromServices] IDistributedEventBus eventBus,
-        [FromServices] IExportRequestTrackerWriter tracker,
-        [FromServices] IPrivacyExportAuditWriter auditWriter,
-        [FromServices] PrivacyMetrics metrics,
-        [FromServices] TimeProvider timeProvider,
-        [FromServices] ICurrentTenant currentTenant,
-        [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] IPrivacyExportRequestService exportService,
         [FromServices] IPrivacyRegulationResolver? regulationResolver,
         CancellationToken cancellationToken)
     {
@@ -121,67 +118,32 @@ internal static class PrivacyExportEndpoints
             return PrivacyResponseMapper.UserNotAuthenticated();
         }
 
-        Guid requestId = guidGenerator.Create();
-        DateTimeOffset now = timeProvider.GetUtcNow();
-        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
         string regulation = await PrivacyResponseMapper.ResolveRegulationAsync(regulationResolver, cancellationToken).ConfigureAwait(false);
 
-        // Null / empty Scopes → "everything visible" (Takeout default). Unknown / hidden
-        // entries are silently dropped by the saga via the visibility resolver.
-        IReadOnlyList<string>? requestedScopes = body?.Scopes is { Count: > 0 } scopes ? scopes : null;
-
-        // Self-service: caller == subject. The tracker collapses equal pair to a null
-        // CallerUserId so the row is indistinguishable from pre-CallerUserId rows.
-        await tracker
-            .RecordRequestAsync(requestId, userId, userId, now, cancellationToken)
-            .ConfigureAwait(false);
-
-        await eventBus
-            .PublishAsync(
-                new PersonalDataRequestedEto(
-                    RequestId: requestId,
-                    UserId: userId,
-                    RequestedAt: now,
+        // Self-service: caller == subject, no subject validation.
+        RequestExportOutcome outcome = await exportService
+            .RequestExportAsync(
+                new RequestExportCommand(
+                    SubjectUserId: userId,
+                    CallerUserId: userId,
+                    Scopes: body?.Scopes,
                     Regulation: regulation,
-                    TenantId: tenantId,
-                    RequestedScopes: requestedScopes),
+                    ValidateSubject: false,
+                    Audit: PrivacyResponseMapper.ToExportAuditMetadata(httpContext)),
                 cancellationToken)
             .ConfigureAwait(false);
 
-        metrics.RecordExportRequested(tenantId, regulation);
-
-        await auditWriter.WriteExportRequestedAsync(
-            new PrivacyExportRequestedAudit(
-                RequestId: requestId,
-                CallerUserId: userId,
-                SubjectUserId: userId,
-                TenantId: tenantId,
-                Regulation: regulation,
-                ResolvedScopes: requestedScopes ?? [],
-                ClientIp: PrivacyResponseMapper.PseudonymizeIpAddress(httpContext.Connection.RemoteIpAddress?.ToString()),
-                UserAgent: httpContext.Request.Headers.UserAgent.ToString(),
-                CorrelationId: httpContext.TraceIdentifier,
-                Timestamp: now),
-            cancellationToken).ConfigureAwait(false);
-
         return TypedResults.Accepted(
-            $"/privacy/export/{requestId}",
-            new PrivacyExportRequestResponse(requestId, now));
+            $"/privacy/export/{outcome.RequestId}",
+            new PrivacyExportRequestResponse(outcome.RequestId, outcome.RequestedAt));
     }
 
     private static async Task<Results<Accepted<PrivacyExportRequestResponse>, ProblemHttpResult>> HandleRequestExportOnBehalfOfAsync(
         [FromBody] PrivacyExportOnBehalfOfRequest body,
         HttpContext httpContext,
         [FromServices] ICurrentUserService currentUser,
-        [FromServices] IDistributedEventBus eventBus,
-        [FromServices] IExportRequestTrackerWriter tracker,
-        [FromServices] IPrivacyExportAuditWriter auditWriter,
-        [FromServices] PrivacyMetrics metrics,
-        [FromServices] TimeProvider timeProvider,
-        [FromServices] ICurrentTenant currentTenant,
-        [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] IPrivacyExportRequestService exportService,
         [FromServices] IPrivacyRegulationResolver? regulationResolver,
-        [FromServices] IPrivacySubjectValidator subjectValidator,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(body);
@@ -193,67 +155,32 @@ internal static class PrivacyExportEndpoints
 
         // SubjectUserId non-empty + scope bounds are enforced by
         // PrivacyExportOnBehalfOfRequestValidator at the FluentValidation auto-filter
-        // pass — the handler is only reached on a clean body.
-
-        // Tenant-bound subject existence check. A subject the caller cannot see in
-        // its current tenant returns 404 (NOT 403) — same status as a non-existent
-        // request id, so cross-tenant subject probing yields no signal.
-        bool subjectExists = await subjectValidator
-            .SubjectExistsInCurrentTenantAsync(body.SubjectUserId, cancellationToken)
-            .ConfigureAwait(false);
-        if (!subjectExists)
-        {
-            return TypedResults.Problem(
-                detail: $"Subject '{body.SubjectUserId}' not found.",
-                statusCode: StatusCodes.Status404NotFound);
-        }
-
-        Guid requestId = guidGenerator.Create();
-        DateTimeOffset now = timeProvider.GetUtcNow();
-        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
+        // pass — the handler is only reached on a clean body. The tenant-bound subject
+        // existence check (404 on a subject absent from the caller's tenant) is performed
+        // by the export service via ValidateSubject.
         string regulation = await PrivacyResponseMapper.ResolveRegulationAsync(regulationResolver, cancellationToken).ConfigureAwait(false);
 
-        IReadOnlyList<string>? requestedScopes = body.Scopes is { Count: > 0 } scopes ? scopes : null;
-
-        // The saga's PersonalDataRequestedEto.UserId names the data subject — providers
-        // and the visibility resolver key off it for HasData probes etc. The caller's
-        // identity is persisted both on the tracker row (so the admin sees the export
-        // on their listing) and on the audit row (Art. 30 ROPA).
-        await tracker
-            .RecordRequestAsync(requestId, body.SubjectUserId, callerUserId, now, cancellationToken)
-            .ConfigureAwait(false);
-
-        await eventBus
-            .PublishAsync(
-                new PersonalDataRequestedEto(
-                    RequestId: requestId,
-                    UserId: body.SubjectUserId,
-                    RequestedAt: now,
+        RequestExportOutcome outcome = await exportService
+            .RequestExportAsync(
+                new RequestExportCommand(
+                    SubjectUserId: body.SubjectUserId,
+                    CallerUserId: callerUserId,
+                    Scopes: body.Scopes,
                     Regulation: regulation,
-                    TenantId: tenantId,
-                    RequestedScopes: requestedScopes),
+                    ValidateSubject: true,
+                    Audit: PrivacyResponseMapper.ToExportAuditMetadata(httpContext)),
                 cancellationToken)
             .ConfigureAwait(false);
 
-        metrics.RecordExportRequested(tenantId, regulation);
-
-        await auditWriter.WriteExportRequestedAsync(
-            new PrivacyExportRequestedAudit(
-                RequestId: requestId,
-                CallerUserId: callerUserId,
-                SubjectUserId: body.SubjectUserId,
-                TenantId: tenantId,
-                Regulation: regulation,
-                ResolvedScopes: requestedScopes ?? [],
-                ClientIp: PrivacyResponseMapper.PseudonymizeIpAddress(httpContext.Connection.RemoteIpAddress?.ToString()),
-                UserAgent: httpContext.Request.Headers.UserAgent.ToString(),
-                CorrelationId: httpContext.TraceIdentifier,
-                Timestamp: now),
-            cancellationToken).ConfigureAwait(false);
-
-        return TypedResults.Accepted(
-            $"/privacy/export/{requestId}",
-            new PrivacyExportRequestResponse(requestId, now));
+        return outcome.Result switch
+        {
+            RequestExportResult.SubjectNotFound => TypedResults.Problem(
+                detail: $"Subject '{body.SubjectUserId}' not found.",
+                statusCode: StatusCodes.Status404NotFound),
+            _ => TypedResults.Accepted(
+                $"/privacy/export/{outcome.RequestId}",
+                new PrivacyExportRequestResponse(outcome.RequestId, outcome.RequestedAt)),
+        };
     }
 
     private static async Task<Results<Ok<IReadOnlyList<PrivacyExportScopeResponse>>, ProblemHttpResult>> HandleListExportScopesAsync(

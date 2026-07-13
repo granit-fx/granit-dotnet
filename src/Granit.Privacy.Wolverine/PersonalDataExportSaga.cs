@@ -1,11 +1,12 @@
 using Granit.MultiTenancy;
+using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
 using Granit.Privacy.Diagnostics;
 using Granit.Privacy.Options;
 using Microsoft.Extensions.Options;
 using Wolverine;
 
-namespace Granit.Privacy.DataExport;
+namespace Granit.Privacy.Wolverine;
 
 /// <summary>
 /// Stateful Saga implementing the privacy export scatter-gather pattern (GDPR Art. 15/20, LGPD Art. 18, CCPA).

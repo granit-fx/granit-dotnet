@@ -245,6 +245,13 @@ internal sealed class PrivacyEndpointsTestServer : IAsyncDisposable
         builder.Services.AddMetrics();
         builder.Services.AddSingleton<PrivacyMetrics>();
 
+        // Real domain orchestration services (composed from the mocks above) so the endpoint
+        // handlers exercise the full handler -> service -> dependency path in integration tests.
+        builder.Services.AddScoped<Granit.Privacy.DataDeletion.IPrivacyDeletionRequestService,
+            Granit.Privacy.DataDeletion.Internal.PrivacyDeletionRequestService>();
+        builder.Services.AddScoped<Granit.Privacy.DataExport.IPrivacyExportRequestService,
+            Granit.Privacy.DataExport.Internal.PrivacyExportRequestService>();
+
         // Validators from the Privacy.Endpoints assembly
         builder.Services.AddValidatorsFromAssemblyContaining<PrivacyEndpointsOptions>(
             ServiceLifetime.Singleton, includeInternalTypes: true);

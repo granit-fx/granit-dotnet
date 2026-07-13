@@ -75,7 +75,7 @@ public sealed class BlobBackedExportSourceTests
         DateTimeOffset expectedExpiry =
             clock.GetUtcNow() + TimeSpan.FromMinutes(new GranitPrivacyOptions().ExportTimeoutMinutes * 4);
 
-        signer.Verify(
+        (await signer.VerifyAsync(
             new ExportHmacParameters(
                 Context.RequestId,
                 Context.SubjectUserId,
@@ -85,7 +85,8 @@ public sealed class BlobBackedExportSourceTests
                 SourceBlobId: Guid.Parse(blob.Value),
                 EntryPath: "Documents/x.pdf",
                 ExpiresAt: expectedExpiry),
-            fragment.IntegrityTag).ShouldBeTrue();
+            fragment.IntegrityTag,
+            TestContext.Current.CancellationToken)).ShouldBeTrue();
     }
 
     [Fact]

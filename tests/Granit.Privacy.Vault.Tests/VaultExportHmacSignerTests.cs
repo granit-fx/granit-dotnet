@@ -36,7 +36,7 @@ public sealed class VaultExportHmacSignerTests
         ExpiresAt: expiry ?? DateTimeOffset.UtcNow.AddMinutes(30));
 
     [Fact]
-    public void Sign_WrapsProviderTag_WithFrameworkPrefix()
+    public async Task Sign_WrapsProviderTag_WithFrameworkPrefix()
     {
         _macService.MacAsync(
                 "fragment-key",
@@ -44,13 +44,13 @@ public sealed class VaultExportHmacSignerTests
                 Arg.Any<CancellationToken>())
             .Returns(new TransitMacResult("vault:v1:opaque", 1));
 
-        string tag = _sut.Sign(MakeParameters());
+        string tag = await _sut.SignAsync(MakeParameters(), TestContext.Current.CancellationToken);
 
         tag.ShouldBe("gpv1:vault:v1:opaque");
     }
 
     [Fact]
-    public void Verify_StripsPrefix_AndDelegatesToMacService()
+    public async Task Verify_StripsPrefix_AndDelegatesToMacService()
     {
         _macService.VerifyAsync(
                 "fragment-key",
@@ -59,25 +59,26 @@ public sealed class VaultExportHmacSignerTests
                 Arg.Any<CancellationToken>())
             .Returns(true);
 
-        _sut.Verify(MakeParameters(), "gpv1:vault:v1:opaque").ShouldBeTrue();
+        (await _sut.VerifyAsync(MakeParameters(), "gpv1:vault:v1:opaque", TestContext.Current.CancellationToken)).ShouldBeTrue();
     }
 
     [Fact]
-    public void Verify_ReturnsFalse_ForLegacyEphemeralTagFormat() =>
+    public async Task Verify_ReturnsFalse_ForLegacyEphemeralTagFormat() =>
         // Tag from EphemeralExportHmacSigner — vN:base64 with no gpv1 prefix.
-        _sut.Verify(MakeParameters(), "v1:abc123").ShouldBeFalse();
+        (await _sut.VerifyAsync(MakeParameters(), "v1:abc123", TestContext.Current.CancellationToken)).ShouldBeFalse();
 
     [Fact]
-    public void Verify_ReturnsFalse_WhenTagIsExpired()
+    public async Task Verify_ReturnsFalse_WhenTagIsExpired()
     {
-        _sut.Verify(
+        (await _sut.VerifyAsync(
                 MakeParameters(expiry: DateTimeOffset.UtcNow.AddMinutes(-1)),
-                "gpv1:vault:v1:opaque")
+                "gpv1:vault:v1:opaque",
+                TestContext.Current.CancellationToken))
             .ShouldBeFalse();
     }
 
     [Fact]
-    public void SignBytes_UsesContentKeyName()
+    public async Task SignBytes_UsesContentKeyName()
     {
         _macService.MacAsync(
                 "content-key",
@@ -85,12 +86,12 @@ public sealed class VaultExportHmacSignerTests
                 Arg.Any<CancellationToken>())
             .Returns(new TransitMacResult("provider:tag", 1));
 
-        string tag = _sut.SignBytes(Encoding.UTF8.GetBytes("manifest-bytes"));
+        string tag = await _sut.SignBytesAsync(Encoding.UTF8.GetBytes("manifest-bytes"), TestContext.Current.CancellationToken);
 
         tag.ShouldBe("gpv1:provider:tag");
     }
 
     [Fact]
-    public void VerifyBytes_RejectsLegacyTagFormat() =>
-        _sut.VerifyBytes(Encoding.UTF8.GetBytes("manifest-bytes"), "v1:abc").ShouldBeFalse();
+    public async Task VerifyBytes_RejectsLegacyTagFormat() =>
+        (await _sut.VerifyBytesAsync(Encoding.UTF8.GetBytes("manifest-bytes"), "v1:abc", TestContext.Current.CancellationToken)).ShouldBeFalse();
 }

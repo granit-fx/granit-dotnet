@@ -84,7 +84,7 @@ public sealed partial class StagedFragmentBuilder(
 
         DateTimeOffset expiresAt = timeProvider.GetUtcNow()
             + TimeSpan.FromMinutes(options.Value.ExportTimeoutMinutes * 4);
-        string integrityTag = hmacSigner.Sign(new ExportHmacParameters(
+        string integrityTag = await hmacSigner.SignAsync(new ExportHmacParameters(
             RequestId: context.RequestId,
             SubjectUserId: context.SubjectUserId,
             ProviderName: providerName,
@@ -92,7 +92,7 @@ public sealed partial class StagedFragmentBuilder(
             SourceContainer: PrivacyExportContainerNames.FragmentContainer,
             SourceBlobId: ticket.BlobId,
             EntryPath: safeEntryPath,
-            ExpiresAt: expiresAt));
+            ExpiresAt: expiresAt), cancellationToken).ConfigureAwait(false);
 
         var stagedBlob = BlobReference.Create(ticket.BlobId.ToString());
 

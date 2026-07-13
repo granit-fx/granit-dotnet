@@ -1,6 +1,6 @@
 using Wolverine.Persistence.Sagas;
 
-namespace Granit.Privacy.DataDeletion.Events;
+namespace Granit.Privacy.Wolverine;
 
 /// <summary>
 /// Internal saga timeout event: fires N days before the deletion deadline

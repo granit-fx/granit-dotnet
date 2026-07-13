@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Privacy.Wolverine</PackageId>
+    <Description>Wolverine sagas and handlers for Granit.Privacy: the scatter-gather personal-data export saga (GDPR Art. 15/20), the deferred deletion saga with cooling-off period and provider acknowledgement fan-in (GDPR Art. 17), and the legal-document cache invalidation handler. Keeps the base Granit.Privacy package free of any WolverineFx dependency.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Privacy.Wolverine.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WolverineFx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Privacy\Granit.Privacy.csproj" />
+    <ProjectReference Include="..\Granit.Wolverine\Granit.Wolverine.csproj" />
+  </ItemGroup>
+
+</Project>

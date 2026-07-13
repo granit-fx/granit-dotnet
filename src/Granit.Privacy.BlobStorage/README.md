@@ -63,13 +63,14 @@ The uploader:
 
 ```csharp
 app.MapGranitPrivacy();               // from Granit.Privacy.Endpoints
-app.MapGranitPrivacyExportDownload(); // from this package
+app.MapGranitPrivacyExportDownload(); // from Granit.Privacy.BlobStorage.Endpoints
 ```
 
-Exposes `GET /privacy/exports/{requestId}/download` which resolves the tracker,
-verifies the caller owns the request, and 302-redirects to a short-lived presigned
-URL of the assembled ZIP. Kept in this package (not `Granit.Privacy.Endpoints`) so
-the core privacy endpoints stay usable without a BlobStorage dependency.
+The `GET /privacy/exports/{requestId}/download` endpoint lives in the dedicated
+`Granit.Privacy.BlobStorage.Endpoints` package — this package is data plumbing
+only and carries no ASP.NET Core framework reference. The split keeps the core
+privacy endpoints usable without a BlobStorage dependency, and this package
+usable without an HTTP surface.
 
 ### Assembler flow
 

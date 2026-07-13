@@ -25,7 +25,8 @@ public class LegalDocumentObsoleteHandler
         INotificationPublisher publisher,
         CancellationToken cancellationToken)
     {
-        LegalDocumentDefinition? definition = documentRegistry.GetDefinition(evt.DocumentId);
+        LegalDocumentDefinition? definition = await documentRegistry
+            .GetDefinitionAsync(evt.DocumentId, cancellationToken).ConfigureAwait(false);
         string displayName = definition?.DisplayName ?? evt.DocumentId;
 
         var data = new PrivacyLegalDocumentObsoleteNotificationData(

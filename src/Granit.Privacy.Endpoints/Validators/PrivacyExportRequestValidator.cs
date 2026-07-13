@@ -21,7 +21,7 @@ internal sealed class PrivacyExportRequestValidator : GranitValidator<PrivacyExp
     {
         RuleFor(x => x.Scopes)
             .Must(s => s is null || s.Count <= MaxScopes)
-                .WithErrorCodeAndMessage("Granit:Validation:PrivacyExportTooManyScopes");
+                .WithErrorCodeAndMessage("Privacy:Validation:TooManyScopes");
 
         RuleForEach(x => x.Scopes!)
             .NotEmpty()

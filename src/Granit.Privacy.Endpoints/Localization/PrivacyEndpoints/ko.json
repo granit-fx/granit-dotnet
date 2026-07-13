@@ -1,7 +1,7 @@
 {
   "culture": "ko",
   "texts": {
-    "Granit:Validation:PrivacyExportTooManyScopes": "단일 내보내기 요청에 너무 많은 스코프가 포함되어 있습니다 (최대 64개).",
+    "Privacy:Validation:TooManyScopes": "단일 내보내기 요청에 너무 많은 스코프가 포함되어 있습니다 (최대 64개).",
     "Permission:Privacy.Agreements.Create": "법적 계약 수락",
     "Permission:Privacy.Agreements.Read": "법적 문서 및 동의 상태 조회",
     "Permission:Privacy.Deletions.Execute": "개인 데이터 삭제 요청",

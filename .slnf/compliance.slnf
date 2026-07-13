@@ -44,6 +44,7 @@
       "src/Granit.Privacy.Auditing/Granit.Privacy.Auditing.csproj",
       "src/Granit.Privacy.BackgroundJobs.Wolverine/Granit.Privacy.BackgroundJobs.Wolverine.csproj",
       "src/Granit.Privacy.BackgroundJobs/Granit.Privacy.BackgroundJobs.csproj",
+      "src/Granit.Privacy.BlobStorage.Endpoints/Granit.Privacy.BlobStorage.Endpoints.csproj",
       "src/Granit.Privacy.BlobStorage/Granit.Privacy.BlobStorage.csproj",
       "src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj",
       "src/Granit.Privacy.EntityFrameworkCore/Granit.Privacy.EntityFrameworkCore.csproj",
@@ -51,6 +52,7 @@
       "src/Granit.Privacy.Regulations.Cookies/Granit.Privacy.Regulations.Cookies.csproj",
       "src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj",
       "src/Granit.Privacy.Vault/Granit.Privacy.Vault.csproj",
+      "src/Granit.Privacy.Wolverine/Granit.Privacy.Wolverine.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
       "src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj",
@@ -81,6 +83,7 @@
       "tests/Granit.Privacy.Auditing.Tests/Granit.Privacy.Auditing.Tests.csproj",
       "tests/Granit.Privacy.BackgroundJobs.Tests/Granit.Privacy.BackgroundJobs.Tests.csproj",
       "tests/Granit.Privacy.BackgroundJobs.Wolverine.Tests/Granit.Privacy.BackgroundJobs.Wolverine.Tests.csproj",
+      "tests/Granit.Privacy.BlobStorage.Endpoints.Tests/Granit.Privacy.BlobStorage.Endpoints.Tests.csproj",
       "tests/Granit.Privacy.BlobStorage.Tests/Granit.Privacy.BlobStorage.Tests.csproj",
       "tests/Granit.Privacy.Endpoints.Tests/Granit.Privacy.Endpoints.Tests.csproj",
       "tests/Granit.Privacy.EntityFrameworkCore.Tests/Granit.Privacy.EntityFrameworkCore.Tests.csproj",
@@ -88,7 +91,8 @@
       "tests/Granit.Privacy.Regulations.Cookies.Tests/Granit.Privacy.Regulations.Cookies.Tests.csproj",
       "tests/Granit.Privacy.Regulations.Tests/Granit.Privacy.Regulations.Tests.csproj",
       "tests/Granit.Privacy.Tests/Granit.Privacy.Tests.csproj",
-      "tests/Granit.Privacy.Vault.Tests/Granit.Privacy.Vault.Tests.csproj"
+      "tests/Granit.Privacy.Vault.Tests/Granit.Privacy.Vault.Tests.csproj",
+      "tests/Granit.Privacy.Wolverine.Tests/Granit.Privacy.Wolverine.Tests.csproj"
     ]
   }
 }

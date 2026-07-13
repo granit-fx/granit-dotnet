@@ -25,46 +25,49 @@ public sealed partial class EphemeralExportHmacSigner : IExportHmacSigner, IExpo
     private readonly ILogger<EphemeralExportHmacSigner> _logger;
     private bool _disposed;
 
+    private readonly TimeProvider _timeProvider;
+
     /// <summary>Creates a signer with a fresh random key.</summary>
-    public EphemeralExportHmacSigner(ILogger<EphemeralExportHmacSigner> logger)
+    public EphemeralExportHmacSigner(ILogger<EphemeralExportHmacSigner> logger, TimeProvider? timeProvider = null)
     {
         ArgumentNullException.ThrowIfNull(logger);
         _logger = logger;
+        _timeProvider = timeProvider ?? TimeProvider.System;
         _key = RandomNumberGenerator.GetBytes(KeySizeBytes);
         LogEphemeralKeyGenerated(_logger, KeySizeBytes * 8);
     }
 
     /// <inheritdoc />
-    public string Sign(in ExportHmacParameters parameters)
+    public Task<string> SignAsync(ExportHmacParameters parameters, CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
         byte[] canonical = Canonicalize(parameters);
         byte[] mac = HMACSHA256.HashData(_key, canonical);
-        return $"{Version}:{Base64UrlEncode(mac)}";
+        return Task.FromResult($"{Version}:{Base64UrlEncode(mac)}");
     }
 
     /// <inheritdoc />
-    public bool Verify(in ExportHmacParameters parameters, string tag)
+    public Task<bool> VerifyAsync(ExportHmacParameters parameters, string tag, CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentException.ThrowIfNullOrEmpty(tag);
 
-        if (parameters.ExpiresAt <= TimeProvider.System.GetUtcNow())
+        if (parameters.ExpiresAt <= _timeProvider.GetUtcNow())
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         int colonIndex = tag.IndexOf(':', StringComparison.Ordinal);
         if (colonIndex <= 0)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         // Only the single key version is known to the ephemeral signer.
         if (!tag.AsSpan(0, colonIndex).SequenceEqual(Version))
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         string presented = tag[(colonIndex + 1)..];
@@ -77,22 +80,22 @@ public sealed partial class EphemeralExportHmacSigner : IExportHmacSigner, IExpo
         }
         catch (FormatException)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
-        return CryptographicOperations.FixedTimeEquals(expected, decoded);
+        return Task.FromResult(CryptographicOperations.FixedTimeEquals(expected, decoded));
     }
 
     /// <inheritdoc />
-    public string SignBytes(ReadOnlySpan<byte> payload)
+    public Task<string> SignBytesAsync(ReadOnlyMemory<byte> payload, CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        byte[] mac = HMACSHA256.HashData(_key, payload);
-        return $"{Version}:{Base64UrlEncode(mac)}";
+        byte[] mac = HMACSHA256.HashData(_key, payload.Span);
+        return Task.FromResult($"{Version}:{Base64UrlEncode(mac)}");
     }
 
     /// <inheritdoc />
-    public bool VerifyBytes(ReadOnlySpan<byte> payload, string tag)
+    public Task<bool> VerifyBytesAsync(ReadOnlyMemory<byte> payload, string tag, CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentException.ThrowIfNullOrEmpty(tag);
@@ -100,16 +103,16 @@ public sealed partial class EphemeralExportHmacSigner : IExportHmacSigner, IExpo
         int colonIndex = tag.IndexOf(':', StringComparison.Ordinal);
         if (colonIndex <= 0)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         if (!tag.AsSpan(0, colonIndex).SequenceEqual(Version))
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         string presented = tag[(colonIndex + 1)..];
-        byte[] expected = HMACSHA256.HashData(_key, payload);
+        byte[] expected = HMACSHA256.HashData(_key, payload.Span);
         byte[] decoded;
         try
         {
@@ -117,10 +120,10 @@ public sealed partial class EphemeralExportHmacSigner : IExportHmacSigner, IExpo
         }
         catch (FormatException)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
-        return CryptographicOperations.FixedTimeEquals(expected, decoded);
+        return Task.FromResult(CryptographicOperations.FixedTimeEquals(expected, decoded));
     }
 
     /// <inheritdoc />
@@ -135,7 +138,7 @@ public sealed partial class EphemeralExportHmacSigner : IExportHmacSigner, IExpo
         _disposed = true;
     }
 
-    private static byte[] Canonicalize(in ExportHmacParameters p) => ExportHmacCanonicalizer.Canonicalize(p);
+    private static byte[] Canonicalize(ExportHmacParameters p) => ExportHmacCanonicalizer.Canonicalize(p);
 
     private static string Base64UrlEncode(ReadOnlySpan<byte> bytes) =>
         Convert.ToBase64String(bytes)

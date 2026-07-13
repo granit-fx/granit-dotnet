@@ -1,5 +1,7 @@
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
+using Granit.Privacy.DataDeletion;
+using Granit.Privacy.DataDeletion.Internal;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Audit;
 using Granit.Privacy.DataExport.Internal;
@@ -75,6 +77,13 @@ public static class PrivacyServiceCollectionExtensions
         // has data stays visible) — hosts override via services.AddSingleton<IPrivacyScopeVisibilityPolicy, ...>.
         services.TryAddSingleton<IPrivacyScopeVisibilityPolicy, AllowAllPrivacyScopeVisibilityPolicy>();
         services.TryAddScoped<IPrivacyScopeResolver, PrivacyScopeResolver>();
+
+        // Domain orchestration services for the deletion / export request workflows. Registered
+        // here (not in .Endpoints) so the workflow lives in the base module; the HTTP handlers
+        // delegate to these. Their optional trackers keep DI construction valid for hosts that
+        // reference the module without wiring a tracker.
+        services.TryAddScoped<IPrivacyDeletionRequestService, PrivacyDeletionRequestService>();
+        services.TryAddScoped<IPrivacyExportRequestService, PrivacyExportRequestService>();
 
         // ROPA / ISO 27001 audit trail — hosts that wire Granit.Privacy.Auditing replace this
         // with the IAuditingWriter-backed adapter via DI overrides.

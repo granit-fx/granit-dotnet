@@ -44,7 +44,7 @@ public abstract record ExportFragment
     /// <summary>
     /// HMAC capability tag binding the fragment to its request, subject, source blob, and
     /// entry path. Format: <c>v{N}:Base64Url(HMAC-SHA256(K_export, ...))</c>.
-    /// Verified by <see cref="Security.IExportHmacSigner.Verify"/> before the assembler
+    /// Verified by <see cref="Security.IExportHmacSigner.VerifyAsync"/> before the assembler
     /// opens the source stream.
     /// </summary>
     public required string IntegrityTag { get; init; }

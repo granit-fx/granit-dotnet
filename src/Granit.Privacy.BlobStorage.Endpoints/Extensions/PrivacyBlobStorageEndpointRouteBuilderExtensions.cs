@@ -7,19 +7,22 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace Granit.Privacy.BlobStorage.Extensions;
+namespace Granit.Privacy.BlobStorage.Endpoints.Extensions;
 
 /// <summary>
 /// Endpoint extensions that require <c>Granit.BlobStorage</c>. Kept separate from
 /// <c>Granit.Privacy.Endpoints</c> so that privacy endpoints (opt-out, deletion, agreements,
-/// purposes, regulation) stay usable without pulling BlobStorage into every host.
+/// purposes, regulation) stay usable without pulling BlobStorage into every host — and
+/// separate from the data-plumbing package <c>Granit.Privacy.BlobStorage</c> so that one
+/// carries no <c>Microsoft.AspNetCore.App</c> framework reference (layer purity).
 /// </summary>
 public static class PrivacyBlobStorageEndpointRouteBuilderExtensions
 {
     /// <summary>
     /// Maps <c>GET /{prefix}/exports/{requestId}/download</c>. The handler resolves the tracker,
     /// verifies the caller owns the request, and 302-redirects to a presigned URL for the
-    /// manifest blob produced by <see cref="DataExport.PrivacyExportAssemblyService"/>.
+    /// manifest blob produced by <c>PrivacyExportAssemblyService</c> (internal, in
+    /// <c>Granit.Privacy.BlobStorage</c>).
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="routePrefix">Route prefix — typically mirrors <c>MapGranitPrivacy</c>. Default <c>"privacy"</c>.</param>

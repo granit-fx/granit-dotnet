@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="WolverineFx" />
+    <!-- v6 moved Roslyn runtime codegen out of core WolverineFx; the bespoke codegen-test
+         host runs TypeLoadMode.Dynamic, so it needs the compiler package (auto-registers via
+         [WolverineModule]). Production hosts get it transitively through Granit.Wolverine. -->
+    <PackageReference Include="WolverineFx.RuntimeCompilation" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.Testing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.Privacy.Wolverine\Granit.Privacy.Wolverine.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Testing\Granit.Testing.csproj" />
+  </ItemGroup>
+
+</Project>

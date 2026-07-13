@@ -51,7 +51,7 @@ public sealed class BlobBackedExportSource(
             string safeEntryPath = EntryPathSanitizer.Sanitize(item.EntryPath);
             Guid sourceBlobId = ParseBlobId(item.SourceBlob.Value);
 
-            string integrityTag = hmacSigner.Sign(new ExportHmacParameters(
+            string integrityTag = await hmacSigner.SignAsync(new ExportHmacParameters(
                 RequestId: context.RequestId,
                 SubjectUserId: context.SubjectUserId,
                 ProviderName: providerName,
@@ -59,7 +59,7 @@ public sealed class BlobBackedExportSource(
                 SourceContainer: item.SourceContainer,
                 SourceBlobId: sourceBlobId,
                 EntryPath: safeEntryPath,
-                ExpiresAt: expiresAt));
+                ExpiresAt: expiresAt), cancellationToken).ConfigureAwait(false);
 
             yield return new PassThroughExportFragment
             {

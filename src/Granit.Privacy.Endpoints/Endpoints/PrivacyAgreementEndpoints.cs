@@ -17,7 +17,7 @@ internal static class PrivacyAgreementEndpoints
 {
     internal static RouteGroupBuilder MapPrivacyAgreementEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/agreements/documents", HandleGetDocuments)
+        group.MapGet("/agreements/documents", HandleGetDocumentsAsync)
              .RequireAuthorization(PrivacyPermissions.Agreements.Read)
              .WithName("ListPrivacyLegalDocuments")
              .WithSummary("Returns all registered legal documents.")
@@ -35,7 +35,8 @@ internal static class PrivacyAgreementEndpoints
                  "For each registered legal document, returns whether the current user has accepted "
                  + "the latest version and when the last acceptance occurred. "
                  + "Documents where HasAcceptedLatest is false require re-consent.")
-             .Produces<IReadOnlyList<PrivacyConsentStatusResponse>>();
+             .Produces<IReadOnlyList<PrivacyConsentStatusResponse>>()
+             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapGet("/agreements/history", HandleGetAgreementHistoryAsync)
              .RequireAuthorization(PrivacyPermissions.Agreements.Read)
@@ -45,7 +46,8 @@ internal static class PrivacyAgreementEndpoints
                  "Returns all consent records for the current user, ordered by most recent first. "
                  + "Each record includes the document ID, accepted version, timestamp, and whether "
                  + "it matches the current document version.")
-             .Produces<IReadOnlyList<PrivacyUserAgreementResponse>>();
+             .Produces<IReadOnlyList<PrivacyUserAgreementResponse>>()
+             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapPost("/agreements/accept", HandleAcceptAgreementAsync)
              .RequireAuthorization(PrivacyPermissions.Agreements.Create)
@@ -58,19 +60,22 @@ internal static class PrivacyAgreementEndpoints
                  + "The client IP address is captured and pseudonymized for the audit trail. "
                  + "Ensure ForwardedHeadersMiddleware is enabled when running behind a reverse proxy.")
              .Produces(StatusCodes.Status201Created)
+             .ProducesProblem(StatusCodes.Status401Unauthorized)
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status409Conflict)
-             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         return group;
     }
 
-    private static Ok<IReadOnlyList<PrivacyLegalDocumentResponse>> HandleGetDocuments(
-        [FromServices] ILegalDocumentRegistry registry)
+    private static async Task<Ok<IReadOnlyList<PrivacyLegalDocumentResponse>>> HandleGetDocumentsAsync(
+        [FromServices] ILegalDocumentRegistry registry,
+        CancellationToken cancellationToken)
     {
-        IReadOnlyList<PrivacyLegalDocumentResponse> result = registry
-            .GetAll()
+        IReadOnlyList<LegalDocumentDefinition> documents = await registry
+            .GetAllAsync(cancellationToken).ConfigureAwait(false);
+
+        IReadOnlyList<PrivacyLegalDocumentResponse> result = documents
             .Select(d => new PrivacyLegalDocumentResponse(d.DocumentId, d.CurrentVersion, d.DisplayName))
             .ToList();
 
@@ -89,7 +94,8 @@ internal static class PrivacyAgreementEndpoints
             return PrivacyResponseMapper.UserNotAuthenticated();
         }
 
-        IReadOnlyList<LegalDocumentDefinition> documents = registry.GetAll();
+        IReadOnlyList<LegalDocumentDefinition> documents = await registry
+            .GetAllAsync(cancellationToken).ConfigureAwait(false);
         List<PrivacyConsentStatusResponse> result = new(documents.Count);
 
         foreach (LegalDocumentDefinition doc in documents)
@@ -127,13 +133,17 @@ internal static class PrivacyAgreementEndpoints
             .GetUserAgreementsAsync(userId, cancellationToken)
             .ConfigureAwait(false);
 
+        // One registry snapshot for the whole history instead of a lookup per row.
+        var currentVersions = (await registry.GetAllAsync(cancellationToken).ConfigureAwait(false))
+            .ToDictionary(d => d.DocumentId, d => d.CurrentVersion, StringComparer.OrdinalIgnoreCase);
+
         IReadOnlyList<PrivacyUserAgreementResponse> result = agreements
             .Select(a => new PrivacyUserAgreementResponse(
                 a.Id,
                 a.DocumentId,
                 a.Version,
                 a.AcceptedAt,
-                registry.GetDefinition(a.DocumentId)?.CurrentVersion == a.Version))
+                currentVersions.TryGetValue(a.DocumentId, out string? current) && current == a.Version))
             .ToList();
 
         return TypedResults.Ok(result);
@@ -155,7 +165,8 @@ internal static class PrivacyAgreementEndpoints
             return PrivacyResponseMapper.UserNotAuthenticated();
         }
 
-        LegalDocumentDefinition? document = registry.GetDefinition(body.DocumentId);
+        LegalDocumentDefinition? document = await registry
+            .GetDefinitionAsync(body.DocumentId, cancellationToken).ConfigureAwait(false);
         if (document is null)
         {
             return TypedResults.Problem(

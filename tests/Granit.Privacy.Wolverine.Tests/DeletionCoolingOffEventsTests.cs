@@ -5,7 +5,7 @@ using Shouldly;
 using Wolverine.Persistence.Sagas;
 using Xunit;
 
-namespace Granit.Privacy.Tests.DataDeletion.Events;
+namespace Granit.Privacy.Wolverine.Tests;
 
 public sealed class DeletionCoolingOffEventsTests
 {
