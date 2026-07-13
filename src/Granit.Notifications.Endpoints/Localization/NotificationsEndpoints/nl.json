@@ -5,6 +5,7 @@
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Meldingen beheren (voorkeuren, abonnementen, pushtokens)",
         "Permission:Notifications.UserNotifications.Read": "Meldingen bekijken (inbox, activiteitenoverzicht)",
+        "Permission:Notifications.UserNotifications.Update": "Eigen meldingen als gelezen markeren",
         "PermissionGroup:Notifications": "Meldingen"
     }
 }

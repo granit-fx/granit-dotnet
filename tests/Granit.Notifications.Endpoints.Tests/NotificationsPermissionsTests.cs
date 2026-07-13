@@ -15,6 +15,10 @@ public sealed class NotificationsPermissionsTests
         NotificationsPermissions.UserNotifications.Read.ShouldBe("Notifications.UserNotifications.Read");
 
     [Fact]
+    public void Notifications_Update_FollowsThreeSegmentConvention() =>
+        NotificationsPermissions.UserNotifications.Update.ShouldBe("Notifications.UserNotifications.Update");
+
+    [Fact]
     public void Notifications_Manage_FollowsThreeSegmentConvention() =>
         NotificationsPermissions.UserNotifications.Manage.ShouldBe("Notifications.UserNotifications.Manage");
 
@@ -23,12 +27,20 @@ public sealed class NotificationsPermissionsTests
         NotificationsPermissions.UserNotifications.Read.ShouldStartWith(NotificationsPermissions.GroupName + ".");
 
     [Fact]
+    public void Update_StartsWithGroupName() =>
+        NotificationsPermissions.UserNotifications.Update.ShouldStartWith(NotificationsPermissions.GroupName + ".");
+
+    [Fact]
     public void Manage_StartsWithGroupName() =>
         NotificationsPermissions.UserNotifications.Manage.ShouldStartWith(NotificationsPermissions.GroupName + ".");
 
     [Fact]
     public void Read_HasThreeSegments() =>
         NotificationsPermissions.UserNotifications.Read.Split('.').Length.ShouldBe(3);
+
+    [Fact]
+    public void Update_HasThreeSegments() =>
+        NotificationsPermissions.UserNotifications.Update.Split('.').Length.ShouldBe(3);
 
     [Fact]
     public void Manage_HasThreeSegments() =>

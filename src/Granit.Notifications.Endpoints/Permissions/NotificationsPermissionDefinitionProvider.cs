@@ -6,7 +6,8 @@ using Granit.Notifications.Endpoints.Internal;
 namespace Granit.Notifications.Endpoints.Permissions;
 
 /// <summary>
-/// Declares the <c>Notifications.UserNotifications.Read</c> and <c>Notifications.UserNotifications.Manage</c> permissions in the Granit RBAC system.
+/// Declares the <c>Notifications.UserNotifications.Read</c>, <c>Notifications.UserNotifications.Update</c>,
+/// and <c>Notifications.UserNotifications.Manage</c> permissions in the Granit RBAC system.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -41,6 +42,12 @@ internal sealed class NotificationsPermissionDefinitionProvider : IPermissionDef
             NotificationsPermissions.UserNotifications.Read,
             LocalizableString.Create<NotificationsEndpointsLocalizationResource>(
                 "Permission:Notifications.UserNotifications.Read"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
+            NotificationsPermissions.UserNotifications.Update,
+            LocalizableString.Create<NotificationsEndpointsLocalizationResource>(
+                "Permission:Notifications.UserNotifications.Update"),
             MultiTenancySides.Both);
 
         group.AddPermission(

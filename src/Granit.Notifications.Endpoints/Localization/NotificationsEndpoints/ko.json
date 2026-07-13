@@ -5,6 +5,7 @@
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "알림 관리 (설정, 구독, 푸시 토큰)",
         "Permission:Notifications.UserNotifications.Read": "알림 조회 (수신함, 활동 피드)",
+        "Permission:Notifications.UserNotifications.Update": "내 알림을 읽음으로 표시",
         "PermissionGroup:Notifications": "알림"
     }
 }

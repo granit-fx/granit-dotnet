@@ -5,6 +5,7 @@
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Gestionar notificaciones (preferencias, suscripciones, tokens push)",
         "Permission:Notifications.UserNotifications.Read": "Ver notificaciones (bandeja de entrada, actividad)",
+        "Permission:Notifications.UserNotifications.Update": "Marcar las notificaciones propias como leídas",
         "PermissionGroup:Notifications": "Notificaciones"
     }
 }

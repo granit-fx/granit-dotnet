@@ -5,6 +5,7 @@
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Bildirimleri yönet (tercihler, abonelikler, push tokenları)",
         "Permission:Notifications.UserNotifications.Read": "Bildirimleri görüntüle (gelen kutusu, etkinlik akışı)",
+        "Permission:Notifications.UserNotifications.Update": "Kendi bildirimlerini okundu olarak işaretleme",
         "PermissionGroup:Notifications": "Bildirimler"
     }
 }

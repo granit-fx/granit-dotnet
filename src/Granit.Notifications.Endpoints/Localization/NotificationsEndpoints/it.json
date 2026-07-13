@@ -5,6 +5,7 @@
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Gestire le notifiche (preferenze, iscrizioni, token push)",
         "Permission:Notifications.UserNotifications.Read": "Visualizzare le notifiche (posta in arrivo, attività)",
+        "Permission:Notifications.UserNotifications.Update": "Segnare le proprie notifiche come lette",
         "PermissionGroup:Notifications": "Notifiche"
     }
 }

@@ -5,6 +5,7 @@
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Hantera aviseringar (inställningar, prenumerationer, pushtoken)",
         "Permission:Notifications.UserNotifications.Read": "Visa aviseringar (inkorg, aktivitetsflöde)",
+        "Permission:Notifications.UserNotifications.Update": "Markera egna aviseringar som lästa",
         "PermissionGroup:Notifications": "Aviseringar"
     }
 }

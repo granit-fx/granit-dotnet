@@ -38,14 +38,14 @@ internal static class InboxEndpoints
             .Produces<UnreadCountResponse>();
 
         group.MapPost("/{id:guid}/read", MarkAsReadAsync)
-            .RequireAuthorization(NotificationsPermissions.UserNotifications.Manage)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Update)
             .WithName("MarkAsRead")
             .WithSummary("Marks a single notification as read.")
             .WithDescription("Marks the specified notification as read by setting its read timestamp. Idempotent — marking an already-read notification is a no-op.")
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapPost("/read-all", MarkAllAsReadAsync)
-            .RequireAuthorization(NotificationsPermissions.UserNotifications.Manage)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Update)
             .WithName("MarkAllAsRead")
             .WithSummary("Marks all notifications as read for the current user.")
             .WithDescription("Marks all unread notifications as read for the authenticated user within the current tenant. Useful for a 'mark all as read' bulk action.")

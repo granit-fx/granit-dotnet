@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Reflection;
 using Granit.Domain;
 using Granit.Notifications.Abstractions;
 using Granit.Timing;
@@ -91,41 +93,21 @@ internal sealed class EntityTrackingInterceptor(
 
         foreach (EntityEntry entry in context.ChangeTracker.Entries())
         {
-            if (entry.State != EntityState.Modified)
+            if (entry.State != EntityState.Modified || entry.Entity is not ITrackedEntity trackedEntity)
             {
                 continue;
             }
 
-            Type entityType = entry.Entity.GetType();
-
-            if (!entityType.GetInterfaces().Any(i => i == typeof(ITrackedEntity)))
-            {
-                continue;
-            }
-
-            // Use reflection to access static abstract members
-            System.Reflection.PropertyInfo? entityTypeNameProp = entityType.GetProperty("EntityTypeName", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy);
-            System.Reflection.PropertyInfo? trackedPropsProp = entityType.GetProperty("TrackedProperties", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy);
-
-            if (entityTypeNameProp is null || trackedPropsProp is null)
-            {
-                continue;
-            }
-
-            string entityTypeName = (string)entityTypeNameProp.GetValue(null)!;
-            var trackedProperties =
-                (IReadOnlyDictionary<string, TrackedPropertyConfig>)trackedPropsProp.GetValue(null)!;
-
-            var trackedEntity = (ITrackedEntity)entry.Entity;
+            TrackedEntityMetadata metadata = GetMetadata(entry.Entity.GetType());
             string entityId = trackedEntity.GetEntityId();
 
             foreach (PropertyEntry property in entry.Properties)
             {
-                if (property.IsModified && trackedProperties.TryGetValue(property.Metadata.Name, out TrackedPropertyConfig? config))
+                if (property.IsModified && metadata.TrackedProperties.TryGetValue(property.Metadata.Name, out TrackedPropertyConfig? config))
                 {
                     changes.Add(new EntityStateChange
                     {
-                        EntityType = entityTypeName,
+                        EntityType = metadata.EntityTypeName,
                         EntityId = entityId,
                         PropertyName = property.Metadata.Name,
                         OldValue = property.OriginalValue?.ToString(),
@@ -139,6 +121,27 @@ internal sealed class EntityTrackingInterceptor(
 
         return changes;
     }
+
+    // Static abstract interface members cannot be read through an instance, so the CLR type
+    // is closed over ReadMetadata<TEntity> exactly once per entity type; every subsequent
+    // save pays a single ConcurrentDictionary lookup instead of two reflection property reads.
+    private static readonly ConcurrentDictionary<Type, TrackedEntityMetadata> MetadataCache = new();
+
+    private static readonly MethodInfo ReadMetadataMethod = typeof(EntityTrackingInterceptor)
+        .GetMethod(nameof(ReadMetadata), BindingFlags.NonPublic | BindingFlags.Static)!;
+
+    private static TrackedEntityMetadata GetMetadata(Type entityType) =>
+        MetadataCache.GetOrAdd(
+            entityType,
+            static type => (TrackedEntityMetadata)ReadMetadataMethod.MakeGenericMethod(type).Invoke(null, null)!);
+
+    private static TrackedEntityMetadata ReadMetadata<TEntity>()
+        where TEntity : ITrackedEntity =>
+        new(TEntity.EntityTypeName, TEntity.TrackedProperties);
+
+    private sealed record TrackedEntityMetadata(
+        string EntityTypeName,
+        IReadOnlyDictionary<string, TrackedPropertyConfig> TrackedProperties);
 
     private sealed record EntityStateChange
     {

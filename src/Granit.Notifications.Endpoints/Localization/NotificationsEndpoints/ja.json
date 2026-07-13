@@ -5,6 +5,7 @@
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "通知の管理（設定、サブスクリプション、プッシュトークン）",
         "Permission:Notifications.UserNotifications.Read": "通知の閲覧（受信トレイ、アクティビティフィード）",
+        "Permission:Notifications.UserNotifications.Update": "自分の通知を既読にする",
         "PermissionGroup:Notifications": "通知"
     }
 }

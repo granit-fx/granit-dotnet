@@ -5,6 +5,7 @@
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "管理通知（偏好设置、订阅、推送令牌）",
         "Permission:Notifications.UserNotifications.Read": "查看通知（收件箱、活动动态）",
+        "Permission:Notifications.UserNotifications.Update": "将自己的通知标记为已读",
         "PermissionGroup:Notifications": "通知"
     }
 }

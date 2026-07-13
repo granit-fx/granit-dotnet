@@ -5,6 +5,7 @@
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Gérer les notifications (préférences, abonnements, jetons push)",
         "Permission:Notifications.UserNotifications.Read": "Consulter les notifications (boîte de réception, fil d'activité)",
+        "Permission:Notifications.UserNotifications.Update": "Marquer ses notifications comme lues",
         "PermissionGroup:Notifications": "Notifications"
     }
 }

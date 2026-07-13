@@ -5,6 +5,7 @@
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Spravovat oznámení (předvolby, odběry, push tokeny)",
         "Permission:Notifications.UserNotifications.Read": "Zobrazit oznámení (doručená pošta, přehled aktivit)",
+        "Permission:Notifications.UserNotifications.Update": "Označení vlastních oznámení jako přečtených",
         "PermissionGroup:Notifications": "Oznámení"
     }
 }

@@ -9,7 +9,7 @@ namespace Granit.Notifications.Endpoints.Tests;
 
 /// <summary>
 /// Verifies that <see cref="NotificationsPermissionDefinitionProvider"/> correctly
-/// registers the Notifications permission group and Read/Manage permissions.
+/// registers the Notifications permission group and Read/Update/Manage permissions.
 /// </summary>
 public sealed class NotificationsPermissionDefinitionProviderTests
 {
@@ -45,6 +45,23 @@ public sealed class NotificationsPermissionDefinitionProviderTests
 
         // Assert
         group.Permissions.ShouldContain(p => p.Name == NotificationsPermissions.UserNotifications.Read);
+    }
+
+    [Fact]
+    public void DefinePermissions_adds_Update_permission()
+    {
+        // Arrange
+        PermissionGroup group = new(NotificationsPermissions.GroupName);
+        IPermissionDefinitionContext context = Substitute.For<IPermissionDefinitionContext>();
+        context.AddGroup(NotificationsPermissions.GroupName, Arg.Any<LocalizableString>()).Returns(group);
+
+        NotificationsPermissionDefinitionProvider provider = new();
+
+        // Act
+        provider.DefinePermissions(context);
+
+        // Assert
+        group.Permissions.ShouldContain(p => p.Name == NotificationsPermissions.UserNotifications.Update);
     }
 
     [Fact]
@@ -84,7 +101,7 @@ public sealed class NotificationsPermissionDefinitionProviderTests
     }
 
     [Fact]
-    public void DefinePermissions_registers_exactly_two_permissions()
+    public void DefinePermissions_registers_exactly_three_permissions()
     {
         // Arrange
         PermissionGroup group = new(NotificationsPermissions.GroupName);
@@ -97,6 +114,6 @@ public sealed class NotificationsPermissionDefinitionProviderTests
         provider.DefinePermissions(context);
 
         // Assert
-        group.Permissions.Count.ShouldBe(2);
+        group.Permissions.Count.ShouldBe(3);
     }
 }

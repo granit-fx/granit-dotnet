@@ -16,6 +16,13 @@ public static class NotificationsPermissions
         /// <summary>Grants read-only access to view notifications (inbox, activity feed).</summary>
         public const string Read = "Notifications.UserNotifications.Read";
 
+        /// <summary>
+        /// Grants self-service updates to one's own inbox (mark as read, mark all as read).
+        /// Grants are exact-name (no checker-side implication), so roles holding
+        /// <see cref="Manage"/> must also be granted this permission — Manage ⊇ Update.
+        /// </summary>
+        public const string Update = "Notifications.UserNotifications.Update";
+
         /// <summary>Grants management access to notification settings (preferences, subscriptions, push tokens).</summary>
         public const string Manage = "Notifications.UserNotifications.Manage";
     }

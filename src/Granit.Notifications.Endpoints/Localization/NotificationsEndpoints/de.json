@@ -5,6 +5,7 @@
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Benachrichtigungen verwalten (Einstellungen, Abonnements, Push-Token)",
         "Permission:Notifications.UserNotifications.Read": "Benachrichtigungen anzeigen (Posteingang, Aktivitätsfeed)",
+        "Permission:Notifications.UserNotifications.Update": "Eigene Benachrichtigungen als gelesen markieren",
         "PermissionGroup:Notifications": "Benachrichtigungen"
     }
 }

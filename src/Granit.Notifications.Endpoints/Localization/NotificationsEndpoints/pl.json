@@ -5,6 +5,7 @@
         "NotificationsEndpoints:Workspace.Section": "Notifications",
         "Permission:Notifications.UserNotifications.Manage": "Zarządzanie powiadomieniami (preferencje, subskrypcje, tokeny push)",
         "Permission:Notifications.UserNotifications.Read": "Przeglądanie powiadomień (skrzynka odbiorcza, aktywność)",
+        "Permission:Notifications.UserNotifications.Update": "Oznaczanie własnych powiadomień jako przeczytane",
         "PermissionGroup:Notifications": "Powiadomienia"
     }
 }
