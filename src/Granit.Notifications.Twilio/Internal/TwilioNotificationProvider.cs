@@ -94,7 +94,7 @@ internal sealed partial class TwilioNotificationProvider(
         {
             errorBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
         }
-        catch
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             // Best-effort -- do not mask the original HTTP error.
         }

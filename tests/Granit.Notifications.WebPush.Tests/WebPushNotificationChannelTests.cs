@@ -158,7 +158,7 @@ public sealed class WebPushNotificationChannelTests
         await channel.SendAsync(context, TestContext.Current.CancellationToken);
 
         await _subscriptionWriter.Received(1).RemoveSubscriptionAsync(
-            expiredEndpoint, context.TenantId, Arg.Any<CancellationToken>());
+            context.RecipientUserId, expiredEndpoint, context.TenantId, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -185,7 +185,7 @@ public sealed class WebPushNotificationChannelTests
         await channel.SendAsync(context, TestContext.Current.CancellationToken);
 
         await _subscriptionWriter.Received(1).RemoveSubscriptionAsync(
-            expiredEndpoint, tenantId, Arg.Any<CancellationToken>());
+            context.RecipientUserId, expiredEndpoint, tenantId, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -214,11 +214,11 @@ public sealed class WebPushNotificationChannelTests
         handler.Requests.Count.ShouldBe(3);
         // Only the expired endpoint should be removed.
         await _subscriptionWriter.Received(1).RemoveSubscriptionAsync(
-            "https://push.example.com/expired", context.TenantId, Arg.Any<CancellationToken>());
+            context.RecipientUserId, "https://push.example.com/expired", context.TenantId, Arg.Any<CancellationToken>());
         await _subscriptionWriter.DidNotReceive().RemoveSubscriptionAsync(
-            "https://push.example.com/active1", Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+            Arg.Any<string>(), "https://push.example.com/active1", Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
         await _subscriptionWriter.DidNotReceive().RemoveSubscriptionAsync(
-            "https://push.example.com/active2", Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+            Arg.Any<string>(), "https://push.example.com/active2", Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

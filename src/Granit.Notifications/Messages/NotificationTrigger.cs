@@ -18,6 +18,12 @@ public sealed record NotificationTrigger
     public EntityReference? RelatedEntity { get; init; }
     public Guid? TenantId { get; init; }
     public required DateTimeOffset OccurredAt { get; init; }
+
+    /// <summary>
+    /// Explicit culture override for content rendering (BCP-47). Leave <see langword="null"/>
+    /// (the default) to let each channel fall back to the recipient's preferred culture —
+    /// stamping a server-ambient culture here would override per-recipient localization.
+    /// </summary>
     public string? Culture { get; init; }
 
     /// <summary>

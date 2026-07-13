@@ -32,7 +32,9 @@ public static class NotificationsAIHostApplicationBuilderExtensions
     {
         builder.Services
             .AddOptions<NotificationsAIOptions>()
-            .BindConfiguration(NotificationsAIOptions.SectionName);
+            .BindConfiguration(NotificationsAIOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         // Scoped, not singleton: both depend on the scoped IStructuredCompletion primitive
         // (ADR-064), so a singleton here would capture a stale scope.

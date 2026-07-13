@@ -5,7 +5,6 @@ using Granit.Notifications.AI.Options;
 using Granit.Notifications.AI.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -17,10 +16,10 @@ namespace Granit.Notifications.AI.Tests;
 public sealed class LlmNotificationContentGeneratorTests
 {
     private readonly IStructuredCompletion _structured = Substitute.For<IStructuredCompletion>();
-    private readonly IOptions<NotificationsAIOptions> _options = MsOptions.Create(new NotificationsAIOptions());
     private readonly ILogger<LlmNotificationContentGenerator> _logger = NullLogger<LlmNotificationContentGenerator>.Instance;
 
-    private LlmNotificationContentGenerator CreateSut() => new(_structured, _options, _logger);
+    private LlmNotificationContentGenerator CreateSut(NotificationsAIOptions? options = null) =>
+        new(_structured, MsOptions.Create(options ?? new NotificationsAIOptions()), _logger);
 
     private static NotificationDeliveryContext MakeContext(
         string typeName = "order.completed",
@@ -103,7 +102,8 @@ public sealed class LlmNotificationContentGeneratorTests
             .CompleteAsync<NotificationContentResponse>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
             .Returns(Ok("S", "B"));
 
-        await CreateSut().GenerateAsync(
+        // Forwarding the Data payload is an explicit GDPR opt-in.
+        await CreateSut(new NotificationsAIOptions { AllowPersonalDataInPrompts = true }).GenerateAsync(
             MakeContext(typeName: "user.registered", culture: "fr"), TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
@@ -114,5 +114,22 @@ public sealed class LlmNotificationContentGeneratorTests
         // ...and the notification type travels as labelled context.
         captured.Context.ShouldNotBeNull();
         captured.Context.ShouldContain(kv => kv.Value == "user.registered");
+    }
+
+    [Fact]
+    public async Task GenerateAsync_ByDefault_DoesNotForwardDataPayloadToTheModel()
+    {
+        StructuredCompletionRequest? captured = null;
+        _structured
+            .CompleteAsync<NotificationContentResponse>(Arg.Do<StructuredCompletionRequest>(r => captured = r), Arg.Any<CancellationToken>())
+            .Returns(Ok("S", "B"));
+
+        await CreateSut().GenerateAsync(MakeContext(), TestContext.Current.CancellationToken);
+
+        // GDPR: the payload may contain personal data — it must never reach the LLM
+        // unless the host explicitly sets AllowPersonalDataInPrompts = true.
+        captured.ShouldNotBeNull();
+        captured.Content.ShouldBe("{}");
+        captured.Content.ShouldNotContain("ORD-001");
     }
 }

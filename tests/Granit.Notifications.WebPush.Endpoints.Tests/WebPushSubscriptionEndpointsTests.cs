@@ -198,7 +198,7 @@ public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
         HttpResponseMessage response = await _authClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        await _writer.Received(1).RemoveSubscriptionAsync(SampleEndpoint, null, Arg.Any<CancellationToken>());
+        await _writer.Received(1).RemoveSubscriptionAsync(UserId, SampleEndpoint, null, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -214,7 +214,7 @@ public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         await _writer.Received(1).RemoveSubscriptionAsync(
-            "https://push.example/unknown", null, Arg.Any<CancellationToken>());
+            UserId, "https://push.example/unknown", null, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -242,7 +242,7 @@ public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
 
         response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
         await _writer.DidNotReceive().RemoveSubscriptionAsync(
-            Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -260,7 +260,7 @@ public sealed class WebPushSubscriptionEndpointsTests : IAsyncDisposable
         HttpResponseMessage response = await _authClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        await _writer.Received(1).RemoveSubscriptionAsync(SampleEndpoint, tenantId, Arg.Any<CancellationToken>());
+        await _writer.Received(1).RemoveSubscriptionAsync(UserId, SampleEndpoint, tenantId, Arg.Any<CancellationToken>());
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────

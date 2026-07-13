@@ -117,6 +117,70 @@ public sealed class EmailNotificationChannelTests
     public void Name_ReturnsEmail() =>
         _channel.Name.ShouldBe(NotificationChannels.Email);
 
+    // ──── Culture selection ────
+
+    [Fact]
+    public async Task SendAsync_NoExplicitCulture_ResolvesTemplateWithRecipientPreferredCulture()
+    {
+        NotificationDeliveryContext context = BuildContext(); // Culture is null
+        _recipientResolver.ResolveAsync("user-1", Arg.Any<CancellationToken>())
+            .Returns(new RecipientInfo
+            {
+                UserId = "user-1",
+                Email = "user@test.com",
+                PreferredCulture = "fr",
+            });
+
+        List<Granit.Templating.Keys.TemplateKey> requestedKeys = [];
+        ITemplateResolver resolver = Substitute.For<ITemplateResolver>();
+        resolver.Priority.Returns(100);
+        resolver.TryResolveAsync(Arg.Any<Granit.Templating.Keys.TemplateKey>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                requestedKeys.Add(callInfo.Arg<Granit.Templating.Keys.TemplateKey>());
+                return Task.FromResult<TemplateDescriptor?>(null);
+            });
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(new[] { resolver });
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        // The recipient's preferred culture must drive template resolution — without the
+        // fallback, the 18 localized template variants are dead code (culture always null).
+        requestedKeys.ShouldNotBeEmpty();
+        requestedKeys.ShouldAllBe(k => k.Culture == "fr");
+    }
+
+    [Fact]
+    public async Task SendAsync_ExplicitCulture_OverridesRecipientPreferredCulture()
+    {
+        NotificationDeliveryContext context = BuildContext() with { Culture = "de" };
+        _recipientResolver.ResolveAsync("user-1", Arg.Any<CancellationToken>())
+            .Returns(new RecipientInfo
+            {
+                UserId = "user-1",
+                Email = "user@test.com",
+                PreferredCulture = "fr",
+            });
+
+        List<Granit.Templating.Keys.TemplateKey> requestedKeys = [];
+        ITemplateResolver resolver = Substitute.For<ITemplateResolver>();
+        resolver.Priority.Returns(100);
+        resolver.TryResolveAsync(Arg.Any<Granit.Templating.Keys.TemplateKey>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                requestedKeys.Add(callInfo.Arg<Granit.Templating.Keys.TemplateKey>());
+                return Task.FromResult<TemplateDescriptor?>(null);
+            });
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(new[] { resolver });
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        requestedKeys.ShouldNotBeEmpty();
+        requestedKeys.ShouldAllBe(k => k.Culture == "de");
+    }
+
     // ──── Template rendering branch tests ────
 
     [Fact]

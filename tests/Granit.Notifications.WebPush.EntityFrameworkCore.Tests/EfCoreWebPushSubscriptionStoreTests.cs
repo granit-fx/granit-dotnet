@@ -76,10 +76,10 @@ public sealed class EfCoreWebPushSubscriptionStoreTests : IDisposable
     }
 
     [Fact]
-    public async Task RemoveSubscriptionAsync_DeletesByEndpoint()
+    public async Task RemoveSubscriptionAsync_DeletesByUserAndEndpoint()
     {
         await _store.SaveSubscriptionAsync("user-1", Sub("https://push/1"), tenantId: null, TestContext.Current.CancellationToken);
-        await _store.RemoveSubscriptionAsync("https://push/1", tenantId: null, TestContext.Current.CancellationToken);
+        await _store.RemoveSubscriptionAsync("user-1", "https://push/1", tenantId: null, TestContext.Current.CancellationToken);
 
         IReadOnlyList<WebPushSubscriptionInfo> subs = await _store
             .GetSubscriptionsAsync("user-1", null, TestContext.Current.CancellationToken);
@@ -91,7 +91,20 @@ public sealed class EfCoreWebPushSubscriptionStoreTests : IDisposable
     public async Task RemoveSubscriptionAsync_OtherEndpoint_DoesNotDelete()
     {
         await _store.SaveSubscriptionAsync("user-1", Sub("https://push/1"), tenantId: null, TestContext.Current.CancellationToken);
-        await _store.RemoveSubscriptionAsync("https://push/other", tenantId: null, TestContext.Current.CancellationToken);
+        await _store.RemoveSubscriptionAsync("user-1", "https://push/other", tenantId: null, TestContext.Current.CancellationToken);
+
+        IReadOnlyList<WebPushSubscriptionInfo> subs = await _store
+            .GetSubscriptionsAsync("user-1", null, TestContext.Current.CancellationToken);
+
+        subs.ShouldHaveSingleItem();
+    }
+
+    [Fact]
+    public async Task RemoveSubscriptionAsync_AnotherUsersEndpoint_DoesNotDelete()
+    {
+        // Least privilege: knowing another user's endpoint must not allow deleting it.
+        await _store.SaveSubscriptionAsync("user-1", Sub("https://push/1"), tenantId: null, TestContext.Current.CancellationToken);
+        await _store.RemoveSubscriptionAsync("user-2", "https://push/1", tenantId: null, TestContext.Current.CancellationToken);
 
         IReadOnlyList<WebPushSubscriptionInfo> subs = await _store
             .GetSubscriptionsAsync("user-1", null, TestContext.Current.CancellationToken);

@@ -33,12 +33,13 @@ internal sealed class InMemoryWebPushSubscriptionStore : IWebPushSubscriptionRea
         return Task.CompletedTask;
     }
 
-    public Task RemoveSubscriptionAsync(string endpoint, Guid? tenantId, CancellationToken cancellationToken = default)
+    public Task RemoveSubscriptionAsync(string userId, string endpoint, Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        foreach (KeyValuePair<string, List<WebPushSubscriptionInfo>> kvp in _subscriptions)
+        if (_subscriptions.TryGetValue(BuildKey(userId, tenantId), out List<WebPushSubscriptionInfo>? subscriptions))
         {
-            kvp.Value.RemoveAll(s => s.Endpoint == endpoint);
+            subscriptions.RemoveAll(s => s.Endpoint == endpoint);
         }
+
         return Task.CompletedTask;
     }
 
