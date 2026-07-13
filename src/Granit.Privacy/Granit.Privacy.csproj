@@ -10,27 +10,27 @@
     <InternalsVisibleTo Include="Granit.Privacy.BlobStorage" />
     <InternalsVisibleTo Include="Granit.Privacy.Endpoints.Tests" />
     <InternalsVisibleTo Include="Granit.Privacy.Tests" />
+    <!-- LegalDocumentCacheInvalidatedHandler (Granit.Privacy.Wolverine) refreshes the
+         internal CompositeLegalDocumentRegistry. -->
+    <InternalsVisibleTo Include="Granit.Privacy.Wolverine" />
+    <InternalsVisibleTo Include="Granit.Privacy.Wolverine.Tests" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- The Wolverine source generator emits
-         `Wolverine.SourceGeneration.GeneratedWolverineTypeLoader` in every
-         assembly it processes. When Granit.Privacy.BlobStorage references
-         Granit.Privacy via ProjectReference, the SG analyzer flows through
-         and runs again in BlobStorage, emitting a SECOND class with the same
-         FQN — CS0436 conflict. PrivateAssets="analyzers" stops ONLY the source
-         generator from propagating to downstream consumers (the SG still runs
-         HERE, where the Wolverine handlers + sagas are declared) while letting
-         the Wolverine runtime assembly flow transitively.
+    <!-- Referenced ONLY for [SagaIdentity] on the *Eto integration-event contracts
+         (PersonalDataRequestedEto, PersonalDataPreparedEto, PersonalDataDeletedEto,
+         DeletionDeferredEto, DeletionCancelledEto): the sagas in Granit.Privacy.Wolverine
+         correlate on RequestId, which matches none of Wolverine's naming conventions
+         (Id / SagaId / {SagaType}Id), so the attribute must live on the contracts and the
+         contracts must stay here — a dozen provider packages publish them. The sagas and
+         handlers themselves moved to Granit.Privacy.Wolverine.
 
-         It must NOT be PrivateAssets="all": Privacy's public surface (the export
-         and deletion sagas) references Wolverine types, so consumers that reflect
-         over Privacy's exported types — e.g. the OpenAPI generator, FluentValidation
-         and Wolverine's own discovery — need Wolverine loadable. Marking it "all"
-         blocked the runtime asset and crashed those scans with a FileNotFound for
-         Wolverine.dll (#2540). The WolverineCouplingTests guard only flags direct
-         package references, which this transitive flow does not introduce. -->
+         ExcludeAssets="analyzers" keeps the Wolverine source generator from running in this
+         assembly (no handlers/sagas remain, and its internal GeneratedWolverineTypeLoader
+         would collide via InternalsVisibleTo with the one generated in
+         Granit.Privacy.Wolverine — CS0436, the same conflict #2540 fixed for BlobStorage). -->
     <PackageReference Include="WolverineFx">
+      <ExcludeAssets>analyzers</ExcludeAssets>
       <PrivateAssets>analyzers</PrivateAssets>
     </PackageReference>
   </ItemGroup>

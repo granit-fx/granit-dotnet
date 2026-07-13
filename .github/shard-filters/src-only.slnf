@@ -276,6 +276,7 @@
       "src/Granit.Privacy.Regulations.Cookies/Granit.Privacy.Regulations.Cookies.csproj",
       "src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj",
       "src/Granit.Privacy.Vault/Granit.Privacy.Vault.csproj",
+      "src/Granit.Privacy.Wolverine/Granit.Privacy.Wolverine.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",
       "src/Granit.QueryEngine.AI.Tools/Granit.QueryEngine.AI.Tools.csproj",
       "src/Granit.QueryEngine.AI/Granit.QueryEngine.AI.csproj",

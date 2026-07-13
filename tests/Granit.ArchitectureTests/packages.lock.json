@@ -3800,6 +3800,14 @@
           "Granit.Vault": "[0.1.0-dev, )"
         }
       },
+      "granit.privacy.wolverine": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Privacy": "[0.1.0-dev, )",
+          "Granit.Wolverine": "[0.1.0-dev, )",
+          "WolverineFx": "[6.*, )"
+        }
+      },
       "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {

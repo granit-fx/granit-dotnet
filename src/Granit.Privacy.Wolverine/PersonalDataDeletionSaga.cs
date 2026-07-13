@@ -1,5 +1,6 @@
 using Granit.DataProtection;
 using Granit.Encryption;
+using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.Diagnostics;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Wolverine;
 
-namespace Granit.Privacy.DataDeletion;
+namespace Granit.Privacy.Wolverine;
 
 /// <summary>
 /// Stateful Saga implementing the privacy deletion cooling-off period plus the provider-deletion

@@ -7,7 +7,7 @@ namespace Granit.Privacy.DataDeletion.Events;
 
 /// <summary>
 /// Published when a user requests deferred deletion with a grace period (cooling-off).
-/// Starts the <see cref="PersonalDataDeletionSaga"/> which schedules the actual deletion.
+/// Starts the <c>PersonalDataDeletionSaga</c> (in <c>Granit.Privacy.Wolverine</c>) which schedules the actual deletion.
 /// </summary>
 public sealed record DeletionDeferredEto(
     [property: SagaIdentity] Guid RequestId,

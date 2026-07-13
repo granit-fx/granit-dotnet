@@ -13,7 +13,7 @@ using Shouldly;
 using Wolverine;
 using Xunit;
 
-namespace Granit.Privacy.Tests;
+namespace Granit.Privacy.Wolverine.Tests;
 
 public sealed class PersonalDataExportSagaTests : IDisposable
 {
