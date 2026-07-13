@@ -47708,19 +47708,19 @@
       "kind": "interface",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/LegalAgreements/ILegalDocumentRegistry.cs",
-      "line": 6,
+      "line": 11,
       "members": [
         {
-          "name": "GetDefinition",
+          "name": "GetDefinitionAsync",
           "kind": "method",
-          "signature": "GetDefinition(string documentId)",
-          "returnType": "LegalDocumentDefinition?"
+          "signature": "GetDefinitionAsync(string documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<LegalDocumentDefinition?>"
         },
         {
-          "name": "GetAll",
+          "name": "GetAllAsync",
           "kind": "method",
-          "signature": "GetAll()",
-          "returnType": "IReadOnlyList<LegalDocumentDefinition>"
+          "signature": "GetAllAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<LegalDocumentDefinition>>"
         }
       ]
     },

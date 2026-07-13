@@ -21,10 +21,12 @@ internal sealed class LegalDocumentRegistry : ILegalDocumentRegistry
     }
 
     /// <inheritdoc/>
-    public LegalDocumentDefinition? GetDefinition(string documentId) =>
-        _documents.GetValueOrDefault(documentId);
+    public Task<LegalDocumentDefinition?> GetDefinitionAsync(
+        string documentId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(_documents.GetValueOrDefault(documentId));
 
     /// <inheritdoc/>
-    public IReadOnlyList<LegalDocumentDefinition> GetAll() =>
-        _documents.Values.ToList();
+    public Task<IReadOnlyList<LegalDocumentDefinition>> GetAllAsync(
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<LegalDocumentDefinition>>(_documents.Values.ToList());
 }

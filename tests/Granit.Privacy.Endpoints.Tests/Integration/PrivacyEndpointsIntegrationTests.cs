@@ -445,7 +445,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task GetDocuments_ReturnsDocumentList()
     {
-        _server.DocumentRegistry.GetAll().Returns(
+        _server.DocumentRegistry.GetAllAsync(Arg.Any<CancellationToken>()).Returns(
         [
             new LegalDocumentDefinition("privacy-policy", "2.1.0", "Privacy Policy"),
             new LegalDocumentDefinition("terms-of-service", "1.0.0", "Terms of Service"),
@@ -469,7 +469,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
     public async Task AcceptAgreement_ValidRequest_Returns201()
     {
         LegalDocumentDefinition document = new("privacy-policy", "2.1.0", "Privacy Policy");
-        _server.DocumentRegistry.GetDefinition("privacy-policy").Returns(document);
+        _server.DocumentRegistry.GetDefinitionAsync("privacy-policy", Arg.Any<CancellationToken>()).Returns(document);
         _server.AgreementChecker
             .HasAcceptedLatestAsync(PrivacyEndpointsTestServer.TestUserId, "privacy-policy", Arg.Any<CancellationToken>())
             .Returns(false);
@@ -493,7 +493,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
     public async Task AcceptAgreement_AlreadyAccepted_Returns409()
     {
         LegalDocumentDefinition document = new("privacy-policy", "2.1.0", "Privacy Policy");
-        _server.DocumentRegistry.GetDefinition("privacy-policy").Returns(document);
+        _server.DocumentRegistry.GetDefinitionAsync("privacy-policy", Arg.Any<CancellationToken>()).Returns(document);
         _server.AgreementChecker
             .HasAcceptedLatestAsync(PrivacyEndpointsTestServer.TestUserId, "privacy-policy", Arg.Any<CancellationToken>())
             .Returns(true);
@@ -510,7 +510,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
     public async Task AcceptAgreement_VersionMismatch_Returns422()
     {
         LegalDocumentDefinition document = new("privacy-policy", "2.1.0", "Privacy Policy");
-        _server.DocumentRegistry.GetDefinition("privacy-policy").Returns(document);
+        _server.DocumentRegistry.GetDefinitionAsync("privacy-policy", Arg.Any<CancellationToken>()).Returns(document);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
             "/privacy/agreements/accept",
@@ -523,7 +523,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task AcceptAgreement_UnknownDocument_Returns404()
     {
-        _server.DocumentRegistry.GetDefinition("unknown-doc").Returns((LegalDocumentDefinition?)null);
+        _server.DocumentRegistry.GetDefinitionAsync("unknown-doc", Arg.Any<CancellationToken>()).Returns((LegalDocumentDefinition?)null);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
             "/privacy/agreements/accept",
@@ -548,7 +548,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
     public async Task GetConsentStatus_ReturnsStatusPerDocument()
     {
         LegalDocumentDefinition document = new("privacy-policy", "2.1.0", "Privacy Policy");
-        _server.DocumentRegistry.GetAll().Returns(new[] { document });
+        _server.DocumentRegistry.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new[] { document });
         _server.AgreementChecker
             .HasAcceptedLatestAsync(PrivacyEndpointsTestServer.TestUserId, "privacy-policy", Arg.Any<CancellationToken>())
             .Returns(true);
@@ -584,7 +584,8 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
     public async Task GetAgreementHistory_ReturnsHistoryList()
     {
         LegalDocumentDefinition document = new("privacy-policy", "2.1.0", "Privacy Policy");
-        _server.DocumentRegistry.GetDefinition("privacy-policy").Returns(document);
+        // The history handler resolves IsLatest from one GetAllAsync registry snapshot.
+        _server.DocumentRegistry.GetAllAsync(Arg.Any<CancellationToken>()).Returns([document]);
 
         TestLegalAgreement agreement = new()
         {

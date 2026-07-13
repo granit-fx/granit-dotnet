@@ -23,7 +23,7 @@ public sealed class LegalDocumentObsoleteHandlerTests
         Guid[] userIds = [Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()];
         storeReader.StreamUsersByDocumentVersionAsync("privacy-policy", "1.0", Arg.Any<CancellationToken>())
             .Returns(ci => AsAsync(userIds));
-        documentRegistry.GetDefinition("privacy-policy")
+        documentRegistry.GetDefinitionAsync("privacy-policy", Arg.Any<CancellationToken>())
             .Returns(new LegalDocumentDefinition("privacy-policy", "2.0", "Privacy Policy"));
 
         LegalAgreementObsoleteEto evt = new(
@@ -75,7 +75,7 @@ public sealed class LegalDocumentObsoleteHandlerTests
         Guid[] userIds = [.. Enumerable.Range(0, 1000).Select(_ => Guid.NewGuid())];
         storeReader.StreamUsersByDocumentVersionAsync("privacy-policy", "1.0", Arg.Any<CancellationToken>())
             .Returns(ci => AsAsync(userIds));
-        documentRegistry.GetDefinition("privacy-policy")
+        documentRegistry.GetDefinitionAsync("privacy-policy", Arg.Any<CancellationToken>())
             .Returns(new LegalDocumentDefinition("privacy-policy", "2.0", "Privacy Policy"));
 
         LegalAgreementObsoleteEto evt = new(
@@ -120,7 +120,7 @@ public sealed class LegalDocumentObsoleteHandlerTests
         Guid[] userIds = [.. Enumerable.Range(0, 1001).Select(_ => Guid.NewGuid())];
         storeReader.StreamUsersByDocumentVersionAsync("privacy-policy", "1.0", Arg.Any<CancellationToken>())
             .Returns(ci => AsAsync(userIds));
-        documentRegistry.GetDefinition("privacy-policy")
+        documentRegistry.GetDefinitionAsync("privacy-policy", Arg.Any<CancellationToken>())
             .Returns(new LegalDocumentDefinition("privacy-policy", "2.0", "Privacy Policy"));
 
         LegalAgreementObsoleteEto evt = new(
@@ -151,7 +151,7 @@ public sealed class LegalDocumentObsoleteHandlerTests
         Guid[] userIds = [Guid.NewGuid()];
         storeReader.StreamUsersByDocumentVersionAsync("unknown-doc", "1.0", Arg.Any<CancellationToken>())
             .Returns(ci => AsAsync(userIds));
-        documentRegistry.GetDefinition("unknown-doc").Returns((LegalDocumentDefinition?)null);
+        documentRegistry.GetDefinitionAsync("unknown-doc", Arg.Any<CancellationToken>()).Returns((LegalDocumentDefinition?)null);
 
         LegalAgreementObsoleteEto evt = new(
             DocumentId: "unknown-doc",

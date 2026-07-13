@@ -48,7 +48,7 @@ public sealed class PrivacyServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitPrivacy_RegistersLegalDocuments()
+    public async Task AddGranitPrivacy_RegistersLegalDocuments()
     {
         ServiceCollection services = new();
         services.AddGranitPrivacy(privacy =>
@@ -61,8 +61,8 @@ public sealed class PrivacyServiceCollectionExtensionsTests
         ILegalDocumentRegistry? registry = provider.GetService<ILegalDocumentRegistry>();
 
         registry.ShouldNotBeNull();
-        registry!.GetAll().Count.ShouldBe(2);
-        registry.GetDefinition("privacy-policy")!.CurrentVersion.ShouldBe("2.0.0");
+        (await registry!.GetAllAsync(TestContext.Current.CancellationToken)).Count.ShouldBe(2);
+        (await registry.GetDefinitionAsync("privacy-policy", TestContext.Current.CancellationToken))!.CurrentVersion.ShouldBe("2.0.0");
     }
 
     [Fact]

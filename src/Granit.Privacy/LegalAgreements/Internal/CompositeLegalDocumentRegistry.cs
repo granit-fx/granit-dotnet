@@ -25,21 +25,23 @@ internal sealed class CompositeLegalDocumentRegistry(
     private volatile bool _initialized;
 
     /// <inheritdoc/>
-    public LegalDocumentDefinition? GetDefinition(string documentId)
+    public async Task<LegalDocumentDefinition?> GetDefinitionAsync(
+        string documentId, CancellationToken cancellationToken = default)
     {
-        EnsureInitialized();
+        await EnsureInitializedAsync(cancellationToken).ConfigureAwait(false);
         return _cache.GetValueOrDefault(documentId)
-            ?? staticRegistry.GetDefinition(documentId);
+            ?? await staticRegistry.GetDefinitionAsync(documentId, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public IReadOnlyList<LegalDocumentDefinition> GetAll()
+    public async Task<IReadOnlyList<LegalDocumentDefinition>> GetAllAsync(
+        CancellationToken cancellationToken = default)
     {
-        EnsureInitialized();
+        await EnsureInitializedAsync(cancellationToken).ConfigureAwait(false);
 
         // Merge: DB definitions take precedence over static ones.
         Dictionary<string, LegalDocumentDefinition> merged = new(StringComparer.OrdinalIgnoreCase);
-        foreach (LegalDocumentDefinition def in staticRegistry.GetAll())
+        foreach (LegalDocumentDefinition def in await staticRegistry.GetAllAsync(cancellationToken).ConfigureAwait(false))
         {
             merged[def.DocumentId] = def;
         }
@@ -54,7 +56,8 @@ internal sealed class CompositeLegalDocumentRegistry(
 
     /// <summary>
     /// Refreshes the in-memory cache from the database. Called by the
-    /// <see cref="Events.LegalDocumentCacheInvalidatedEto"/> handler.
+    /// <see cref="Events.LegalDocumentCacheInvalidatedEto"/> handler and by the lazy
+    /// first-access initialization.
     /// </summary>
     internal async Task RefreshAsync(CancellationToken cancellationToken = default)
     {
@@ -76,15 +79,9 @@ internal sealed class CompositeLegalDocumentRegistry(
         _initialized = true;
     }
 
-    private void EnsureInitialized()
-    {
-        if (_initialized)
-        {
-            return;
-        }
-
-        // Synchronous initialization on first access — blocks once per pod lifetime.
-        // Subsequent refreshes are async via the Wolverine handler.
-        RefreshAsync().GetAwaiter().GetResult();
-    }
+    private Task EnsureInitializedAsync(CancellationToken cancellationToken) =>
+        // Cold-path hydration on first access; subsequent refreshes come from the
+        // Wolverine invalidation handler. Concurrent first calls may refresh twice —
+        // harmless (idempotent snapshot), cheaper than a lock on every hot-path read.
+        _initialized ? Task.CompletedTask : RefreshAsync(cancellationToken);
 }
