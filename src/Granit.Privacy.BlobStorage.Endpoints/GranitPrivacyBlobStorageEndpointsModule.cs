@@ -1,6 +1,8 @@
 using Granit.BlobStorage;
 using Granit.Modularity;
+using Granit.Privacy.BlobStorage.Endpoints.Options;
 using Granit.Validation;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Privacy.BlobStorage.Endpoints;
 
@@ -13,4 +15,13 @@ namespace Granit.Privacy.BlobStorage.Endpoints;
 [DependsOn(typeof(GranitBlobStorageModule))]
 [DependsOn(typeof(GranitPrivacyModule))]
 [DependsOn(typeof(GranitValidationModule))]
-public sealed class GranitPrivacyBlobStorageEndpointsModule : GranitModule;
+public sealed class GranitPrivacyBlobStorageEndpointsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services
+            .AddOptions<PrivacyBlobStorageEndpointsOptions>()
+            .BindConfiguration(PrivacyBlobStorageEndpointsOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+}

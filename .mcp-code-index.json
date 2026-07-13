@@ -45674,12 +45674,12 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage.Endpoints",
       "file": "src/Granit.Privacy.BlobStorage.Endpoints/Extensions/PrivacyBlobStorageEndpointRouteBuilderExtensions.cs",
-      "line": 19,
+      "line": 22,
       "members": [
         {
           "name": "MapGranitPrivacyExportDownload",
           "kind": "method",
-          "signature": "MapGranitPrivacyExportDownload(this IEndpointRouteBuilder endpoints, string routePrefix = \"privacy\", string tagName = \"Privacy\")",
+          "signature": "MapGranitPrivacyExportDownload(this IEndpointRouteBuilder endpoints, string? routePrefix = null, string? tagName = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -45690,8 +45690,15 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage.Endpoints",
       "file": "src/Granit.Privacy.BlobStorage.Endpoints/GranitPrivacyBlobStorageEndpointsModule.cs",
-      "line": 16,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "PrivacyBlobStorageEndpointsOptions",

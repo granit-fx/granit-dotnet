@@ -1,4 +1,5 @@
 using Granit.BlobStorage;
+using Granit.Privacy.BlobStorage.Endpoints.Options;
 using Granit.Privacy.DataExport;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -6,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Privacy.BlobStorage.Endpoints.Extensions;
 
@@ -25,17 +28,25 @@ public static class PrivacyBlobStorageEndpointRouteBuilderExtensions
     /// <c>Granit.Privacy.BlobStorage</c>).
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
-    /// <param name="routePrefix">Route prefix — typically mirrors <c>MapGranitPrivacy</c>. Default <c>"privacy"</c>.</param>
+    /// <param name="routePrefix">
+    /// Route prefix override — typically mirrors <c>MapGranitPrivacy</c>. When omitted, the value
+    /// bound from <c>Privacy:BlobStorage:Endpoints</c> applies (default <c>"privacy"</c>).
+    /// </param>
     /// <param name="tagName">
-    /// OpenAPI tag. Default <c>"Privacy"</c> — matches <c>PrivacyEndpointsOptions.TagName</c>.
-    /// Override when the host customizes the Privacy tag.
+    /// OpenAPI tag override — matches <c>PrivacyEndpointsOptions.TagName</c>. When omitted, the
+    /// value bound from <c>Privacy:BlobStorage:Endpoints</c> applies (default <c>"Privacy"</c>).
     /// </param>
     public static RouteGroupBuilder MapGranitPrivacyExportDownload(
         this IEndpointRouteBuilder endpoints,
-        string routePrefix = "privacy",
-        string tagName = "Privacy")
+        string? routePrefix = null,
+        string? tagName = null)
     {
         ArgumentNullException.ThrowIfNull(endpoints);
+
+        PrivacyBlobStorageEndpointsOptions options =
+            endpoints.ServiceProvider.GetService<IOptions<PrivacyBlobStorageEndpointsOptions>>()?.Value ?? new();
+        routePrefix ??= options.RoutePrefix;
+        tagName ??= options.TagName;
         ArgumentException.ThrowIfNullOrWhiteSpace(routePrefix);
         ArgumentException.ThrowIfNullOrWhiteSpace(tagName);
 
