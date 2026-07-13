@@ -3,6 +3,7 @@ using Granit.Privacy.Endpoints.Dtos;
 using Granit.Privacy.Endpoints.Permissions;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Domain;
+using Granit.Privacy.LegalAgreements.Exceptions;
 using Granit.QueryEngine.Endpoints.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -156,11 +157,11 @@ internal static class LegalDocumentAdminEndpoints
 
             return TypedResults.Ok(ToResponse(published));
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("not found"))
+        catch (LegalDocumentNotFoundException)
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
-        catch (InvalidOperationException ex)
+        catch (LegalDocumentNotPublishableException ex)
         {
             return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status400BadRequest);
         }
