@@ -97,7 +97,7 @@ Wolverine discovers via `Assembly.ExportedTypes` and needs **public types with p
 ### Background Jobs
 
 - `sealed record *Job : IBackgroundJob` with `[RecurringJob("cron", "name")]`, in `Granit.{Module}.BackgroundJobs/Jobs/`. Job name `{module-kebab}-{action-kebab}` (globally unique).
-- Handler `{Action}Handler` — `public static partial class`. Same Wolverine visibility rules.
+- Handler `{Action}Handler` — `public sealed class` (non-static) with `public static` Handle methods, per the CRITICAL Wolverine visibility rules above (which take precedence; reference: `DeletionDeadlineEnforcerHandler`).
 - Dedicated `Granit.{Module}.BackgroundJobs` sub-project keeps base module free of the `Granit.BackgroundJobs` dep. Never create a `.Wolverine` package for jobs (handled by `Granit.BackgroundJobs.Wolverine`).
 - NEVER `*Command` suffix — commands are CQRS, jobs are scheduled work units.
 

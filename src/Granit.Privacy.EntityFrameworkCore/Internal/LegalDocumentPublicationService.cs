@@ -12,7 +12,9 @@ namespace Granit.Privacy.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// Publishes a legal document draft. Archives the previous published version in the same
-/// transaction and dispatches <see cref="LegalAgreementObsoleteEto"/> for re-consent flows.
+/// transaction (the aggregate's <c>Archive()</c> raises <see cref="LegalAgreementObsoleteEto"/>
+/// as a domain event for re-consent flows) and dispatches
+/// <see cref="LegalDocumentCacheInvalidatedEto"/> so all pods refresh their registry.
 /// </summary>
 internal sealed class LegalDocumentPublicationService(
     IDbContextFactory<PrivacyDbContext> contextFactory,

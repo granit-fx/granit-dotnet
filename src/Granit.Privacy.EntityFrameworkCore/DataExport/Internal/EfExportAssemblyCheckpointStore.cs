@@ -25,10 +25,11 @@ namespace Granit.Privacy.EntityFrameworkCore.DataExport.Internal;
 /// <para>
 /// <b>Concurrency.</b> The row implements <see cref="Granit.Domain.IConcurrencyAware"/>;
 /// a duplicate dispatcher racing on the same tuple loses on
-/// <see cref="DbContext.SaveChangesAsync(CancellationToken)"/> with
-/// <see cref="DbUpdateConcurrencyException"/>. This store currently rethrows the
-/// EF exception — Wolverine's retry-with-cooldown surface wraps it for DLQ
-/// (lands in P6.3c.5).
+/// <see cref="DbContext.SaveChangesAsync(CancellationToken)"/> — with
+/// <see cref="DbUpdateConcurrencyException"/> on the update path, or with a plain
+/// <see cref="DbUpdateException"/> (primary-key violation) when both racers observed no
+/// existing row and try to insert. This store currently rethrows the EF exception —
+/// Wolverine's retry-with-cooldown surface wraps it for DLQ (lands in P6.3c.5).
 /// </para>
 /// </remarks>
 internal sealed class EfExportAssemblyCheckpointStore(
