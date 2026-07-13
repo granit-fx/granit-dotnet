@@ -740,6 +740,21 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Bulkhead",
+      "deps": [
+        "Granit",
+        "Granit.Features"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Bulkhead.Wolverine",
+      "deps": [
+        "Granit.Bulkhead"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Caching",
       "deps": [
         "Granit",
@@ -1158,9 +1173,8 @@
     {
       "name": "Granit.Http.Bulkhead",
       "deps": [
-        "Granit",
-        "Granit.Http.ExceptionHandling",
-        "Granit.Features"
+        "Granit.Bulkhead",
+        "Granit.Http.ExceptionHandling"
       ],
       "framework": "net10.0"
     },
@@ -15669,6 +15683,275 @@
       ]
     },
     {
+      "name": "BulkheadLease",
+      "fqn": "Granit.Bulkhead.Abstractions.BulkheadLease",
+      "kind": "class",
+      "project": "Granit.Bulkhead",
+      "file": "src/Granit.Bulkhead/Abstractions/BulkheadLease.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(null, null)",
+          "returnType": "BulkheadLease NoOp ="
+        }
+      ]
+    },
+    {
+      "name": "IBulkheadQuotaProvider",
+      "fqn": "Granit.Bulkhead.Abstractions.IBulkheadQuotaProvider",
+      "kind": "interface",
+      "project": "Granit.Bulkhead",
+      "file": "src/Granit.Bulkhead/Abstractions/IBulkheadQuotaProvider.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GetPermitLimitAsync",
+          "kind": "method",
+          "signature": "GetPermitLimitAsync(string policyName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int?>"
+        }
+      ]
+    },
+    {
+      "name": "ConcurrencyLimiterRegistry",
+      "fqn": "Granit.Bulkhead.ConcurrencyLimiterRegistry",
+      "kind": "class",
+      "project": "Granit.Bulkhead",
+      "file": "src/Granit.Bulkhead/ConcurrencyLimiterRegistry.cs",
+      "line": 36,
+      "members": [
+        {
+          "name": "AcquireAsync",
+          "kind": "method",
+          "signature": "AcquireAsync(string key, int permitLimit, int queueLimit, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<RateLimitLease>"
+        },
+        {
+          "name": "Dispose",
+          "kind": "method",
+          "signature": "Dispose()",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "BulkheadMetrics",
+      "fqn": "Granit.Bulkhead.Diagnostics.BulkheadMetrics",
+      "kind": "class",
+      "project": "Granit.Bulkhead",
+      "file": "src/Granit.Bulkhead/Diagnostics/BulkheadMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordReleased",
+          "kind": "method",
+          "signature": "RecordReleased(string policyName, string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordRejected",
+          "kind": "method",
+          "signature": "RecordRejected(string policyName, string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordEvicted",
+          "kind": "method",
+          "signature": "RecordEvicted(string reason, int count)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordUnknownPolicy",
+          "kind": "method",
+          "signature": "RecordUnknownPolicy(string policyName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAbandoned",
+          "kind": "method",
+          "signature": "RecordAbandoned(string policyName, string? tenantId)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "BulkheadRejectedException",
+      "fqn": "Granit.Bulkhead.Exceptions.BulkheadRejectedException",
+      "kind": "class",
+      "project": "Granit.Bulkhead",
+      "file": "src/Granit.Bulkhead/Exceptions/BulkheadRejectedException.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "BulkheadServiceCollectionExtensions",
+      "fqn": "Granit.Bulkhead.Extensions.BulkheadServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Bulkhead",
+      "file": "src/Granit.Bulkhead/Extensions/BulkheadServiceCollectionExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitBulkhead",
+          "kind": "method",
+          "signature": "AddGranitBulkhead(this IServiceCollection services, Action<GranitBulkheadOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitBulkheadModule",
+      "fqn": "Granit.Bulkhead.GranitBulkheadModule",
+      "kind": "class",
+      "project": "Granit.Bulkhead",
+      "file": "src/Granit.Bulkhead/GranitBulkheadModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "BulkheadLocalizationResource",
+      "fqn": "Granit.Bulkhead.Localization.BulkheadLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Bulkhead",
+      "file": "src/Granit.Bulkhead/Localization/BulkheadLocalizationResource.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "BulkheadPolicyOptions",
+      "fqn": "Granit.Bulkhead.Options.BulkheadPolicyOptions",
+      "kind": "class",
+      "project": "Granit.Bulkhead",
+      "file": "src/Granit.Bulkhead/Options/BulkheadPolicyOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "PermitLimit",
+          "kind": "property",
+          "signature": "int PermitLimit",
+          "returnType": "int"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "int QueueLimit { get; set; } public TimeSpan QueueTimeout { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "GranitBulkheadOptions",
+      "fqn": "Granit.Bulkhead.Options.GranitBulkheadOptions",
+      "kind": "class",
+      "project": "Granit.Bulkhead",
+      "file": "src/Granit.Bulkhead/Options/GranitBulkheadOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Enabled",
+          "kind": "property",
+          "signature": "bool Enabled",
+          "returnType": "bool"
+        },
+        {
+          "name": "BypassRoles",
+          "kind": "property",
+          "signature": "string[] BypassRoles",
+          "returnType": "string[]"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(StringComparer.OrdinalIgnoreCase)",
+          "returnType": "bool UseFeatureBasedQuotas { get; set; } public Dictionary<string, BulkheadPolicyOptions> Policies { get; set; } ="
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(30)",
+          "returnType": "TimeSpan IdleTimeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan CleanupInterval { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxLimiters",
+          "kind": "property",
+          "signature": "int MaxLimiters",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "TenantPartitionedBulkhead",
+      "fqn": "Granit.Bulkhead.TenantPartitionedBulkhead",
+      "kind": "class",
+      "project": "Granit.Bulkhead",
+      "file": "src/Granit.Bulkhead/TenantPartitionedBulkhead.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "AcquireAsync",
+          "kind": "method",
+          "signature": "AcquireAsync(string policyName, CancellationToken cancellationToken)",
+          "returnType": "Task<BulkheadLease>"
+        }
+      ]
+    },
+    {
+      "name": "BulkheadAttribute",
+      "fqn": "Granit.Bulkhead.Wolverine.Attributes.BulkheadAttribute",
+      "kind": "class",
+      "project": "Granit.Bulkhead.Wolverine",
+      "file": "src/Granit.Bulkhead.Wolverine/Attributes/BulkheadAttribute.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "PolicyName",
+          "kind": "property",
+          "signature": "string PolicyName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "BulkheadMiddleware",
+      "fqn": "Granit.Bulkhead.Wolverine.BulkheadMiddleware",
+      "kind": "class",
+      "project": "Granit.Bulkhead.Wolverine",
+      "file": "src/Granit.Bulkhead.Wolverine/BulkheadMiddleware.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "BeforeAsync",
+          "kind": "method",
+          "signature": "BeforeAsync(object message, TenantPartitionedBulkhead bulkhead, CancellationToken cancellationToken)",
+          "returnType": "Task<BulkheadLease>"
+        }
+      ]
+    },
+    {
+      "name": "GranitBulkheadWolverineModule",
+      "fqn": "Granit.Bulkhead.Wolverine.GranitBulkheadWolverineModule",
+      "kind": "class",
+      "project": "Granit.Bulkhead.Wolverine",
+      "file": "src/Granit.Bulkhead.Wolverine/GranitBulkheadWolverineModule.cs",
+      "line": 20,
+      "members": []
+    },
+    {
       "name": "AesCacheValueEncryptor",
       "fqn": "Granit.Caching.AesCacheValueEncryptor",
       "kind": "class",
@@ -24669,145 +24952,26 @@
       ]
     },
     {
-      "name": "BulkheadLease",
-      "fqn": "Granit.Http.Bulkhead.Abstractions.BulkheadLease",
-      "kind": "class",
-      "project": "Granit.Http.Bulkhead",
-      "file": "src/Granit.Http.Bulkhead/Abstractions/BulkheadLease.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "new",
-          "kind": "method",
-          "signature": "new(null, null)",
-          "returnType": "BulkheadLease NoOp ="
-        }
-      ]
-    },
-    {
-      "name": "IBulkheadQuotaProvider",
-      "fqn": "Granit.Http.Bulkhead.Abstractions.IBulkheadQuotaProvider",
-      "kind": "interface",
-      "project": "Granit.Http.Bulkhead",
-      "file": "src/Granit.Http.Bulkhead/Abstractions/IBulkheadQuotaProvider.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "GetPermitLimitAsync",
-          "kind": "method",
-          "signature": "GetPermitLimitAsync(string policyName, CancellationToken cancellationToken = default)",
-          "returnType": "Task<int?>"
-        }
-      ]
-    },
-    {
       "name": "BulkheadEndpointExtensions",
       "fqn": "Granit.Http.Bulkhead.AspNetCore.BulkheadEndpointExtensions",
       "kind": "class",
       "project": "Granit.Http.Bulkhead",
       "file": "src/Granit.Http.Bulkhead/AspNetCore/BulkheadEndpointExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": []
     },
     {
-      "name": "BulkheadAttribute",
-      "fqn": "Granit.Http.Bulkhead.Attributes.BulkheadAttribute",
+      "name": "BulkheadHttpServiceCollectionExtensions",
+      "fqn": "Granit.Http.Bulkhead.Extensions.BulkheadHttpServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Http.Bulkhead",
-      "file": "src/Granit.Http.Bulkhead/Attributes/BulkheadAttribute.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "PolicyName",
-          "kind": "property",
-          "signature": "string PolicyName",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "ConcurrencyLimiterRegistry",
-      "fqn": "Granit.Http.Bulkhead.ConcurrencyLimiterRegistry",
-      "kind": "class",
-      "project": "Granit.Http.Bulkhead",
-      "file": "src/Granit.Http.Bulkhead/ConcurrencyLimiterRegistry.cs",
-      "line": 29,
-      "members": [
-        {
-          "name": "AcquireAsync",
-          "kind": "method",
-          "signature": "AcquireAsync(string key, int permitLimit, int queueLimit, CancellationToken cancellationToken)",
-          "returnType": "ValueTask<RateLimitLease>"
-        },
-        {
-          "name": "Dispose",
-          "kind": "method",
-          "signature": "Dispose()",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "BulkheadMetrics",
-      "fqn": "Granit.Http.Bulkhead.Diagnostics.BulkheadMetrics",
-      "kind": "class",
-      "project": "Granit.Http.Bulkhead",
-      "file": "src/Granit.Http.Bulkhead/Diagnostics/BulkheadMetrics.cs",
+      "file": "src/Granit.Http.Bulkhead/Extensions/BulkheadHttpServiceCollectionExtensions.cs",
       "line": 10,
       "members": [
         {
-          "name": "RecordReleased",
+          "name": "AddGranitHttpBulkhead",
           "kind": "method",
-          "signature": "RecordReleased(string policyName, string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordRejected",
-          "kind": "method",
-          "signature": "RecordRejected(string policyName, string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordEvicted",
-          "kind": "method",
-          "signature": "RecordEvicted(string reason, int count)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordUnknownPolicy",
-          "kind": "method",
-          "signature": "RecordUnknownPolicy(string policyName)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordAbandoned",
-          "kind": "method",
-          "signature": "RecordAbandoned(string policyName, string? tenantId)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "BulkheadRejectedException",
-      "fqn": "Granit.Http.Bulkhead.Exceptions.BulkheadRejectedException",
-      "kind": "class",
-      "project": "Granit.Http.Bulkhead",
-      "file": "src/Granit.Http.Bulkhead/Exceptions/BulkheadRejectedException.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "BulkheadServiceCollectionExtensions",
-      "fqn": "Granit.Http.Bulkhead.Extensions.BulkheadServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Http.Bulkhead",
-      "file": "src/Granit.Http.Bulkhead/Extensions/BulkheadServiceCollectionExtensions.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "AddGranitBulkhead",
-          "kind": "method",
-          "signature": "AddGranitBulkhead(this IServiceCollection services, Action<GranitBulkheadOptions>? configure = null)",
+          "signature": "AddGranitHttpBulkhead(this IServiceCollection services)",
           "returnType": "IServiceCollection"
         }
       ]
@@ -24818,122 +24982,13 @@
       "kind": "class",
       "project": "Granit.Http.Bulkhead",
       "file": "src/Granit.Http.Bulkhead/GranitHttpBulkheadModule.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "BulkheadLocalizationResource",
-      "fqn": "Granit.Http.Bulkhead.Localization.BulkheadLocalizationResource",
-      "kind": "class",
-      "project": "Granit.Http.Bulkhead",
-      "file": "src/Granit.Http.Bulkhead/Localization/BulkheadLocalizationResource.cs",
-      "line": 9,
-      "members": []
-    },
-    {
-      "name": "BulkheadPolicyOptions",
-      "fqn": "Granit.Http.Bulkhead.Options.BulkheadPolicyOptions",
-      "kind": "class",
-      "project": "Granit.Http.Bulkhead",
-      "file": "src/Granit.Http.Bulkhead/Options/BulkheadPolicyOptions.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "PermitLimit",
-          "kind": "property",
-          "signature": "int PermitLimit",
-          "returnType": "int"
-        },
-        {
-          "name": "FromSeconds",
-          "kind": "method",
-          "signature": "FromSeconds(30)",
-          "returnType": "int QueueLimit { get; set; } public TimeSpan QueueTimeout { get; set; } = TimeSpan."
-        }
-      ]
-    },
-    {
-      "name": "GranitBulkheadOptions",
-      "fqn": "Granit.Http.Bulkhead.Options.GranitBulkheadOptions",
-      "kind": "class",
-      "project": "Granit.Http.Bulkhead",
-      "file": "src/Granit.Http.Bulkhead/Options/GranitBulkheadOptions.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "Enabled",
-          "kind": "property",
-          "signature": "bool Enabled",
-          "returnType": "bool"
-        },
-        {
-          "name": "BypassRoles",
-          "kind": "property",
-          "signature": "string[] BypassRoles",
-          "returnType": "string[]"
-        },
-        {
-          "name": "new",
-          "kind": "method",
-          "signature": "new(StringComparer.OrdinalIgnoreCase)",
-          "returnType": "bool UseFeatureBasedQuotas { get; set; } public Dictionary<string, BulkheadPolicyOptions> Policies { get; set; } ="
-        },
-        {
-          "name": "FromMinutes",
-          "kind": "method",
-          "signature": "FromMinutes(30)",
-          "returnType": "TimeSpan IdleTimeout { get; set; } = TimeSpan."
-        },
-        {
-          "name": "FromMinutes",
-          "kind": "method",
-          "signature": "FromMinutes(5)",
-          "returnType": "TimeSpan CleanupInterval { get; set; } = TimeSpan."
-        },
-        {
-          "name": "MaxLimiters",
-          "kind": "property",
-          "signature": "int MaxLimiters",
-          "returnType": "int"
-        }
-      ]
-    },
-    {
-      "name": "TenantPartitionedBulkhead",
-      "fqn": "Granit.Http.Bulkhead.TenantPartitionedBulkhead",
-      "kind": "class",
-      "project": "Granit.Http.Bulkhead",
-      "file": "src/Granit.Http.Bulkhead/TenantPartitionedBulkhead.cs",
-      "line": 20,
-      "members": [
-        {
-          "name": "AcquireAsync",
-          "kind": "method",
-          "signature": "AcquireAsync(string policyName, CancellationToken cancellationToken)",
-          "returnType": "Task<BulkheadLease>"
-        }
-      ]
-    },
-    {
-      "name": "BulkheadMiddleware",
-      "fqn": "Granit.Http.Bulkhead.Wolverine.BulkheadMiddleware",
-      "kind": "class",
-      "project": "Granit.Http.Bulkhead",
-      "file": "src/Granit.Http.Bulkhead/Wolverine/BulkheadMiddleware.cs",
-      "line": 29,
-      "members": [
-        {
-          "name": "BeforeAsync",
-          "kind": "method",
-          "signature": "BeforeAsync(object message, TenantPartitionedBulkhead bulkhead, CancellationToken cancellationToken)",
-          "returnType": "Task<BulkheadLease>"
         }
       ]
     },

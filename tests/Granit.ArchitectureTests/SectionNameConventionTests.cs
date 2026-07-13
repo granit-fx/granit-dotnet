@@ -33,6 +33,9 @@ public sealed partial class SectionNameConventionTests
         "BackgroundJobs",
         "Bff",
         "BlobStorage",
+        // Bulkhead: core extracted from Granit.Http.Bulkhead per ADR-062 — the project
+        // Granit.Bulkhead IS the root namespace, like RateLimiting.
+        "Bulkhead",
         "Browsing",
         "Cache",
         "Encryption",
