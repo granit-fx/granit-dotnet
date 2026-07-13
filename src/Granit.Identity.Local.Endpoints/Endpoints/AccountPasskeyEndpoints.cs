@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Granit.Auditing;
 using Granit.Auditing.Domain;
-using Granit.Http.Idempotency.Attributes;
+using Granit.Http.Idempotency;
 using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Identity.Endpoints;
 using Granit.Identity.Endpoints.Options;

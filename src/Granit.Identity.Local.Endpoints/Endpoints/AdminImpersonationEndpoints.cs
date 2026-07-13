@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Granit.Http.Idempotency.Attributes;
+using Granit.Http.Idempotency;
 using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;

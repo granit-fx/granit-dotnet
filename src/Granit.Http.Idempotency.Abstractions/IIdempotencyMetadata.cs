@@ -1,7 +1,7 @@
-namespace Granit.Http.Idempotency.Abstractions;
+namespace Granit.Http.Idempotency;
 
 /// <summary>
-/// Marker contract implemented by <see cref="Attributes.IdempotentAttribute"/> and consumed by
+/// Marker contract implemented by <see cref="IdempotentAttribute"/> and consumed by
 /// the idempotency middleware to detect idempotent endpoints.
 /// </summary>
 public interface IIdempotencyMetadata

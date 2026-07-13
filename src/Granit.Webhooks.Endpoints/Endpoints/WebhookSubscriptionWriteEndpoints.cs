@@ -1,4 +1,4 @@
-using Granit.Http.Idempotency.Attributes;
+using Granit.Http.Idempotency;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.Endpoints.Dtos;

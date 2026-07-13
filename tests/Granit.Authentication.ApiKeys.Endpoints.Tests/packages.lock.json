@@ -303,8 +303,8 @@
         "dependencies": {
           "Granit.Authentication.ApiKeys": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Http.Idempotency.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Endpoints": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
@@ -358,9 +358,6 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.http.abstractions": {
-        "type": "Project"
-      },
       "granit.http.apidocumentation": {
         "type": "Project",
         "dependencies": {
@@ -384,6 +381,9 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
         }
+      },
+      "granit.http.idempotency.abstractions": {
+        "type": "Project"
       },
       "granit.http.securityheaders.abstractions": {
         "type": "Project"

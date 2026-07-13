@@ -10,7 +10,6 @@
 
 using System.Net;
 using Granit.Http.Idempotency.Abstractions;
-using Granit.Http.Idempotency.Attributes;
 using Granit.Http.Idempotency.Extensions;
 using Granit.Http.Idempotency.Models;
 using Granit.MultiTenancy;

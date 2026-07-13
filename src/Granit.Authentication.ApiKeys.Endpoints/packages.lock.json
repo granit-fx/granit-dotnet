@@ -100,9 +100,6 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.http.abstractions": {
-        "type": "Project"
-      },
       "granit.http.apidocumentation": {
         "type": "Project",
         "dependencies": {
@@ -126,6 +123,9 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
         }
+      },
+      "granit.http.idempotency.abstractions": {
+        "type": "Project"
       },
       "granit.http.securityheaders.abstractions": {
         "type": "Project"

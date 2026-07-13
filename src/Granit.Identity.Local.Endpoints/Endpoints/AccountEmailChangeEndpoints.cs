@@ -1,4 +1,4 @@
-using Granit.Http.Idempotency.Attributes;
+using Granit.Http.Idempotency;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;

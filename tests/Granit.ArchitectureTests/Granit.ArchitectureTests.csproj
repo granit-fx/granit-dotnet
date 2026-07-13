@@ -161,7 +161,7 @@
     <ProjectReference Include="..\..\src\Granit.Hostnames.Notifications\Granit.Hostnames.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.Html\Granit.Html.csproj" />
     <ProjectReference Include="..\..\src\Granit.Html.AngleSharp\Granit.Html.AngleSharp.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.Idempotency.Abstractions\Granit.Http.Idempotency.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ApiVersioning\Granit.Http.ApiVersioning.csproj" />
     <ProjectReference Include="..\..\src\Granit.Bulkhead\Granit.Bulkhead.csproj" />

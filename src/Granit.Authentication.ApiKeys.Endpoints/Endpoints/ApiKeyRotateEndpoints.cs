@@ -3,7 +3,7 @@ using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Authentication.ApiKeys.Events;
 using Granit.Events;
 using Granit.Guids;
-using Granit.Http.Idempotency.Attributes;
+using Granit.Http.Idempotency;
 using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

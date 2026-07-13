@@ -1,6 +1,5 @@
-using Granit.Http.Idempotency.Abstractions;
 
-namespace Granit.Http.Idempotency.Attributes;
+namespace Granit.Http.Idempotency;
 
 /// <summary>
 /// Marks an ASP.NET Core controller or action as idempotent.
