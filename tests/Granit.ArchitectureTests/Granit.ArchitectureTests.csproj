@@ -295,6 +295,7 @@
     <ProjectReference Include="..\..\src\Granit.Privacy.Auditing\Granit.Privacy.Auditing.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.BackgroundJobs\Granit.Privacy.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.BackgroundJobs.Wolverine\Granit.Privacy.BackgroundJobs.Wolverine.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Privacy.BlobStorage.Endpoints\Granit.Privacy.BlobStorage.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.BlobStorage\Granit.Privacy.BlobStorage.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.Endpoints\Granit.Privacy.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.EntityFrameworkCore\Granit.Privacy.EntityFrameworkCore.csproj" />

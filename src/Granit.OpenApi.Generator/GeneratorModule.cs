@@ -41,6 +41,7 @@ namespace Granit.OpenApi.Generator;
     typeof(Granit.Notifications.WebPush.Endpoints.GranitNotificationsWebPushEndpointsModule),
     typeof(Granit.OpenIddict.Endpoints.GranitOpenIddictEndpointsModule),
     typeof(Granit.Presence.Endpoints.GranitPresenceEndpointsModule),
+    typeof(Granit.Privacy.BlobStorage.Endpoints.GranitPrivacyBlobStorageEndpointsModule),
     typeof(Granit.Privacy.Endpoints.GranitPrivacyEndpointsModule),
     typeof(Granit.QueryEngine.Endpoints.GranitQueryEngineEndpointsModule),
     typeof(Granit.Scheduling.Endpoints.GranitSchedulingEndpointsModule),

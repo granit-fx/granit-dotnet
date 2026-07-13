@@ -26,7 +26,8 @@ app.MapGranitPrivacyGpcDiscovery();
 ```
 
 The export-download endpoint (`MapGranitPrivacyExportDownload`) is provided by
-the separate `Granit.Privacy.BlobStorage` package — see that module's README.
+the separate `Granit.Privacy.BlobStorage.Endpoints` package — see that module's
+README.
 
 ## Dependencies
 

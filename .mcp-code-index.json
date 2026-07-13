@@ -2348,7 +2348,15 @@
       "deps": [
         "Granit.Privacy",
         "Granit.BlobStorage",
-        "Granit.IO",
+        "Granit.IO"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Privacy.BlobStorage.Endpoints",
+      "deps": [
+        "Granit.BlobStorage",
+        "Granit.Privacy",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -41948,7 +41956,7 @@
       "kind": "class",
       "project": "Granit.OpenApi.Generator",
       "file": "src/Granit.OpenApi.Generator/GeneratorModule.cs",
-      "line": 53,
+      "line": 54,
       "members": []
     },
     {
@@ -45741,17 +45749,48 @@
     },
     {
       "name": "PrivacyBlobStorageEndpointRouteBuilderExtensions",
-      "fqn": "Granit.Privacy.BlobStorage.Extensions.PrivacyBlobStorageEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Privacy.BlobStorage.Endpoints.Extensions.PrivacyBlobStorageEndpointRouteBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Privacy.BlobStorage",
-      "file": "src/Granit.Privacy.BlobStorage/Extensions/PrivacyBlobStorageEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "project": "Granit.Privacy.BlobStorage.Endpoints",
+      "file": "src/Granit.Privacy.BlobStorage.Endpoints/Extensions/PrivacyBlobStorageEndpointRouteBuilderExtensions.cs",
+      "line": 19,
       "members": [
         {
           "name": "MapGranitPrivacyExportDownload",
           "kind": "method",
           "signature": "MapGranitPrivacyExportDownload(this IEndpointRouteBuilder endpoints, string routePrefix = \"privacy\", string tagName = \"Privacy\")",
           "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitPrivacyBlobStorageEndpointsModule",
+      "fqn": "Granit.Privacy.BlobStorage.Endpoints.GranitPrivacyBlobStorageEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage.Endpoints",
+      "file": "src/Granit.Privacy.BlobStorage.Endpoints/GranitPrivacyBlobStorageEndpointsModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "PrivacyBlobStorageEndpointsOptions",
+      "fqn": "Granit.Privacy.BlobStorage.Endpoints.Options.PrivacyBlobStorageEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage.Endpoints",
+      "file": "src/Granit.Privacy.BlobStorage.Endpoints/Options/PrivacyBlobStorageEndpointsOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
         }
       ]
     },

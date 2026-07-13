@@ -268,6 +268,7 @@
       "src/Granit.Privacy.Auditing/Granit.Privacy.Auditing.csproj",
       "src/Granit.Privacy.BackgroundJobs.Wolverine/Granit.Privacy.BackgroundJobs.Wolverine.csproj",
       "src/Granit.Privacy.BackgroundJobs/Granit.Privacy.BackgroundJobs.csproj",
+      "src/Granit.Privacy.BlobStorage.Endpoints/Granit.Privacy.BlobStorage.Endpoints.csproj",
       "src/Granit.Privacy.BlobStorage/Granit.Privacy.BlobStorage.csproj",
       "src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj",
       "src/Granit.Privacy.EntityFrameworkCore/Granit.Privacy.EntityFrameworkCore.csproj",

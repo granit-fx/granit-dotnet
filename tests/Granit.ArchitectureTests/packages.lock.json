@@ -3709,8 +3709,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Auditing": "[0.1.0-dev, )",
-          "Granit.Privacy": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )"
+          "Granit.Privacy": "[0.1.0-dev, )"
         }
       },
       "granit.privacy.backgroundjobs": {
@@ -3733,6 +3732,13 @@
         "dependencies": {
           "Granit.BlobStorage": "[0.1.0-dev, )",
           "Granit.IO": "[0.1.0-dev, )",
+          "Granit.Privacy": "[0.1.0-dev, )"
+        }
+      },
+      "granit.privacy.blobstorage.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BlobStorage": "[0.1.0-dev, )",
           "Granit.Privacy": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
@@ -4463,8 +4469,8 @@
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.100.3",
-        "contentHash": "bHe+BZRyC/TnyPw3/l6N96V/hqtBHyjtXINVrVxVl8LTYx2fxNI1HTwknm0jslSkOiOKeHRZ/oduxMcJXBbtsg==",
+        "resolved": "4.0.101",
+        "contentHash": "4m2UR+6BQFE6f8FXqBN2vb20JhYMWGFwMkq0qqSGFN/odrHETyKXfLxj7NkEBIoXB0jNILg09hpmH2LwDV1EvQ==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.100.3, 5.0.0)"
         }
