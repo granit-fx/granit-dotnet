@@ -125,16 +125,6 @@
           "Google.Apis.Core": "1.74.0"
         }
       },
-      "Google.Apis.Auth": {
-        "type": "Transitive",
-        "resolved": "1.74.0",
-        "contentHash": "43H4foh3zfWgboK8QnJjIfPQuBiS794TxqQLDfeE3erQSluKmEN0qeDuwxLTpSr9Mtwj76S4LWxPneuSbC6fNg==",
-        "dependencies": {
-          "Google.Apis": "1.74.0",
-          "Google.Apis.Core": "1.74.0",
-          "System.Management": "7.0.2"
-        }
-      },
       "Google.Apis.Core": {
         "type": "Transitive",
         "resolved": "1.74.0",
@@ -416,6 +406,17 @@
           "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
+        }
+      },
+      "Google.Apis.Auth": {
+        "type": "CentralTransitive",
+        "requested": "[1.*, )",
+        "resolved": "1.74.0",
+        "contentHash": "43H4foh3zfWgboK8QnJjIfPQuBiS794TxqQLDfeE3erQSluKmEN0qeDuwxLTpSr9Mtwj76S4LWxPneuSbC6fNg==",
+        "dependencies": {
+          "Google.Apis": "1.74.0",
+          "Google.Apis.Core": "1.74.0",
+          "System.Management": "7.0.2"
         }
       },
       "Google.Cloud.Storage.V1": {

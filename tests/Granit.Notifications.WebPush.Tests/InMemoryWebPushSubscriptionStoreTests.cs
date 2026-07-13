@@ -47,7 +47,7 @@ public sealed class InMemoryWebPushSubscriptionStoreTests
         WebPushSubscriptionInfo subscription = BuildSubscription("https://push.example.com/1");
         await _store.SaveSubscriptionAsync("user-1", subscription, null, TestContext.Current.CancellationToken);
 
-        await _store.RemoveSubscriptionAsync("https://push.example.com/1", null, TestContext.Current.CancellationToken);
+        await _store.RemoveSubscriptionAsync("user-1", "https://push.example.com/1", null, TestContext.Current.CancellationToken);
         IReadOnlyList<WebPushSubscriptionInfo> result = await _store.GetSubscriptionsAsync(
             "user-1", null, TestContext.Current.CancellationToken);
 

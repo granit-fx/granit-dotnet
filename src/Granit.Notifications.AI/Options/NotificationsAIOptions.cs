@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Granit.Notifications.AI.Options;
 
 /// <summary>
@@ -22,5 +24,14 @@ public sealed class NotificationsAIOptions
     /// <summary>
     /// Timeout in seconds for LLM requests.
     /// </summary>
+    [Range(1, 300)]
     public int TimeoutSeconds { get; set; } = 5;
+
+    /// <summary>
+    /// Gates whether the notification's <c>Data</c> payload is forwarded to the LLM when
+    /// generating content. The payload may contain personal data (GDPR), so forwarding is
+    /// opt-in: when <see langword="false"/> (the default) only the notification type,
+    /// severity and culture reach the model.
+    /// </summary>
+    public bool AllowPersonalDataInPrompts { get; set; }
 }

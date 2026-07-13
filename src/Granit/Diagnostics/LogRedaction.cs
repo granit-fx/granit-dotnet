@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Granit.Diagnostics;
 
@@ -8,9 +9,12 @@ namespace Granit.Diagnostics;
 /// Use these methods to prevent sensitive data (email, phone, IP, device tokens)
 /// from reaching observability backends (GDPR Art. 5, ISO 27001 A.5.34).
 /// </summary>
-public static class LogRedaction
+public static partial class LogRedaction
 {
     private const string Mask = "***";
+
+    /// <summary>Ceiling applied by <see cref="Scrub"/> so a huge vendor payload cannot flood a log line.</summary>
+    private const int ScrubMaxLength = 2000;
 
     /// <summary>
     /// Redacts an email address, preserving a prefix and the domain for debugging.
@@ -123,4 +127,29 @@ public static class LogRedaction
         byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(value));
         return Convert.ToHexStringLower(hash.AsSpan(0, 4));
     }
+
+    /// <summary>
+    /// Scrubs free-form text (typically a provider error-response body) before logging:
+    /// email addresses and phone-like digit sequences are masked, and the result is
+    /// truncated to a bounded length. Use for third-party payloads that may echo the
+    /// recipient or message content back on the error path.
+    /// <example><c>{"to":"john@example.com"}</c> → <c>{"to":"joh***@example.com"}</c></example>
+    /// </summary>
+    public static string Scrub(string text)
+    {
+        string scrubbed = EmailPattern().Replace(text, m => Email(m.Value));
+        scrubbed = PhoneLikePattern().Replace(scrubbed, m => Phone(m.Value));
+
+        return scrubbed.Length <= ScrubMaxLength
+            ? scrubbed
+            : $"{scrubbed.AsSpan(0, ScrubMaxLength)}… [truncated {scrubbed.Length - ScrubMaxLength} chars]";
+    }
+
+    [GeneratedRegex(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 250)]
+    private static partial Regex EmailPattern();
+
+    // 7+ digit runs, optionally +-prefixed and separated by spaces/dots/dashes/parens —
+    // catches E.164 and most national phone formats without eating short numeric ids.
+    [GeneratedRegex(@"\+?\d(?:[\s().-]?\d){6,}", RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 250)]
+    private static partial Regex PhoneLikePattern();
 }

@@ -1967,7 +1967,8 @@
       "name": "Granit.Notifications.MobilePush.GoogleFcm",
       "deps": [
         "Granit.Http.Resilience",
-        "Granit.Notifications.MobilePush"
+        "Granit.Notifications.MobilePush",
+        "Granit.Timing"
       ],
       "framework": "net10.0"
     },
@@ -18781,7 +18782,7 @@
       "kind": "class",
       "project": "Granit",
       "file": "src/Granit/Diagnostics/LogRedaction.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "Email",
@@ -22133,6 +22134,15 @@
           "returnType": "Task<IHostApplicationBuilder>"
         }
       ]
+    },
+    {
+      "name": "GranitProviderOptionsServiceCollectionExtensions",
+      "fqn": "Granit.Extensions.GranitProviderOptionsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Extensions/GranitProviderOptionsServiceCollectionExtensions.cs",
+      "line": 18,
+      "members": []
     },
     {
       "name": "FeatureCacheInvalidationHandler",
@@ -26217,6 +26227,22 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpResponseMessageExtensions",
+      "fqn": "Granit.Http.Resilience.Extensions.GranitHttpResponseMessageExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Resilience",
+      "file": "src/Granit.Http.Resilience/Extensions/GranitHttpResponseMessageExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "EnsureGranitSuccessAsync",
+          "kind": "method",
+          "signature": "EnsureGranitSuccessAsync(this HttpResponseMessage response, ILogger logger, string providerName, string? endpoint = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -37572,7 +37598,7 @@
       "kind": "class",
       "project": "Granit.Notifications.AI",
       "file": "src/Granit.Notifications.AI/Options/NotificationsAIOptions.cs",
-      "line": 9,
+      "line": 11,
       "members": [
         {
           "name": "WorkspaceName",
@@ -37895,7 +37921,7 @@
           "name": "EraseUserDataAsync",
           "kind": "method",
           "signature": "EraseUserDataAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
+          "returnType": "Task<int>"
         }
       ]
     },
@@ -39154,6 +39180,15 @@
       "members": []
     },
     {
+      "name": "MobilePushTokenRemoveRequest",
+      "fqn": "Granit.Notifications.MobilePush.Endpoints.Dtos.MobilePushTokenRemoveRequest",
+      "kind": "record",
+      "project": "Granit.Notifications.MobilePush.Endpoints",
+      "file": "src/Granit.Notifications.MobilePush.Endpoints/Dtos/MobilePushTokenRemoveRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "MobilePushTokenResponse",
       "fqn": "Granit.Notifications.MobilePush.Endpoints.Dtos.MobilePushTokenResponse",
       "kind": "record",
@@ -39272,7 +39307,7 @@
       "kind": "class",
       "project": "Granit.Notifications.MobilePush.GoogleFcm",
       "file": "src/Granit.Notifications.MobilePush.GoogleFcm/Extensions/GoogleFcmMobilePushServiceCollectionExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitNotificationsMobilePushGoogleFcm",
@@ -39288,7 +39323,7 @@
       "kind": "class",
       "project": "Granit.Notifications.MobilePush.GoogleFcm",
       "file": "src/Granit.Notifications.MobilePush.GoogleFcm/GranitNotificationsMobilePushGoogleFcmModule.cs",
-      "line": 16,
+      "line": 18,
       "members": []
     },
     {
@@ -39707,7 +39742,7 @@
       "kind": "class",
       "project": "Granit.Notifications.SignalR",
       "file": "src/Granit.Notifications.SignalR/Extensions/SignalRNotificationsServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitNotificationsSignalR",
@@ -40377,7 +40412,7 @@
         {
           "name": "RemoveSubscriptionAsync",
           "kind": "method",
-          "signature": "RemoveSubscriptionAsync(string endpoint, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "signature": "RemoveSubscriptionAsync(string userId, string endpoint, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]

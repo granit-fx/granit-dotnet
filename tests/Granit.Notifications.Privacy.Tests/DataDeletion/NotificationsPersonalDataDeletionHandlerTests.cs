@@ -60,12 +60,26 @@ public sealed class NotificationsPersonalDataDeletionHandlerTests
     }
 
     [Fact]
+    public async Task Handle_reports_the_real_erased_row_count_in_the_acknowledgement()
+    {
+        INotificationsPersonalDataEraser eraser = Substitute.For<INotificationsPersonalDataEraser>();
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        eraser.EraseUserDataAsync(Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
+            .Returns(42);
+
+        PersonalDataDeletedEto ack = await NotificationsPersonalDataDeletionHandler.Handle(
+            Eto(Tenant), eraser, currentTenant, TestContext.Current.CancellationToken);
+
+        ack.AffectedRecords.ShouldBe(42);
+    }
+
+    [Fact]
     public async Task Handle_does_not_acknowledge_when_the_erasure_fails()
     {
         INotificationsPersonalDataEraser eraser = Substitute.For<INotificationsPersonalDataEraser>();
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         eraser.EraseUserDataAsync(Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
-            .Returns<Task>(_ => throw new InvalidOperationException("notifications erase failed"));
+            .Returns<Task<int>>(_ => throw new InvalidOperationException("notifications erase failed"));
 
         await Should.ThrowAsync<InvalidOperationException>(() => NotificationsPersonalDataDeletionHandler.Handle(
             Eto(Tenant), eraser, currentTenant, TestContext.Current.CancellationToken));

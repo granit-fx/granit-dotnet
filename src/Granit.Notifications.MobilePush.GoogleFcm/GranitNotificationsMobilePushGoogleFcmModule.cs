@@ -1,5 +1,6 @@
 using Granit.Http.Resilience;
 using Granit.Modularity;
+using Granit.Timing;
 
 namespace Granit.Notifications.MobilePush.GoogleFcm;
 
@@ -12,5 +13,6 @@ namespace Granit.Notifications.MobilePush.GoogleFcm;
 /// </remarks>
 [DependsOn(
     typeof(GranitHttpResilienceModule),
-    typeof(GranitNotificationsMobilePushModule))]
+    typeof(GranitNotificationsMobilePushModule),
+    typeof(GranitTimingModule))]
 public sealed class GranitNotificationsMobilePushGoogleFcmModule : GranitModule;
