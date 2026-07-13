@@ -3398,6 +3398,13 @@
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
+      "granit.notifications.sse.stackexchangeredis": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Notifications.Sse": "[0.1.0-dev, )",
+          "StackExchange.Redis": "[2.*, )"
+        }
+      },
       "granit.notifications.twilio": {
         "type": "Project",
         "dependencies": {

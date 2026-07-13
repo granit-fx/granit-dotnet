@@ -3,7 +3,7 @@ namespace Granit.Notifications.Endpoints.Options;
 /// <summary>
 /// Configuration options for the Granit.Notifications HTTP endpoints.
 /// </summary>
-public sealed class NotificationEndpointsOptions
+public sealed class NotificationsEndpointsOptions
 {
     /// <summary>Configuration section name.</summary>
     public const string SectionName = "Notifications:Endpoints";

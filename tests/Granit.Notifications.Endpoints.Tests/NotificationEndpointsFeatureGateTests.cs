@@ -5,6 +5,7 @@ using Granit.Authorization;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
+using Granit.Notifications.Endpoints.Dtos;
 using Granit.Notifications.Endpoints.Extensions;
 using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
@@ -90,7 +91,7 @@ public sealed class NotificationEndpointsFeatureGateTests : IAsyncDisposable
         _featureGate.IsFeatureEnabledAsync("Workflow.Enabled", Arg.Any<CancellationToken>())
             .Returns(true);
 
-        List<NotificationDefinition> response = await _authClient.GetFromJsonAsync<List<NotificationDefinition>>(
+        List<NotificationTypeResponse> response = await _authClient.GetFromJsonAsync<List<NotificationTypeResponse>>(
             $"{Prefix}/types", TestContext.Current.CancellationToken)
             ?? throw new InvalidOperationException();
 
@@ -108,7 +109,7 @@ public sealed class NotificationEndpointsFeatureGateTests : IAsyncDisposable
         _featureGate.IsFeatureEnabledAsync("Workflow.Enabled", Arg.Any<CancellationToken>())
             .Returns(false);
 
-        List<NotificationDefinition> response = await _authClient.GetFromJsonAsync<List<NotificationDefinition>>(
+        List<NotificationTypeResponse> response = await _authClient.GetFromJsonAsync<List<NotificationTypeResponse>>(
             $"{Prefix}/types", TestContext.Current.CancellationToken)
             ?? throw new InvalidOperationException();
 
@@ -126,7 +127,7 @@ public sealed class NotificationEndpointsFeatureGateTests : IAsyncDisposable
         _featureGate.IsFeatureEnabledAsync("Workflow.Enabled", Arg.Any<CancellationToken>())
             .Throws(new InvalidOperationException("gate misbehaved"));
 
-        List<NotificationDefinition> response = await _authClient.GetFromJsonAsync<List<NotificationDefinition>>(
+        List<NotificationTypeResponse> response = await _authClient.GetFromJsonAsync<List<NotificationTypeResponse>>(
             $"{Prefix}/types", TestContext.Current.CancellationToken)
             ?? throw new InvalidOperationException();
 
@@ -147,7 +148,7 @@ public sealed class NotificationEndpointsFeatureGateTests : IAsyncDisposable
         await cts.CancelAsync();
 
         await Should.ThrowAsync<TaskCanceledException>(async () =>
-            await _authClient.GetFromJsonAsync<List<NotificationDefinition>>(
+            await _authClient.GetFromJsonAsync<List<NotificationTypeResponse>>(
                 $"{Prefix}/types", cts.Token));
     }
 

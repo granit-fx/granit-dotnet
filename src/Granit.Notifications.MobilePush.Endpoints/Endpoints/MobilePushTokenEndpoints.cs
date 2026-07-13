@@ -21,7 +21,7 @@ internal static class MobilePushTokenEndpoints
     public static RouteGroupBuilder MapMobilePushTokenEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/tokens", RegisterTokenAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Manage)
             .WithName("RegisterMobilePushToken")
             .WithSummary("Registers a mobile device token for push notifications.")
             .WithDescription("Registers a device token (FCM or APNs) for the authenticated user. If the token already exists, it is updated (upsert). Returns 201 Created for new registrations, 200 OK for updates. Tokens are scoped to the current tenant.")
@@ -30,7 +30,7 @@ internal static class MobilePushTokenEndpoints
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapDelete("/tokens", RemoveTokenAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Manage)
             .WithName("RemoveMobilePushToken")
             .WithSummary("Removes a mobile device token.")
             .WithDescription("Removes the device token carried in the request body for the authenticated user in the current tenant. The token is a sendable push credential, so it travels in the body — never in the URL, where it would leak into access and proxy logs. Call this when the user logs out or the token becomes invalid. No-op if the token does not exist.")
@@ -38,7 +38,7 @@ internal static class MobilePushTokenEndpoints
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapGet("/tokens", GetTokensAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Read)
             .WithName("GetMobilePushTokens")
             .WithSummary("Returns the current user's registered device tokens.")
             .WithDescription("Returns all device tokens registered by the authenticated user for the current tenant, including the platform (iOS, Android) and registration timestamp. The device token itself is a sendable push credential, so only a masked preview (last 4 characters) is returned — never the plaintext token.")

@@ -22,7 +22,7 @@ internal static class ActivityFeedEndpoints
     public static RouteGroupBuilder MapActivityFeedEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/entity/{entityType}/{entityId}", GetEntityActivityFeedAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Read)
             .WithName("GetEntityActivityFeed")
             .WithSummary("Returns the activity feed for a specific entity.")
             .WithDescription("Returns a paginated list of notifications related to a specific entity. Useful for displaying an activity log on an entity detail page. Results are sorted by creation date, newest first.")

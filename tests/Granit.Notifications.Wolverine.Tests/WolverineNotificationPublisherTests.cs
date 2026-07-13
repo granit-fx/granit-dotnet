@@ -15,6 +15,7 @@ public sealed class WolverineNotificationPublisherTests
     private readonly IMessageBus _bus = Substitute.For<IMessageBus>();
     private readonly ICurrentTenant _tenant = Substitute.For<ICurrentTenant>();
     private readonly IClock _clock = Substitute.For<IClock>();
+    private readonly Granit.Guids.IGuidGenerator _guidGenerator = Substitute.For<Granit.Guids.IGuidGenerator>();
     private readonly WolverineNotificationPublisher _sut;
 
     private static readonly DateTimeOffset _now = new(2026, 1, 15, 10, 0, 0, TimeSpan.Zero);
@@ -23,7 +24,7 @@ public sealed class WolverineNotificationPublisherTests
     {
         _tenant.IsAvailable.Returns(false);
         _clock.Now.Returns(_now);
-        _sut = new(_bus, _tenant, _clock);
+        _sut = new(_bus, _tenant, _clock, _guidGenerator);
     }
 
     [Fact]

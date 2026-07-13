@@ -20,7 +20,7 @@ internal static class WebPushSubscriptionEndpoints
     public static RouteGroupBuilder MapWebPushSubscriptionEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/subscriptions", RegisterSubscriptionAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Manage)
             .WithName("RegisterWebPushSubscription")
             .WithSummary("Registers a browser Web Push subscription.")
             .WithDescription("Registers a W3C Web Push subscription (endpoint + encryption keys) for the authenticated user. If the endpoint is already registered, it is updated (upsert). Returns 201 Created for new subscriptions, 200 OK for updates. Subscriptions are scoped to the current tenant.")
@@ -29,7 +29,7 @@ internal static class WebPushSubscriptionEndpoints
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapDelete("/subscriptions", RemoveSubscriptionAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Manage)
             .WithName("RemoveWebPushSubscription")
             .WithSummary("Removes a browser Web Push subscription.")
             .WithDescription("Removes the Web Push subscription identified by its endpoint. The endpoint travels in the request body because it is an opaque, slash-bearing URL unsuitable as a route segment. Call this when the user disables push or the browser rotates the subscription. No-op if the endpoint is unknown.")

@@ -9,7 +9,7 @@ internal sealed class NotificationsFeatureProvider : IFeatureProvider
     /// <inheritdoc />
     public void DefineFeatures(IFeatureCatalogBuilder catalog) =>
         catalog.Add(NotificationsFeatures.User, f => f
-            .Permission(NotificationPermissions.UserNotifications.Read)
+            .Permission(NotificationsPermissions.UserNotifications.Read)
             .RouteName(NotificationsFeatures.User)
             .DefaultIcon("bell")
             .DisplayKey("NotificationsEndpoints:Workspace.Item"));

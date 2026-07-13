@@ -24,28 +24,28 @@ internal static class InboxEndpoints
     public static RouteGroupBuilder MapInboxEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/", GetNotificationsAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Read)
             .WithName("GetNotifications")
             .WithSummary("Returns the user's notification inbox, newest first.")
             .WithDescription("Returns a paginated list of the current user's notifications. Supports filtering by read/unread status. Results are sorted by creation date, newest first.")
             .Produces<PagedResult<UserNotificationResponse>>();
 
         group.MapGet("/unread/count", GetUnreadCountAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Read)
             .WithName("GetUnreadCount")
             .WithSummary("Returns the number of unread notifications for the current user.")
             .WithDescription("Returns the total count of unread notifications for the authenticated user within the current tenant. Use this to display a badge count in the UI.")
             .Produces<UnreadCountResponse>();
 
         group.MapPost("/{id:guid}/read", MarkAsReadAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Manage)
             .WithName("MarkAsRead")
             .WithSummary("Marks a single notification as read.")
             .WithDescription("Marks the specified notification as read by setting its read timestamp. Idempotent — marking an already-read notification is a no-op.")
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapPost("/read-all", MarkAllAsReadAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Manage)
             .WithName("MarkAllAsRead")
             .WithSummary("Marks all notifications as read for the current user.")
             .WithDescription("Marks all unread notifications as read for the authenticated user within the current tenant. Useful for a 'mark all as read' bulk action.")

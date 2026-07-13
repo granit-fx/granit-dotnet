@@ -21,6 +21,7 @@ public sealed class ChannelNotificationPublisherTests
 {
     private readonly Channel<NotificationTrigger> _channel = Channel.CreateUnbounded<NotificationTrigger>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
+    private readonly Granit.Guids.IGuidGenerator _guidGenerator = CreateGuidGen();
     private readonly IClock _clock;
     private readonly ChannelNotificationPublisher _publisher;
 
@@ -29,7 +30,7 @@ public sealed class ChannelNotificationPublisherTests
         _clock = Substitute.For<IClock>();
         _clock.Now.Returns(_ => DateTimeOffset.UtcNow);
         _currentTenant.IsAvailable.Returns(false);
-        _publisher = new ChannelNotificationPublisher(_channel, _currentTenant, _clock);
+        _publisher = new ChannelNotificationPublisher(_channel, _currentTenant, _clock, _guidGenerator);
     }
 
     [Fact]
@@ -141,5 +142,12 @@ public sealed class ChannelNotificationPublisherTests
         public static readonly TestNotificationType Instance = new();
         public override string Name => "test.notification";
         public override IReadOnlyList<string> DefaultChannels => [NotificationChannels.InApp];
+    }
+
+    private static Granit.Guids.IGuidGenerator CreateGuidGen()
+    {
+        Granit.Guids.IGuidGenerator gen = Substitute.For<Granit.Guids.IGuidGenerator>();
+        gen.Create().Returns(_ => Guid.NewGuid());
+        return gen;
     }
 }

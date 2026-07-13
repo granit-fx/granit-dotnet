@@ -6,12 +6,12 @@ using Xunit;
 
 namespace Granit.Notifications.Endpoints.Tests;
 
-public sealed class NotificationSchemaExampleProviderTests
+public sealed class NotificationsSchemaExampleProviderTests
 {
     [Fact]
     public void GetExamples_ReturnsNotificationPreferenceUpdateRequestExample()
     {
-        var provider = new NotificationSchemaExampleProvider();
+        var provider = new NotificationsSchemaExampleProvider();
 
         IReadOnlyDictionary<Type, JsonNode> examples = provider.GetExamples();
 
@@ -21,7 +21,7 @@ public sealed class NotificationSchemaExampleProviderTests
     [Fact]
     public void GetExamples_ExampleContainsExpectedFields()
     {
-        var provider = new NotificationSchemaExampleProvider();
+        var provider = new NotificationsSchemaExampleProvider();
 
         IReadOnlyDictionary<Type, JsonNode> examples = provider.GetExamples();
         JsonNode? example = examples[typeof(NotificationPreferenceUpdateRequest)];
@@ -35,7 +35,7 @@ public sealed class NotificationSchemaExampleProviderTests
     [Fact]
     public void GetExamples_ReturnsSingleEntry()
     {
-        var provider = new NotificationSchemaExampleProvider();
+        var provider = new NotificationsSchemaExampleProvider();
 
         IReadOnlyDictionary<Type, JsonNode> examples = provider.GetExamples();
 

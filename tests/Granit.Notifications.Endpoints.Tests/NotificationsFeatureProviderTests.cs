@@ -14,7 +14,7 @@ public sealed class NotificationsFeatureProviderTests
         FakeCatalog catalog = new();
         new NotificationsFeatureProvider().DefineFeatures(catalog);
 
-        catalog.Get(NotificationsFeatures.User).Permission.ShouldBe(NotificationPermissions.UserNotifications.Read);
+        catalog.Get(NotificationsFeatures.User).Permission.ShouldBe(NotificationsPermissions.UserNotifications.Read);
         catalog.Get(NotificationsFeatures.User).RouteName.ShouldBe(NotificationsFeatures.User);
         catalog.Get(NotificationsFeatures.User).DefaultIcon.ShouldBe("bell");
         catalog.Get(NotificationsFeatures.User).DisplayKey.ShouldBe("NotificationsEndpoints:Workspace.Item");

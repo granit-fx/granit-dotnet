@@ -318,6 +318,7 @@
     <Project Path="src/Granit.Notifications.SignalR/Granit.Notifications.SignalR.csproj" />
     <Project Path="src/Granit.Notifications.Sms/Granit.Notifications.Sms.csproj" />
     <Project Path="src/Granit.Notifications.Sse/Granit.Notifications.Sse.csproj" />
+    <Project Path="src/Granit.Notifications.Sse.StackExchangeRedis/Granit.Notifications.Sse.StackExchangeRedis.csproj" />
     <Project Path="src/Granit.Notifications.Twilio/Granit.Notifications.Twilio.csproj" />
     <Project Path="src/Granit.Notifications.WebPush.Endpoints/Granit.Notifications.WebPush.Endpoints.csproj" />
     <Project Path="src/Granit.Notifications.WebPush.EntityFrameworkCore/Granit.Notifications.WebPush.EntityFrameworkCore.csproj" />
@@ -702,6 +703,7 @@
     <Project Path="tests/Granit.Notifications.SignalR.Tests/Granit.Notifications.SignalR.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Sms.Tests/Granit.Notifications.Sms.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Sse.Tests/Granit.Notifications.Sse.Tests.csproj" />
+    <Project Path="tests/Granit.Notifications.Sse.StackExchangeRedis.Tests/Granit.Notifications.Sse.StackExchangeRedis.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Tests/Granit.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Twilio.Tests/Granit.Notifications.Twilio.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.WebPush.Endpoints.Tests/Granit.Notifications.WebPush.Endpoints.Tests.csproj" />

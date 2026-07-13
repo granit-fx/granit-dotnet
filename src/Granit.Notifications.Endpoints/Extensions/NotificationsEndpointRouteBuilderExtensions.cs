@@ -12,7 +12,7 @@ namespace Granit.Notifications.Endpoints.Extensions;
 /// <summary>
 /// Extension methods for mapping Granit.Notifications REST endpoints.
 /// </summary>
-public static class NotificationEndpointRouteBuilderExtensions
+public static class NotificationsEndpointRouteBuilderExtensions
 {
     /// <summary>
     /// Maps the core Granit.Notifications REST endpoints (inbox, activity feed, preferences,
@@ -24,17 +24,17 @@ public static class NotificationEndpointRouteBuilderExtensions
     /// <c>MapGranitMobilePushTokens()</c> (Granit.Notifications.MobilePush.Endpoints).
     /// </remarks>
     /// <param name="endpoints">The endpoint route builder.</param>
-    /// <param name="configure">Optional delegate to customize <see cref="NotificationEndpointsOptions"/>.</param>
+    /// <param name="configure">Optional delegate to customize <see cref="NotificationsEndpointsOptions"/>.</param>
     /// <returns>The endpoint route builder for chaining.</returns>
     public static IEndpointRouteBuilder MapGranitNotifications(
         this IEndpointRouteBuilder endpoints,
-        Action<NotificationEndpointsOptions>? configure = null)
+        Action<NotificationsEndpointsOptions>? configure = null)
     {
-        // Configuration-bound values first (NotificationEndpointsOptions.SectionName), then the delegate
+        // Configuration-bound values first (NotificationsEndpointsOptions.SectionName), then the delegate
         // override. IOptionsFactory creates a fresh instance — the shared IOptions singleton
         // is never mutated.
-        NotificationEndpointsOptions options = endpoints.ServiceProvider
-            .GetService<IOptionsFactory<NotificationEndpointsOptions>>()?
+        NotificationsEndpointsOptions options = endpoints.ServiceProvider
+            .GetService<IOptionsFactory<NotificationsEndpointsOptions>>()?
             .Create(Microsoft.Extensions.Options.Options.DefaultName) ?? new();
         configure?.Invoke(options);
 

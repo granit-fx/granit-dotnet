@@ -25,14 +25,14 @@ internal static class PreferenceEndpoints
     public static RouteGroupBuilder MapPreferenceEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/preferences", GetPreferencesAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Read)
             .WithName("GetPreferences")
             .WithSummary("Returns notification delivery preferences for the current user.")
             .WithDescription("Returns all notification delivery preferences for the authenticated user within the current tenant. Each preference indicates whether a specific notification type is enabled or disabled for a given channel.")
             .Produces<List<NotificationPreferenceResponse>>();
 
         group.MapPut("/preferences", UpdatePreferenceAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Manage)
             .WithName("UpdatePreference")
             .WithSummary("Creates or updates a notification delivery preference.")
             .WithDescription("Creates or updates a delivery preference for a specific notification type and channel. If a preference already exists for the same type and channel, it is replaced (upsert).")
@@ -40,11 +40,11 @@ internal static class PreferenceEndpoints
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapGet("/types", GetNotificationTypes)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Read)
             .WithName("GetNotificationTypes")
             .WithSummary("Returns all registered notification type definitions.")
             .WithDescription("Returns all notification types registered in the system with their metadata. Use this to build the preferences UI, showing which notification types are available and their supported channels.")
-            .Produces<IReadOnlyList<NotificationDefinition>>();
+            .Produces<IReadOnlyList<NotificationTypeResponse>>();
 
         return group;
     }
@@ -66,6 +66,7 @@ internal static class PreferenceEndpoints
     private static async Task<NoContent> UpdatePreferenceAsync(
         NotificationPreferenceUpdateRequest request,
         [FromServices] INotificationPreferenceWriter writer,
+        [FromServices] INotificationPreferenceReader reader,
         [FromServices] IGuidGenerator guidGenerator,
         [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user,
@@ -73,16 +74,24 @@ internal static class PreferenceEndpoints
     {
         string userId = NotificationsResponseMapper.GetUserId(user);
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
+
+        // True upsert: an existing preference keeps its identity and creation provenance —
+        // regenerating Id/CreatedAt on every PUT silently rewrote audit history.
+        IReadOnlyList<NotificationPreference> existingList = await reader
+            .GetListAsync(userId, tenantId).ConfigureAwait(false);
+        NotificationPreference? existing = existingList.FirstOrDefault(p =>
+            p.NotificationTypeName == request.NotificationTypeName && p.ChannelName == request.ChannelName);
+
         NotificationPreference preference = new()
         {
-            Id = guidGenerator.Create(),
+            Id = existing?.Id ?? guidGenerator.Create(),
             UserId = userId,
             NotificationTypeName = request.NotificationTypeName,
             ChannelName = request.ChannelName,
             IsEnabled = request.IsEnabled,
             TenantId = tenantId,
-            CreatedAt = clock.Now,
-            CreatedBy = userId,
+            CreatedAt = existing?.CreatedAt ?? clock.Now,
+            CreatedBy = existing?.CreatedBy ?? userId,
             ModifiedAt = clock.Now,
             ModifiedBy = userId,
         };
@@ -90,7 +99,7 @@ internal static class PreferenceEndpoints
         return TypedResults.NoContent();
     }
 
-    private static async Task<Ok<IReadOnlyList<NotificationDefinition>>> GetNotificationTypes(
+    private static async Task<Ok<IReadOnlyList<NotificationTypeResponse>>> GetNotificationTypes(
         [FromServices] INotificationDefinitionStore definitionStore,
         [FromServices] IPermissionChecker permissionChecker,
         [FromServices] IServiceProvider serviceProvider,
@@ -99,14 +108,25 @@ internal static class PreferenceEndpoints
         IReadOnlyList<NotificationDefinition> definitions = definitionStore.GetAll();
         if (definitions.Count == 0)
         {
-            return TypedResults.Ok(definitions);
+            return TypedResults.Ok<IReadOnlyList<NotificationTypeResponse>>([]);
         }
 
         IReadOnlyList<NotificationDefinition> filtered = await FilterAsync(
             definitions, permissionChecker, serviceProvider, cancellationToken).ConfigureAwait(false);
 
-        return TypedResults.Ok(filtered);
+        return TypedResults.Ok<IReadOnlyList<NotificationTypeResponse>>(
+            filtered.Select(Map).ToList());
     }
+
+    private static NotificationTypeResponse Map(NotificationDefinition definition) =>
+        new(
+            definition.Name,
+            definition.DisplayName,
+            definition.Description,
+            definition.GroupName,
+            definition.DefaultSeverity.ToString(),
+            definition.DefaultChannels,
+            definition.AllowUserOptOut);
 
     private static async Task<IReadOnlyList<NotificationDefinition>> FilterAsync(
         IReadOnlyList<NotificationDefinition> definitions,

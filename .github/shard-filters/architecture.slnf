@@ -229,6 +229,7 @@
       "src/Granit.Notifications.SignalR/Granit.Notifications.SignalR.csproj",
       "src/Granit.Notifications.Sms/Granit.Notifications.Sms.csproj",
       "src/Granit.Notifications.Smtp/Granit.Notifications.Smtp.csproj",
+      "src/Granit.Notifications.Sse.StackExchangeRedis/Granit.Notifications.Sse.StackExchangeRedis.csproj",
       "src/Granit.Notifications.Sse/Granit.Notifications.Sse.csproj",
       "src/Granit.Notifications.Twilio/Granit.Notifications.Twilio.csproj",
       "src/Granit.Notifications.WebPush.Endpoints/Granit.Notifications.WebPush.Endpoints.csproj",

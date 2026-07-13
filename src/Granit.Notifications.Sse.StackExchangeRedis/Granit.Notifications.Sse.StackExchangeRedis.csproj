@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Notifications.Sse.StackExchangeRedis</PackageId>
+    <Description>Redis pub/sub backplane for the Granit.Notifications SSE channel: cross-replica delivery on Kubernetes. Reuses the shared IConnectionMultiplexer.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Notifications.Sse.StackExchangeRedis.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+    <PackageReference Include="StackExchange.Redis" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Notifications.Sse\Granit.Notifications.Sse.csproj" />
+  </ItemGroup>
+
+</Project>

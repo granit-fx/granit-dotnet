@@ -5,7 +5,7 @@ namespace Granit.Notifications.Endpoints.Permissions;
 /// Use these names when granting permissions via <c>IPermissionManagerWriter.SetAsync()</c>
 /// or when checking access via <c>IPermissionChecker.IsGrantedAsync()</c>.
 /// </summary>
-public static class NotificationPermissions
+public static class NotificationsPermissions
 {
     /// <summary>Permission group name used in <c>IPermissionDefinitionContext.AddGroup()</c>.</summary>
     public const string GroupName = "Notifications";

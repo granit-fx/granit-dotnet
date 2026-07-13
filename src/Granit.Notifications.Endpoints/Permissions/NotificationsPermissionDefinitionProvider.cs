@@ -27,24 +27,24 @@ namespace Granit.Notifications.Endpoints.Permissions;
 /// </list>
 /// </para>
 /// </remarks>
-internal sealed class NotificationPermissionDefinitionProvider : IPermissionDefinitionProvider
+internal sealed class NotificationsPermissionDefinitionProvider : IPermissionDefinitionProvider
 {
     /// <inheritdoc />
     public void DefinePermissions(IPermissionDefinitionContext context)
     {
         PermissionGroup group = context.AddGroup(
-            NotificationPermissions.GroupName,
+            NotificationsPermissions.GroupName,
             LocalizableString.Create<NotificationsEndpointsLocalizationResource>(
                 "PermissionGroup:Notifications"));
 
         group.AddPermission(
-            NotificationPermissions.UserNotifications.Read,
+            NotificationsPermissions.UserNotifications.Read,
             LocalizableString.Create<NotificationsEndpointsLocalizationResource>(
                 "Permission:Notifications.UserNotifications.Read"),
             MultiTenancySides.Both);
 
         group.AddPermission(
-            NotificationPermissions.UserNotifications.Manage,
+            NotificationsPermissions.UserNotifications.Manage,
             LocalizableString.Create<NotificationsEndpointsLocalizationResource>(
                 "Permission:Notifications.UserNotifications.Manage"),
             MultiTenancySides.Both);

@@ -22,21 +22,21 @@ internal static class EntityFollowerEndpoints
     public static RouteGroupBuilder MapEntityFollowerEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/entity/{entityType}/{entityId}/follow", FollowEntityAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Manage)
             .WithName("FollowEntity")
             .WithSummary("Subscribes the current user as a follower of an entity.")
             .WithDescription("Adds the authenticated user as a follower of the specified entity within the current tenant. Followers receive notifications when activity occurs on the entity. Idempotent.")
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapDelete("/entity/{entityType}/{entityId}/follow", UnfollowEntityAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Manage)
             .WithName("UnfollowEntity")
             .WithSummary("Unsubscribes the current user from an entity.")
             .WithDescription("Removes the authenticated user from the follower list of the specified entity within the current tenant. The user will no longer receive entity-level notifications. Idempotent.")
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapGet("/entity/{entityType}/{entityId}/followers", GetEntityFollowersAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Read)
             .WithName("GetEntityFollowers")
             .WithSummary("Returns all followers of a specific entity.")
             .WithDescription("Returns all users following the specified entity within the current tenant. Each entry includes the user ID and subscription metadata.")

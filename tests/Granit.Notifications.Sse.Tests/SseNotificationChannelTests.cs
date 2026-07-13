@@ -9,6 +9,7 @@
 using System.Text.Json;
 using Granit.Domain;
 using Granit.Notifications.Sse.Internal;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -31,7 +32,7 @@ public sealed class SseNotificationChannelTests
             .ReturnsForAnyArgs(ValueTask.CompletedTask);
 #pragma warning restore CA2012
 
-        _channel = new SseNotificationChannel(_connectionManager);
+        _channel = new SseNotificationChannel(_connectionManager, NullLogger<SseNotificationChannel>.Instance);
     }
 
     [Fact]

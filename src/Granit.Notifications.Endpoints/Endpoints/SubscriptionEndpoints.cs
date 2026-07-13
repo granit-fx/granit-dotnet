@@ -22,21 +22,21 @@ internal static class SubscriptionEndpoints
     public static RouteGroupBuilder MapSubscriptionEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/subscriptions", GetSubscriptionsAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Read)
             .WithName("GetSubscriptions")
             .WithSummary("Returns all notification subscriptions for the current user.")
             .WithDescription("Returns all notification type subscriptions for the authenticated user within the current tenant. Each subscription indicates a notification type the user has opted into.")
             .Produces<List<NotificationSubscriptionResponse>>();
 
         group.MapPost("/subscriptions/{typeName}", SubscribeAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Manage)
             .WithName("Subscribe")
             .WithSummary("Subscribes the current user to a notification type.")
             .WithDescription("Subscribes the authenticated user to the specified notification type within the current tenant. Idempotent — subscribing to an already-subscribed type is a no-op.")
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapDelete("/subscriptions/{typeName}", UnsubscribeAsync)
-            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
+            .RequireAuthorization(NotificationsPermissions.UserNotifications.Manage)
             .WithName("Unsubscribe")
             .WithSummary("Unsubscribes the current user from a notification type.")
             .WithDescription("Removes the authenticated user's subscription to the specified notification type within the current tenant. Idempotent — unsubscribing from a non-subscribed type is a no-op.")

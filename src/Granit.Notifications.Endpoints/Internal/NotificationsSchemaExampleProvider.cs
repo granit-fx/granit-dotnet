@@ -7,7 +7,7 @@ namespace Granit.Notifications.Endpoints.Internal;
 /// <summary>
 /// Provides OpenAPI schema examples for notification Request DTOs.
 /// </summary>
-internal sealed class NotificationSchemaExampleProvider : ISchemaExampleProvider
+internal sealed class NotificationsSchemaExampleProvider : ISchemaExampleProvider
 {
     /// <inheritdoc/>
     public IReadOnlyDictionary<Type, JsonNode> GetExamples() =>

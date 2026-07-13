@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Granit.Domain;
 using Granit.Encryption;
+using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Messages;
@@ -18,6 +19,7 @@ internal sealed class WolverineNotificationPublisher(
     IMessageBus messageBus,
     ICurrentTenant currentTenant,
     IClock clock,
+    IGuidGenerator guidGenerator,
     IStringEncryptionService? encryptionService = null) : INotificationPublisher
 {
     public ValueTask PublishAsync<TData>(
@@ -91,6 +93,7 @@ internal sealed class WolverineNotificationPublisher(
             string encrypted = encryptionService.Encrypt(plainJson);
             return new()
             {
+                NotificationId = guidGenerator.Create(),
                 NotificationTypeName = notificationType.Name,
                 Severity = notificationType.DefaultSeverity,
                 Data = default,
@@ -103,6 +106,7 @@ internal sealed class WolverineNotificationPublisher(
 
         return new()
         {
+            NotificationId = guidGenerator.Create(),
             NotificationTypeName = notificationType.Name,
             Severity = notificationType.DefaultSeverity,
             Data = jsonData,

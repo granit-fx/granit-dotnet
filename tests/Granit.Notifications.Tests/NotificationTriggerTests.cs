@@ -16,8 +16,10 @@ namespace Granit.Notifications.Tests;
 public sealed class NotificationTriggerTests
 {
     [Fact]
-    public void NotificationId_HasDefaultValue()
+    public void NotificationId_DefaultsToEmpty_PublishersAssignIt()
     {
+        // UUID v7 assignment moved to the publishers (IGuidGenerator) — the record no
+        // longer self-assigns a random v4 (GRSEC002).
         NotificationTrigger trigger = new()
         {
             NotificationTypeName = "test.notification",
@@ -26,29 +28,24 @@ public sealed class NotificationTriggerTests
             OccurredAt = DateTimeOffset.UtcNow,
         };
 
-        trigger.NotificationId.ShouldNotBe(Guid.Empty);
+        trigger.NotificationId.ShouldBe(Guid.Empty);
     }
 
     [Fact]
-    public void TwoTriggers_HaveDifferentDefaultNotificationIds()
+    public void NotificationId_IsInitSettable_ByPublishers()
     {
-        NotificationTrigger a = new()
+        var id = Guid.NewGuid();
+
+        NotificationTrigger trigger = new()
         {
+            NotificationId = id,
             NotificationTypeName = "test",
             Severity = NotificationSeverity.Info,
             Data = JsonSerializer.SerializeToElement(new { }),
             OccurredAt = DateTimeOffset.UtcNow,
         };
 
-        NotificationTrigger b = new()
-        {
-            NotificationTypeName = "test",
-            Severity = NotificationSeverity.Info,
-            Data = JsonSerializer.SerializeToElement(new { }),
-            OccurredAt = DateTimeOffset.UtcNow,
-        };
-
-        a.NotificationId.ShouldNotBe(b.NotificationId);
+        trigger.NotificationId.ShouldBe(id);
     }
 
     [Fact]

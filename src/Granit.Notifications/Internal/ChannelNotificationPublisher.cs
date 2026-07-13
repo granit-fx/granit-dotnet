@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Threading.Channels;
 using Granit.Domain;
+using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Messages;
@@ -20,7 +21,8 @@ namespace Granit.Notifications.Internal;
 internal sealed class ChannelNotificationPublisher(
     Channel<NotificationTrigger> channel,
     ICurrentTenant currentTenant,
-    IClock clock) : INotificationPublisher
+    IClock clock,
+    IGuidGenerator guidGenerator) : INotificationPublisher
 {
     public ValueTask PublishAsync<TData>(
         NotificationType<TData> notificationType,
@@ -85,6 +87,7 @@ internal sealed class ChannelNotificationPublisher(
         TData data,
         EntityReference? relatedEntity) where TData : notnull => new()
         {
+            NotificationId = guidGenerator.Create(),
             NotificationTypeName = notificationType.Name,
             Severity = notificationType.DefaultSeverity,
             Data = JsonSerializer.SerializeToElement(data),

@@ -227,7 +227,7 @@ public sealed class NotificationEndpointsTests : IAsyncDisposable
         _permissionChecker.GetGrantedAsync(Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>())
             .Returns(Array.Empty<string>());
 
-        List<NotificationDefinition> response = await _authClient.GetFromJsonAsync<List<NotificationDefinition>>(
+        List<NotificationTypeResponse> response = await _authClient.GetFromJsonAsync<List<NotificationTypeResponse>>(
             $"{Prefix}/types", TestContext.Current.CancellationToken)
             ?? throw new InvalidOperationException();
 
@@ -244,7 +244,7 @@ public sealed class NotificationEndpointsTests : IAsyncDisposable
         _permissionChecker.GetGrantedAsync(Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>())
             .Returns(["Test.Resource.Read"]);
 
-        List<NotificationDefinition> response = await _authClient.GetFromJsonAsync<List<NotificationDefinition>>(
+        List<NotificationTypeResponse> response = await _authClient.GetFromJsonAsync<List<NotificationTypeResponse>>(
             $"{Prefix}/types", TestContext.Current.CancellationToken)
             ?? throw new InvalidOperationException();
 
@@ -261,7 +261,7 @@ public sealed class NotificationEndpointsTests : IAsyncDisposable
         _permissionChecker.GetGrantedAsync(Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>())
             .Returns<IReadOnlyList<string>>(_ => throw new InvalidOperationException("not declared"));
 
-        List<NotificationDefinition> response = await _authClient.GetFromJsonAsync<List<NotificationDefinition>>(
+        List<NotificationTypeResponse> response = await _authClient.GetFromJsonAsync<List<NotificationTypeResponse>>(
             $"{Prefix}/types", TestContext.Current.CancellationToken)
             ?? throw new InvalidOperationException();
 
@@ -278,7 +278,7 @@ public sealed class NotificationEndpointsTests : IAsyncDisposable
         _permissionChecker.GetGrantedAsync(Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>())
             .Returns(Array.Empty<string>());
 
-        List<NotificationDefinition> response = await _authClient.GetFromJsonAsync<List<NotificationDefinition>>(
+        List<NotificationTypeResponse> response = await _authClient.GetFromJsonAsync<List<NotificationTypeResponse>>(
             $"{Prefix}/types", TestContext.Current.CancellationToken)
             ?? throw new InvalidOperationException();
 

@@ -15,39 +15,74 @@ internal sealed class EntityTrackingInterceptor(
     INotificationPublisher notificationPublisher,
     IClock clock) : SaveChangesInterceptor
 {
+    // Changes are DETECTED pre-save (entity state is still Modified) but PUBLISHED
+    // post-commit: publishing from SavingChangesAsync fired follower notifications for
+    // saves that subsequently failed or rolled back. Keyed per context instance —
+    // ConditionalWeakTable so a context that never completes cannot leak.
+    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<DbContext, List<EntityStateChange>> _pendingChanges = new();
+
     /// <inheritdoc/>
-    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
+    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
         DbContextEventData eventData,
         InterceptionResult<int> result,
         CancellationToken cancellationToken = default)
     {
-        if (eventData.Context is null)
+        if (eventData.Context is not null)
         {
-            return await base.SavingChangesAsync(eventData, result, cancellationToken).ConfigureAwait(false);
+            List<EntityStateChange> changes = DetectChanges(eventData.Context);
+            _pendingChanges.Remove(eventData.Context);
+            if (changes.Count > 0)
+            {
+                _pendingChanges.Add(eventData.Context, changes);
+            }
         }
 
-        List<EntityStateChange> changes = DetectChanges(eventData.Context);
+        return base.SavingChangesAsync(eventData, result, cancellationToken);
+    }
 
-        InterceptionResult<int> baseResult = await base.SavingChangesAsync(eventData, result, cancellationToken).ConfigureAwait(false);
-
-        foreach (EntityStateChange change in changes)
+    /// <inheritdoc/>
+    public override async ValueTask<int> SavedChangesAsync(
+        SaveChangesCompletedEventData eventData,
+        int result,
+        CancellationToken cancellationToken = default)
+    {
+        if (eventData.Context is not null && _pendingChanges.TryGetValue(eventData.Context, out List<EntityStateChange>? changes))
         {
-            await notificationPublisher.PublishToEntityFollowersAsync(
-                new EntityStateChangedNotificationType(change.NotificationTypeName, change.Severity),
-                new EntityStateChangedData
-                {
-                    EntityType = change.EntityType,
-                    EntityId = change.EntityId,
-                    PropertyName = change.PropertyName,
-                    OldValue = change.OldValue,
-                    NewValue = change.NewValue,
-                    ChangedAt = clock.Now,
-                },
-                new EntityReference(change.EntityType, change.EntityId),
-                cancellationToken).ConfigureAwait(false);
+            _pendingChanges.Remove(eventData.Context);
+
+            foreach (EntityStateChange change in changes)
+            {
+                await notificationPublisher.PublishToEntityFollowersAsync(
+                    new EntityStateChangedNotificationType(change.NotificationTypeName, change.Severity),
+                    new EntityStateChangedData
+                    {
+                        EntityType = change.EntityType,
+                        EntityId = change.EntityId,
+                        PropertyName = change.PropertyName,
+                        OldValue = change.OldValue,
+                        NewValue = change.NewValue,
+                        ChangedAt = clock.Now,
+                    },
+                    new EntityReference(change.EntityType, change.EntityId),
+                    cancellationToken).ConfigureAwait(false);
+            }
         }
 
-        return baseResult;
+        return await base.SavedChangesAsync(eventData, result, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public override Task SaveChangesFailedAsync(
+        DbContextErrorEventData eventData,
+        CancellationToken cancellationToken = default)
+    {
+        // The save failed — the rolled-back changes must never notify followers.
+        if (eventData.Context is not null)
+        {
+            _pendingChanges.Remove(eventData.Context);
+        }
+
+        return base.SaveChangesFailedAsync(eventData, cancellationToken);
     }
 
     private static List<EntityStateChange> DetectChanges(DbContext context)

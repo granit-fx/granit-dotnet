@@ -34,8 +34,8 @@ public sealed class GranitNotificationsEndpointsModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddLocalizationResource<NotificationsEndpointsLocalizationResource>();
-        context.Services.AddOptions<NotificationEndpointsOptions>()
-            .BindConfiguration(NotificationEndpointsOptions.SectionName)
+        context.Services.AddOptions<NotificationsEndpointsOptions>()
+            .BindConfiguration(NotificationsEndpointsOptions.SectionName)
             .ValidateOnStart();
         context.Services.AddFeatureProvider<NotificationsFeatureProvider>();
     }

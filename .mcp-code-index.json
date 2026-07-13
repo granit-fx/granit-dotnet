@@ -2007,6 +2007,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Notifications.Sse.StackExchangeRedis",
+      "deps": [
+        "Granit.Notifications.Sse"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Notifications.Twilio",
       "deps": [
         "Granit.Diagnostics",
@@ -38657,6 +38664,15 @@
       "members": []
     },
     {
+      "name": "NotificationTypeResponse",
+      "fqn": "Granit.Notifications.Endpoints.Dtos.NotificationTypeResponse",
+      "kind": "record",
+      "project": "Granit.Notifications.Endpoints",
+      "file": "src/Granit.Notifications.Endpoints/Dtos/NotificationTypeResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "UnreadCountResponse",
       "fqn": "Granit.Notifications.Endpoints.Dtos.UnreadCountResponse",
       "kind": "record",
@@ -38675,17 +38691,17 @@
       "members": []
     },
     {
-      "name": "NotificationEndpointRouteBuilderExtensions",
-      "fqn": "Granit.Notifications.Endpoints.Extensions.NotificationEndpointRouteBuilderExtensions",
+      "name": "NotificationsEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Notifications.Endpoints.Extensions.NotificationsEndpointRouteBuilderExtensions",
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
-      "file": "src/Granit.Notifications.Endpoints/Extensions/NotificationEndpointRouteBuilderExtensions.cs",
+      "file": "src/Granit.Notifications.Endpoints/Extensions/NotificationsEndpointRouteBuilderExtensions.cs",
       "line": 15,
       "members": [
         {
           "name": "MapGranitNotifications",
           "kind": "method",
-          "signature": "MapGranitNotifications(this IEndpointRouteBuilder endpoints, Action<NotificationEndpointsOptions>? configure = null)",
+          "signature": "MapGranitNotifications(this IEndpointRouteBuilder endpoints, Action<NotificationsEndpointsOptions>? configure = null)",
           "returnType": "IEndpointRouteBuilder"
         }
       ]
@@ -38707,11 +38723,11 @@
       ]
     },
     {
-      "name": "NotificationEndpointsOptions",
-      "fqn": "Granit.Notifications.Endpoints.Options.NotificationEndpointsOptions",
+      "name": "NotificationsEndpointsOptions",
+      "fqn": "Granit.Notifications.Endpoints.Options.NotificationsEndpointsOptions",
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
-      "file": "src/Granit.Notifications.Endpoints/Options/NotificationEndpointsOptions.cs",
+      "file": "src/Granit.Notifications.Endpoints/Options/NotificationsEndpointsOptions.cs",
       "line": 6,
       "members": [
         {
@@ -38729,11 +38745,11 @@
       ]
     },
     {
-      "name": "NotificationPermissions",
-      "fqn": "Granit.Notifications.Endpoints.Permissions.NotificationPermissions",
+      "name": "NotificationsPermissions",
+      "fqn": "Granit.Notifications.Endpoints.Permissions.NotificationsPermissions",
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
-      "file": "src/Granit.Notifications.Endpoints/Permissions/NotificationPermissions.cs",
+      "file": "src/Granit.Notifications.Endpoints/Permissions/NotificationsPermissions.cs",
       "line": 8,
       "members": []
     },
@@ -38742,7 +38758,7 @@
       "fqn": "Granit.Notifications.Endpoints.Permissions.UserNotifications",
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
-      "file": "src/Granit.Notifications.Endpoints/Permissions/NotificationPermissions.cs",
+      "file": "src/Granit.Notifications.Endpoints/Permissions/NotificationsPermissions.cs",
       "line": 14,
       "members": []
     },
@@ -39075,16 +39091,10 @@
       "line": 9,
       "members": [
         {
-          "name": "NewGuid",
-          "kind": "method",
-          "signature": "NewGuid()",
-          "returnType": "Guid NotificationId { get; init; } = Guid."
-        },
-        {
-          "name": "NotificationTypeName",
+          "name": "NotificationId",
           "kind": "property",
-          "signature": "required string NotificationTypeName",
-          "returnType": "required string"
+          "signature": "Guid NotificationId",
+          "returnType": "Guid"
         }
       ]
     },
@@ -40076,6 +40086,22 @@
       "members": []
     },
     {
+      "name": "ISseBackplane",
+      "fqn": "Granit.Notifications.Sse.ISseBackplane",
+      "kind": "interface",
+      "project": "Granit.Notifications.Sse",
+      "file": "src/Granit.Notifications.Sse/ISseBackplane.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "PublishAsync",
+          "kind": "method",
+          "signature": "PublishAsync(string userId, SseNotificationMessage message, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask"
+        }
+      ]
+    },
+    {
       "name": "ISseConnectionManager",
       "fqn": "Granit.Notifications.Sse.ISseConnectionManager",
       "kind": "interface",
@@ -40166,6 +40192,54 @@
           "kind": "property",
           "signature": "Guid NotificationId",
           "returnType": "Guid"
+        }
+      ]
+    },
+    {
+      "name": "SseRedisBackplaneServiceCollectionExtensions",
+      "fqn": "Granit.Notifications.Sse.StackExchangeRedis.Extensions.SseRedisBackplaneServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.Sse.StackExchangeRedis",
+      "file": "src/Granit.Notifications.Sse.StackExchangeRedis/Extensions/SseRedisBackplaneServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitNotificationsSseRedisBackplane",
+          "kind": "method",
+          "signature": "AddGranitNotificationsSseRedisBackplane(this IServiceCollection services, Action<SseRedisBackplaneOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsSseStackExchangeRedisModule",
+      "fqn": "Granit.Notifications.Sse.StackExchangeRedis.GranitNotificationsSseStackExchangeRedisModule",
+      "kind": "class",
+      "project": "Granit.Notifications.Sse.StackExchangeRedis",
+      "file": "src/Granit.Notifications.Sse.StackExchangeRedis/GranitNotificationsSseStackExchangeRedisModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "SseRedisBackplaneOptions",
+      "fqn": "Granit.Notifications.Sse.StackExchangeRedis.Options.SseRedisBackplaneOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.Sse.StackExchangeRedis",
+      "file": "src/Granit.Notifications.Sse.StackExchangeRedis/Options/SseRedisBackplaneOptions.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "ChannelName",
+          "kind": "property",
+          "signature": "string ChannelName",
+          "returnType": "string"
         }
       ]
     },

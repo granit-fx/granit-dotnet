@@ -4,14 +4,14 @@ using Xunit;
 
 namespace Granit.Notifications.Endpoints.Tests;
 
-public sealed class NotificationEndpointsOptionsTests
+public sealed class NotificationsEndpointsOptionsTests
 {
     /// <summary>Pins the configuration section path so a rename surfaces in CI (checklist §1d).</summary>
     [Fact]
     public void SectionName_IsPinned() =>
-        NotificationEndpointsOptions.SectionName.ShouldBe("Notifications:Endpoints");
+        NotificationsEndpointsOptions.SectionName.ShouldBe("Notifications:Endpoints");
 
     [Fact]
     public void RoutePrefix_Default_IsNotifications() =>
-        new NotificationEndpointsOptions().RoutePrefix.ShouldBe("notifications");
+        new NotificationsEndpointsOptions().RoutePrefix.ShouldBe("notifications");
 }

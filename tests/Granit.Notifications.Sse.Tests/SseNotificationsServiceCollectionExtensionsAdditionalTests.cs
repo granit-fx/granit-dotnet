@@ -32,6 +32,7 @@ public sealed class SseNotificationsServiceCollectionExtensionsAdditionalTests
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddSingleton<IGuidGenerator>(SimpleGuidGenerator.Instance);
+        services.AddLogging();
         services.AddGranitNotificationsSse();
 
         using ServiceProvider sp = services.BuildServiceProvider();
