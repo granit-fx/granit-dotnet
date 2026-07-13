@@ -22,11 +22,11 @@ namespace Granit.Privacy.DataExport.Security;
 public interface IExportContentSigner
 {
     /// <summary>Produces an integrity tag over the canonical byte payload.</summary>
-    string SignBytes(ReadOnlySpan<byte> payload);
+    Task<string> SignBytesAsync(ReadOnlyMemory<byte> payload, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Returns <see langword="true"/> when <paramref name="tag"/> verifies against
     /// <paramref name="payload"/> under any key version known to the signer.
     /// </summary>
-    bool VerifyBytes(ReadOnlySpan<byte> payload, string tag);
+    Task<bool> VerifyBytesAsync(ReadOnlyMemory<byte> payload, string tag, CancellationToken cancellationToken = default);
 }

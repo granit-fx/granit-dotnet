@@ -30,15 +30,16 @@ public interface IExportHmacSigner
     /// </summary>
     /// <param name="parameters">Identity inputs (deterministic order — see
     /// <see cref="ExportHmacParameters"/>).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The opaque versioned tag to store in
     /// <see cref="ExportFragment.IntegrityTag"/>.</returns>
-    string Sign(in ExportHmacParameters parameters);
+    Task<string> SignAsync(ExportHmacParameters parameters, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Returns <see langword="true"/> when <paramref name="tag"/> verifies under any key
     /// version known to the signer (supports rolling rotation).
     /// </summary>
-    bool Verify(in ExportHmacParameters parameters, string tag);
+    Task<bool> VerifyAsync(ExportHmacParameters parameters, string tag, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

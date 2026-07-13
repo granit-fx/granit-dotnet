@@ -45752,7 +45752,7 @@
       "kind": "record",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/PrivacyExportAssemblyService.cs",
-      "line": 619,
+      "line": 621,
       "members": []
     },
     {
@@ -46791,16 +46791,16 @@
       "line": 22,
       "members": [
         {
-          "name": "SignBytes",
+          "name": "SignBytesAsync",
           "kind": "method",
-          "signature": "SignBytes(ReadOnlySpan<byte> payload)",
-          "returnType": "string"
+          "signature": "SignBytesAsync(ReadOnlyMemory<byte> payload, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
         },
         {
-          "name": "VerifyBytes",
+          "name": "VerifyBytesAsync",
           "kind": "method",
-          "signature": "VerifyBytes(ReadOnlySpan<byte> payload, string tag)",
-          "returnType": "bool"
+          "signature": "VerifyBytesAsync(ReadOnlyMemory<byte> payload, string tag, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -46813,16 +46813,16 @@
       "line": 26,
       "members": [
         {
-          "name": "Sign",
+          "name": "SignAsync",
           "kind": "method",
-          "signature": "Sign(in ExportHmacParameters parameters)",
-          "returnType": "string"
+          "signature": "SignAsync(ExportHmacParameters parameters, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
         },
         {
-          "name": "Verify",
+          "name": "VerifyAsync",
           "kind": "method",
-          "signature": "Verify(in ExportHmacParameters parameters, string tag)",
-          "returnType": "bool"
+          "signature": "VerifyAsync(ExportHmacParameters parameters, string tag, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -46832,7 +46832,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Security/IExportHmacSigner.cs",
-      "line": 59,
+      "line": 60,
       "members": []
     },
     {
@@ -48930,7 +48930,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Vault",
       "file": "src/Granit.Privacy.Vault/VaultExportHmacSigner.cs",
-      "line": 32,
+      "line": 27,
       "members": []
     },
     {

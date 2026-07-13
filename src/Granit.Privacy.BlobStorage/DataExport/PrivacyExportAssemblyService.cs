@@ -44,7 +44,7 @@ namespace Granit.Privacy.BlobStorage.DataExport;
 /// </para>
 /// <para>
 /// <b>HMAC verification.</b> Each fragment is verified via
-/// <see cref="IExportHmacSigner.Verify"/> with parameters reconstructed from the
+/// <see cref="IExportHmacSigner.VerifyAsync"/> with parameters reconstructed from the
 /// <see cref="ReceivedFragment"/> values. Empty-sentinel fragments
 /// (<see cref="PrivacyFragmentUploader.EmptyFragmentKind"/>) carry no HMAC and
 /// are recorded in the manifest's <c>emptyProviders</c> list without a blob
@@ -361,18 +361,19 @@ internal sealed partial class PrivacyExportAssemblyService(
             .ConfigureAwait(false);
     }
 
-    private bool VerifyFragmentTag(
+    private Task<bool> VerifyFragmentTagAsync(
         ExportCompletedEto completion,
         ReceivedFragment fragment,
         Guid blobId,
-        DateTimeOffset expiry)
+        DateTimeOffset expiry,
+        CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(fragment.IntegrityTag))
         {
-            return false;
+            return Task.FromResult(false);
         }
 
-        return hmacSigner.Verify(
+        return hmacSigner.VerifyAsync(
             new ExportHmacParameters(
                 RequestId: completion.RequestId,
                 SubjectUserId: completion.UserId,
@@ -382,7 +383,8 @@ internal sealed partial class PrivacyExportAssemblyService(
                 SourceBlobId: blobId,
                 EntryPath: fragment.EntryPath ?? string.Empty,
                 ExpiresAt: expiry),
-            fragment.IntegrityTag);
+            fragment.IntegrityTag,
+            cancellationToken);
     }
 
     private async Task<BlobReference> UploadManifestAsync(
@@ -422,7 +424,7 @@ internal sealed partial class PrivacyExportAssemblyService(
         };
 
         byte[] payloadBytes = JsonSerializer.SerializeToUtf8Bytes(manifestPayload, ManifestJsonOptions);
-        string integrityTag = contentSigner.SignBytes(payloadBytes);
+        string integrityTag = await contentSigner.SignBytesAsync(payloadBytes, cancellationToken).ConfigureAwait(false);
 
         byte[] signedEnvelope = BuildSignedEnvelope(payloadBytes, integrityTag);
 
@@ -525,7 +527,7 @@ internal sealed partial class PrivacyExportAssemblyService(
             return shardStartTimestamp;
         }
 
-        if (!VerifyFragmentTag(completion, fragment, blobId, ctx.HmacExpiryWindow))
+        if (!await VerifyFragmentTagAsync(completion, fragment, blobId, ctx.HmacExpiryWindow, cancellationToken).ConfigureAwait(false))
         {
             LogIntegrityTagRejected(logger, fragment.ProviderName, completion.RequestId);
             throw new InvalidOperationException(

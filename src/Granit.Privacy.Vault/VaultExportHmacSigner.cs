@@ -13,14 +13,9 @@ namespace Granit.Privacy.Vault;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Why Sync interfaces over an async primitive:</b> the privacy export saga
-/// signs every fragment inside a Wolverine handler that already runs on the
-/// async path — but the <see cref="IExportHmacSigner"/> contract is synchronous
-/// because the assembler verifies in tight loops where the surrounding I/O is
-/// blocking (FileStream reads). The sync→async bridge uses
-/// <c>GetAwaiter().GetResult()</c>; the call is rare (one per fragment, on the
-/// order of seconds between calls) and avoids cascading the interface change
-/// through every existing caller.
+/// The signer contracts are async-first, so the underlying
+/// <see cref="ITransitMacService"/> calls are awaited directly — no
+/// sync-over-async bridge.
 /// </para>
 /// <para>
 /// <b>Tag format:</b> <c>gpv1:{providerOpaqueTag}</c>. The <c>gpv1</c> prefix lets
@@ -35,32 +30,34 @@ public sealed partial class VaultExportHmacSigner : IExportHmacSigner, IExportCo
 
     private readonly ITransitMacService _macService;
     private readonly VaultExportSignerOptions _options;
+    private readonly TimeProvider _timeProvider;
 
     /// <summary>Initializes a new instance.</summary>
     public VaultExportHmacSigner(
         ITransitMacService macService,
-        IOptions<VaultExportSignerOptions> options)
+        IOptions<VaultExportSignerOptions> options,
+        TimeProvider? timeProvider = null)
     {
         ArgumentNullException.ThrowIfNull(macService);
         ArgumentNullException.ThrowIfNull(options);
 
         _macService = macService;
         _options = options.Value;
+        _timeProvider = timeProvider ?? TimeProvider.System;
     }
 
     /// <inheritdoc />
-    public string Sign(in ExportHmacParameters parameters)
+    public async Task<string> SignAsync(ExportHmacParameters parameters, CancellationToken cancellationToken = default)
     {
         byte[] canonical = ExportHmacCanonicalizer.Canonicalize(parameters);
-        TransitMacResult result = _macService
-            .MacAsync(_options.FragmentKeyName, canonical, CancellationToken.None)
-            .GetAwaiter()
-            .GetResult();
+        TransitMacResult result = await _macService
+            .MacAsync(_options.FragmentKeyName, canonical, cancellationToken)
+            .ConfigureAwait(false);
         return $"{TagPrefix}{result.Mac}";
     }
 
     /// <inheritdoc />
-    public bool Verify(in ExportHmacParameters parameters, string tag)
+    public async Task<bool> VerifyAsync(ExportHmacParameters parameters, string tag, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(tag);
 
@@ -69,33 +66,29 @@ public sealed partial class VaultExportHmacSigner : IExportHmacSigner, IExportCo
             return false;
         }
 
-        if (parameters.ExpiresAt <= TimeProvider.System.GetUtcNow())
+        if (parameters.ExpiresAt <= _timeProvider.GetUtcNow())
         {
             return false;
         }
 
         string providerTag = tag[TagPrefix.Length..];
         byte[] canonical = ExportHmacCanonicalizer.Canonicalize(parameters);
-        return _macService
-            .VerifyAsync(_options.FragmentKeyName, canonical, providerTag, CancellationToken.None)
-            .GetAwaiter()
-            .GetResult();
+        return await _macService
+            .VerifyAsync(_options.FragmentKeyName, canonical, providerTag, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public string SignBytes(ReadOnlySpan<byte> payload)
+    public async Task<string> SignBytesAsync(ReadOnlyMemory<byte> payload, CancellationToken cancellationToken = default)
     {
-        // Copy span to heap — ITransitMacService is async and span is stack-only.
-        byte[] heap = payload.ToArray();
-        TransitMacResult result = _macService
-            .MacAsync(_options.ContentKeyName, heap, CancellationToken.None)
-            .GetAwaiter()
-            .GetResult();
+        TransitMacResult result = await _macService
+            .MacAsync(_options.ContentKeyName, payload.ToArray(), cancellationToken)
+            .ConfigureAwait(false);
         return $"{TagPrefix}{result.Mac}";
     }
 
     /// <inheritdoc />
-    public bool VerifyBytes(ReadOnlySpan<byte> payload, string tag)
+    public async Task<bool> VerifyBytesAsync(ReadOnlyMemory<byte> payload, string tag, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(tag);
 
@@ -105,10 +98,8 @@ public sealed partial class VaultExportHmacSigner : IExportHmacSigner, IExportCo
         }
 
         string providerTag = tag[TagPrefix.Length..];
-        byte[] heap = payload.ToArray();
-        return _macService
-            .VerifyAsync(_options.ContentKeyName, heap, providerTag, CancellationToken.None)
-            .GetAwaiter()
-            .GetResult();
+        return await _macService
+            .VerifyAsync(_options.ContentKeyName, payload.ToArray(), providerTag, cancellationToken)
+            .ConfigureAwait(false);
     }
 }

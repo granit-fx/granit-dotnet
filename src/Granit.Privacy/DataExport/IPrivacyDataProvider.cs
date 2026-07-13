@@ -74,7 +74,7 @@ public interface IPrivacyDataProvider
     /// </summary>
     /// <remarks>
     /// Fragments MUST be signed with
-    /// <see cref="Security.IExportHmacSigner.Sign"/>; the archive assembler rejects unsigned
+    /// <see cref="Security.IExportHmacSigner.SignAsync"/>; the archive assembler rejects unsigned
     /// or tampered fragments and routes them to the DLQ (closes VULN-001 / VULN-102).
     /// Yielding an empty enumerable is legal and translates to <c>EmptyProviders</c> in the
     /// manifest.
