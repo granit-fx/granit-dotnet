@@ -2375,6 +2375,8 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Diagnostics": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Http.SecurityHeaders": "[0.1.0-dev, )",
+          "Granit.Http.SecurityHeaders.Abstractions": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
@@ -2641,12 +2643,6 @@
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
-      "granit.http.cors": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
@@ -2657,6 +2653,12 @@
         "type": "Project",
         "dependencies": {
           "Granit.Features": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.hosting": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.http.idempotency": {
@@ -2712,12 +2714,6 @@
           "Microsoft.Extensions.Http.Resilience": "[10.*, )"
         }
       },
-      "granit.http.responsecompression": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
       "granit.http.securityheaders": {
         "type": "Project",
         "dependencies": {
@@ -2727,14 +2723,6 @@
       },
       "granit.http.securityheaders.abstractions": {
         "type": "Project"
-      },
-      "granit.http.securityheaders.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Diagnostics.Endpoints": "[0.1.0-dev, )",
-          "Granit.Http.SecurityHeaders": "[0.1.0-dev, )",
-          "Granit.Http.SecurityHeaders.Abstractions": "[0.1.0-dev, )"
-        }
       },
       "granit.http.urlsafety": {
         "type": "Project",

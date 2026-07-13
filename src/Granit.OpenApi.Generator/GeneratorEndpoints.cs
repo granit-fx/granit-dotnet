@@ -14,7 +14,6 @@ using Granit.Features.Endpoints.Extensions;
 using Granit.Geocoding.Endpoints.Extensions;
 using Granit.Hostnames.Endpoints.Extensions;
 using Granit.Http.Cookies.Endpoints.Extensions;
-using Granit.Http.SecurityHeaders.Endpoints.Extensions;
 using Granit.Identity.Endpoints.Extensions;
 using Granit.Identity.Local.Endpoints.Extensions;
 using Granit.Localization.Endpoints.Extensions;
@@ -59,12 +58,15 @@ internal static class GeneratorEndpoints
         new("blob-storage", e => e.MapGranitBlobStorage()),
         new("data-exchange", e => e.MapGranitDataExchange()),
         new("data-lookup", e => e.MapGranitDataLookups()),
-        new("diagnostics", e => e.MapGranitDiagnosticsMonitoring()),
+        new("diagnostics", e =>
+        {
+            e.MapGranitDiagnosticsMonitoring();
+            e.MapGranitSecurityHeadersAudit();
+        }),
         new("features", e => e.MapGranitFeatures()),
         new("geocoding", e => e.MapGranitGeocoding()),
         new("hostnames", e => e.MapGranitHostnames()),
         new("cookies", e => e.MapGranitCookieConsent()),
-        new("security-headers", e => e.MapGranitSecurityHeadersAudit()),
         new("identity", e =>
         {
             e.MapGranitIdentityUserCache();

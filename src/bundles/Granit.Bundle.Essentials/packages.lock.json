@@ -259,19 +259,13 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
-      "granit.http.cors": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.http.responsecompression": {
+      "granit.http.hosting": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

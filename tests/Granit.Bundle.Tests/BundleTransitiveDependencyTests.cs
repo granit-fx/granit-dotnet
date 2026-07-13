@@ -3,8 +3,8 @@ using Granit.Diagnostics;
 using Granit.Guids;
 using Granit.Http.ApiDocumentation;
 using Granit.Http.ApiVersioning;
-using Granit.Http.Cors;
 using Granit.Http.ExceptionHandling;
+using Granit.Http.Hosting;
 using Granit.Http.Idempotency;
 using Granit.Localization;
 using Granit.Modularity;
@@ -50,7 +50,7 @@ public sealed class BundleTransitiveDependencyTests
 
         typeof(GranitHttpApiVersioningModule).Assembly.ShouldNotBeNull();
         typeof(GranitHttpApiDocumentationModule).Assembly.ShouldNotBeNull();
-        typeof(GranitHttpCorsModule).Assembly.ShouldNotBeNull();
+        typeof(GranitHttpHostingModule).Assembly.ShouldNotBeNull();
         typeof(GranitHttpIdempotencyModule).Assembly.ShouldNotBeNull();
         typeof(GranitLocalizationModule).Assembly.ShouldNotBeNull();
         typeof(GranitCachingModule).Assembly.ShouldNotBeNull();

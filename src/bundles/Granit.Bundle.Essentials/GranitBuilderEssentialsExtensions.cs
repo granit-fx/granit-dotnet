@@ -16,7 +16,7 @@ public static class GranitBuilderEssentialsExtensions
 {
     /// <summary>
     /// Adds the Essentials bundle: Core, Timing, Guids, Security, Validation,
-    /// Persistence, Observability, ExceptionHandling, Http.Security, Diagnostics.
+    /// Persistence, Observability, ExceptionHandling, Http.SecurityHeaders, Diagnostics.
     /// </summary>
     public static GranitBuilder AddEssentials(this GranitBuilder builder)
     {
