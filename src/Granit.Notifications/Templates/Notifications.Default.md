@@ -1,0 +1,2 @@
+You have a new notification
+You have received a new notification of type **{{ model.notification_type }}**{{ if model.severity }} ({{ model.severity }}){{ end }}.

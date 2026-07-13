@@ -41,15 +41,13 @@ internal sealed partial class TemplateNotificationContentRenderer(
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        if (format != NotificationContentFormat.Html)
-        {
-            // Text/markdown templates need text-template support in Granit.Templating —
-            // lands in the #2963 follow-up. Channels keep their fallback until then.
-            return null;
-        }
-
         // Effective culture: explicit trigger override wins, then the recipient's preference.
         context = context with { Culture = context.Culture ?? recipient?.PreferredCulture };
+
+        if (format != NotificationContentFormat.Html)
+        {
+            return await RenderTextAsync(context, recipient, format, extraModelData, cancellationToken).ConfigureAwait(false);
+        }
 
         RenderedNotificationContent? content =
             await TryRenderTemplateAsync(context.NotificationTypeName, context, recipient, extraModelData, cancellationToken).ConfigureAwait(false)
@@ -62,6 +60,77 @@ internal sealed partial class TemplateNotificationContentRenderer(
 
         return await TryApplyLayoutAsync(context.NotificationTypeName, content, context, recipient, extraModelData, cancellationToken).ConfigureAwait(false)
             ?? content;
+    }
+
+    /// <summary>
+    /// Text/markdown path: resolves <c>.txt</c>/<c>.md</c> template variants (via the
+    /// <see cref="TemplateKey.MimeType"/> hint), no layout. Convention: the first non-empty
+    /// line is the title (mirrors <c>&lt;title&gt;</c> for HTML), the remainder is the body.
+    /// </summary>
+    private async Task<RenderedNotificationContent?> RenderTextAsync(
+        NotificationDeliveryContext context,
+        RecipientInfo? recipient,
+        NotificationContentFormat format,
+        IReadOnlyDictionary<string, object?>? extraModelData,
+        CancellationToken cancellationToken)
+    {
+        IEnumerable<ITemplateResolver>? resolvers = serviceProvider.GetService<IEnumerable<ITemplateResolver>>();
+        if (resolvers?.Any() != true)
+        {
+            return null;
+        }
+
+        string mimeType = format == NotificationContentFormat.Markdown ? "text/markdown" : "text/plain";
+
+        TemplateDescriptor? descriptor =
+            await ResolveAsync(resolvers, new TemplateKey(context.NotificationTypeName, context.Culture, mimeType), cancellationToken).ConfigureAwait(false)
+            ?? await ResolveAsync(resolvers, new TemplateKey(FallbackTemplateName, context.Culture, mimeType), cancellationToken).ConfigureAwait(false);
+
+        if (descriptor is null)
+        {
+            return null;
+        }
+
+        ITemplateEngine? engine = FindEngine(descriptor, context.NotificationTypeName);
+        if (engine is null)
+        {
+            return null;
+        }
+
+        try
+        {
+            RenderedContent rendered = await engine
+                .RenderAsync(descriptor, BuildModel(context, recipient, extraModelData), DocumentFormat.Html, ResolveGlobalContexts(), cancellationToken)
+                .ConfigureAwait(false);
+
+            if (rendered is TextRenderedContent textResult)
+            {
+                Log.TemplateRendered(logger, context.NotificationTypeName, context.Culture);
+                (string? title, string body) = SplitFirstLineTitle(textResult.Html);
+                return new RenderedNotificationContent(title, body);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.TemplateRenderFailed(logger, context.NotificationTypeName, ex);
+        }
+
+        return null;
+    }
+
+    /// <summary>First non-empty line = title, remainder = body (trimmed).</summary>
+    internal static (string? Title, string Body) SplitFirstLineTitle(string text)
+    {
+        string trimmed = text.Trim();
+        int newline = trimmed.IndexOf('\n');
+        if (newline < 0)
+        {
+            return (null, trimmed);
+        }
+
+        string title = trimmed[..newline].TrimEnd('\r').Trim();
+        string body = trimmed[(newline + 1)..].Trim();
+        return (title.Length == 0 ? null : title, body.Length == 0 ? trimmed : body);
     }
 
     /// <summary>
@@ -255,6 +324,7 @@ internal sealed partial class TemplateNotificationContentRenderer(
             .GetService<INotificationDefinitionStore>()?.Get(context.NotificationTypeName);
 
         dataDict.TryAdd("notification_type", context.NotificationTypeName);
+        dataDict.TryAdd("severity", context.Severity.ToString());
         dataDict.TryAdd("notification_group", definition?.GroupName ?? "");
         dataDict.TryAdd("allow_opt_out", definition?.AllowUserOptOut ?? true);
         dataDict.TryAdd("unsubscribe_url", "");

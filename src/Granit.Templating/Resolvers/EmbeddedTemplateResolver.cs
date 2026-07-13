@@ -71,7 +71,8 @@ internal sealed class EmbeddedTemplateResolver(IReadOnlyList<Assembly> assemblie
     private TemplateDescriptor? TryLoadFromAssembly(Assembly assembly, TemplateKey key)
     {
         string assemblyName = assembly.GetName().Name ?? string.Empty;
-        string neutralResource = $"{assemblyName}.Templates.{key.Name}.html";
+        (string extension, string mimeType) = ExtensionFor(key.MimeType);
+        string neutralResource = $"{assemblyName}.Templates.{key.Name}.{extension}";
 
         // Walk requested culture → parent → neutral. Mirrors the JSON locale fallback so
         // regional template files (pt-BR, en-GB...) can omit keys identical to their parent.
@@ -80,7 +81,7 @@ internal sealed class EmbeddedTemplateResolver(IReadOnlyList<Assembly> assemblie
         {
             foreach (string culture in EnumerateCultureChain(key.Culture))
             {
-                resourceName = FindResource(assembly, $"{assemblyName}.Templates.{key.Name}.{culture}.html");
+                resourceName = FindResource(assembly, $"{assemblyName}.Templates.{key.Name}.{culture}.{extension}");
                 if (resourceName is not null)
                 {
                     break;
@@ -102,10 +103,18 @@ internal sealed class EmbeddedTemplateResolver(IReadOnlyList<Assembly> assemblie
         return new TemplateDescriptor
         {
             Content = content,
-            MimeType = "text/html",
+            MimeType = mimeType,
             RevisionId = null,
         };
     }
+
+    /// <summary>Maps the requested MIME type to the embedded-resource file extension.</summary>
+    private static (string Extension, string MimeType) ExtensionFor(string? mimeType) => mimeType switch
+    {
+        "text/plain" => ("txt", "text/plain"),
+        "text/markdown" => ("md", "text/markdown"),
+        _ => ("html", "text/html"),
+    };
 
     private static IEnumerable<string> EnumerateCultureChain(string culture)
     {

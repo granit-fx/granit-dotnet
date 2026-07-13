@@ -32,4 +32,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Localization\**\*.json" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- WithCulture="false": MSBuild would otherwise treat *.fr.txt as satellite resources. -->
+    <EmbeddedResource Include="Templates\**\*.txt" WithCulture="false" />
+    <EmbeddedResource Include="Templates\**\*.md" WithCulture="false" />
+  </ItemGroup>
+
 </Project>

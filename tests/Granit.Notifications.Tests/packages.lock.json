@@ -617,6 +617,14 @@
           "Granit.Workflow": "[0.1.0-dev, )"
         }
       },
+      "granit.templating.scriban": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Templating": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
+          "Scriban": "[7.*, )"
+        }
+      },
       "granit.testing": {
         "type": "Project",
         "dependencies": {
@@ -774,6 +782,12 @@
           "Microsoft.Extensions.Options": "10.0.9",
           "Microsoft.Extensions.Primitives": "10.0.9"
         }
+      },
+      "Scriban": {
+        "type": "CentralTransitive",
+        "requested": "[7.*, )",
+        "resolved": "7.2.5",
+        "contentHash": "6HDyv0P6PVdx/prWM3Aw0QHAT/DCpkBxOovZ2iPIH4L4ZvJ13JNYJgyUI+xJ5K2agXreYTBe23AL5ZQNTqJQvA=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",

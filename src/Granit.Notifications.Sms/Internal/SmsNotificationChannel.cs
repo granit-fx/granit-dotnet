@@ -1,4 +1,5 @@
 using Granit.Notifications.Abstractions;
+using Granit.Notifications.Rendering;
 using Granit.Notifications.Sms.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -11,7 +12,8 @@ namespace Granit.Notifications.Sms.Internal;
 internal sealed class SmsNotificationChannel(
     IServiceProvider serviceProvider,
     IOptions<SmsChannelOptions> options,
-    IRecipientResolver recipientResolver) : INotificationChannel
+    IRecipientResolver recipientResolver,
+    INotificationContentRenderer? contentRenderer = null) : INotificationChannel
 {
     /// <inheritdoc />
     public string Name => NotificationChannels.Sms;
@@ -27,7 +29,14 @@ internal sealed class SmsNotificationChannel(
             return;
         }
 
-        string body = $"Notification: {context.NotificationTypeName}";
+        // Localized template (type-specific or Notifications.Default .txt), minimal fallback
+        // when templating is not configured.
+        RenderedNotificationContent? rendered = contentRenderer is null
+            ? null
+            : await contentRenderer.RenderAsync(
+                context, recipient, NotificationContentFormat.PlainText, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        string body = rendered?.Body ?? $"Notification: {context.NotificationTypeName}";
 
         await sender.SendAsync(new SmsMessage
         {
