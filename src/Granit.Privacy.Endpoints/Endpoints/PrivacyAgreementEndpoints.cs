@@ -35,7 +35,8 @@ internal static class PrivacyAgreementEndpoints
                  "For each registered legal document, returns whether the current user has accepted "
                  + "the latest version and when the last acceptance occurred. "
                  + "Documents where HasAcceptedLatest is false require re-consent.")
-             .Produces<IReadOnlyList<PrivacyConsentStatusResponse>>();
+             .Produces<IReadOnlyList<PrivacyConsentStatusResponse>>()
+             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapGet("/agreements/history", HandleGetAgreementHistoryAsync)
              .RequireAuthorization(PrivacyPermissions.Agreements.Read)
@@ -45,7 +46,8 @@ internal static class PrivacyAgreementEndpoints
                  "Returns all consent records for the current user, ordered by most recent first. "
                  + "Each record includes the document ID, accepted version, timestamp, and whether "
                  + "it matches the current document version.")
-             .Produces<IReadOnlyList<PrivacyUserAgreementResponse>>();
+             .Produces<IReadOnlyList<PrivacyUserAgreementResponse>>()
+             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapPost("/agreements/accept", HandleAcceptAgreementAsync)
              .RequireAuthorization(PrivacyPermissions.Agreements.Create)
@@ -58,9 +60,9 @@ internal static class PrivacyAgreementEndpoints
                  + "The client IP address is captured and pseudonymized for the audit trail. "
                  + "Ensure ForwardedHeadersMiddleware is enabled when running behind a reverse proxy.")
              .Produces(StatusCodes.Status201Created)
+             .ProducesProblem(StatusCodes.Status401Unauthorized)
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status409Conflict)
-             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         return group;

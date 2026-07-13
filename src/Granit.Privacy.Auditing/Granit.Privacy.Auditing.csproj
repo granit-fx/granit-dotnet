@@ -13,7 +13,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.Auditing\Granit.Auditing.csproj" />
     <ProjectReference Include="..\Granit.Privacy\Granit.Privacy.csproj" />
-    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
   </ItemGroup>
 
 </Project>

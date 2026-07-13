@@ -34,7 +34,8 @@ internal static class PrivacyExportEndpoints
                  + "\"if you never used it, it doesn't appear\"), and the host IPrivacyScopeVisibilityPolicy. "
                  + "Use the returned ProviderName values to populate the POST /privacy/exports `Scopes` field; "
                  + "unknown / hidden scopes in that POST are silently skipped.")
-             .Produces<IReadOnlyList<PrivacyExportScopeResponse>>();
+             .Produces<IReadOnlyList<PrivacyExportScopeResponse>>()
+             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapPost("/exports/on-behalf-of", HandleRequestExportOnBehalfOfAsync)
              .RequireAuthorization(PrivacyPermissions.Exports.ExecuteOnBehalfOf)
@@ -54,7 +55,9 @@ internal static class PrivacyExportEndpoints
                  + "IPrivacySubjectValidator — a subject absent from the tenant returns 404 (same "
                  + "status as a non-existent request id, so cross-tenant existence cannot be probed).")
              .Produces<PrivacyExportRequestResponse>(StatusCodes.Status202Accepted)
+             .ProducesProblem(StatusCodes.Status401Unauthorized)
              .ProducesProblem(StatusCodes.Status404NotFound)
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapPost("/exports", HandleRequestExportAsync)
@@ -75,6 +78,8 @@ internal static class PrivacyExportEndpoints
                  + "Honours an optional `Idempotency-Key` header (Granit.Http.Idempotency) so accidental "
                  + "double-clicks don't spawn two scatter-gather sagas.")
              .Produces<PrivacyExportRequestResponse>(StatusCodes.Status202Accepted)
+             .ProducesProblem(StatusCodes.Status401Unauthorized)
+             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapGet("/exports/{requestId:guid}", HandleGetExportStatusAsync)
@@ -87,6 +92,7 @@ internal static class PrivacyExportEndpoints
                  + "the archive blob reference when available, and any missing providers. "
                  + "Returns 404 if the request ID is not found or belongs to another user.")
              .Produces<PrivacyExportStatusResponse>()
+             .ProducesProblem(StatusCodes.Status401Unauthorized)
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/exports", HandleGetMyExportsAsync)
@@ -95,7 +101,8 @@ internal static class PrivacyExportEndpoints
              .WithDescription(
                  "Returns all export requests submitted by the current user, ordered by most recent first. "
                  + "Each entry includes the request state, timestamps, and archive reference when available.")
-             .Produces<IReadOnlyList<PrivacyExportStatusResponse>>();
+             .Produces<IReadOnlyList<PrivacyExportStatusResponse>>()
+             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapPrivacyExportDownloadEndpoints();
 
