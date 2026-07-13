@@ -4,6 +4,7 @@ using Granit.Events;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Domain;
 using Granit.Privacy.LegalAgreements.Events;
+using Granit.Privacy.LegalAgreements.Exceptions;
 using Granit.Workflow.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,12 +31,11 @@ internal sealed class LegalDocumentPublicationService(
         LegalDocument draft = await db.LegalDocuments
             .FirstOrDefaultAsync(d => d.Id == documentId, cancellationToken)
             .ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"Legal document '{documentId}' not found.");
+            ?? throw new LegalDocumentNotFoundException(documentId);
 
         if (draft.LifecycleStatus != WorkflowLifecycleStatus.Draft)
         {
-            throw new InvalidOperationException(
-                $"Legal document '{documentId}' is in '{draft.LifecycleStatus}' status. Only drafts can be published.");
+            throw new LegalDocumentNotPublishableException(documentId, draft.LifecycleStatus);
         }
 
         // Find the currently published version for the same DocumentId.

@@ -47507,6 +47507,24 @@
       "members": []
     },
     {
+      "name": "LegalDocumentNotFoundException",
+      "fqn": "Granit.Privacy.LegalAgreements.Exceptions.LegalDocumentNotFoundException",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/LegalAgreements/Exceptions/LegalDocumentNotFoundException.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "LegalDocumentNotPublishableException",
+      "fqn": "Granit.Privacy.LegalAgreements.Exceptions.LegalDocumentNotPublishableException",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/LegalAgreements/Exceptions/LegalDocumentNotPublishableException.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "ILegalAgreementChecker",
       "fqn": "Granit.Privacy.LegalAgreements.ILegalAgreementChecker",
       "kind": "interface",
