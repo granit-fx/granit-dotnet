@@ -15,6 +15,12 @@ public static class RateLimitEndpointExtensions
     /// <summary>
     /// Applies the specified rate limiting policy to the endpoint.
     /// </summary>
+    /// <remarks>
+    /// IP-partitioned policies read <see cref="Microsoft.AspNetCore.Http.ConnectionInfo.RemoteIpAddress"/>.
+    /// Behind a reverse proxy / ingress, register the <c>ForwardedHeaders</c> middleware
+    /// (<c>X-Forwarded-For</c>) upstream — otherwise every client collapses into the
+    /// proxy's IP bucket and the limit is effectively shared by all traffic.
+    /// </remarks>
     /// <param name="builder">The endpoint convention builder.</param>
     /// <param name="policyName">Name of the rate limiting policy defined in <c>RateLimiting:Policies</c>.</param>
     public static TBuilder RequireGranitRateLimiting<TBuilder>(this TBuilder builder, string policyName)

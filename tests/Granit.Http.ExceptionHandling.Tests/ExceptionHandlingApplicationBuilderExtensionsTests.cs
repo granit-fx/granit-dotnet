@@ -6,6 +6,7 @@
 
 using Granit.Http.ExceptionHandling.Extensions;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -19,6 +20,7 @@ public sealed class ExceptionHandlingApplicationBuilderExtensionsTests
     {
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitExceptionHandling();
         ServiceProvider sp = services.BuildServiceProvider();
 
@@ -34,6 +36,7 @@ public sealed class ExceptionHandlingApplicationBuilderExtensionsTests
     {
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitExceptionHandling();
         ServiceProvider sp = services.BuildServiceProvider();
 

@@ -22,6 +22,7 @@ using Granit.Http.ExceptionHandling.Internal;
 using Granit.Http.ExceptionHandling.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using NSubstitute;
@@ -44,6 +45,7 @@ public sealed class GranitExceptionHandlerTests
     {
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitExceptionHandling(configureOptions);
         return services.BuildServiceProvider();
     }
@@ -238,6 +240,7 @@ public sealed class GranitExceptionHandlerTests
     {
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         // Register custom mapper BEFORE calling AddGranitExceptionHandling
         // so it's tried first in the chain
         services.AddSingleton<IExceptionStatusCodeMapper, ArgumentExceptionMapper>();
@@ -256,6 +259,7 @@ public sealed class GranitExceptionHandlerTests
     {
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddSingleton<IExceptionStatusCodeMapper, NullReturningMapper>();
         services.AddGranitExceptionHandling();
         await using ServiceProvider sp = services.BuildServiceProvider();
@@ -556,6 +560,7 @@ public sealed class GranitExceptionHandlerTests
 
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddSingleton(mockLocalizerFactory);
         services.AddGranitExceptionHandling();
         await using ServiceProvider sp = services.BuildServiceProvider();
@@ -576,6 +581,7 @@ public sealed class GranitExceptionHandlerTests
 
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddSingleton(mockLocalizerFactory);
         services.AddGranitExceptionHandling();
         await using ServiceProvider sp = services.BuildServiceProvider();
@@ -611,6 +617,7 @@ public sealed class GranitExceptionHandlerTests
 
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddSingleton(mockLocalizerFactory);
         services.AddGranitExceptionHandling();
         await using ServiceProvider sp = services.BuildServiceProvider();
@@ -633,6 +640,7 @@ public sealed class GranitExceptionHandlerTests
 
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddSingleton(mockLocalizerFactory);
         services.AddGranitExceptionHandling();
         await using ServiceProvider sp = services.BuildServiceProvider();

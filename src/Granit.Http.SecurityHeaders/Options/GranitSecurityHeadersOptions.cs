@@ -3,7 +3,7 @@ namespace Granit.Http.SecurityHeaders.Options;
 
 /// <summary>
 /// Configuration options for Granit HTTP security headers.
-/// Bindable from <c>appsettings.json</c> section <c>"SecurityHeaders"</c>.
+/// Bindable from <c>appsettings.json</c> section <c>"Http:SecurityHeaders"</c>.
 /// </summary>
 public sealed class GranitSecurityHeadersOptions
 {
@@ -79,7 +79,7 @@ public sealed class GranitSecurityHeadersOptions
     /// <summary>
     /// Names (matching <see cref="ICspContributor.Name"/>) of contributors
     /// that must be ignored even when registered. Bind from
-    /// <c>SecurityHeaders:DisabledContributors</c> to disable a framework
+    /// <c>Http:SecurityHeaders:DisabledContributors</c> to disable a framework
     /// contributor when an internal security policy is stricter than the
     /// framework's default.
     /// </summary>

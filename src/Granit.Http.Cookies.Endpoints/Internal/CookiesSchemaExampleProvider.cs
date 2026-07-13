@@ -27,7 +27,7 @@ internal sealed class CookiesSchemaExampleProvider : ISchemaExampleProvider
                     new JsonObject
                     {
                         ["name"] = ".Granit.Locale",
-                        ["category"] = "functional",
+                        ["category"] = "preferences",
                         ["retentionDays"] = 365,
                         ["purpose"] = "Stores the user's preferred language.",
                     },

@@ -7,9 +7,11 @@ namespace Granit.Http.Security.Diagnostics;
 /// </summary>
 internal static partial class HttpSecurityLog
 {
+    // Warning, not Information: a blocked egress attempt (SSRF probe, metadata-endpoint
+    // reach) is a security-relevant anomaly defenders must be able to alert on.
     [LoggerMessage(
         EventId = 1,
-        Level = LogLevel.Information,
+        Level = LogLevel.Warning,
         Message = "URL safety check blocked host '{Host}': {Kind} ({Reason})")]
     public static partial void UrlBlocked(ILogger logger, string host, UrlSafetyViolationKind kind, string reason);
 

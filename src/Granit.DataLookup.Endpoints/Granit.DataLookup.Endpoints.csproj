@@ -18,7 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
     <ProjectReference Include="..\Granit.DataLookup\Granit.DataLookup.csproj" />
-    <ProjectReference Include="..\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
   </ItemGroup>
 

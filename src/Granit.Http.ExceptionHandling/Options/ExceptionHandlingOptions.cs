@@ -6,6 +6,11 @@ namespace Granit.Http.ExceptionHandling.Options;
 public sealed class ExceptionHandlingOptions
 {
     /// <summary>
+    /// Configuration section: <c>Http:ExceptionHandling</c>.
+    /// </summary>
+    public const string SectionName = "Http:ExceptionHandling";
+
+    /// <summary>
     /// When <c>true</c>, the original exception message is included in the
     /// <c>ProblemDetails.Detail</c> field even for <c>5xx</c> errors.
     /// <para>

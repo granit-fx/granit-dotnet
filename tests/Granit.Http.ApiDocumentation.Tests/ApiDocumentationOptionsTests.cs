@@ -13,7 +13,7 @@ namespace Granit.Http.ApiDocumentation.Tests;
 public sealed class ApiDocumentationOptionsTests
 {
     [Fact]
-    public void SectionName_IsApiDocumentation() =>
+    public void SectionName_IsHttpApiDocumentation() =>
         ApiDocumentationOptions.SectionName.ShouldBe("Http:ApiDocumentation");
 
     [Fact]

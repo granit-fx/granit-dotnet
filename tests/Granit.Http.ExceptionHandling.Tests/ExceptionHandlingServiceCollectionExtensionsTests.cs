@@ -15,6 +15,7 @@ using Granit.Http.ExceptionHandling.Internal;
 using Granit.Http.ExceptionHandling.Options;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Shouldly;
@@ -33,6 +34,7 @@ public sealed class ExceptionHandlingServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitExceptionHandling();
 
         using ServiceProvider sp = services.BuildServiceProvider();
@@ -45,6 +47,7 @@ public sealed class ExceptionHandlingServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitExceptionHandling();
 
         using ServiceProvider sp = services.BuildServiceProvider();
@@ -59,6 +62,7 @@ public sealed class ExceptionHandlingServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitExceptionHandling();
 
         using ServiceProvider sp = services.BuildServiceProvider();
@@ -76,6 +80,7 @@ public sealed class ExceptionHandlingServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitExceptionHandling();
 
         using ServiceProvider sp = services.BuildServiceProvider();
@@ -89,6 +94,7 @@ public sealed class ExceptionHandlingServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitExceptionHandling(opts => opts.ExposeInternalErrorDetails = true);
 
         using ServiceProvider sp = services.BuildServiceProvider();
@@ -102,6 +108,7 @@ public sealed class ExceptionHandlingServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitExceptionHandling(configure: null);
 
         using ServiceProvider sp = services.BuildServiceProvider();
@@ -119,6 +126,7 @@ public sealed class ExceptionHandlingServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
         IServiceCollection returned = services.AddGranitExceptionHandling();
 
@@ -134,6 +142,7 @@ public sealed class ExceptionHandlingServiceCollectionExtensionsTests
     {
         ServiceCollection services = new();
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitExceptionHandling();
         services.AddSingleton<IExceptionStatusCodeMapper, CustomPriorityMapper>();
 
