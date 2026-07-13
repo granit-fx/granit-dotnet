@@ -1,6 +1,8 @@
 using Granit.Modularity;
 using Granit.Notifications.Endpoints;
+using Granit.Notifications.MobilePush.Endpoints.Options;
 using Granit.Validation;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Notifications.MobilePush.Endpoints;
 
@@ -16,4 +18,10 @@ namespace Granit.Notifications.MobilePush.Endpoints;
     typeof(GranitNotificationsEndpointsModule),
     typeof(GranitNotificationsMobilePushModule),
     typeof(GranitValidationModule))]
-public sealed class GranitNotificationsMobilePushEndpointsModule : GranitModule;
+public sealed class GranitNotificationsMobilePushEndpointsModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddOptions<MobilePushEndpointsOptions>()
+            .BindConfiguration(MobilePushEndpointsOptions.SectionName)
+            .ValidateOnStart();
+}

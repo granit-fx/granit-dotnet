@@ -14,6 +14,7 @@ using Granit.Templating.Pipeline;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -55,6 +56,8 @@ public sealed class EmailNotificationsServiceCollectionExtensionsTests
             opts.DefaultSenderName = "Test App";
         });
 
+        // Satisfies the keyed-provider startup validator — these tests assert options mechanics.
+        services.AddKeyedSingleton("Brevo", (_, _) => Substitute.For<IEmailSender>());
         ServiceProvider sp = services.BuildServiceProvider();
         EmailChannelOptions options = sp.GetRequiredService<IOptions<EmailChannelOptions>>().Value;
 

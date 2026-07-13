@@ -3,6 +3,7 @@ using Granit.Notifications.Email.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -17,6 +18,8 @@ public sealed class EmailNotificationsServiceCollectionExtensionsAdditionalTests
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitNotificationsEmail();
 
+        // Satisfies the keyed-provider startup validator — these tests assert options mechanics.
+        services.AddKeyedSingleton("Smtp", (_, _) => Substitute.For<IEmailSender>());
         using ServiceProvider sp = services.BuildServiceProvider();
         IOptions<EmailChannelOptions> options = sp.GetRequiredService<IOptions<EmailChannelOptions>>();
 
@@ -35,6 +38,8 @@ public sealed class EmailNotificationsServiceCollectionExtensionsAdditionalTests
             opts.DefaultSenderName = "Test App";
         });
 
+        // Satisfies the keyed-provider startup validator — these tests assert options mechanics.
+        services.AddKeyedSingleton("Brevo", (_, _) => Substitute.For<IEmailSender>());
         using ServiceProvider sp = services.BuildServiceProvider();
         IOptions<EmailChannelOptions> options = sp.GetRequiredService<IOptions<EmailChannelOptions>>();
 
@@ -50,6 +55,8 @@ public sealed class EmailNotificationsServiceCollectionExtensionsAdditionalTests
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddGranitNotificationsEmail();
 
+        // Satisfies the keyed-provider startup validator — these tests assert options mechanics.
+        services.AddKeyedSingleton("Smtp", (_, _) => Substitute.For<IEmailSender>());
         using ServiceProvider sp = services.BuildServiceProvider();
         IOptions<EmailChannelOptions> options = sp.GetRequiredService<IOptions<EmailChannelOptions>>();
 

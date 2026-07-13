@@ -1,6 +1,8 @@
 using Granit.Modularity;
 using Granit.Notifications.Endpoints;
+using Granit.Notifications.WebPush.Endpoints.Options;
 using Granit.Validation;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Notifications.WebPush.Endpoints;
 
@@ -16,4 +18,10 @@ namespace Granit.Notifications.WebPush.Endpoints;
     typeof(GranitNotificationsEndpointsModule),
     typeof(GranitNotificationsWebPushModule),
     typeof(GranitValidationModule))]
-public sealed class GranitNotificationsWebPushEndpointsModule : GranitModule;
+public sealed class GranitNotificationsWebPushEndpointsModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddOptions<WebPushEndpointsOptions>()
+            .BindConfiguration(WebPushEndpointsOptions.SectionName)
+            .ValidateOnStart();
+}

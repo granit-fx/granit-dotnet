@@ -4,6 +4,8 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Notifications.MobilePush.Endpoints.Extensions;
 
@@ -24,7 +26,12 @@ public static class MobilePushTokenEndpointRouteBuilderExtensions
         this IEndpointRouteBuilder endpoints,
         Action<MobilePushEndpointsOptions>? configure = null)
     {
-        MobilePushEndpointsOptions options = new();
+        // Configuration-bound values first (MobilePushEndpointsOptions.SectionName), then the delegate
+        // override. IOptionsFactory creates a fresh instance — the shared IOptions singleton
+        // is never mutated.
+        MobilePushEndpointsOptions options = endpoints.ServiceProvider
+            .GetService<IOptionsFactory<MobilePushEndpointsOptions>>()?
+            .Create(Microsoft.Extensions.Options.Options.DefaultName) ?? new();
         configure?.Invoke(options);
 
         endpoints.MapGranitGroup(options.RoutePrefix)

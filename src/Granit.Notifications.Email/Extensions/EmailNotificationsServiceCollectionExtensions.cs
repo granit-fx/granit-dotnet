@@ -4,6 +4,8 @@ using Granit.Notifications.Email.Internal;
 using Granit.Notifications.Email.Options;
 using Granit.Templating.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Notifications.Email.Extensions;
 
@@ -18,6 +20,7 @@ public static class EmailNotificationsServiceCollectionExtensions
         services.AddOptions<EmailChannelOptions>()
             .BindConfiguration(EmailChannelOptions.SectionName)
             .ValidateOnStart();
+        services.TryAddSingleton<IValidateOptions<EmailChannelOptions>, EmailChannelOptionsValidator>();
 
         if (configure is not null)
         {

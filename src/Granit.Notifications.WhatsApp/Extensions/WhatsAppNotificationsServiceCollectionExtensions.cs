@@ -2,6 +2,8 @@ using Granit.Notifications.Abstractions;
 using Granit.Notifications.WhatsApp.Internal;
 using Granit.Notifications.WhatsApp.Options;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Notifications.WhatsApp.Extensions;
 
@@ -16,6 +18,7 @@ public static class WhatsAppNotificationsServiceCollectionExtensions
         services.AddOptions<WhatsAppChannelOptions>()
             .BindConfiguration(WhatsAppChannelOptions.SectionName)
             .ValidateOnStart();
+        services.TryAddSingleton<IValidateOptions<WhatsAppChannelOptions>, WhatsAppChannelOptionsValidator>();
 
         if (configure is not null)
         {

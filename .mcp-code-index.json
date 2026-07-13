@@ -38555,7 +38555,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Email",
       "file": "src/Granit.Notifications.Email/Extensions/EmailNotificationsServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitNotificationsEmail",
@@ -38678,7 +38678,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/Extensions/NotificationEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "MapGranitNotifications",
@@ -38694,7 +38694,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/GranitNotificationsEndpointsModule.cs",
-      "line": 29,
+      "line": 31,
       "members": [
         {
           "name": "ConfigureServices",
@@ -39131,7 +39131,7 @@
       "kind": "class",
       "project": "Granit.Notifications.MobilePush.Endpoints",
       "file": "src/Granit.Notifications.MobilePush.Endpoints/Extensions/MobilePushTokenEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "MapGranitMobilePushTokens",
@@ -39147,8 +39147,15 @@
       "kind": "class",
       "project": "Granit.Notifications.MobilePush.Endpoints",
       "file": "src/Granit.Notifications.MobilePush.Endpoints/GranitNotificationsMobilePushEndpointsModule.cs",
-      "line": 19,
-      "members": []
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "MobilePushEndpointsOptions",
@@ -39219,7 +39226,7 @@
       "kind": "class",
       "project": "Granit.Notifications.MobilePush",
       "file": "src/Granit.Notifications.MobilePush/Extensions/MobilePushNotificationsServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitNotificationsMobilePush",
@@ -39833,7 +39840,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Sms",
       "file": "src/Granit.Notifications.Sms/Extensions/SmsNotificationsServiceCollectionExtensions.cs",
-      "line": 9,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitNotificationsSms",
@@ -40249,7 +40256,7 @@
       "kind": "class",
       "project": "Granit.Notifications.WebPush.Endpoints",
       "file": "src/Granit.Notifications.WebPush.Endpoints/Extensions/WebPushSubscriptionEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "MapGranitWebPushSubscriptions",
@@ -40265,8 +40272,15 @@
       "kind": "class",
       "project": "Granit.Notifications.WebPush.Endpoints",
       "file": "src/Granit.Notifications.WebPush.Endpoints/GranitNotificationsWebPushEndpointsModule.cs",
-      "line": 19,
-      "members": []
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "WebPushEndpointsOptions",
@@ -40453,7 +40467,7 @@
       "kind": "class",
       "project": "Granit.Notifications.WhatsApp",
       "file": "src/Granit.Notifications.WhatsApp/Extensions/WhatsAppNotificationsServiceCollectionExtensions.cs",
-      "line": 9,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitNotificationsWhatsApp",

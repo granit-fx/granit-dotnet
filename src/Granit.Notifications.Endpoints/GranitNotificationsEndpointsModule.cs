@@ -4,10 +4,12 @@ using Granit.Http.ApiDocumentation;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.Notifications.Endpoints.Internal;
+using Granit.Notifications.Endpoints.Options;
 using Granit.Notifications.Endpoints.Workspaces;
 using Granit.Validation;
 using Granit.Workspaces;
 using Granit.Workspaces.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Notifications.Endpoints;
 
@@ -32,6 +34,9 @@ public sealed class GranitNotificationsEndpointsModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddLocalizationResource<NotificationsEndpointsLocalizationResource>();
+        context.Services.AddOptions<NotificationEndpointsOptions>()
+            .BindConfiguration(NotificationEndpointsOptions.SectionName)
+            .ValidateOnStart();
         context.Services.AddFeatureProvider<NotificationsFeatureProvider>();
     }
 }

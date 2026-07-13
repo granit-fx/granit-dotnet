@@ -4,6 +4,7 @@ using Granit.Notifications.Sms.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -26,9 +27,14 @@ public sealed class SmsNotificationsServiceCollectionExtensionsTests
     public void AddGranitNotificationsSms_RegistersOptions()
     {
         ServiceCollection services = new();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["Notifications:Sms:Provider"] = "Twilio",
+        }).Build());
         services.AddGranitNotificationsSms();
 
+        // Satisfies the keyed-provider startup validator — these tests assert options mechanics.
+        services.AddKeyedSingleton("Twilio", (_, _) => Substitute.For<ISmsSender>());
         using ServiceProvider sp = services.BuildServiceProvider();
         IOptions<SmsChannelOptions> options = sp.GetRequiredService<IOptions<SmsChannelOptions>>();
 
@@ -46,6 +52,8 @@ public sealed class SmsNotificationsServiceCollectionExtensionsTests
             opts.SenderId = "CustomSender";
         });
 
+        // Satisfies the keyed-provider startup validator — these tests assert options mechanics.
+        services.AddKeyedSingleton("Twilio", (_, _) => Substitute.For<ISmsSender>());
         using ServiceProvider sp = services.BuildServiceProvider();
         IOptions<SmsChannelOptions> options = sp.GetRequiredService<IOptions<SmsChannelOptions>>();
 

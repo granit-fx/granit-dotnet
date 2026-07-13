@@ -4,6 +4,8 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Notifications.Endpoints.Extensions;
 
@@ -28,7 +30,12 @@ public static class NotificationEndpointRouteBuilderExtensions
         this IEndpointRouteBuilder endpoints,
         Action<NotificationEndpointsOptions>? configure = null)
     {
-        NotificationEndpointsOptions options = new();
+        // Configuration-bound values first (NotificationEndpointsOptions.SectionName), then the delegate
+        // override. IOptionsFactory creates a fresh instance — the shared IOptions singleton
+        // is never mutated.
+        NotificationEndpointsOptions options = endpoints.ServiceProvider
+            .GetService<IOptionsFactory<NotificationEndpointsOptions>>()?
+            .Create(Microsoft.Extensions.Options.Options.DefaultName) ?? new();
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints.MapGranitGroup(options.RoutePrefix)

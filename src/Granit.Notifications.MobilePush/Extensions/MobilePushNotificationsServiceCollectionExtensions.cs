@@ -3,6 +3,7 @@ using Granit.Notifications.MobilePush.Internal;
 using Granit.Notifications.MobilePush.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Notifications.MobilePush.Extensions;
 
@@ -17,6 +18,7 @@ public static class MobilePushNotificationsServiceCollectionExtensions
         services.AddOptions<MobilePushChannelOptions>()
             .BindConfiguration(MobilePushChannelOptions.SectionName)
             .ValidateOnStart();
+        services.TryAddSingleton<IValidateOptions<MobilePushChannelOptions>, MobilePushChannelOptionsValidator>();
 
         services.AddOptions<MobilePushTokenHasherOptions>()
             .BindConfiguration(MobilePushTokenHasherOptions.SectionName);
