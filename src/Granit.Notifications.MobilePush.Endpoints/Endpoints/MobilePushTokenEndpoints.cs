@@ -29,12 +29,13 @@ internal static class MobilePushTokenEndpoints
             .Produces(StatusCodes.Status200OK)
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
-        group.MapDelete("/tokens/{deviceToken}", RemoveTokenAsync)
+        group.MapDelete("/tokens", RemoveTokenAsync)
             .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("RemoveMobilePushToken")
             .WithSummary("Removes a mobile device token.")
-            .WithDescription("Removes the specified device token for the authenticated user in the current tenant. Call this when the user logs out or the token becomes invalid. No-op if the token does not exist.")
-            .Produces(StatusCodes.Status204NoContent);
+            .WithDescription("Removes the device token carried in the request body for the authenticated user in the current tenant. The token is a sendable push credential, so it travels in the body — never in the URL, where it would leak into access and proxy logs. Call this when the user logs out or the token becomes invalid. No-op if the token does not exist.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapGet("/tokens", GetTokensAsync)
             .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
@@ -76,7 +77,7 @@ internal static class MobilePushTokenEndpoints
     }
 
     private static async Task<NoContent> RemoveTokenAsync(
-        string deviceToken,
+        [FromBody] MobilePushTokenRemoveRequest request,
         ClaimsPrincipal user,
         [FromServices] IMobilePushTokenWriter tokenWriter,
         [FromServices] ICurrentTenant tenant,
@@ -85,7 +86,7 @@ internal static class MobilePushTokenEndpoints
         string userId = NotificationsResponseMapper.GetUserId(user);
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
 
-        await tokenWriter.RemoveAsync(deviceToken, userId, tenantId, cancellationToken).ConfigureAwait(false);
+        await tokenWriter.RemoveAsync(request.DeviceToken, userId, tenantId, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();
     }

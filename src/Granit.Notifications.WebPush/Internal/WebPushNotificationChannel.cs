@@ -68,7 +68,7 @@ internal sealed partial class WebPushNotificationChannel(
             catch (PushServiceClientException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Gone)
             {
                 LogSubscriptionExpired(sub.Endpoint);
-                await subscriptionWriter.RemoveSubscriptionAsync(sub.Endpoint, context.TenantId, cancellationToken).ConfigureAwait(false);
+                await subscriptionWriter.RemoveSubscriptionAsync(context.RecipientUserId, sub.Endpoint, context.TenantId, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {

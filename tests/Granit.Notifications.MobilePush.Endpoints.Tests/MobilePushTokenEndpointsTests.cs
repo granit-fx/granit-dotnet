@@ -2,10 +2,12 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using FluentValidation;
 using Granit.MultiTenancy;
 using Granit.Notifications.MobilePush.Domain;
 using Granit.Notifications.MobilePush.Endpoints.Dtos;
 using Granit.Notifications.MobilePush.Endpoints.Extensions;
+using Granit.Notifications.MobilePush.Endpoints.Validators;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -47,6 +49,8 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_tokenWriter);
         builder.Services.AddSingleton(_tokenReader);
         builder.Services.AddSingleton(_currentTenant);
+        builder.Services.AddScoped<IValidator<MobilePushTokenRegisterRequest>, MobilePushTokenRegisterRequestValidator>();
+        builder.Services.AddScoped<IValidator<MobilePushTokenRemoveRequest>, MobilePushTokenRemoveRequestValidator>();
 
         _app = builder.Build();
         _app.MapGranitMobilePushTokens();
@@ -115,20 +119,45 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task RemoveToken_Returns204()
+    public async Task RemoveToken_Returns204_AndBindsTokenFromBody()
     {
-        HttpResponseMessage response = await _authClient.DeleteAsync(
-            $"{Prefix}/my-device-token", TestContext.Current.CancellationToken);
+        // The device token is a sendable push credential — it travels in the JSON body,
+        // never in the URL (access/proxy log leakage).
+        using HttpRequestMessage request = new(HttpMethod.Delete, Prefix)
+        {
+            Content = JsonContent.Create(new MobilePushTokenRemoveRequest { DeviceToken = "my-device-token" }),
+        };
+
+        HttpResponseMessage response = await _authClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         await _tokenWriter.Received(1).RemoveAsync("my-device-token", "user-456", null, Arg.Any<CancellationToken>());
     }
 
     [Fact]
+    public async Task RemoveToken_EmptyToken_Returns422()
+    {
+        using HttpRequestMessage request = new(HttpMethod.Delete, Prefix)
+        {
+            Content = JsonContent.Create(new MobilePushTokenRemoveRequest { DeviceToken = "" }),
+        };
+
+        HttpResponseMessage response = await _authClient.SendAsync(request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
+        await _tokenWriter.DidNotReceive().RemoveAsync(
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task RemoveToken_Unauthenticated_Returns401()
     {
-        HttpResponseMessage response = await _anonClient.DeleteAsync(
-            $"{Prefix}/my-device-token", TestContext.Current.CancellationToken);
+        using HttpRequestMessage request = new(HttpMethod.Delete, Prefix)
+        {
+            Content = JsonContent.Create(new MobilePushTokenRemoveRequest { DeviceToken = "my-device-token" }),
+        };
+
+        HttpResponseMessage response = await _anonClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -196,8 +225,12 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
         _currentTenant.IsAvailable.Returns(true);
         _currentTenant.Id.Returns(tenantId);
 
-        HttpResponseMessage response = await _authClient.DeleteAsync(
-            $"{Prefix}/my-token", TestContext.Current.CancellationToken);
+        using HttpRequestMessage request = new(HttpMethod.Delete, Prefix)
+        {
+            Content = JsonContent.Create(new MobilePushTokenRemoveRequest { DeviceToken = "my-token" }),
+        };
+
+        HttpResponseMessage response = await _authClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         await _tokenWriter.Received(1).RemoveAsync("my-token", "user-456", tenantId, Arg.Any<CancellationToken>());

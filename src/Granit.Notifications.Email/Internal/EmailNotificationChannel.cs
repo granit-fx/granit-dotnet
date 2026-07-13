@@ -78,6 +78,12 @@ internal sealed partial class EmailNotificationChannel(
             return;
         }
 
+        // Effective culture: an explicit trigger-level override wins, otherwise the recipient's
+        // preferred culture. Publishers rarely set Culture, so without this fallback the
+        // localized template variants (18 cultures) are never selected — every recipient
+        // silently gets the culture-neutral template.
+        context = context with { Culture = context.Culture ?? recipient.PreferredCulture };
+
         // Resolve notification metadata for opt-out and group info
         INotificationDefinitionStore? defStore = serviceProvider.GetService<INotificationDefinitionStore>();
         NotificationDefinition? definition = defStore?.Get(context.NotificationTypeName);

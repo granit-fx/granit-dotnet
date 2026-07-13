@@ -212,6 +212,54 @@ public sealed class LogRedactionTests
     }
 
     // -------------------------------------------------------------------------
+    // Scrub — free-form provider error bodies
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void Scrub_MasksEmailAddressesInText()
+    {
+        string scrubbed = LogRedaction.Scrub("""{"error":"invalid recipient john.doe@example.com"}""");
+
+        scrubbed.ShouldNotContain("john.doe@example.com");
+        scrubbed.ShouldContain("@example.com"); // domain preserved for debugging
+    }
+
+    [Fact]
+    public void Scrub_MasksPhoneNumbersInText()
+    {
+        string scrubbed = LogRedaction.Scrub("""{"message":"The 'To' number +33612345678 is not valid"}""");
+
+        scrubbed.ShouldNotContain("+33612345678");
+        scrubbed.ShouldContain("*****78");
+    }
+
+    [Fact]
+    public void Scrub_MasksFormattedPhoneNumbers()
+    {
+        string scrubbed = LogRedaction.Scrub("call (206) 555-01 99 back");
+
+        scrubbed.ShouldNotContain("555-01 99");
+    }
+
+    [Fact]
+    public void Scrub_LeavesShortNumericIdsIntact()
+    {
+        // Status codes, short ids and error numbers are diagnostic value — not PII.
+        string scrubbed = LogRedaction.Scrub("""{"code":21211,"status":400}""");
+
+        scrubbed.ShouldBe("""{"code":21211,"status":400}""");
+    }
+
+    [Fact]
+    public void Scrub_TruncatesOversizedPayloads()
+    {
+        string scrubbed = LogRedaction.Scrub(new string('x', 5000));
+
+        scrubbed.Length.ShouldBeLessThan(2100);
+        scrubbed.ShouldContain("[truncated");
+    }
+
+    // -------------------------------------------------------------------------
     // Cross-method — multiple sensitive values
     // -------------------------------------------------------------------------
 

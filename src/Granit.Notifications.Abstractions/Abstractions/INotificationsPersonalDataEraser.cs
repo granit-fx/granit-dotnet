@@ -12,7 +12,11 @@ public interface INotificationsPersonalDataEraser
     /// Permanently deletes every inbox item, preference and subscription owned by the
     /// given user within a tenant scope. A no-op for entities the user has none of.
     /// </summary>
-    Task EraseUserDataAsync(
+    /// <returns>
+    /// The total number of rows physically deleted across all entity sets — carried into
+    /// <c>PersonalDataDeletedEto.AffectedRecords</c> as the ISO 27001 deletion audit evidence.
+    /// </returns>
+    Task<int> EraseUserDataAsync(
         string userId,
         Guid? tenantId,
         CancellationToken cancellationToken = default);
