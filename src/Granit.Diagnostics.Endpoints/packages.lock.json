@@ -105,6 +105,13 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.http.securityheaders": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Http.SecurityHeaders.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.http.securityheaders.abstractions": {
         "type": "Project"
       },

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Bundle.Essentials</PackageId>
-    <Description>Meta-package grouping the essential Granit modules for a minimal API: Core, Timing, Guids, Security, Validation, Persistence, Observability, Http.Cors, Http.ExceptionHandling, Http.ResponseCompression, Http.Security, Diagnostics.</Description>
+    <Description>Meta-package grouping the essential Granit modules for a minimal API: Core, Timing, Guids, Security, Validation, Persistence, Observability, Http.Hosting (CORS + compression), Http.ExceptionHandling, Http.UrlSafety, Diagnostics.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -13,9 +13,8 @@
     <ProjectReference Include="..\..\Granit.Validation\Granit.Validation.csproj" />
     <ProjectReference Include="..\..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\Granit.Observability\Granit.Observability.csproj" />
-    <ProjectReference Include="..\..\Granit.Http.Cors\Granit.Http.Cors.csproj" />
+    <ProjectReference Include="..\..\Granit.Http.Hosting\Granit.Http.Hosting.csproj" />
     <ProjectReference Include="..\..\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
-    <ProjectReference Include="..\..\Granit.Http.ResponseCompression\Granit.Http.ResponseCompression.csproj" />
     <ProjectReference Include="..\..\Granit.Http.SecurityHeaders\Granit.Http.SecurityHeaders.csproj" />
     <ProjectReference Include="..\..\Granit.Diagnostics\Granit.Diagnostics.csproj" />
   </ItemGroup>

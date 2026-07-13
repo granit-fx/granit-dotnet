@@ -909,6 +909,8 @@
       "deps": [
         "Granit.Authorization",
         "Granit.Diagnostics",
+        "Granit.Http.SecurityHeaders",
+        "Granit.Http.SecurityHeaders.Abstractions",
         "Granit.Http.ApiDocumentation",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
@@ -1198,13 +1200,6 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Http.Cors",
-      "deps": [
-        "Granit"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.Http.ExceptionHandling",
       "deps": [
         "Granit"
@@ -1215,6 +1210,13 @@
       "name": "Granit.Http.Features",
       "deps": [
         "Granit.Features"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Http.Hosting",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -1275,13 +1277,6 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Http.ResponseCompression",
-      "deps": [
-        "Granit"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.Http.SecurityHeaders",
       "deps": [
         "Granit",
@@ -1292,15 +1287,6 @@
     {
       "name": "Granit.Http.SecurityHeaders.Abstractions",
       "deps": [],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Http.SecurityHeaders.Endpoints",
-      "deps": [
-        "Granit.Diagnostics.Endpoints",
-        "Granit.Http.SecurityHeaders",
-        "Granit.Http.SecurityHeaders.Abstractions"
-      ],
       "framework": "net10.0"
     },
     {
@@ -18891,6 +18877,33 @@
       "members": []
     },
     {
+      "name": "CspAuditResponse",
+      "fqn": "Granit.Diagnostics.Endpoints.Dtos.CspAuditResponse",
+      "kind": "record",
+      "project": "Granit.Diagnostics.Endpoints",
+      "file": "src/Granit.Diagnostics.Endpoints/Dtos/CspAuditResponse.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "CspContributorInfo",
+      "fqn": "Granit.Diagnostics.Endpoints.Dtos.CspContributorInfo",
+      "kind": "record",
+      "project": "Granit.Diagnostics.Endpoints",
+      "file": "src/Granit.Diagnostics.Endpoints/Dtos/CspAuditResponse.cs",
+      "line": 38,
+      "members": []
+    },
+    {
+      "name": "CspEndpointAudit",
+      "fqn": "Granit.Diagnostics.Endpoints.Dtos.CspEndpointAudit",
+      "kind": "record",
+      "project": "Granit.Diagnostics.Endpoints",
+      "file": "src/Granit.Diagnostics.Endpoints/Dtos/CspAuditResponse.cs",
+      "line": 54,
+      "members": []
+    },
+    {
       "name": "DiagnosticsEndpointRouteBuilderExtensions",
       "fqn": "Granit.Diagnostics.Endpoints.Extensions.DiagnosticsEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -18907,12 +18920,28 @@
       ]
     },
     {
+      "name": "SecurityHeadersAuditEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Diagnostics.Endpoints.Extensions.SecurityHeadersAuditEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Diagnostics.Endpoints",
+      "file": "src/Granit.Diagnostics.Endpoints/Extensions/SecurityHeadersAuditEndpointRouteBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "MapGranitSecurityHeadersAudit",
+          "kind": "method",
+          "signature": "MapGranitSecurityHeadersAudit(this IEndpointRouteBuilder endpoints, Action<SecurityHeadersAuditOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
       "name": "GranitDiagnosticsEndpointsModule",
       "fqn": "Granit.Diagnostics.Endpoints.GranitDiagnosticsEndpointsModule",
       "kind": "class",
       "project": "Granit.Diagnostics.Endpoints",
       "file": "src/Granit.Diagnostics.Endpoints/GranitDiagnosticsEndpointsModule.cs",
-      "line": 23,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
@@ -18928,6 +18957,28 @@
       "kind": "class",
       "project": "Granit.Diagnostics.Endpoints",
       "file": "src/Granit.Diagnostics.Endpoints/Options/DiagnosticsEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "SecurityHeadersAuditOptions",
+      "fqn": "Granit.Diagnostics.Endpoints.Options.SecurityHeadersAuditOptions",
+      "kind": "class",
+      "project": "Granit.Diagnostics.Endpoints",
+      "file": "src/Granit.Diagnostics.Endpoints/Options/SecurityHeadersAuditOptions.cs",
       "line": 6,
       "members": [
         {
@@ -25457,60 +25508,6 @@
       "members": []
     },
     {
-      "name": "CorsHostApplicationBuilderExtensions",
-      "fqn": "Granit.Http.Cors.Extensions.CorsHostApplicationBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Http.Cors",
-      "file": "src/Granit.Http.Cors/Extensions/CorsHostApplicationBuilderExtensions.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "AddGranitCors",
-          "kind": "method",
-          "signature": "AddGranitCors(this IHostApplicationBuilder builder)",
-          "returnType": "IHostApplicationBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitHttpCorsModule",
-      "fqn": "Granit.Http.Cors.GranitHttpCorsModule",
-      "kind": "class",
-      "project": "Granit.Http.Cors",
-      "file": "src/Granit.Http.Cors/GranitHttpCorsModule.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "GranitCorsOptions",
-      "fqn": "Granit.Http.Cors.Options.GranitCorsOptions",
-      "kind": "class",
-      "project": "Granit.Http.Cors",
-      "file": "src/Granit.Http.Cors/Options/GranitCorsOptions.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "AllowedOrigins",
-          "kind": "property",
-          "signature": "string[] AllowedOrigins",
-          "returnType": "string[]"
-        },
-        {
-          "name": "AllowCredentials",
-          "kind": "property",
-          "signature": "bool AllowCredentials",
-          "returnType": "bool"
-        }
-      ]
-    },
-    {
       "name": "ExceptionHandlingApplicationBuilderExtensions",
       "fqn": "Granit.Http.ExceptionHandling.Extensions.ExceptionHandlingApplicationBuilderExtensions",
       "kind": "class",
@@ -25607,6 +25604,132 @@
       "file": "src/Granit.Http.Features/GranitHttpFeaturesModule.cs",
       "line": 17,
       "members": []
+    },
+    {
+      "name": "CorsHostApplicationBuilderExtensions",
+      "fqn": "Granit.Http.Hosting.Cors.Extensions.CorsHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Hosting",
+      "file": "src/Granit.Http.Hosting/Cors/Extensions/CorsHostApplicationBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitCors",
+          "kind": "method",
+          "signature": "AddGranitCors(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitCorsOptions",
+      "fqn": "Granit.Http.Hosting.Cors.Options.GranitCorsOptions",
+      "kind": "class",
+      "project": "Granit.Http.Hosting",
+      "file": "src/Granit.Http.Hosting/Cors/Options/GranitCorsOptions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AllowedOrigins",
+          "kind": "property",
+          "signature": "string[] AllowedOrigins",
+          "returnType": "string[]"
+        },
+        {
+          "name": "AllowCredentials",
+          "kind": "property",
+          "signature": "bool AllowCredentials",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpHostingModule",
+      "fqn": "Granit.Http.Hosting.GranitHttpHostingModule",
+      "kind": "class",
+      "project": "Granit.Http.Hosting",
+      "file": "src/Granit.Http.Hosting/GranitHttpHostingModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ResponseCompressionApplicationBuilderExtensions",
+      "fqn": "Granit.Http.Hosting.ResponseCompression.Extensions.ResponseCompressionApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Hosting",
+      "file": "src/Granit.Http.Hosting/ResponseCompression/Extensions/ResponseCompressionApplicationBuilderExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "UseGranitResponseCompression",
+          "kind": "method",
+          "signature": "UseGranitResponseCompression(this IApplicationBuilder app)",
+          "returnType": "IApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "ResponseCompressionHostApplicationBuilderExtensions",
+      "fqn": "Granit.Http.Hosting.ResponseCompression.Extensions.ResponseCompressionHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Hosting",
+      "file": "src/Granit.Http.Hosting/ResponseCompression/Extensions/ResponseCompressionHostApplicationBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitResponseCompression",
+          "kind": "method",
+          "signature": "AddGranitResponseCompression(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitResponseCompressionOptions",
+      "fqn": "Granit.Http.Hosting.ResponseCompression.Options.GranitResponseCompressionOptions",
+      "kind": "class",
+      "project": "Granit.Http.Hosting",
+      "file": "src/Granit.Http.Hosting/ResponseCompression/Options/GranitResponseCompressionOptions.cs",
+      "line": 36,
+      "members": [
+        {
+          "name": "EnableForHttps",
+          "kind": "property",
+          "signature": "bool EnableForHttps",
+          "returnType": "bool"
+        },
+        {
+          "name": "EnableBrotli",
+          "kind": "property",
+          "signature": "bool EnableBrotli",
+          "returnType": "bool"
+        },
+        {
+          "name": "EnableGzip",
+          "kind": "property",
+          "signature": "bool EnableGzip",
+          "returnType": "bool"
+        },
+        {
+          "name": "BrotliLevel",
+          "kind": "property",
+          "signature": "CompressionLevel BrotliLevel",
+          "returnType": "CompressionLevel"
+        },
+        {
+          "name": "GzipLevel",
+          "kind": "property",
+          "signature": "CompressionLevel GzipLevel",
+          "returnType": "CompressionLevel"
+        }
+      ]
     },
     {
       "name": "IIdempotencyStore",
@@ -26255,94 +26378,6 @@
       "members": []
     },
     {
-      "name": "ResponseCompressionApplicationBuilderExtensions",
-      "fqn": "Granit.Http.ResponseCompression.Extensions.ResponseCompressionApplicationBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Http.ResponseCompression",
-      "file": "src/Granit.Http.ResponseCompression/Extensions/ResponseCompressionApplicationBuilderExtensions.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "UseGranitResponseCompression",
-          "kind": "method",
-          "signature": "UseGranitResponseCompression(this IApplicationBuilder app)",
-          "returnType": "IApplicationBuilder"
-        }
-      ]
-    },
-    {
-      "name": "ResponseCompressionHostApplicationBuilderExtensions",
-      "fqn": "Granit.Http.ResponseCompression.Extensions.ResponseCompressionHostApplicationBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Http.ResponseCompression",
-      "file": "src/Granit.Http.ResponseCompression/Extensions/ResponseCompressionHostApplicationBuilderExtensions.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "AddGranitResponseCompression",
-          "kind": "method",
-          "signature": "AddGranitResponseCompression(this IHostApplicationBuilder builder)",
-          "returnType": "IHostApplicationBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitHttpResponseCompressionModule",
-      "fqn": "Granit.Http.ResponseCompression.GranitHttpResponseCompressionModule",
-      "kind": "class",
-      "project": "Granit.Http.ResponseCompression",
-      "file": "src/Granit.Http.ResponseCompression/GranitHttpResponseCompressionModule.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "GranitResponseCompressionOptions",
-      "fqn": "Granit.Http.ResponseCompression.Options.GranitResponseCompressionOptions",
-      "kind": "class",
-      "project": "Granit.Http.ResponseCompression",
-      "file": "src/Granit.Http.ResponseCompression/Options/GranitResponseCompressionOptions.cs",
-      "line": 36,
-      "members": [
-        {
-          "name": "EnableForHttps",
-          "kind": "property",
-          "signature": "bool EnableForHttps",
-          "returnType": "bool"
-        },
-        {
-          "name": "EnableBrotli",
-          "kind": "property",
-          "signature": "bool EnableBrotli",
-          "returnType": "bool"
-        },
-        {
-          "name": "EnableGzip",
-          "kind": "property",
-          "signature": "bool EnableGzip",
-          "returnType": "bool"
-        },
-        {
-          "name": "BrotliLevel",
-          "kind": "property",
-          "signature": "CompressionLevel BrotliLevel",
-          "returnType": "CompressionLevel"
-        },
-        {
-          "name": "GzipLevel",
-          "kind": "property",
-          "signature": "CompressionLevel GzipLevel",
-          "returnType": "CompressionLevel"
-        }
-      ]
-    },
-    {
       "name": "AllowsPopupAuthorizationMetadata",
       "fqn": "Granit.Http.SecurityHeaders.AllowsPopupAuthorizationMetadata",
       "kind": "class",
@@ -26503,80 +26538,6 @@
           "kind": "property",
           "signature": "bool UpgradeInsecureRequests",
           "returnType": "bool"
-        }
-      ]
-    },
-    {
-      "name": "CspAuditResponse",
-      "fqn": "Granit.Http.SecurityHeaders.Endpoints.Dtos.CspAuditResponse",
-      "kind": "record",
-      "project": "Granit.Http.SecurityHeaders.Endpoints",
-      "file": "src/Granit.Http.SecurityHeaders.Endpoints/Dtos/CspAuditResponse.cs",
-      "line": 28,
-      "members": []
-    },
-    {
-      "name": "CspContributorInfo",
-      "fqn": "Granit.Http.SecurityHeaders.Endpoints.Dtos.CspContributorInfo",
-      "kind": "record",
-      "project": "Granit.Http.SecurityHeaders.Endpoints",
-      "file": "src/Granit.Http.SecurityHeaders.Endpoints/Dtos/CspAuditResponse.cs",
-      "line": 36,
-      "members": []
-    },
-    {
-      "name": "CspEndpointAudit",
-      "fqn": "Granit.Http.SecurityHeaders.Endpoints.Dtos.CspEndpointAudit",
-      "kind": "record",
-      "project": "Granit.Http.SecurityHeaders.Endpoints",
-      "file": "src/Granit.Http.SecurityHeaders.Endpoints/Dtos/CspAuditResponse.cs",
-      "line": 52,
-      "members": []
-    },
-    {
-      "name": "SecurityHeadersEndpointRouteBuilderExtensions",
-      "fqn": "Granit.Http.SecurityHeaders.Endpoints.Extensions.SecurityHeadersEndpointRouteBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Http.SecurityHeaders.Endpoints",
-      "file": "src/Granit.Http.SecurityHeaders.Endpoints/Extensions/SecurityHeadersEndpointRouteBuilderExtensions.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "MapGranitSecurityHeadersAudit",
-          "kind": "method",
-          "signature": "MapGranitSecurityHeadersAudit(this IEndpointRouteBuilder endpoints, Action<SecurityHeadersEndpointsOptions>? configure = null)",
-          "returnType": "RouteGroupBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitHttpSecurityHeadersEndpointsModule",
-      "fqn": "Granit.Http.SecurityHeaders.Endpoints.GranitHttpSecurityHeadersEndpointsModule",
-      "kind": "class",
-      "project": "Granit.Http.SecurityHeaders.Endpoints",
-      "file": "src/Granit.Http.SecurityHeaders.Endpoints/GranitHttpSecurityHeadersEndpointsModule.cs",
-      "line": 22,
-      "members": []
-    },
-    {
-      "name": "SecurityHeadersEndpointsOptions",
-      "fqn": "Granit.Http.SecurityHeaders.Endpoints.Options.SecurityHeadersEndpointsOptions",
-      "kind": "class",
-      "project": "Granit.Http.SecurityHeaders.Endpoints",
-      "file": "src/Granit.Http.SecurityHeaders.Endpoints/Options/SecurityHeadersEndpointsOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "RoutePrefix",
-          "kind": "property",
-          "signature": "string RoutePrefix",
-          "returnType": "string"
-        },
-        {
-          "name": "TagName",
-          "kind": "property",
-          "signature": "string TagName",
-          "returnType": "string"
         }
       ]
     },
@@ -41900,7 +41861,7 @@
       "kind": "class",
       "project": "Granit.OpenApi.Generator",
       "file": "src/Granit.OpenApi.Generator/GeneratorModule.cs",
-      "line": 53,
+      "line": 52,
       "members": []
     },
     {

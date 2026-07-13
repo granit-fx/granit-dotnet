@@ -24,8 +24,6 @@ public sealed partial class OptionsBindingConventionTests
     private static readonly Dictionary<string, string> Exemptions = new(StringComparer.Ordinal)
     {
         // Pre-existing repo-wide debt, enumerated at introduction — tracked by #3010.
-        // Fixed-by-design elsewhere:
-        ["SecurityHeadersEndpointsOptions"] = "#3000 — bound when the package folds into Granit.Http.SecurityHeaders",
         ["AIEndpointsOptions"] = "#3010 — pre-existing unbound section 'AI:Endpoints'",
         ["AIQuotaOptions"] = "#3010 — pre-existing unbound section 'AI:Quota'",
         ["ApiKeysEndpointsOptions"] = "#3010 — pre-existing unbound section 'Authentication:ApiKeys:Endpoints'",

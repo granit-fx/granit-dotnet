@@ -558,6 +558,8 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Diagnostics": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Http.SecurityHeaders": "[0.1.0-dev, )",
+          "Granit.Http.SecurityHeaders.Abstractions": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
@@ -602,6 +604,13 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.securityheaders": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Http.SecurityHeaders.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.http.securityheaders.abstractions": {

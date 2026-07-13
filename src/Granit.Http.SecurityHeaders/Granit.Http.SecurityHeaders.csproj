@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Granit.Http.SecurityHeaders.Endpoints" />
-    <InternalsVisibleTo Include="Granit.Http.SecurityHeaders.Endpoints.Tests" />
+    <InternalsVisibleTo Include="Granit.Diagnostics.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Diagnostics.Endpoints.Tests" />
     <InternalsVisibleTo Include="Granit.Http.SecurityHeaders.Tests" />
   </ItemGroup>
 

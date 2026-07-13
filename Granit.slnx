@@ -37,7 +37,7 @@
     <Project Path="src/Granit.Bulkhead.Wolverine/Granit.Bulkhead.Wolverine.csproj" />
     <Project Path="src/Granit.Http.Bulkhead/Granit.Http.Bulkhead.csproj" />
     <Project Path="src/Granit.Http.Cookies.CookieConsent/Granit.Http.Cookies.CookieConsent.csproj" />
-    <Project Path="src/Granit.Http.Cors/Granit.Http.Cors.csproj" />
+    <Project Path="src/Granit.Http.Hosting/Granit.Http.Hosting.csproj" />
     <Project Path="src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj" />
     <Project Path="src/Granit.Http.Features/Granit.Http.Features.csproj" />
     <Project Path="src/Granit.Http.Idempotency/Granit.Http.Idempotency.csproj" />
@@ -46,10 +46,8 @@
     <Project Path="src/Granit.Http.OutputCaching/Granit.Http.OutputCaching.csproj" />
     <Project Path="src/Granit.Http.RateLimiting/Granit.Http.RateLimiting.csproj" />
     <Project Path="src/Granit.Http.Resilience/Granit.Http.Resilience.csproj" />
-    <Project Path="src/Granit.Http.ResponseCompression/Granit.Http.ResponseCompression.csproj" />
     <Project Path="src/Granit.Http.UrlSafety/Granit.Http.UrlSafety.csproj" />
     <Project Path="src/Granit.Http.SecurityHeaders.Abstractions/Granit.Http.SecurityHeaders.Abstractions.csproj" />
-    <Project Path="src/Granit.Http.SecurityHeaders.Endpoints/Granit.Http.SecurityHeaders.Endpoints.csproj" />
     <Project Path="src/Granit.Http.SecurityHeaders/Granit.Http.SecurityHeaders.csproj" />
     <Project Path="src/Granit.IO/Granit.IO.csproj" />
     <Project Path="src/Granit.Indexing.AI/Granit.Indexing.AI.csproj" />
@@ -410,7 +408,7 @@
     <Project Path="tests/Granit.Bulkhead.Wolverine.Tests/Granit.Bulkhead.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Http.Bulkhead.Tests/Granit.Http.Bulkhead.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.CookieConsent.Tests/Granit.Http.Cookies.CookieConsent.Tests.csproj" />
-    <Project Path="tests/Granit.Http.Cors.Tests/Granit.Http.Cors.Tests.csproj" />
+    <Project Path="tests/Granit.Http.Hosting.Tests/Granit.Http.Hosting.Tests.csproj" />
     <Project Path="tests/Granit.Http.ExceptionHandling.Tests/Granit.Http.ExceptionHandling.Tests.csproj" />
     <Project Path="tests/Granit.Http.Features.Tests/Granit.Http.Features.Tests.csproj" />
     <Project Path="tests/Granit.Http.Idempotency.Tests/Granit.Http.Idempotency.Tests.csproj" />
@@ -420,10 +418,8 @@
     <Project Path="tests/Granit.Http.OutputCaching.Tests/Granit.Http.OutputCaching.Tests.csproj" />
     <Project Path="tests/Granit.Http.RateLimiting.Tests/Granit.Http.RateLimiting.Tests.csproj" />
     <Project Path="tests/Granit.Http.Resilience.Tests/Granit.Http.Resilience.Tests.csproj" />
-    <Project Path="tests/Granit.Http.ResponseCompression.Tests/Granit.Http.ResponseCompression.Tests.csproj" />
     <Project Path="tests/Granit.Http.UrlSafety.Tests/Granit.Http.UrlSafety.Tests.csproj" />
     <Project Path="tests/Granit.Http.SecurityHeaders.Abstractions.Tests/Granit.Http.SecurityHeaders.Abstractions.Tests.csproj" />
-    <Project Path="tests/Granit.Http.SecurityHeaders.Endpoints.Tests/Granit.Http.SecurityHeaders.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Http.SecurityHeaders.Tests/Granit.Http.SecurityHeaders.Tests.csproj" />
     <Project Path="tests/Granit.IO.Tests/Granit.IO.Tests.csproj" />
     <Project Path="tests/Granit.Indexing.AI.Tests/Granit.Indexing.AI.Tests.csproj" />
