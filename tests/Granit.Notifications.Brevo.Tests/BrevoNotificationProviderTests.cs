@@ -222,7 +222,9 @@ public sealed class BrevoNotificationProviderTests : IDisposable
             },
             TestContext.Current.CancellationToken));
 
-        ex.Message.ShouldContain("Invalid email address");
+        // The vendor error body may echo the recipient — logged scrubbed, never thrown.
+        ex.Message.ShouldNotContain("Invalid email address");
+        ex.Message.ShouldContain("Brevo API error 400");
         ex.Message.ShouldContain("smtp/email");
         ex.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
@@ -320,7 +322,7 @@ public sealed class BrevoNotificationProviderTests : IDisposable
             },
             TestContext.Current.CancellationToken));
 
-        ex.Message.ShouldContain("Not enough SMS credits");
+        ex.Message.ShouldNotContain("Not enough SMS credits");
         ex.StatusCode.ShouldBe(HttpStatusCode.PaymentRequired);
     }
 
@@ -419,7 +421,9 @@ public sealed class BrevoNotificationProviderTests : IDisposable
             },
             TestContext.Current.CancellationToken));
 
-        ex.Message.ShouldContain("Access denied");
+        // Vendor error body is logged scrubbed, never thrown (PII posture).
+        ex.Message.ShouldNotContain("Access denied");
+        ex.Message.ShouldContain("Brevo API error");
         ex.Message.ShouldContain("whatsapp/sendTemplate");
         ex.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
@@ -550,7 +554,7 @@ public sealed class BrevoNotificationProviderTests : IDisposable
             },
             TestContext.Current.CancellationToken));
 
-        ex.Message.ShouldContain("Invalid API key");
+        ex.Message.ShouldNotContain("Invalid API key");
         ex.Message.ShouldContain("whatsapp/sendTemplate");
         ex.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }

@@ -1,7 +1,10 @@
 using System.Net.Http.Headers;
 using System.Text;
+using Granit.Diagnostics;
+using Granit.Extensions;
 using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Sms;
+using Granit.Notifications.Twilio.Diagnostics;
 using Granit.Notifications.Twilio.HealthChecks;
 using Granit.Notifications.Twilio.Internal;
 using Granit.Notifications.Twilio.Options;
@@ -23,10 +26,7 @@ public static class TwilioNotificationsServiceCollectionExtensions
         this IServiceCollection services,
         Action<TwilioOptions>? configure = null)
     {
-        services.AddOptions<TwilioOptions>()
-            .BindConfiguration(TwilioOptions.SectionName)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        services.AddGranitProviderOptions<TwilioOptions>(TwilioOptions.SectionName);
 
         if (configure is not null)
         {
@@ -49,11 +49,13 @@ public static class TwilioNotificationsServiceCollectionExtensions
         services.AddKeyedSingleton<IWhatsAppSender>(
             ProviderKey, (sp, _) => sp.GetRequiredService<TwilioNotificationProvider>());
 
+        GranitActivitySourceRegistry.Register(NotificationsTwilioActivitySource.Name);
+
         return services;
     }
 
     /// <summary>
-    /// Adds the Twilio API health check (tags: <c>readiness</c>).
+    /// Adds the Twilio API health check (tags: <c>readiness</c>, <c>startup</c>).
     /// </summary>
     /// <param name="builder">The health checks builder.</param>
     /// <param name="name">Optional check name (default: <c>"twilio"</c>).</param>
@@ -75,6 +77,6 @@ public static class TwilioNotificationsServiceCollectionExtensions
                 return new TwilioHealthCheck(factory, opts);
             },
             failureStatus,
-            ["readiness"],
+            ["readiness", "startup"],
             timeout));
 }

@@ -1,5 +1,8 @@
+using Granit.Diagnostics;
+using Granit.Extensions;
 using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Abstractions;
+using Granit.Notifications.Zulip.Diagnostics;
 using Granit.Notifications.Zulip.HealthChecks;
 using Granit.Notifications.Zulip.Internal;
 using Granit.Notifications.Zulip.Options;
@@ -18,14 +21,9 @@ public static class ZulipNotificationsServiceCollectionExtensions
         Action<ZulipChannelOptions>? configureChannel = null,
         Action<ZulipBotOptions>? configureBot = null)
     {
-        services.AddOptions<ZulipChannelOptions>()
-            .BindConfiguration(ZulipChannelOptions.SectionName)
-            .ValidateOnStart();
+        services.AddGranitProviderOptions<ZulipChannelOptions>(ZulipChannelOptions.SectionName);
 
-        services.AddOptions<ZulipBotOptions>()
-            .BindConfiguration(ZulipBotOptions.SectionName)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        services.AddGranitProviderOptions<ZulipBotOptions>(ZulipBotOptions.SectionName);
 
         if (configureChannel is not null)
         {
@@ -46,6 +44,8 @@ public static class ZulipNotificationsServiceCollectionExtensions
 
         services.AddSingleton<IZulipSender, ZulipBotSender>();
         services.AddScoped<INotificationChannel, ZulipNotificationChannel>();
+        GranitActivitySourceRegistry.Register(NotificationsZulipActivitySource.Name);
+
         return services;
     }
 
@@ -59,5 +59,5 @@ public static class ZulipNotificationsServiceCollectionExtensions
                 sp.GetRequiredService<IHttpClientFactory>(),
                 sp.GetRequiredService<IOptions<ZulipBotOptions>>()),
             failureStatus: null,
-            tags: ["readiness"]));
+            tags: ["readiness", "startup"]));
 }

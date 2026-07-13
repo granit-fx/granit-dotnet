@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Granit.Diagnostics;
+using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Email;
 using Granit.Notifications.Scaleway.Diagnostics;
 using Granit.Notifications.Scaleway.Options;
@@ -56,42 +57,13 @@ internal sealed partial class ScalewayEmailSender(
 
         using HttpResponseMessage response = await client.PostAsJsonAsync(
             "emails", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
-        await EnsureSuccessAsync(response, cancellationToken).ConfigureAwait(false);
+        await response.EnsureGranitSuccessAsync(logger, "Scaleway", "emails", cancellationToken).ConfigureAwait(false);
 
         LogEmailSent(LogRedaction.Email(message.To));
     }
 
-    /// <summary>
-    /// Reads the Scaleway error body before throwing, so the caller (and logs) get a meaningful message.
-    /// </summary>
-    private async Task EnsureSuccessAsync(HttpResponseMessage response, CancellationToken cancellationToken)
-    {
-        if (response.IsSuccessStatusCode)
-        {
-            return;
-        }
-
-        string? errorBody = null;
-        try
-        {
-            errorBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        }
-        catch
-        {
-            // Best-effort — do not mask the original HTTP error.
-        }
-
-        LogScalewayError((int)response.StatusCode, errorBody);
-
-        throw new HttpRequestException(
-            $"Scaleway API error {(int)response.StatusCode} on emails: {errorBody ?? "(no body)"}",
-            inner: null,
-            response.StatusCode);
-    }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Scaleway email sent to {RedactedRecipient}")]
     private partial void LogEmailSent(string redactedRecipient);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Scaleway API error: HTTP {StatusCode} — {ErrorBody}")]
-    private partial void LogScalewayError(int statusCode, string? errorBody);
 }

@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Granit.Diagnostics;
+using Granit.Notifications.GoogleFcm.Diagnostics;
 using Granit.Notifications.GoogleFcm.Options;
 using Granit.Notifications.MobilePush;
 using Microsoft.Extensions.Logging;
@@ -28,6 +30,7 @@ internal sealed partial class GoogleFcmMobilePushSender(
     /// <inheritdoc />
     public async Task SendAsync(MobilePushMessage message, CancellationToken cancellationToken = default)
     {
+        using Activity? activity = NotificationsGoogleFcmActivitySource.Source.StartActivity(NotificationsGoogleFcmActivitySource.Operations.SendPush);
         HttpClient client = httpClientFactory.CreateClient(FcmHttpClientName);
 
         List<Exception>? failures = null;

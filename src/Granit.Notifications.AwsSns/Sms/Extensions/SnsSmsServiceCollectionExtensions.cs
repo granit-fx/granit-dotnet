@@ -2,6 +2,7 @@ using Amazon;
 using Amazon.Runtime;
 using Amazon.SimpleNotificationService;
 using Granit.Diagnostics;
+using Granit.Extensions;
 using Granit.Notifications.AwsSns.Sms.Diagnostics;
 using Granit.Notifications.AwsSns.Sms.HealthChecks;
 using Granit.Notifications.AwsSns.Sms.Internal;
@@ -21,11 +22,7 @@ public static class SnsSmsServiceCollectionExtensions
         this IServiceCollection services,
         Action<AwsSnsSmsOptions>? configure = null)
     {
-        services.AddOptions<AwsSnsSmsOptions>()
-            .BindConfiguration(AwsSnsSmsOptions.SectionName)
-            .ValidateOnStart();
-
-        services.AddSingleton<IValidateOptions<AwsSnsSmsOptions>, AwsSnsSmsOptionsValidator>();
+        services.AddGranitProviderOptions<AwsSnsSmsOptions, AwsSnsSmsOptionsValidator>(AwsSnsSmsOptions.SectionName);
 
         if (configure is not null)
         {

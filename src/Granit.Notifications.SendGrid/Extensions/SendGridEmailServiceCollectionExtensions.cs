@@ -1,4 +1,5 @@
 using Granit.Diagnostics;
+using Granit.Extensions;
 using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Email;
 using Granit.Notifications.SendGrid.Diagnostics;
@@ -20,10 +21,7 @@ public static class SendGridEmailServiceCollectionExtensions
         this IServiceCollection services,
         Action<SendGridEmailOptions>? configure = null)
     {
-        services.AddOptions<SendGridEmailOptions>()
-            .BindConfiguration(SendGridEmailOptions.SectionName)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        services.AddGranitProviderOptions<SendGridEmailOptions>(SendGridEmailOptions.SectionName);
 
         if (configure is not null)
         {
@@ -50,7 +48,7 @@ public static class SendGridEmailServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds the SendGrid health check (tags: <c>readiness</c>).
+    /// Adds the SendGrid health check (tags: <c>readiness</c>, <c>startup</c>).
     /// </summary>
     /// <param name="builder">The health checks builder.</param>
     /// <param name="name">Optional check name (default: <c>"sendgrid"</c>).</param>
@@ -66,6 +64,6 @@ public static class SendGridEmailServiceCollectionExtensions
             name,
             sp => new SendGridHealthCheck(sp.GetRequiredService<IHttpClientFactory>()),
             failureStatus,
-            ["readiness"],
+            ["readiness", "startup"],
             timeout));
 }

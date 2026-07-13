@@ -1,9 +1,13 @@
+using Granit.DataExchange;
+using Granit.Encryption;
 using Granit.Guids;
+using Granit.Localization;
 using Granit.Modularity;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Diagnostics;
 using Granit.Notifications.Extensions;
 using Granit.Notifications.Internal;
+using Granit.QueryEngine;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,8 +25,12 @@ namespace Granit.Notifications;
 /// <c>AddGranitNotificationsEntityFrameworkCore()</c> for persistent stores.
 /// </remarks>
 [DependsOn(
+    typeof(GranitDataExchangeAbstractionsModule),
+    typeof(GranitEncryptionModule),
     typeof(GranitGuidsModule),
+    typeof(GranitLocalizationModule),
     typeof(GranitNotificationsAbstractionsModule),
+    typeof(GranitQueryEngineAbstractionsModule),
     typeof(GranitTimingModule))]
 public sealed class GranitNotificationsModule : GranitModule
 {

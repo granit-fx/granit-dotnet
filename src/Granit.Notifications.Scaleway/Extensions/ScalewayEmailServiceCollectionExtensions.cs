@@ -1,4 +1,5 @@
 using Granit.Diagnostics;
+using Granit.Extensions;
 using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Email;
 using Granit.Notifications.Scaleway.Diagnostics;
@@ -20,10 +21,7 @@ public static class ScalewayEmailServiceCollectionExtensions
         this IServiceCollection services,
         Action<ScalewayEmailOptions>? configure = null)
     {
-        services.AddOptions<ScalewayEmailOptions>()
-            .BindConfiguration(ScalewayEmailOptions.SectionName)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        services.AddGranitProviderOptions<ScalewayEmailOptions>(ScalewayEmailOptions.SectionName);
 
         if (configure is not null)
         {

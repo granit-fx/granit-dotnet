@@ -2,6 +2,7 @@ using Amazon;
 using Amazon.Runtime;
 using Amazon.SimpleNotificationService;
 using Granit.Diagnostics;
+using Granit.Extensions;
 using Granit.Notifications.AwsSns.MobilePush.Diagnostics;
 using Granit.Notifications.AwsSns.MobilePush.HealthChecks;
 using Granit.Notifications.AwsSns.MobilePush.Internal;
@@ -21,11 +22,7 @@ public static class AwsSnsMobilePushServiceCollectionExtensions
         this IServiceCollection services,
         Action<AwsSnsMobilePushOptions>? configure = null)
     {
-        services.AddOptions<AwsSnsMobilePushOptions>()
-            .BindConfiguration(AwsSnsMobilePushOptions.SectionName)
-            .ValidateOnStart();
-
-        services.AddSingleton<IValidateOptions<AwsSnsMobilePushOptions>, AwsSnsMobilePushOptionsValidator>();
+        services.AddGranitProviderOptions<AwsSnsMobilePushOptions, AwsSnsMobilePushOptionsValidator>(AwsSnsMobilePushOptions.SectionName);
 
         if (configure is not null)
         {

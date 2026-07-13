@@ -1,5 +1,8 @@
+using System.Diagnostics;
 using Granit.Diagnostics;
+using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Sms;
+using Granit.Notifications.Twilio.Diagnostics;
 using Granit.Notifications.Twilio.Options;
 using Granit.Notifications.WhatsApp;
 using Microsoft.Extensions.Logging;
@@ -20,6 +23,7 @@ internal sealed partial class TwilioNotificationProvider(
     /// <inheritdoc />
     async Task ISmsSender.SendAsync(SmsMessage message, CancellationToken cancellationToken)
     {
+        using Activity? activity = NotificationsTwilioActivitySource.Source.StartActivity(NotificationsTwilioActivitySource.Operations.SendSms);
         TwilioOptions opts = options.CurrentValue;
         HttpClient client = httpClientFactory.CreateClient("Twilio");
 
@@ -35,7 +39,7 @@ internal sealed partial class TwilioNotificationProvider(
 
         using HttpResponseMessage response = await client.PostAsync(
             endpoint, content, cancellationToken).ConfigureAwait(false);
-        await EnsureSuccessAsync(endpoint, response, cancellationToken).ConfigureAwait(false);
+        await response.EnsureGranitSuccessAsync(logger, "Twilio", endpoint, cancellationToken).ConfigureAwait(false);
 
         LogSmsSent(LogRedaction.Phone(message.To));
     }
@@ -43,6 +47,7 @@ internal sealed partial class TwilioNotificationProvider(
     /// <inheritdoc />
     async Task IWhatsAppSender.SendAsync(WhatsAppMessage message, CancellationToken cancellationToken)
     {
+        using Activity? activity = NotificationsTwilioActivitySource.Source.StartActivity(NotificationsTwilioActivitySource.Operations.SendWhatsApp);
         TwilioOptions opts = options.CurrentValue;
         HttpClient client = httpClientFactory.CreateClient("Twilio");
 
@@ -60,7 +65,7 @@ internal sealed partial class TwilioNotificationProvider(
 
         using HttpResponseMessage response = await client.PostAsync(
             endpoint, content, cancellationToken).ConfigureAwait(false);
-        await EnsureSuccessAsync(endpoint, response, cancellationToken).ConfigureAwait(false);
+        await response.EnsureGranitSuccessAsync(logger, "Twilio", endpoint, cancellationToken).ConfigureAwait(false);
 
         LogWhatsAppSent(LogRedaction.Phone(message.To), message.TemplateName);
     }
@@ -79,33 +84,6 @@ internal sealed partial class TwilioNotificationProvider(
         return string.Join(", ", message.TemplateParameters.Prepend(message.TemplateName));
     }
 
-    /// <summary>
-    /// Reads the Twilio error body before throwing, so the caller (and logs) get a meaningful message.
-    /// </summary>
-    private async Task EnsureSuccessAsync(string endpoint, HttpResponseMessage response, CancellationToken cancellationToken)
-    {
-        if (response.IsSuccessStatusCode)
-        {
-            return;
-        }
-
-        string? errorBody = null;
-        try
-        {
-            errorBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        }
-        catch (Exception ex) when (ex is not OperationCanceledException)
-        {
-            // Best-effort -- do not mask the original HTTP error.
-        }
-
-        LogTwilioError(endpoint, (int)response.StatusCode, errorBody);
-
-        throw new HttpRequestException(
-            $"Twilio API error {(int)response.StatusCode} on {endpoint}: {errorBody ?? "(no body)"}",
-            inner: null,
-            response.StatusCode);
-    }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Twilio SMS sent to {RedactedRecipient}")]
     private partial void LogSmsSent(string redactedRecipient);
@@ -113,6 +91,4 @@ internal sealed partial class TwilioNotificationProvider(
     [LoggerMessage(Level = LogLevel.Information, Message = "Twilio WhatsApp sent to {RedactedRecipient} template {TemplateName}")]
     private partial void LogWhatsAppSent(string redactedRecipient, string templateName);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Twilio API error on {Endpoint}: HTTP {StatusCode} — {ErrorBody}")]
-    private partial void LogTwilioError(string endpoint, int statusCode, string? errorBody);
 }

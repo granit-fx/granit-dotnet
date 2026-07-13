@@ -29,7 +29,7 @@ public sealed class AwsSnsSmsOptions
     /// <summary>Optional AWS access key. When null, default credential chain is used.</summary>
     public string? AccessKeyId { get; set; }
 
-    /// <summary>Optional AWS secret key. Required when <see cref="AccessKeyId"/> is set.</summary>
+    /// <summary>Optional AWS secret key. Required when <see cref="AccessKeyId"/> is set. Source from Vault, never from plaintext appsettings.</summary>
     public string? SecretAccessKey { get; set; }
 
     /// <summary>API call timeout in seconds. Default: 30.</summary>

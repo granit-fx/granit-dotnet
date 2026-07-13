@@ -1,5 +1,7 @@
+using Granit.Diagnostics;
 using Granit.Http.Resilience;
 using Granit.Modularity;
+using Granit.Notifications.Zulip.Extensions;
 
 namespace Granit.Notifications.Zulip;
 
@@ -11,6 +13,11 @@ namespace Granit.Notifications.Zulip;
 /// Includes its own <c>ZulipBotSender</c> implementation.
 /// </remarks>
 [DependsOn(
+    typeof(GranitDiagnosticsModule),
     typeof(GranitHttpResilienceModule),
     typeof(GranitNotificationsAbstractionsModule))]
-public sealed class GranitNotificationsZulipModule : GranitModule;
+public sealed class GranitNotificationsZulipModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddGranitNotificationsZulip();
+}

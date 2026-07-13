@@ -1,4 +1,5 @@
 using Granit.Authorization;
+using Granit.Guids;
 using Granit.Http.ApiDocumentation;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
@@ -20,6 +21,7 @@ namespace Granit.Notifications.Endpoints;
 /// </remarks>
 [DependsOn(
     typeof(GranitAuthorizationModule),
+    typeof(GranitGuidsModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitNotificationsModule),
     typeof(GranitValidationModule),

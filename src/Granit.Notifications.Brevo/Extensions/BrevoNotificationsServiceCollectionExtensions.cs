@@ -1,4 +1,7 @@
+using Granit.Diagnostics;
+using Granit.Extensions;
 using Granit.Http.Resilience.Extensions;
+using Granit.Notifications.Brevo.Diagnostics;
 using Granit.Notifications.Brevo.HealthChecks;
 using Granit.Notifications.Brevo.Internal;
 using Granit.Notifications.Brevo.Options;
@@ -22,10 +25,7 @@ public static class BrevoNotificationsServiceCollectionExtensions
         this IServiceCollection services,
         Action<BrevoOptions>? configure = null)
     {
-        services.AddOptions<BrevoOptions>()
-            .BindConfiguration(BrevoOptions.SectionName)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        services.AddGranitProviderOptions<BrevoOptions>(BrevoOptions.SectionName);
 
         if (configure is not null)
         {
@@ -49,11 +49,13 @@ public static class BrevoNotificationsServiceCollectionExtensions
         services.AddKeyedSingleton<IWhatsAppSender>(
             ProviderKey, (sp, _) => sp.GetRequiredService<BrevoNotificationProvider>());
 
+        GranitActivitySourceRegistry.Register(NotificationsBrevoActivitySource.Name);
+
         return services;
     }
 
     /// <summary>
-    /// Adds the Brevo API health check (tags: <c>readiness</c>).
+    /// Adds the Brevo API health check (tags: <c>readiness</c>, <c>startup</c>).
     /// </summary>
     /// <param name="builder">The health checks builder.</param>
     /// <param name="name">Optional check name (default: <c>"brevo"</c>).</param>
@@ -69,6 +71,6 @@ public static class BrevoNotificationsServiceCollectionExtensions
             name,
             sp => new BrevoHealthCheck(sp.GetRequiredService<IHttpClientFactory>()),
             failureStatus,
-            ["readiness"],
+            ["readiness", "startup"],
             timeout));
 }

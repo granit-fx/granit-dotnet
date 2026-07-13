@@ -11,6 +11,7 @@ public sealed class AcsEmailOptions
     /// <summary>
     /// ACS connection string. When provided, takes precedence over <see cref="Endpoint"/>.
     /// Either <see cref="ConnectionString"/> or <see cref="Endpoint"/> must be set.
+    /// Contains the access key — source from Vault, never from plaintext appsettings.
     /// </summary>
     public string? ConnectionString { get; set; }
 

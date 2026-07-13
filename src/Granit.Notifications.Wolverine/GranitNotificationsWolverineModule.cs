@@ -1,3 +1,4 @@
+using Granit.Encryption;
 using Granit.Modularity;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Exceptions;
@@ -29,6 +30,7 @@ namespace Granit.Notifications.Wolverine;
 /// </para>
 /// </remarks>
 [DependsOn(
+    typeof(GranitEncryptionModule),
     typeof(GranitNotificationsModule),
     typeof(GranitWolverineModule))]
 public sealed class GranitNotificationsWolverineModule : GranitModule

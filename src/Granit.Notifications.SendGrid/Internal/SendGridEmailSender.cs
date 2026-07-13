@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Granit.Diagnostics;
+using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Email;
 using Granit.Notifications.SendGrid.Diagnostics;
 using Granit.Notifications.SendGrid.Options;
@@ -59,42 +60,13 @@ internal sealed partial class SendGridEmailSender(
 
         using HttpResponseMessage response = await client.PostAsJsonAsync(
             "mail/send", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
-        await EnsureSuccessAsync(response, cancellationToken).ConfigureAwait(false);
+        await response.EnsureGranitSuccessAsync(logger, "SendGrid", "v3/mail/send", cancellationToken).ConfigureAwait(false);
 
         LogEmailSent(LogRedaction.Email(message.To));
     }
 
-    /// <summary>
-    /// Reads the SendGrid error body before throwing, so the caller (and logs) get a meaningful message.
-    /// </summary>
-    private async Task EnsureSuccessAsync(HttpResponseMessage response, CancellationToken cancellationToken)
-    {
-        if (response.IsSuccessStatusCode)
-        {
-            return;
-        }
-
-        string? errorBody = null;
-        try
-        {
-            errorBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        }
-        catch
-        {
-            // Best-effort — do not mask the original HTTP error.
-        }
-
-        LogSendGridError((int)response.StatusCode, errorBody);
-
-        throw new HttpRequestException(
-            $"SendGrid API error {(int)response.StatusCode} on mail/send: {errorBody ?? "(no body)"}",
-            inner: null,
-            response.StatusCode);
-    }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "SendGrid email sent to {RedactedRecipient}")]
     private partial void LogEmailSent(string redactedRecipient);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "SendGrid API error: HTTP {StatusCode} — {ErrorBody}")]
-    private partial void LogSendGridError(int statusCode, string? errorBody);
 }

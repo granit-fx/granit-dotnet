@@ -1,5 +1,7 @@
+using Granit.Diagnostics;
 using Granit.Http.Resilience;
 using Granit.Modularity;
+using Granit.Notifications.Brevo.Extensions;
 using Granit.Notifications.Email;
 using Granit.Notifications.Sms;
 using Granit.Notifications.WhatsApp;
@@ -14,8 +16,13 @@ namespace Granit.Notifications.Brevo;
 /// Registers <c>BrevoNotificationProvider</c> as a keyed service for email, SMS and WhatsApp channels.
 /// </remarks>
 [DependsOn(
+    typeof(GranitDiagnosticsModule),
     typeof(GranitHttpResilienceModule),
     typeof(GranitNotificationsEmailModule),
     typeof(GranitNotificationsSmsModule),
     typeof(GranitNotificationsWhatsAppModule))]
-public sealed class GranitNotificationsBrevoModule : GranitModule;
+public sealed class GranitNotificationsBrevoModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddGranitNotificationsBrevo();
+}

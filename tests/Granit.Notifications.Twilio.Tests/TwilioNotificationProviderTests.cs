@@ -166,7 +166,10 @@ public sealed class TwilioNotificationProviderTests : IDisposable
             },
             TestContext.Current.CancellationToken));
 
-        ex.Message.ShouldContain("Invalid 'To' Phone Number");
+        // The vendor error body may echo the recipient — it must never reach the
+        // exception message (it is logged scrubbed instead).
+        ex.Message.ShouldNotContain("Invalid 'To' Phone Number");
+        ex.Message.ShouldContain("Twilio API error 400");
         ex.Message.ShouldContain("Messages.json");
         ex.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
@@ -321,7 +324,8 @@ public sealed class TwilioNotificationProviderTests : IDisposable
             },
             TestContext.Current.CancellationToken));
 
-        ex.Message.ShouldContain("Access denied");
+        ex.Message.ShouldNotContain("Access denied");
+        ex.Message.ShouldContain("Twilio API error");
         ex.Message.ShouldContain("Messages.json");
         ex.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }

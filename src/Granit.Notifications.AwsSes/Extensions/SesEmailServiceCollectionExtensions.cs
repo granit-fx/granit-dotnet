@@ -2,6 +2,7 @@ using Amazon;
 using Amazon.Runtime;
 using Amazon.SimpleEmailV2;
 using Granit.Diagnostics;
+using Granit.Extensions;
 using Granit.Notifications.AwsSes.Diagnostics;
 using Granit.Notifications.AwsSes.HealthChecks;
 using Granit.Notifications.AwsSes.Internal;
@@ -21,11 +22,7 @@ public static class SesEmailServiceCollectionExtensions
         this IServiceCollection services,
         Action<AwsSesOptions>? configure = null)
     {
-        services.AddOptions<AwsSesOptions>()
-            .BindConfiguration(AwsSesOptions.SectionName)
-            .ValidateOnStart();
-
-        services.AddSingleton<IValidateOptions<AwsSesOptions>, AwsSesOptionsValidator>();
+        services.AddGranitProviderOptions<AwsSesOptions, AwsSesOptionsValidator>(AwsSesOptions.SectionName);
 
         if (configure is not null)
         {

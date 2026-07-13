@@ -24,11 +24,13 @@ public sealed class AwsSesOptions
     /// <summary>
     /// AWS access key ID. When <c>null</c>, the SDK uses the default credential chain
     /// (IAM roles on ECS/EKS, environment variables, or shared credentials file).
+    /// Credential material — source from Vault, never from plaintext appsettings.
     /// </summary>
     public string? AccessKeyId { get; set; }
 
     /// <summary>
     /// AWS secret access key. When <c>null</c>, the SDK uses the default credential chain.
+    /// Secret material — source from Vault, never from plaintext appsettings.
     /// </summary>
     public string? SecretAccessKey { get; set; }
 

@@ -37997,7 +37997,7 @@
       "kind": "class",
       "project": "Granit.Notifications.AwsSes",
       "file": "src/Granit.Notifications.AwsSes/Extensions/SesEmailServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitNotificationsAwsSes",
@@ -38067,7 +38067,7 @@
       "kind": "class",
       "project": "Granit.Notifications.AwsSns",
       "file": "src/Granit.Notifications.AwsSns/MobilePush/Extensions/AwsSnsMobilePushServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitNotificationsAwsSnsMobilePush",
@@ -38111,7 +38111,7 @@
       "kind": "class",
       "project": "Granit.Notifications.AwsSns",
       "file": "src/Granit.Notifications.AwsSns/Sms/Extensions/SnsSmsServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitNotificationsAwsSnsSms",
@@ -38155,7 +38155,7 @@
       "kind": "class",
       "project": "Granit.Notifications.AzureCommunicationServices",
       "file": "src/Granit.Notifications.AzureCommunicationServices/Email/Extensions/AcsEmailServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitNotificationsAcsEmail",
@@ -38209,7 +38209,7 @@
       "kind": "class",
       "project": "Granit.Notifications.AzureCommunicationServices",
       "file": "src/Granit.Notifications.AzureCommunicationServices/Sms/Extensions/AcsSmsServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitNotificationsAcsSms",
@@ -38247,7 +38247,7 @@
       "kind": "class",
       "project": "Granit.Notifications.AzureNotificationHubs",
       "file": "src/Granit.Notifications.AzureNotificationHubs/Extensions/AzureNotificationHubsServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitNotificationsAzureNotificationHubs",
@@ -38307,7 +38307,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Brevo",
       "file": "src/Granit.Notifications.Brevo/Extensions/BrevoNotificationsServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitNotificationsBrevo",
@@ -38323,8 +38323,15 @@
       "kind": "class",
       "project": "Granit.Notifications.Brevo",
       "file": "src/Granit.Notifications.Brevo/GranitNotificationsBrevoModule.cs",
-      "line": 21,
-      "members": []
+      "line": 24,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "BrevoOptions",
@@ -38687,7 +38694,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/GranitNotificationsEndpointsModule.cs",
-      "line": 27,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -38893,7 +38900,7 @@
       "kind": "class",
       "project": "Granit.Notifications.GoogleFcm",
       "file": "src/Granit.Notifications.GoogleFcm/Extensions/GoogleFcmMobilePushServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitNotificationsGoogleFcm",
@@ -38909,8 +38916,15 @@
       "kind": "class",
       "project": "Granit.Notifications.GoogleFcm",
       "file": "src/Granit.Notifications.GoogleFcm/GranitNotificationsGoogleFcmModule.cs",
-      "line": 19,
-      "members": []
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "GoogleFcmOptions",
@@ -38961,7 +38975,7 @@
       "kind": "class",
       "project": "Granit.Notifications",
       "file": "src/Granit.Notifications/GranitNotificationsModule.cs",
-      "line": 27,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",
@@ -39597,7 +39611,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Scaleway",
       "file": "src/Granit.Notifications.Scaleway/Extensions/ScalewayEmailServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitNotificationsScaleway",
@@ -39613,7 +39627,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Scaleway",
       "file": "src/Granit.Notifications.Scaleway/GranitNotificationsScalewayModule.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
@@ -39681,7 +39695,7 @@
       "kind": "class",
       "project": "Granit.Notifications.SendGrid",
       "file": "src/Granit.Notifications.SendGrid/Extensions/SendGridEmailServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitNotificationsSendGrid",
@@ -39697,7 +39711,7 @@
       "kind": "class",
       "project": "Granit.Notifications.SendGrid",
       "file": "src/Granit.Notifications.SendGrid/GranitNotificationsSendGridModule.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
@@ -39885,7 +39899,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Smtp",
       "file": "src/Granit.Notifications.Smtp/Extensions/SmtpEmailServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitNotificationsSmtp",
@@ -39901,8 +39915,15 @@
       "kind": "class",
       "project": "Granit.Notifications.Smtp",
       "file": "src/Granit.Notifications.Smtp/GranitNotificationsSmtpModule.cs",
-      "line": 14,
-      "members": []
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "SmtpOptions",
@@ -40095,7 +40116,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Twilio",
       "file": "src/Granit.Notifications.Twilio/Extensions/TwilioNotificationsServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitNotificationsTwilio",
@@ -40111,8 +40132,15 @@
       "kind": "class",
       "project": "Granit.Notifications.Twilio",
       "file": "src/Granit.Notifications.Twilio/GranitNotificationsTwilioModule.cs",
-      "line": 19,
-      "members": []
+      "line": 22,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "TwilioOptions",
@@ -40498,7 +40526,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Wolverine",
       "file": "src/Granit.Notifications.Wolverine/GranitNotificationsWolverineModule.cs",
-      "line": 34,
+      "line": 36,
       "members": [
         {
           "name": "ConfigureServices",
@@ -40514,7 +40542,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Zulip",
       "file": "src/Granit.Notifications.Zulip/Extensions/ZulipNotificationsServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitNotificationsZulip",
@@ -40530,8 +40558,15 @@
       "kind": "class",
       "project": "Granit.Notifications.Zulip",
       "file": "src/Granit.Notifications.Zulip/GranitNotificationsZulipModule.cs",
-      "line": 16,
-      "members": []
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IZulipSender",

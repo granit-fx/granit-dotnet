@@ -1,6 +1,8 @@
+using Granit.Diagnostics;
 using Granit.Http.Resilience;
 using Granit.Modularity;
 using Granit.Notifications.Sms;
+using Granit.Notifications.Twilio.Extensions;
 using Granit.Notifications.WhatsApp;
 
 namespace Granit.Notifications.Twilio;
@@ -13,7 +15,12 @@ namespace Granit.Notifications.Twilio;
 /// Registers <c>TwilioNotificationProvider</c> as a keyed service for SMS and WhatsApp channels.
 /// </remarks>
 [DependsOn(
+    typeof(GranitDiagnosticsModule),
     typeof(GranitHttpResilienceModule),
     typeof(GranitNotificationsSmsModule),
     typeof(GranitNotificationsWhatsAppModule))]
-public sealed class GranitNotificationsTwilioModule : GranitModule;
+public sealed class GranitNotificationsTwilioModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddGranitNotificationsTwilio();
+}

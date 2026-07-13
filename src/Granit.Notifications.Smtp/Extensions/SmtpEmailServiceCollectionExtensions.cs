@@ -1,4 +1,7 @@
+using Granit.Diagnostics;
+using Granit.Extensions;
 using Granit.Notifications.Email;
+using Granit.Notifications.Smtp.Diagnostics;
 using Granit.Notifications.Smtp.HealthChecks;
 using Granit.Notifications.Smtp.Internal;
 using Granit.Notifications.Smtp.Options;
@@ -15,9 +18,7 @@ public static class SmtpEmailServiceCollectionExtensions
         this IServiceCollection services,
         Action<SmtpOptions>? configure = null)
     {
-        services.AddOptions<SmtpOptions>()
-            .BindConfiguration(SmtpOptions.SectionName)
-            .ValidateOnStart();
+        services.AddGranitProviderOptions<SmtpOptions>(SmtpOptions.SectionName);
 
         if (configure is not null)
         {
@@ -25,6 +26,8 @@ public static class SmtpEmailServiceCollectionExtensions
         }
 
         services.AddKeyedSingleton<IEmailSender, MailKitEmailSender>("Smtp");
+        GranitActivitySourceRegistry.Register(NotificationsSmtpActivitySource.Name);
+
         return services;
     }
 
@@ -48,7 +51,7 @@ public static class SmtpEmailServiceCollectionExtensions
             name,
             sp => sp.GetRequiredService<SmtpHealthCheck>(),
             failureStatus,
-            ["readiness"],
+            ["readiness", "startup"],
             timeout ?? TimeSpan.FromSeconds(10)));
     }
 }

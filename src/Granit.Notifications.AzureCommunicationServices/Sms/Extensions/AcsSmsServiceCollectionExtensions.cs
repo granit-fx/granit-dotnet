@@ -1,6 +1,7 @@
 using Azure.Communication.Sms;
 using Azure.Identity;
 using Granit.Diagnostics;
+using Granit.Extensions;
 using Granit.Notifications.AzureCommunicationServices.Sms.Diagnostics;
 using Granit.Notifications.AzureCommunicationServices.Sms.HealthChecks;
 using Granit.Notifications.AzureCommunicationServices.Sms.Internal;
@@ -20,11 +21,7 @@ public static class AcsSmsServiceCollectionExtensions
         this IServiceCollection services,
         Action<AcsSmsOptions>? configure = null)
     {
-        services.AddOptions<AcsSmsOptions>()
-            .BindConfiguration(AcsSmsOptions.SectionName)
-            .ValidateOnStart();
-
-        services.AddSingleton<IValidateOptions<AcsSmsOptions>, AcsSmsOptionsValidator>();
+        services.AddGranitProviderOptions<AcsSmsOptions, AcsSmsOptionsValidator>(AcsSmsOptions.SectionName);
 
         if (configure is not null)
         {

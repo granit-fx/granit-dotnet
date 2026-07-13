@@ -1,4 +1,5 @@
 using Granit.Diagnostics;
+using Granit.Extensions;
 using Granit.Notifications.AzureNotificationHubs.Diagnostics;
 using Granit.Notifications.AzureNotificationHubs.HealthChecks;
 using Granit.Notifications.AzureNotificationHubs.Internal;
@@ -20,12 +21,7 @@ public static class AzureNotificationHubsServiceCollectionExtensions
         this IServiceCollection services,
         Action<AzureNotificationHubsOptions>? configure = null)
     {
-        services.AddOptions<AzureNotificationHubsOptions>()
-            .BindConfiguration(AzureNotificationHubsOptions.SectionName)
-            .ValidateOnStart();
-
-        services.AddSingleton<IValidateOptions<AzureNotificationHubsOptions>,
-            AzureNotificationHubsOptionsValidator>();
+        services.AddGranitProviderOptions<AzureNotificationHubsOptions, AzureNotificationHubsOptionsValidator>(AzureNotificationHubsOptions.SectionName);
 
         if (configure is not null)
         {

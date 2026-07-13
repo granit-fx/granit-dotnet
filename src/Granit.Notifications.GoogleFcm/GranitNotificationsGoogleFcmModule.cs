@@ -1,5 +1,6 @@
 using Granit.Http.Resilience;
 using Granit.Modularity;
+using Granit.Notifications.GoogleFcm.Extensions;
 using Granit.Notifications.MobilePush;
 using Granit.Timing;
 
@@ -16,4 +17,8 @@ namespace Granit.Notifications.GoogleFcm;
     typeof(GranitHttpResilienceModule),
     typeof(GranitNotificationsMobilePushModule),
     typeof(GranitTimingModule))]
-public sealed class GranitNotificationsGoogleFcmModule : GranitModule;
+public sealed class GranitNotificationsGoogleFcmModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddGranitNotificationsGoogleFcm();
+}

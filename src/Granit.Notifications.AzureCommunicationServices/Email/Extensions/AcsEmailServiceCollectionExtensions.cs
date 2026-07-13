@@ -1,6 +1,7 @@
 using Azure.Communication.Email;
 using Azure.Identity;
 using Granit.Diagnostics;
+using Granit.Extensions;
 using Granit.Notifications.AzureCommunicationServices.Email.Diagnostics;
 using Granit.Notifications.AzureCommunicationServices.Email.HealthChecks;
 using Granit.Notifications.AzureCommunicationServices.Email.Internal;
@@ -23,11 +24,7 @@ public static class AcsEmailServiceCollectionExtensions
         this IServiceCollection services,
         Action<AcsEmailOptions>? configure = null)
     {
-        services.AddOptions<AcsEmailOptions>()
-            .BindConfiguration(AcsEmailOptions.SectionName)
-            .ValidateOnStart();
-
-        services.AddSingleton<IValidateOptions<AcsEmailOptions>, AcsEmailOptionsValidator>();
+        services.AddGranitProviderOptions<AcsEmailOptions, AcsEmailOptionsValidator>(AcsEmailOptions.SectionName);
 
         if (configure is not null)
         {

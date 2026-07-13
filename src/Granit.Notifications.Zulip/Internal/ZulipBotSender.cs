@@ -1,6 +1,9 @@
+using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Granit.Http.Resilience.Extensions;
+using Granit.Notifications.Zulip.Diagnostics;
 using Granit.Notifications.Zulip.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,6 +24,7 @@ internal sealed partial class ZulipBotSender(
     /// <inheritdoc />
     public async Task SendAsync(ZulipMessage message, CancellationToken cancellationToken = default)
     {
+        using Activity? activity = NotificationsZulipActivitySource.Source.StartActivity(NotificationsZulipActivitySource.Operations.SendMessage);
         HttpClient client = httpClientFactory.CreateClient(HttpClientName);
         ZulipBotOptions botOptions = options.CurrentValue;
 
@@ -46,12 +50,7 @@ internal sealed partial class ZulipBotSender(
         using var content = new FormUrlEncodedContent(formData);
         using HttpResponseMessage response = await client.PostAsync("api/v1/messages", content, cancellationToken).ConfigureAwait(false);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            string body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-            LogSendFailed(response.StatusCode.ToString(), body);
-            response.EnsureSuccessStatusCode();
-        }
+        await response.EnsureGranitSuccessAsync(logger, "Zulip", "api/v1/messages", cancellationToken).ConfigureAwait(false);
 
         LogMessageSent(message.Type, message.Stream ?? "direct");
     }
@@ -59,6 +58,4 @@ internal sealed partial class ZulipBotSender(
     [LoggerMessage(Level = LogLevel.Information, Message = "Zulip message sent (type={Type}, target={Target})")]
     private partial void LogMessageSent(string type, string target);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Zulip API error: {StatusCode} — {Body}")]
-    private partial void LogSendFailed(string statusCode, string body);
 }

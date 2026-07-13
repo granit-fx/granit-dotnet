@@ -1,7 +1,10 @@
+using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Granit.Diagnostics;
+using Granit.Http.Resilience.Extensions;
+using Granit.Notifications.Brevo.Diagnostics;
 using Granit.Notifications.Brevo.Options;
 using Granit.Notifications.Email;
 using Granit.Notifications.Sms;
@@ -30,6 +33,7 @@ internal sealed partial class BrevoNotificationProvider(
     /// <inheritdoc />
     async Task IEmailSender.SendAsync(EmailMessage message, CancellationToken cancellationToken)
     {
+        using Activity? activity = NotificationsBrevoActivitySource.Source.StartActivity(NotificationsBrevoActivitySource.Operations.SendEmail);
         BrevoOptions opts = options.CurrentValue;
         HttpClient client = httpClientFactory.CreateClient("Brevo");
 
@@ -51,7 +55,7 @@ internal sealed partial class BrevoNotificationProvider(
 
         using HttpResponseMessage response = await client.PostAsJsonAsync(
             "smtp/email", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
-        await EnsureSuccessAsync("smtp/email", response, cancellationToken).ConfigureAwait(false);
+        await response.EnsureGranitSuccessAsync(logger, "Brevo", "smtp/email", cancellationToken).ConfigureAwait(false);
 
         LogEmailSent(LogRedaction.Email(message.To));
     }
@@ -59,6 +63,7 @@ internal sealed partial class BrevoNotificationProvider(
     /// <inheritdoc />
     async Task ISmsSender.SendAsync(SmsMessage message, CancellationToken cancellationToken)
     {
+        using Activity? activity = NotificationsBrevoActivitySource.Source.StartActivity(NotificationsBrevoActivitySource.Operations.SendSms);
         BrevoOptions opts = options.CurrentValue;
         HttpClient client = httpClientFactory.CreateClient("Brevo");
 
@@ -72,7 +77,7 @@ internal sealed partial class BrevoNotificationProvider(
 
         using HttpResponseMessage response = await client.PostAsJsonAsync(
             "transactionalSMS/sms", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
-        await EnsureSuccessAsync("transactionalSMS/sms", response, cancellationToken).ConfigureAwait(false);
+        await response.EnsureGranitSuccessAsync(logger, "Brevo", "transactionalSMS/sms", cancellationToken).ConfigureAwait(false);
 
         LogSmsSent(LogRedaction.Phone(message.To));
     }
@@ -80,6 +85,7 @@ internal sealed partial class BrevoNotificationProvider(
     /// <inheritdoc />
     async Task IWhatsAppSender.SendAsync(WhatsAppMessage message, CancellationToken cancellationToken)
     {
+        using Activity? activity = NotificationsBrevoActivitySource.Source.StartActivity(NotificationsBrevoActivitySource.Operations.SendWhatsApp);
         HttpClient client = httpClientFactory.CreateClient("Brevo");
 
         object payload = new
@@ -93,38 +99,11 @@ internal sealed partial class BrevoNotificationProvider(
 
         using HttpResponseMessage response = await client.PostAsJsonAsync(
             "whatsapp/sendTemplate", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
-        await EnsureSuccessAsync("whatsapp/sendTemplate", response, cancellationToken).ConfigureAwait(false);
+        await response.EnsureGranitSuccessAsync(logger, "Brevo", "whatsapp/sendTemplate", cancellationToken).ConfigureAwait(false);
 
         LogWhatsAppSent(LogRedaction.Phone(message.To), message.TemplateName);
     }
 
-    /// <summary>
-    /// Reads the Brevo error body before throwing, so the caller (and logs) get a meaningful message.
-    /// </summary>
-    private async Task EnsureSuccessAsync(string endpoint, HttpResponseMessage response, CancellationToken cancellationToken)
-    {
-        if (response.IsSuccessStatusCode)
-        {
-            return;
-        }
-
-        string? errorBody = null;
-        try
-        {
-            errorBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        }
-        catch
-        {
-            // Best-effort — do not mask the original HTTP error.
-        }
-
-        LogBrevoError(endpoint, (int)response.StatusCode, errorBody);
-
-        throw new HttpRequestException(
-            $"Brevo API error {(int)response.StatusCode} on {endpoint}: {errorBody ?? "(no body)"}",
-            inner: null,
-            response.StatusCode);
-    }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Brevo email sent to {RedactedRecipient}")]
     private partial void LogEmailSent(string redactedRecipient);
@@ -135,6 +114,4 @@ internal sealed partial class BrevoNotificationProvider(
     [LoggerMessage(Level = LogLevel.Information, Message = "Brevo WhatsApp sent to {RedactedRecipient} template {TemplateName}")]
     private partial void LogWhatsAppSent(string redactedRecipient, string templateName);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Brevo API error on {Endpoint}: HTTP {StatusCode} — {ErrorBody}")]
-    private partial void LogBrevoError(string endpoint, int statusCode, string? errorBody);
 }

@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using Granit.Diagnostics;
 using Granit.Notifications.Email;
+using Granit.Notifications.Smtp.Diagnostics;
 using Granit.Notifications.Smtp.Options;
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
@@ -22,6 +24,7 @@ internal sealed partial class MailKitEmailSender(
     /// <inheritdoc />
     public async Task SendAsync(EmailMessage message, CancellationToken cancellationToken = default)
     {
+        using Activity? activity = NotificationsSmtpActivitySource.Source.StartActivity(NotificationsSmtpActivitySource.Operations.SendEmail);
         SmtpOptions smtp = options.CurrentValue;
         int timeoutMs = smtp.TimeoutSeconds * 1000;
 
