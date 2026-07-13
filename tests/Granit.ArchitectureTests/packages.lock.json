@@ -2641,12 +2641,6 @@
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
-      "granit.http.cookies.klaro": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Http.Cookies": "[0.1.0-dev, )"
-        }
-      },
       "granit.http.cors": {
         "type": "Project",
         "dependencies": {

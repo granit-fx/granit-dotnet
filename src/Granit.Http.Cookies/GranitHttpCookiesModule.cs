@@ -11,6 +11,13 @@ namespace Granit.Http.Cookies;
 /// Ensures the cookie infrastructure (registry, manager, consent resolver) is available
 /// even if the application host does not call <c>AddGranitCookies()</c> explicitly.
 /// </summary>
+/// <remarks>
+/// Naming: sibling artifacts (<c>GranitCookiesOptions</c>, <c>AddGranitCookies</c>,
+/// <c>CookiesLocalizationResource</c>) deliberately drop the <c>Http</c> segment —
+/// "Cookies" is unambiguous within the framework and the shorter names predate the
+/// package split; only the module class carries the full package name. Kept as-is:
+/// consistency-over-churn (§3e audit note, story #2999).
+/// </remarks>
 public sealed class GranitHttpCookiesModule : GranitModule
 {
     /// <inheritdoc/>

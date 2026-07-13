@@ -6,15 +6,17 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace Granit.Http.Cookies.CookieConsent.Extensions;
 
 /// <summary>
-/// Extension methods for registering the @cookieconsent/core CMP integration.
+/// Registration for the @cookieconsent/core CMP integration. The single public entry
+/// point is <see cref="GranitCookiesBuilderExtensions.UseCookieConsent"/> — the module
+/// system calls this internal extension directly.
 /// </summary>
-public static class CookieConsentServiceCollectionExtensions
+internal static class CookieConsentServiceCollectionExtensions
 {
     /// <summary>
     /// Registers the CookieConsent consent resolver and binds <see cref="CookieConsentOptions"/>
     /// from the <c>Http:Cookies:CookieConsent</c> configuration section.
     /// </summary>
-    public static IServiceCollection AddGranitCookiesCookieConsent(this IServiceCollection services)
+    internal static IServiceCollection AddGranitCookiesCookieConsent(this IServiceCollection services)
     {
         services.AddOptions<CookieConsentOptions>()
             .BindConfiguration(CookieConsentOptions.SectionName)
