@@ -32,7 +32,9 @@ public static class IdempotencyServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers Granit Idempotency services with an options delegate.
+    /// Registers Granit Idempotency services, binding <see cref="IdempotencyOptions"/> from the
+    /// <c>Http:Idempotency</c> configuration section. The optional delegate runs after binding
+    /// and can override individual values.
     /// </summary>
     public static IServiceCollection AddGranitIdempotency(
         this IServiceCollection services,
@@ -40,6 +42,7 @@ public static class IdempotencyServiceCollectionExtensions
     {
         OptionsBuilder<IdempotencyOptions> optionsBuilder = services
             .AddOptions<IdempotencyOptions>()
+            .BindConfiguration(IdempotencyOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

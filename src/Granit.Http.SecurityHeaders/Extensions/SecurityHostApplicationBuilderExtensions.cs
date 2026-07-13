@@ -29,7 +29,7 @@ public static class SecurityHostApplicationBuilderExtensions
     ///   </item>
     ///   <item>
     ///     Registers <see cref="GranitSecurityHeadersOptions"/> from the
-    ///     <c>"SecurityHeaders"</c> configuration section.
+    ///     <c>"Http:SecurityHeaders"</c> configuration section.
     ///   </item>
     /// </list>
     /// <para>
@@ -45,7 +45,8 @@ public static class SecurityHostApplicationBuilderExtensions
     {
         builder.Services
             .AddOptions<GranitSecurityHeadersOptions>()
-            .BindConfiguration(GranitSecurityHeadersOptions.SectionName);
+            .BindConfiguration(GranitSecurityHeadersOptions.SectionName)
+            .ValidateOnStart();
 
         builder.Services.AddSingleton<IValidateOptions<GranitSecurityHeadersOptions>,
             GranitSecurityHeadersOptionsValidator>();

@@ -38,6 +38,9 @@ internal sealed class CookieConsentConfigProvider(
         CookieCategory.Preferences => "preferences",
         CookieCategory.Analytics => "analytics",
         CookieCategory.Marketing => "marketing",
+        CookieCategory.SaleOrSharing => "sale_or_sharing",
+        // Lower-casing a multi-word enum name glues its words together — every
+        // category must have an explicit snake_case mapping above.
         _ => category.ToString().ToLowerInvariant(),
     };
 }

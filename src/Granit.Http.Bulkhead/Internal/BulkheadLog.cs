@@ -24,7 +24,7 @@ internal static partial class BulkheadLog
     public static partial void LogBypassApplied(ILogger logger, string policyName, string reason, string? userId);
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Bulkhead policy '{PolicyName}' is not configured — endpoint/handler will execute without isolation. Check the 'Bulkhead:Policies' section in appsettings.")]
+        Message = "Bulkhead policy '{PolicyName}' is not configured — endpoint/handler will execute without isolation. Check the 'Http:Bulkhead:Policies' section in appsettings.")]
     public static partial void LogUnknownPolicy(ILogger logger, string policyName);
 
     [LoggerMessage(Level = LogLevel.Debug,

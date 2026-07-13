@@ -867,7 +867,6 @@
       "deps": [
         "Granit.Authorization",
         "Granit.DataLookup",
-        "Granit.Http.Abstractions",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -1232,7 +1231,6 @@
         "Granit.Authorization",
         "Granit.DataExchange.Abstractions",
         "Granit.Entities.Abstractions",
-        "Granit.Http.Abstractions",
         "Granit.Http.RateLimiting",
         "Granit.QueryEngine.Abstractions",
         "Granit.Validation"
@@ -2267,7 +2265,6 @@
       "name": "Granit.Presence.Endpoints",
       "deps": [
         "Granit.Authorization",
-        "Granit.Http.Abstractions",
         "Granit.Http.RateLimiting",
         "Granit.Presence",
         "Granit.Validation"
@@ -24958,7 +24955,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies.CookieConsent",
       "file": "src/Granit.Http.Cookies.CookieConsent/Extensions/CookieConsentServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitCookiesCookieConsent",
@@ -25119,7 +25116,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies.Endpoints",
       "file": "src/Granit.Http.Cookies.Endpoints/Extensions/CookieConsentEndpointRouteBuilderExtensions.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "MapGranitCookieConsent",
@@ -25135,8 +25132,15 @@
       "kind": "class",
       "project": "Granit.Http.Cookies.Endpoints",
       "file": "src/Granit.Http.Cookies.Endpoints/GranitHttpCookiesEndpointsModule.cs",
-      "line": 16,
-      "members": []
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "CookieConsentEndpointsOptions",
@@ -25400,7 +25404,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies.Klaro",
       "file": "src/Granit.Http.Cookies.Klaro/Extensions/KlaroServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitCookiesKlaro",
@@ -26210,22 +26214,6 @@
       "file": "src/Granit.Http.RateLimiting/AspNetCore/RateLimitEndpointExtensions.cs",
       "line": 13,
       "members": []
-    },
-    {
-      "name": "RateLimitingApplicationBuilderExtensions",
-      "fqn": "Granit.Http.RateLimiting.Extensions.RateLimitingApplicationBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Http.RateLimiting",
-      "file": "src/Granit.Http.RateLimiting/Extensions/RateLimitingApplicationBuilderExtensions.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "UseGranitRateLimiting",
-          "kind": "method",
-          "signature": "UseGranitRateLimiting(this IApplicationBuilder app)",
-          "returnType": "IApplicationBuilder"
-        }
-      ]
     },
     {
       "name": "RateLimitingHttpServiceCollectionExtensions",

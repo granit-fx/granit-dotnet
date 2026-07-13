@@ -139,7 +139,12 @@ internal sealed partial class GranitExceptionHandler(
         {
             Status = statusCode,
             Title = title,
-            Detail = detail
+            Detail = detail,
+            // RFC 7807 `instance` identifies the occurrence — the request path aids
+            // correlation without leaking anything the client does not already know.
+            // `Type` is left null: ProblemDetailsDefaults fills the RFC 9110 URI for
+            // the status code when the response is written.
+            Instance = httpContext.Request.Path
         };
 
         problemDetails.Extensions["traceId"] = traceId;

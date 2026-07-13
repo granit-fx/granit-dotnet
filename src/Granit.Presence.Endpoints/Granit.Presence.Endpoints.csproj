@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
-    <ProjectReference Include="..\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Http.RateLimiting\Granit.Http.RateLimiting.csproj" />
     <ProjectReference Include="..\Granit.Presence\Granit.Presence.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
