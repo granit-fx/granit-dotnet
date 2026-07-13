@@ -407,7 +407,16 @@ internal sealed partial class EmailNotificationChannel(
         {
             dict[prop.Name] = prop.Value.ValueKind switch
             {
+                // ISO-8601 strings surface as DateTime so Scriban date filters work —
+                // DateTimeOffset payload properties round-trip through JSON as strings, and a
+                // raw string makes `| date.to_string` fail (template silently fell back to the
+                // default before this conversion). Scriban's date functions accept DateTime,
+                // not DateTimeOffset; .DateTime keeps the sender's wall-clock time.
+                JsonValueKind.String when prop.Value.TryGetDateTimeOffset(out DateTimeOffset dto) => dto.DateTime,
                 JsonValueKind.String => prop.Value.GetString(),
+                // Integers must stay integral: Scriban's range operator (`for i in 0..n`)
+                // is not implemented for doubles, so a blanket GetDouble() broke loops.
+                JsonValueKind.Number when prop.Value.TryGetInt64(out long integer) => integer,
                 JsonValueKind.Number => prop.Value.GetDouble(),
                 JsonValueKind.True => true,
                 JsonValueKind.False => false,

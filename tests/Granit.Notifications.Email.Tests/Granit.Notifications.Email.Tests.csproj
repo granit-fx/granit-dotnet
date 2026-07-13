@@ -13,6 +13,13 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Notifications.Email\Granit.Notifications.Email.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Privacy.Notifications\Granit.Privacy.Notifications.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Templating.Mjml\Granit.Templating.Mjml.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Templating.Scriban\Granit.Templating.Scriban.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications\Granit.Notifications.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="GoldenMaster\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

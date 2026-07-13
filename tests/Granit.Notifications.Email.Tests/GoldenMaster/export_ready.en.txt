@@ -1,0 +1,77 @@
+Hi,
+
+
+Your personal data export, requested on *March 10, 2026* under regulation GDPR, is now ready for download.
+
+
+Your archive was split across *3 files*. Download each one — they can be opened independently:
+
+
+   •  Shard 1 of 3 (https://app.golden.test/privacy/exports/33333333-3333-3333-3333-333333333333/download/0)
+   •  Shard 2 of 3 (https://app.golden.test/privacy/exports/33333333-3333-3333-3333-333333333333/download/1)
+   •  Shard 3 of 3 (https://app.golden.test/privacy/exports/33333333-3333-3333-3333-333333333333/download/2)
+
+
+You can also download the integrity manifest to verify each shard:
+
+
+Download manifest (https://app.golden.test/privacy/exports/33333333-3333-3333-3333-333333333333/download/manifest)
+
+
+For your security, each download link triggers a brief re-authentication. If you don't recognise this request, contact us immediately.
+
+
+Reference: 33333333-3333-3333-3333-333333333333
+
+
+Questions about your data? Contact our Data Protection Officer at .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ Manage notification preferences (https://app.golden.test/unsubscribe)
+
+
+
+
+
+ Please do not reply to this email. It was sent from a notification-only address.
+
+
+
+
+
+ © 2026
