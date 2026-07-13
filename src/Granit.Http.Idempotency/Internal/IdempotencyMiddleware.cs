@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Granit.Http.Idempotency.Abstractions;
+using Granit.Http.Idempotency.Diagnostics;
 using Granit.Http.Idempotency.Models;
 using Granit.MultiTenancy;
 using Granit.Users;
@@ -28,6 +29,7 @@ internal sealed partial class IdempotencyMiddleware(
     TimeProvider timeProvider,
     ICurrentUserService currentUser,
     ICurrentTenant currentTenant,
+    IdempotencyMetrics metrics,
     ILogger<IdempotencyMiddleware> logger) : IMiddleware
 {
     private readonly IdempotencyOptions _opts = options.Value;
@@ -36,7 +38,10 @@ internal sealed partial class IdempotencyMiddleware(
     private readonly TimeProvider _timeProvider = timeProvider;
     private readonly ICurrentUserService _currentUser = currentUser;
     private readonly ICurrentTenant _currentTenant = currentTenant;
+    private readonly IdempotencyMetrics _metrics = metrics;
     private readonly ILogger<IdempotencyMiddleware> _logger = logger;
+
+    private string? TenantTag => _currentTenant.IsAvailable ? _currentTenant.Id?.ToString() : null;
 
     /// <inheritdoc/>
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -128,12 +133,15 @@ internal sealed partial class IdempotencyMiddleware(
             // we can re-acquire cleanly. Preserves the at-most-once guarantee.
             int retryAfter = (int)_opts.InProgressTtl.TotalSeconds;
             context.Response.Headers.RetryAfter = retryAfter.ToString();
+            _metrics.RecordLockConflict(TenantTag);
             LogRaceCondition(_logger, redisKey);
             await WriteProblemAsync(context, StatusCodes.Status409Conflict,
                 "Idempotency Race",
                 $"Could not acquire the idempotency lock for this request. Retry after {retryAfter}s.").ConfigureAwait(false);
             return;
         }
+
+        _metrics.RecordLockAcquired(TenantTag);
 
         // 8. Execute downstream handler and capture the response
         await ExecuteAndCaptureAsync(context, next, redisKey, payloadHash, createdAt, meta).ConfigureAwait(false);
@@ -153,6 +161,7 @@ internal sealed partial class IdempotencyMiddleware(
         if (entry.State == IdempotencyState.InProgress)
         {
             int retryAfter = (int)_opts.InProgressTtl.TotalSeconds;
+            _metrics.RecordLockConflict(TenantTag);
             context.Response.Headers.RetryAfter = retryAfter.ToString();
             await WriteProblemAsync(context, StatusCodes.Status409Conflict,
                 "Request In Progress",
@@ -163,6 +172,7 @@ internal sealed partial class IdempotencyMiddleware(
         // Validate payload hash to detect request mutation (prevents key reuse with different body)
         if (!string.Equals(entry.PayloadHash, payloadHash, StringComparison.Ordinal))
         {
+            _metrics.RecordHashMismatch(TenantTag);
             await WriteProblemAsync(context, StatusCodes.Status422UnprocessableEntity,
                 "Idempotency Key Conflict",
                 "The request payload does not match the original request associated with this idempotency key.").ConfigureAwait(false);
@@ -192,6 +202,7 @@ internal sealed partial class IdempotencyMiddleware(
 
         // Replay the completed response
         await ReplayResponseAsync(context, entry, _opts).ConfigureAwait(false);
+        _metrics.RecordResponseReplayed(TenantTag, entry.StatusCode ?? StatusCodes.Status200OK);
         LogReplay(_logger, redisKey, entry.StatusCode, entry.CompletedAt);
 
         // meta may carry per-endpoint TTL overrides — kept as parameter for symmetry
@@ -429,7 +440,7 @@ internal sealed partial class IdempotencyMiddleware(
 
     private string BuildRedisKey(HttpContext context, string idempotencyKeyValue)
     {
-        string tenantSegment = _currentTenant.Id?.ToString() ?? "global";
+        string tenantSegment = (_currentTenant.IsAvailable ? _currentTenant.Id?.ToString() : null) ?? "global";
         string userSegment = _currentUser.UserId ?? "anon";
         string method = context.Request.Method;
         string routePattern = context.GetEndpoint()?.DisplayName ?? context.Request.Path.Value ?? string.Empty;

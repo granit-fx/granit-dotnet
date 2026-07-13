@@ -45,6 +45,7 @@ public static partial class GranitHttpResponseMessageExtensions
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             // Best-effort — never mask the original HTTP error with a body-read failure.
+            LogErrorBodyReadFailed(logger, providerName, ex);
         }
 
         LogProviderApiError(
@@ -65,4 +66,7 @@ public static partial class GranitHttpResponseMessageExtensions
     [LoggerMessage(Level = LogLevel.Warning, Message = "{ProviderName} API error on {Endpoint}: HTTP {StatusCode} — {ScrubbedErrorBody}")]
     private static partial void LogProviderApiError(
         ILogger logger, string providerName, string endpoint, int statusCode, string scrubbedErrorBody);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Could not read the {ProviderName} error response body; continuing with the HTTP status only.")]
+    private static partial void LogErrorBodyReadFailed(ILogger logger, string providerName, Exception exception);
 }

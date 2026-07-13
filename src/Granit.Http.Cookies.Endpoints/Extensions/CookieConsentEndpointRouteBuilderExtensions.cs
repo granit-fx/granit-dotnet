@@ -3,6 +3,8 @@ using Granit.Http.Cookies.Endpoints.Options;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Http.Cookies.Endpoints.Extensions;
 
@@ -20,7 +22,9 @@ public static class CookieConsentEndpointRouteBuilderExtensions
         this IEndpointRouteBuilder endpoints,
         Action<CookieConsentEndpointsOptions>? configure = null)
     {
-        CookieConsentEndpointsOptions options = new();
+        // Bound from Http:Cookies:Endpoints by the module; the delegate overrides on top.
+        CookieConsentEndpointsOptions options =
+            endpoints.ServiceProvider.GetService<IOptions<CookieConsentEndpointsOptions>>()?.Value ?? new();
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints

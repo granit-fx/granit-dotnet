@@ -69,6 +69,8 @@ public sealed class IdempotencyMiddlewareTests
                     // Core idempotency services (without Redis store — mocked below)
                     services.AddSingleton<TimeProvider>(TimeProvider.System);
                     services.AddSingleton<RecyclableMemoryStreamManager>();
+                    services.AddMetrics();
+                    services.AddSingleton<Diagnostics.IdempotencyMetrics>();
                     services.AddTransient<Internal.IdempotencyMiddleware>();
 
                     // Mocked store (singleton so captured state persists across requests)
@@ -266,6 +268,8 @@ public sealed class IdempotencyMiddlewareTests
                     services.Configure<IdempotencyOptions>(_ => { });
                     services.AddSingleton<TimeProvider>(TimeProvider.System);
                     services.AddSingleton<RecyclableMemoryStreamManager>();
+                    services.AddMetrics();
+                    services.AddSingleton<Diagnostics.IdempotencyMetrics>();
                     services.AddTransient<Internal.IdempotencyMiddleware>();
                     services.AddSingleton(store);
                     services.AddSingleton<IIdempotencyStore>(store);
@@ -332,6 +336,8 @@ public sealed class IdempotencyMiddlewareTests
                     services.Configure<IdempotencyOptions>(_ => { });
                     services.AddSingleton<TimeProvider>(TimeProvider.System);
                     services.AddSingleton<RecyclableMemoryStreamManager>();
+                    services.AddMetrics();
+                    services.AddSingleton<Diagnostics.IdempotencyMetrics>();
                     services.AddTransient<Internal.IdempotencyMiddleware>();
                     services.AddSingleton(store);
                     services.AddSingleton<IIdempotencyStore>(store);
@@ -759,6 +765,8 @@ public sealed class IdempotencyMiddlewareTests
                     services.Configure<IdempotencyOptions>(_ => { });
                     services.AddSingleton<TimeProvider>(TimeProvider.System);
                     services.AddSingleton<RecyclableMemoryStreamManager>();
+                    services.AddMetrics();
+                    services.AddSingleton<Diagnostics.IdempotencyMetrics>();
                     services.AddTransient<Internal.IdempotencyMiddleware>();
                     services.AddSingleton(store);
                     services.AddSingleton<IIdempotencyStore>(store);

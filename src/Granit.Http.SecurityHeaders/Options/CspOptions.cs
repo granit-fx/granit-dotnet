@@ -2,7 +2,7 @@ namespace Granit.Http.SecurityHeaders.Options;
 
 /// <summary>
 /// Typed Content-Security-Policy base configuration. Bindable from the
-/// <c>SecurityHeaders:Csp</c> section.
+/// <c>Http:SecurityHeaders:Csp</c> section.
 /// </summary>
 /// <remarks>
 /// <para>

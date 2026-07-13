@@ -13,6 +13,10 @@ namespace Granit.Http.ExceptionHandling.Tests;
 public sealed class ExceptionHandlingOptionsTests
 {
     [Fact]
+    public void SectionName_IsHttpExceptionHandling() =>
+        ExceptionHandlingOptions.SectionName.ShouldBe("Http:ExceptionHandling");
+
+    [Fact]
     public void ExposeInternalErrorDetails_DefaultsToFalse()
     {
         ExceptionHandlingOptions options = new();

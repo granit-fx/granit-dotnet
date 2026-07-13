@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Granit.Diagnostics;
 using Granit.Http.Security.Diagnostics;
 using Granit.Http.Security.Options;
 using Granit.MultiTenancy;
@@ -280,7 +281,7 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
     private UrlSafetyResult Block(Activity? activity, UrlSafetyViolation violation)
     {
         _metrics.RecordBlocked(CurrentTenantId(), violation.Kind);
-        HttpSecurityLog.UrlBlocked(_logger, SanitizeForDisplay(ExtractHost(violation)), violation.Kind, violation.Reason);
+        HttpSecurityLog.UrlBlocked(_logger, RedactHostForLog(ExtractHost(violation)), violation.Kind, violation.Reason);
         activity?.SetTag("url_safety.outcome", "blocked");
         activity?.SetTag("url_safety.violation_kind", violation.Kind.ToString());
         return UrlSafetyResult.Invalid(violation);
@@ -288,6 +289,15 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
 
     private static string ExtractHost(UrlSafetyViolation violation) =>
         violation.Args.Count > 0 && violation.Args[0] is string h ? h : "<unknown>";
+
+    /// <summary>
+    /// IP-literal targets are redacted (GDPR — an IP can be personal data) on top of the
+    /// control-character sanitization applied to every logged host.
+    /// </summary>
+    private static string RedactHostForLog(string host) =>
+        IPAddress.TryParse(StripBrackets(host), out _)
+            ? LogRedaction.IpAddress(StripBrackets(host))
+            : SanitizeForDisplay(host);
 
     private static bool IsSchemeAllowed(string scheme, IReadOnlyList<string> allowed) =>
         allowed.Any(s => string.Equals(scheme, s, StringComparison.OrdinalIgnoreCase));

@@ -70,9 +70,6 @@
           "Granit.Workflow.Abstractions": "[0.1.0-dev, )"
         }
       },
-      "granit.http.abstractions": {
-        "type": "Project"
-      },
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {

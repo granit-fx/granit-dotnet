@@ -26,7 +26,6 @@ internal sealed class DefaultExceptionStatusCodeMapper : IExceptionStatusCodeMap
         BusinessException => StatusCodes.Status400BadRequest,
         IHasErrorCode => StatusCodes.Status400BadRequest,
         NotImplementedException => StatusCodes.Status501NotImplemented,
-        OperationCanceledException => 499,
         TimeoutException => StatusCodes.Status408RequestTimeout,
         // Body binding failures (malformed JSON, payload too large, …) surface as
         // BadHttpRequestException with a status ASP.NET has already resolved

@@ -26,14 +26,24 @@ public static class ExceptionHandlingServiceCollectionExtensions
     /// <b>before</b> routing and authorization to ensure all exceptions are caught.
     /// </remarks>
     /// <param name="services">The service collection.</param>
-    /// <param name="configure">Optional configuration delegate for <see cref="ExceptionHandlingOptions"/>.</param>
+    /// <param name="configure">
+    /// Optional configuration delegate for <see cref="ExceptionHandlingOptions"/>. Runs after the
+    /// <c>Http:ExceptionHandling</c> configuration section is bound and can override individual values.
+    /// </param>
     public static IServiceCollection AddGranitExceptionHandling(
         this IServiceCollection services,
         Action<ExceptionHandlingOptions>? configure = null)
     {
+        services
+            .AddOptions<ExceptionHandlingOptions>()
+            .BindConfiguration(ExceptionHandlingOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         services.AddProblemDetails();
         services.AddExceptionHandler<GranitExceptionHandler>();
-        services.AddSingleton<IExceptionStatusCodeMapper, DefaultExceptionStatusCodeMapper>();
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IExceptionStatusCodeMapper, DefaultExceptionStatusCodeMapper>());
 
         // SensitivePropertyRegistry is a cross-cutting primitive (MCP, audit,
         // and now ProblemDetails sanitization). TryAdd guards against

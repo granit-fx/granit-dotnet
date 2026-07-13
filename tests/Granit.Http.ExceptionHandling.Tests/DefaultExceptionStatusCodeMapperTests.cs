@@ -148,23 +148,25 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void TryGetStatusCode_OperationCanceledException_Returns499()
+    public void TryGetStatusCode_OperationCanceledException_ReturnsNull()
     {
+        // GranitExceptionHandler short-circuits OperationCanceledException before
+        // consulting the mapper chain — a 499 arm here would be dead code.
         DefaultExceptionStatusCodeMapper mapper = Create();
 
         int? result = mapper.TryGetStatusCode(new OperationCanceledException());
 
-        result.ShouldBe(499);
+        result.ShouldBeNull();
     }
 
     [Fact]
-    public void TryGetStatusCode_TaskCanceledException_Returns499()
+    public void TryGetStatusCode_TaskCanceledException_ReturnsNull()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
         int? result = mapper.TryGetStatusCode(new TaskCanceledException());
 
-        result.ShouldBe(499);
+        result.ShouldBeNull();
     }
 
     [Fact]

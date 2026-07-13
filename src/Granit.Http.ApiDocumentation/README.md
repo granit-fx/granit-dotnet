@@ -24,7 +24,7 @@ Without this call no documentation endpoints are exposed.
 ## Dependencies
 
 - `Granit.Http.ApiVersioning`
-- `Granit.Users`
+- `Granit.Http.SecurityHeaders.Abstractions`
 
 ## Documentation
 
