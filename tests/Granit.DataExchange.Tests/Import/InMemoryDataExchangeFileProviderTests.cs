@@ -67,4 +67,40 @@ public sealed class InMemoryDataExchangeFileProviderTests
 
         ref1.ShouldNotBe(ref2);
     }
+
+    [Fact]
+    public async Task StreamingSaveAsync_RoundTrips_WrittenBytes()
+    {
+        byte[] expected = [10, 20, 30];
+
+        string reference = await _provider.SaveAsync(
+            "file.csv",
+            "text/csv",
+            async (stream, ct) => await stream.WriteAsync(expected, ct),
+            TestContext.Current.CancellationToken);
+
+        await using Stream result = await _provider.OpenAsync(reference, TestContext.Current.CancellationToken);
+        await using MemoryStream resultBuffer = new();
+        await result.CopyToAsync(resultBuffer, TestContext.Current.CancellationToken);
+
+        resultBuffer.ToArray().ShouldBe(expected);
+    }
+
+    [Fact]
+    public async Task StreamingSaveAsync_InvokesCallback()
+    {
+        bool invoked = false;
+
+        await _provider.SaveAsync(
+            "file.csv",
+            "text/csv",
+            (_, _) =>
+            {
+                invoked = true;
+                return Task.CompletedTask;
+            },
+            TestContext.Current.CancellationToken);
+
+        invoked.ShouldBeTrue();
+    }
 }

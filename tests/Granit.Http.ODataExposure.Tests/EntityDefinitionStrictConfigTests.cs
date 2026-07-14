@@ -132,7 +132,13 @@ public sealed class EntityDefinitionStrictConfigTests
         });
 
         using WebApplication app = builder.Build();
-        app.MapGranitODataEndpoints("/api/granit/odata", configure);
+        app.MapGranitODataEndpoints("/api/granit/odata", opts =>
+        {
+            // #3005 — metadata stance is mandatory; declared here so these
+            // suites keep exercising the ADR-050 gates in isolation.
+            opts.AllowAnonymousMetadata();
+            configure(opts);
+        });
     }
 
     public sealed class Invoice

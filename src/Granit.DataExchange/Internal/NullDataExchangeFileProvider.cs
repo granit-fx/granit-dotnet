@@ -22,6 +22,14 @@ internal sealed class NullDataExchangeFileProvider : IDataExchangeFileProvider
         throw new NotImplementedException(Message);
 
     /// <inheritdoc/>
+    public Task<BlobReference> SaveAsync(
+        string fileName,
+        string contentType,
+        Func<Stream, CancellationToken, Task> writeAsync,
+        CancellationToken cancellationToken = default) =>
+        throw new NotImplementedException(Message);
+
+    /// <inheritdoc/>
     public Task DeleteAsync(BlobReference blobReference, CancellationToken cancellationToken = default) =>
         throw new NotImplementedException(Message);
 }

@@ -15,10 +15,12 @@ public static class ODataExposureServiceCollectionExtensions
     /// <summary>
     /// Registers the OData runtime infrastructure required by
     /// <see cref="ODataExposureEndpointRouteBuilderExtensions.MapGranitODataEndpoints"/>.
-    /// Enables the standard OData query features ($filter, $select, $top,
-    /// $skip, $orderby, $expand) so they are available on every exposed
-    /// EntitySet — per-set restrictions (e.g. expand whitelist, max top) are
-    /// applied per route in a follow-up story (#1392 / C3).
+    /// Enables exactly the query features the per-route
+    /// <c>ODataValidationSettings</c> can allow ($filter, $select, $orderby,
+    /// $count, $expand, $skiptoken; $top and $skip carry no enable gate on
+    /// <c>ODataMiniOptions</c> and are clamped per route) — per-set
+    /// restrictions (expand whitelist + depth, count gate, orderby whitelist,
+    /// max top) are applied per route.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
@@ -30,11 +32,23 @@ public static class ODataExposureServiceCollectionExtensions
         // parameter binder, and the routing helpers used by WithODataResult
         // / WithODataModel. The .Mini variant lives directly on
         // IServiceCollection (no MVC stack required) — this matters for
-        // minimal-API-only hosts. EnableAll() turns on every standard query
-        // option ($filter / $select / $top / $skip / $orderby / $expand /
-        // $count); per-route restrictions are layered via
-        // AddODataQueryEndpointFilter in #1392 / C3.
-        services.AddOData(opt => opt.EnableAll());
+        // minimal-API-only hosts. #3005: the former EnableAll() is replaced
+        // by the explicit per-option list so nothing outside the validated
+        // surface is ever switched on ($compute / $apply / $search have no
+        // enable hook on ODataMiniOptions 9.4.x and stay off; the per-route
+        // ODataValidationSettings.AllowedQueryOptions never includes them
+        // either — belt and braces). SetMaxTop(null) mirrors EnableAll()'s
+        // global no-cap default — the real cap is the per-route
+        // SetMaxTop(descriptor.MaxTop) silent clamp pinned by
+        // QueryHardeningTests.
+        services.AddOData(opt => opt
+            .Filter()
+            .Select()
+            .OrderBy()
+            .Count()
+            .SkipToken()
+            .Expand()
+            .SetMaxTop(null));
 
         // C3 hardening telemetry: counts rejected queries (count disabled,
         // expand not whitelisted) and top-clamps. Always on so observability

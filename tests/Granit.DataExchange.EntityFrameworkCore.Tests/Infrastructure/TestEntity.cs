@@ -11,4 +11,5 @@ internal sealed class TestEntity : Entity
     public string? Email { get; set; }
     public string? Niss { get; set; }
     public string? ExternalId { get; set; }
+    public int Age { get; set; }
 }

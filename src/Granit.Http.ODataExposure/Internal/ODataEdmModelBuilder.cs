@@ -22,28 +22,30 @@ internal static class ODataEdmModelBuilder
     public const string HostContainerName = "HostContainer";
 
     /// <summary>
-    /// Builds the EDM model for the supplied descriptors, applying a per-entity
-    /// scalar-property whitelist resolved from each entity's
-    /// <c>ExportDefinition</c>. Properties absent from the whitelist (including
-    /// framework-internal collections such as <c>DomainEvents</c> /
-    /// <c>IntegrationEvents</c>) are <c>EntityTypeConfiguration.Ignore(PropertyInfo)</c>-ed
-    /// before the convention pass runs. Navigation properties listed in the
-    /// descriptor's <see cref="ODataEntitySetDescriptor.ExpandWhitelist"/>
-    /// remain available to the consumer; un-whitelisted navigation properties
-    /// are ignored too.
+    /// Builds the EDM model for the supplied descriptors, applying the
+    /// per-type property whitelist resolved from each type's
+    /// <c>ExportDefinition</c> at startup. Every type in
+    /// <paramref name="whitelistByType"/> that is not an EntitySet root is a
+    /// navigation-target type reachable through a whitelisted <c>$expand</c>
+    /// path — it is registered explicitly via <c>AddEntityType</c> so the
+    /// convention pass cannot pull it in with every public property exposed
+    /// (#3005 — before this, navigation targets bypassed the ADR-050
+    /// whitelist entirely). Properties absent from a type's whitelist
+    /// (including framework-internal collections such as <c>DomainEvents</c> /
+    /// <c>IntegrationEvents</c>) are removed before the convention pass runs.
     /// </summary>
     /// <param name="descriptors">EntitySet descriptors registered via the fluent options.</param>
-    /// <param name="scalarWhitelistByEntity">Scalar property names allowed on the EDM EntityType, per entity CLR type. Resolved from <c>ExportDefinition.GetFields()</c> at startup.</param>
+    /// <param name="whitelistByType">Per-CLR-type whitelist covering every EntitySet root and every <c>$expand</c> closure target. Resolved by <c>ValidateAndResolveWhitelists</c> at startup.</param>
     /// <param name="containerName">OData container name; defaults to <see cref="TenantContainerName"/>. Host-feed callers pass <see cref="HostContainerName"/>.</param>
     /// <returns>The built <see cref="IEdmModel"/>, ready to wire into <c>WithODataModel</c>.</returns>
     /// <exception cref="ArgumentException"><paramref name="descriptors"/> is empty.</exception>
     public static IEdmModel Build(
         IReadOnlyList<ODataEntitySetDescriptor> descriptors,
-        IReadOnlyDictionary<Type, IReadOnlyList<string>> scalarWhitelistByEntity,
+        IReadOnlyDictionary<Type, ODataEntityTypeWhitelist> whitelistByType,
         string containerName = TenantContainerName)
     {
         ArgumentNullException.ThrowIfNull(descriptors);
-        ArgumentNullException.ThrowIfNull(scalarWhitelistByEntity);
+        ArgumentNullException.ThrowIfNull(whitelistByType);
         ArgumentException.ThrowIfNullOrWhiteSpace(containerName);
 
         if (descriptors.Count == 0)
@@ -54,6 +56,7 @@ internal static class ODataEdmModelBuilder
         }
 
         ODataConventionModelBuilder builder = new() { ContainerName = containerName };
+        Dictionary<Type, EntityTypeConfiguration> typeConfigurations = [];
 
         foreach (ODataEntitySetDescriptor descriptor in descriptors)
         {
@@ -62,11 +65,22 @@ internal static class ODataEdmModelBuilder
             // properties named "Id" / "{Type}Id" during GetEdmModel.
             EntityTypeConfiguration entityTypeConfig = builder.AddEntityType(descriptor.EntityType);
             builder.AddEntitySet(descriptor.EntitySetName, entityTypeConfig);
+            typeConfigurations.TryAdd(descriptor.EntityType, entityTypeConfig);
+        }
 
-            ApplyPropertyWhitelist(
-                entityTypeConfig,
-                descriptor,
-                scalarWhitelistByEntity[descriptor.EntityType]);
+        // $expand closure targets: registered explicitly (no EntitySet) so
+        // the whitelist below applies to them exactly as to the roots.
+        foreach (Type type in whitelistByType.Keys)
+        {
+            if (!typeConfigurations.ContainsKey(type))
+            {
+                typeConfigurations[type] = builder.AddEntityType(type);
+            }
+        }
+
+        foreach ((Type type, EntityTypeConfiguration configuration) in typeConfigurations)
+        {
+            ApplyPropertyWhitelist(configuration, type, whitelistByType[type]);
         }
 
         return builder.GetEdmModel();
@@ -74,26 +88,24 @@ internal static class ODataEdmModelBuilder
 
     /// <summary>
     /// Calls <see cref="StructuralTypeConfiguration.RemoveProperty(PropertyInfo)"/>
-    /// for every public CLR property of the entity that is not (a) the entity's
-    /// <c>Id</c> key, (b) a scalar property listed in the export-derived
-    /// whitelist, or (c) a navigation property listed in the descriptor's
-    /// <see cref="ODataEntitySetDescriptor.ExpandWhitelist"/>. <c>RemoveProperty</c>
-    /// adds to the type configuration's removed-properties list, which the
+    /// for every public CLR property of the entity type that is not (a) the
+    /// type's <c>Id</c> key, (b) a scalar property listed in the
+    /// export-derived whitelist, or (c) a navigation property listed in the
+    /// type's resolved navigation whitelist. <c>RemoveProperty</c> adds to
+    /// the type configuration's removed-properties list, which the
     /// <see cref="ODataConventionModelBuilder"/> consults during discovery —
-    /// ignored properties never make it into the EDM model, and notably never
+    /// removed properties never make it into the EDM model, and notably never
     /// into <c>$metadata</c>.
     /// </summary>
     private static void ApplyPropertyWhitelist(
         EntityTypeConfiguration entityTypeConfig,
-        ODataEntitySetDescriptor descriptor,
-        IReadOnlyList<string> allowedScalarProperties)
+        Type entityType,
+        ODataEntityTypeWhitelist whitelist)
     {
-        HashSet<string> allowedScalars = new(allowedScalarProperties, StringComparer.Ordinal);
-        HashSet<string> allowedNavs = new(
-            descriptor.ExpandWhitelist ?? [],
-            StringComparer.OrdinalIgnoreCase);
+        HashSet<string> allowedScalars = new(whitelist.AllowedScalars, StringComparer.Ordinal);
+        HashSet<string> allowedNavs = new(whitelist.AllowedNavigations, StringComparer.OrdinalIgnoreCase);
 
-        foreach (PropertyInfo property in descriptor.EntityType.GetProperties(
+        foreach (PropertyInfo property in entityType.GetProperties(
             BindingFlags.Public | BindingFlags.Instance))
         {
             // The Id key stays — the convention builder identifies it by name.
@@ -121,9 +133,11 @@ internal static class ODataEdmModelBuilder
     /// <see cref="IEdmNavigationProperty"/> or treats as complex types.
     /// Strings, primitives, enums, value types, <see cref="Guid"/>,
     /// <see cref="DateTime"/>/<see cref="DateTimeOffset"/> and friends are
-    /// scalar.
+    /// scalar. Shared with the startup closure validator (#3005) so "is this
+    /// segment a navigation?" means the same thing at validation time and at
+    /// model-build time.
     /// </summary>
-    private static bool IsNavigationOrCollection(Type type)
+    internal static bool IsNavigationOrCollection(Type type)
     {
         if (type == typeof(string))
         {
@@ -143,5 +157,27 @@ internal static class ODataEdmModelBuilder
         // Anything else (IEnumerable<T>, custom class, IReadOnlyCollection<T>, …)
         // is a navigation-like shape from the EDM's perspective.
         return true;
+    }
+
+    /// <summary>
+    /// Resolves the entity type a navigation property points at: the element
+    /// type for collection navigations (<c>IEnumerable&lt;T&gt;</c> shapes,
+    /// arrays), the property type itself for reference navigations. Used by
+    /// the startup closure walk (#3005) to follow whitelisted <c>$expand</c>
+    /// paths across CLR types.
+    /// </summary>
+    internal static Type ResolveNavigationTargetType(Type propertyType)
+    {
+        if (propertyType.IsArray)
+        {
+            return propertyType.GetElementType()!;
+        }
+
+        Type? enumerable = propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+            ? propertyType
+            : Array.Find(propertyType.GetInterfaces(), i =>
+                i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+
+        return enumerable?.GetGenericArguments()[0] ?? propertyType;
     }
 }

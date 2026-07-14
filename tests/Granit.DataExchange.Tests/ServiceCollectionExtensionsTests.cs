@@ -4,6 +4,8 @@ using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.DataExchange.Internal;
+using Granit.DataExchange.Retention;
+using Granit.DataExchange.Retention.Internal;
 using Granit.DataExchange.Tests.Mapping;
 using Granit.Events;
 using Microsoft.Extensions.DependencyInjection;
@@ -117,6 +119,22 @@ public sealed class ServiceCollectionExtensionsTests
         ServiceProvider provider = services.BuildServiceProvider();
         ISemanticMappingService service = provider.GetRequiredService<ISemanticMappingService>();
         service.ShouldBeOfType<FakeSemanticMappingService>();
+    }
+
+    [Fact]
+    public void AddGranitDataImport_registers_fail_fast_retention_store()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitDataImport();
+
+        // Assert
+        services.ShouldContain(d =>
+            d.ServiceType == typeof(IDataExchangeRetentionStore) &&
+            d.ImplementationType == typeof(NullDataExchangeRetentionStore) &&
+            d.Lifetime == ServiceLifetime.Scoped);
     }
 
     [Fact]
@@ -248,6 +266,51 @@ public sealed class ServiceCollectionExtensionsTests
 
         descriptor.Name.ShouldBe("Test.ExportEntity");
         descriptor.EntityType.ShouldBe(typeof(TestExportEntity));
+    }
+
+    [Fact]
+    public void AddExportDefinition_registers_entity_binding_as_singleton()
+    {
+        ServiceCollection services = new();
+
+        services.AddExportDefinition<TestExportEntity, TestExportEntityDefinition>();
+
+        services.ShouldContain(d =>
+            d.ServiceType == typeof(IExportEntityBinding) &&
+            d.Lifetime == ServiceLifetime.Singleton);
+    }
+
+    [Fact]
+    public void AddExportDefinition_binding_recovers_typed_definition_via_visitor()
+    {
+        ServiceCollection services = new();
+        services.AddExportDefinition<TestExportEntity, TestExportEntityDefinition>();
+        ServiceProvider provider = services.BuildServiceProvider();
+
+        IExportEntityBinding binding = provider.GetRequiredService<IExportEntityBinding>();
+
+        binding.Descriptor.ShouldBeSameAs(provider.GetRequiredService<ExportDefinition<TestExportEntity>>());
+        Type visitedEntityType = binding.Accept(new EntityTypeProbeVisitor());
+        visitedEntityType.ShouldBe(typeof(TestExportEntity));
+    }
+
+    [Fact]
+    public void AddExportDefinition_is_idempotent_for_same_pair()
+    {
+        ServiceCollection services = new();
+
+        services.AddExportDefinition<TestExportEntity, TestExportEntityDefinition>();
+        services.AddExportDefinition<TestExportEntity, TestExportEntityDefinition>();
+
+        services.Count(d => d.ServiceType == typeof(ExportDefinition<TestExportEntity>)).ShouldBe(1);
+        services.Count(d => d.ServiceType == typeof(IExportEntityBinding)).ShouldBe(1);
+    }
+
+    private sealed class EntityTypeProbeVisitor : IExportEntityVisitor<Type>
+    {
+        public Type Visit<TEntity>(ExportDefinition<TEntity> definition)
+            where TEntity : class =>
+            typeof(TEntity);
     }
 
     [Fact]

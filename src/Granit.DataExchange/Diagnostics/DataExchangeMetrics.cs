@@ -18,6 +18,7 @@ public sealed class DataExchangeMetrics
     private const string TagStatus = "status";
     private const string TagDefinition = "definition";
     private const string TagResult = "result";
+    private const string TagKind = "kind";
 
     // ──── Import instruments ────
 
@@ -31,6 +32,10 @@ public sealed class DataExchangeMetrics
     private readonly Counter<long> _exportJobsCompleted;
     private readonly Counter<long> _exportRowsExported;
     private readonly Histogram<double> _exportDuration;
+
+    // ──── Retention instruments ────
+
+    private readonly Counter<long> _retentionPurged;
 
     public DataExchangeMetrics(IMeterFactory meterFactory)
     {
@@ -65,6 +70,10 @@ public sealed class DataExchangeMetrics
             "granit.data_exchange.export.duration",
             unit: "s",
             description: "Duration of export pipeline execution in seconds.");
+
+        _retentionPurged = meter.CreateCounter<long>(
+            "granit.dataexchange.retention.purged",
+            description: "Number of import/export jobs purged (file or record) or recovered (stuck) by the retention sweep.");
     }
 
     /// <summary>
@@ -147,6 +156,30 @@ public sealed class DataExchangeMetrics
             { TagTenantId, tenant },
             { TagStatus, "Failed" },
             { TagDefinition, definitionName },
+        });
+    }
+
+    /// <summary>
+    /// Records import/export jobs purged (file or record) or recovered (stuck) by the
+    /// retention sweep (<c>Granit.DataExchange.BackgroundJobs</c>).
+    /// </summary>
+    /// <param name="kind">
+    /// One of <c>import_file</c>, <c>export_file</c>, <c>import_record</c>, <c>export_record</c>,
+    /// <c>stuck_import</c>, <c>stuck_export</c>.
+    /// </param>
+    /// <param name="tenantId">The tenant identifier, or <see langword="null"/> for the host partition.</param>
+    /// <param name="count">Number of jobs affected.</param>
+    public void RecordRetentionPurged(string kind, string? tenantId, int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+
+        _retentionPurged.Add(count, new TagList
+        {
+            { TagKind, kind },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
     }
 

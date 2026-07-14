@@ -1,16 +1,15 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using Granit.Commands;
 using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Events;
 using Granit.DataExchange.Export.Exceptions;
 using Granit.DataExchange.Export.Messages;
+using Granit.DataExchange.Export.Pipeline;
 using Granit.Domain.ValueObjects;
 using Granit.Events;
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.QueryEngine;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -20,9 +19,9 @@ namespace Granit.DataExchange.Export;
 
 /// <summary>
 /// Default <see cref="IExportOrchestrator"/> implementation.
-/// Resolves the export definition, streams data via
-/// <see cref="IExportDataSource{TEntity}"/> + optional <see cref="IQueryEngine{TEntity}"/>,
-/// extracts field values, and writes the output via the matching <see cref="IExportWriter"/>.
+/// Resolves the typed export pipeline from the <see cref="IExportPipelineRegistry"/>,
+/// delegates streaming and value extraction to it, and writes the output via the
+/// matching <see cref="IExportWriter"/>.
 /// </summary>
 public sealed partial class ExportOrchestrator(
     IServiceProvider serviceProvider,
@@ -36,8 +35,8 @@ public sealed partial class ExportOrchestrator(
     ILocalEventBus eventBus,
     IDistributedEventBus distributedEventBus,
     ICurrentTenant currentTenant,
+    IExportPipelineRegistry pipelineRegistry,
     IExtraExportFieldProvider extraFieldProvider,
-    IExportExtraValueResolver extraValueResolver,
     DataExchangeMetrics metrics,
     ILogger<ExportOrchestrator> logger) : IExportOrchestrator
 {
@@ -46,7 +45,7 @@ public sealed partial class ExportOrchestrator(
     {
         _ = serviceProvider.GetRequiredService<IOptions<ExportOptions>>().Value; // Validated early; will carry threshold logic in a future version.
         // Validate early
-        IExportDefinitionDescriptor definition = ResolveDefinition(request.DefinitionName);
+        IExportDefinitionDescriptor definition = ResolvePipelineDescriptor(request.DefinitionName).Definition;
         IExportWriter writer = ResolveWriter(request.Format);
 
         // Fast-fail when the format cannot handle complex fields (Throw policy)
@@ -97,26 +96,33 @@ public sealed partial class ExportOrchestrator(
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
             ExportRequest request = job.Request;
-            IExportDefinitionDescriptor definition = ResolveDefinition(request.DefinitionName);
+            IExportPipelineDescriptor pipelineDescriptor = ResolvePipelineDescriptor(request.DefinitionName);
+            IExportDefinitionDescriptor definition = pipelineDescriptor.Definition;
             IExportWriter writer = ResolveWriter(request.Format);
             IReadOnlyList<ExportFieldDescriptor> fields = ResolveFields(definition, request.SelectedFields, request.IncludeIdForImport);
 
             // Apply Skip policy: strip complex fields when writer cannot handle them
             fields = FilterIncompatibleFields(definition, writer, fields, request.Format);
 
-            // Project entity rows to flat dictionaries
-            int rowCount = 0;
-            IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows =
-                GetProjectedRows(definition, request, fields, count => rowCount = count, cancellationToken);
+            // Stream entities through the typed pipeline into a temporary stream
+            IExportPipeline pipeline = pipelineDescriptor.Create(serviceProvider);
+            ExportPipelineContext pipelineContext = new()
+            {
+                Request = request,
+                Fields = fields,
+                Writer = writer,
+            };
 
-            // Write to temporary stream
-            MemoryStream outputStream = new();
-            await writer.WriteAsync(outputStream, fields, rows, cancellationToken).ConfigureAwait(false);
-            outputStream.Position = 0;
-
-            // Store the generated file
+            // Store the generated file, streaming pipeline output directly into the provider's
+            // destination stream — no full in-memory buffer of the generated file.
             string fileName = $"{SanitizeFileName(request.DefinitionName)}_{clock.Now:yyyy-MM-dd_HHmmss}{writer.FileExtension}";
-            BlobReference blobReference = await fileProvider.SaveAsync(fileName, outputStream, cancellationToken).ConfigureAwait(false);
+            long writtenRows = 0;
+            BlobReference blobReference = await fileProvider.SaveAsync(
+                fileName,
+                writer.MimeType,
+                async (stream, ct) => writtenRows = await pipeline.WriteAsync(pipelineContext, stream, ct).ConfigureAwait(false),
+                cancellationToken).ConfigureAwait(false);
+            int rowCount = checked((int)writtenRows);
 
             stopwatch.Stop();
             job.Complete(blobReference, fileName, rowCount, clock.Now);
@@ -174,32 +180,21 @@ public sealed partial class ExportOrchestrator(
         return new ExportDownload(stream, writer.MimeType, job.FileName);
     }
 
-    private IExportDefinitionDescriptor ResolveDefinition(string definitionName)
+    private IExportPipelineDescriptor ResolvePipelineDescriptor(string definitionName)
     {
-        IExportDefinitionProvider? provider = serviceProvider.GetService<IExportDefinitionProvider>();
-        if (provider is not null)
+        IExportPipelineDescriptor? descriptor = pipelineRegistry.Find(definitionName);
+        if (descriptor is not null)
         {
-            IExportDefinitionDescriptor? descriptor = provider.FindByName(definitionName);
-            if (descriptor is not null)
-            {
-                return descriptor;
-            }
-        }
-        else
-        {
-            // Backward compat: no provider registered (no EF Core module)
-            IExportDefinitionDescriptor? descriptor = serviceProvider
-                .GetServices<IExportDefinitionDescriptor>()
-                .FirstOrDefault(d => string.Equals(d.Name, definitionName, StringComparison.OrdinalIgnoreCase));
-
-            if (descriptor is not null)
-            {
-                return descriptor;
-            }
+            return descriptor;
         }
 
+        IReadOnlyList<IExportPipelineDescriptor> registered = pipelineRegistry.GetAll();
+        string registeredNames = registered.Count > 0
+            ? string.Join(", ", registered.Select(d => d.DefinitionName))
+            : "none";
         throw new InvalidOperationException(
-            $"Export definition '{definitionName}' not found.");
+            $"Export definition '{definitionName}' not found (lookups are case-sensitive). " +
+            $"Registered definitions: [{registeredNames}].");
     }
 
     private IExportWriter ResolveWriter(string format)
@@ -292,168 +287,6 @@ public sealed partial class ExportOrchestrator(
 
         List<ExportFieldDescriptor> withId = [idField, .. fields];
         return withId.AsReadOnly();
-    }
-
-    private async IAsyncEnumerable<IReadOnlyDictionary<string, object?>> GetProjectedRows(
-        IExportDefinitionDescriptor definition,
-        ExportRequest request,
-        IReadOnlyList<ExportFieldDescriptor> fields,
-        Action<int> setRowCount,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        // Resolve the data source dynamically (single type param)
-        Type dataSourceType = typeof(IExportDataSource<>)
-            .MakeGenericType(definition.EntityType);
-        object dataSource = serviceProvider.GetRequiredService(dataSourceType);
-
-        // Call GetQueryable() via reflection
-        System.Reflection.MethodInfo getQueryableMethod = dataSourceType
-            .GetMethod(nameof(IExportDataSource<object>.GetQueryable))!;
-        object queryable = getQueryableMethod.Invoke(dataSource, [])!;
-
-        IAsyncEnumerable<object> typedIterator;
-
-        if (definition.QueryDefinitionName is not null)
-        {
-            // Use IQueryEngine for filtering and sorting
-            Type queryEngineType = typeof(IQueryEngine<>)
-                .MakeGenericType(definition.EntityType);
-            object queryEngine = serviceProvider.GetRequiredService(queryEngineType);
-
-            QueryRequest queryRequest = new()
-            {
-                Sort = request.Sort,
-                Filter = request.Filter,
-                Presets = request.Presets,
-                Search = request.Search,
-            };
-
-            // Call ExecuteStreamAsync(queryable, queryRequest, cancellationToken) via reflection
-            System.Reflection.MethodInfo streamMethod = queryEngineType
-                .GetMethod(nameof(IQueryEngine<object>.ExecuteStreamAsync))!;
-            object asyncEnumerable = streamMethod.Invoke(queryEngine, [queryable, queryRequest, cancellationToken])!;
-
-            // Bridge the generic gap via IterateAsync<TEntity>
-            System.Reflection.MethodInfo iterateMethod = typeof(ExportOrchestrator)
-                .GetMethod(nameof(IterateAsync), System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!
-                .MakeGenericMethod(definition.EntityType);
-            typedIterator = (IAsyncEnumerable<object>)iterateMethod.Invoke(null, [asyncEnumerable, cancellationToken])!;
-        }
-        else
-        {
-            // No QueryDefinition — stream queryable directly (sync iteration)
-            System.Reflection.MethodInfo enumerateMethod = typeof(ExportOrchestrator)
-                .GetMethod(nameof(EnumerateQueryable), System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!
-                .MakeGenericMethod(definition.EntityType);
-            typedIterator = (IAsyncEnumerable<object>)enumerateMethod.Invoke(null, [queryable, cancellationToken])!;
-        }
-
-        // Build set of extra property names for fast lookup during row extraction
-        HashSet<string>? extraPropertyNames = null;
-        if (definition.IncludeMetadata)
-        {
-            IReadOnlyList<ExportFieldDescriptor> extraFields = extraFieldProvider.GetExtraFields(definition.EntityType);
-            if (extraFields.Count > 0)
-            {
-                extraPropertyNames = new HashSet<string>(
-                    extraFields.Select(f => f.PropertyPath), StringComparer.Ordinal);
-            }
-        }
-
-        int count = 0;
-        await foreach (object entity in typedIterator.WithCancellation(cancellationToken).ConfigureAwait(false))
-        {
-            count++;
-            yield return ExtractRow(entity, fields, extraPropertyNames);
-        }
-
-        setRowCount(count);
-    }
-
-    /// <summary>
-    /// Iterates an <c>IAsyncEnumerable&lt;T&gt;</c>, yielding each element as <c>object</c>.
-    /// Called via reflection from <see cref="GetProjectedRows"/> to bridge the generic gap.
-    /// Public on an internal class to avoid <c>BindingFlags.NonPublic</c> in reflection (S3011).
-    /// </summary>
-    public static async IAsyncEnumerable<object> IterateAsync<T>(
-        IAsyncEnumerable<T> source,
-        [EnumeratorCancellation] CancellationToken cancellationToken) where T : notnull
-    {
-        await foreach (T item in source.WithCancellation(cancellationToken).ConfigureAwait(false))
-        {
-            yield return item;
-        }
-    }
-
-    /// <summary>
-    /// Enumerates an <c>IQueryable&lt;T&gt;</c> synchronously, yielding each element as <c>object</c>.
-    /// Used when no <c>QueryDefinition</c> is associated with the export definition.
-    /// Public on an internal class to avoid <c>BindingFlags.NonPublic</c> in reflection (S3011).
-    /// </summary>
-    public static async IAsyncEnumerable<object> EnumerateQueryable<T>(
-        IQueryable<T> source,
-        [EnumeratorCancellation] CancellationToken cancellationToken) where T : notnull
-    {
-        await Task.CompletedTask.ConfigureAwait(false);
-        foreach (T item in source)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            yield return item;
-        }
-    }
-
-    private Dictionary<string, object?> ExtractRow(
-        object entity,
-        IReadOnlyList<ExportFieldDescriptor> fields,
-        HashSet<string>? extraPropertyNames)
-    {
-        Dictionary<string, object?> row = new(fields.Count);
-
-        foreach (ExportFieldDescriptor field in fields)
-        {
-            string propertyPath = field.PropertyPath;
-            object? value;
-
-            if (field.ValueSelector is not null)
-            {
-                value = field.ValueSelector(entity);
-            }
-            else if (extraPropertyNames?.Contains(propertyPath) == true)
-            {
-                value = extraValueResolver.ResolveExtraValue(entity, propertyPath);
-            }
-            else
-            {
-                value = ResolvePropertyValue(entity, propertyPath);
-            }
-
-            row[propertyPath] = value;
-        }
-
-        return row;
-    }
-
-    private static object? ResolvePropertyValue(object? obj, string propertyPath)
-    {
-        if (obj is null)
-        {
-            return null;
-        }
-
-        ReadOnlySpan<char> remaining = propertyPath.AsSpan();
-        object? current = obj;
-
-        while (!remaining.IsEmpty && current is not null)
-        {
-            int dotIndex = remaining.IndexOf('.');
-            ReadOnlySpan<char> segment = dotIndex >= 0 ? remaining[..dotIndex] : remaining;
-            remaining = dotIndex >= 0 ? remaining[(dotIndex + 1)..] : [];
-
-            System.Reflection.PropertyInfo? prop = current.GetType().GetProperty(segment.ToString());
-            current = prop?.GetValue(current);
-        }
-
-        return current;
     }
 
     private IReadOnlyList<ExportFieldDescriptor> FilterIncompatibleFields(

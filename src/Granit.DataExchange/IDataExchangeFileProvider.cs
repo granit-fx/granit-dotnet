@@ -31,6 +31,22 @@ public interface IDataExchangeFileProvider
     Task<BlobReference> SaveAsync(string fileName, Stream content, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Saves a file by writing directly into the provider's destination stream, avoiding a full
+    /// in-memory buffer. <paramref name="writeAsync"/> receives the writable destination stream and
+    /// must write the complete payload; the provider commits on success and discards on exception.
+    /// </summary>
+    /// <param name="fileName">The original file name.</param>
+    /// <param name="contentType">MIME content type of the file being written.</param>
+    /// <param name="writeAsync">Callback that writes the complete payload to the destination stream.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The blob reference produced by the provider.</returns>
+    Task<BlobReference> SaveAsync(
+        string fileName,
+        string contentType,
+        Func<Stream, CancellationToken, Task> writeAsync,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Deletes a previously saved file by its blob reference.
     /// </summary>
     /// <param name="blobReference">The blob reference to delete.</param>

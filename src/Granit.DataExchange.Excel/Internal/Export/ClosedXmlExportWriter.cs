@@ -1,3 +1,4 @@
+using System.Globalization;
 using ClosedXML.Excel;
 using Granit.DataExchange.Export;
 
@@ -17,9 +18,25 @@ namespace Granit.DataExchange.Excel.Internal.Export;
 /// use date formatting, <c>decimal</c>/<c>double</c>/<c>int</c> use number formatting,
 /// and everything else is written as text.
 /// </para>
+/// <para>
+/// The xlsx format caps a worksheet at <see cref="MaxRowsPerSheet"/> rows. The writer checks the
+/// cap per row and fails fast with an actionable message instead of buffering gigabytes before
+/// ClosedXML rejects the workbook.
+/// </para>
 /// </remarks>
 internal sealed class ClosedXmlExportWriter : IExportWriter
 {
+    /// <summary>
+    /// Hard xlsx worksheet row limit (Office Open XML). One row is consumed by the header,
+    /// so at most <see cref="MaxDataRows"/> data rows fit on the sheet.
+    /// </summary>
+    internal const int MaxRowsPerSheet = 1_048_576;
+
+    /// <summary>
+    /// Maximum number of data rows (<see cref="MaxRowsPerSheet"/> minus the header row).
+    /// </summary>
+    internal const int MaxDataRows = MaxRowsPerSheet - 1;
+
     /// <inheritdoc/>
     public bool CanWrite(string format) =>
         string.Equals(format, "xlsx", StringComparison.OrdinalIgnoreCase);
@@ -34,10 +51,10 @@ internal sealed class ClosedXmlExportWriter : IExportWriter
     public ExportFormatCapabilities Capabilities => ExportFormatCapabilities.TabularOnly;
 
     /// <inheritdoc/>
-    public async Task WriteAsync(
+    public async Task<long> WriteAsync(
         Stream output,
         IReadOnlyList<ExportFieldDescriptor> fields,
-        IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows,
+        IAsyncEnumerable<object?[]> rows,
         CancellationToken cancellationToken = default)
     {
         using XLWorkbook workbook = new();
@@ -51,21 +68,45 @@ internal sealed class ClosedXmlExportWriter : IExportWriter
             cell.Style.Font.Bold = true;
         }
 
-        // Data rows
-        int row = 2;
-        await foreach (IReadOnlyDictionary<string, object?> data in rows.WithCancellation(cancellationToken).ConfigureAwait(false))
+        // Data rows (values aligned to the fields index)
+        long rowCount = 0;
+        int rowNumber = 2;
+        await foreach (object?[] row in rows.WithCancellation(cancellationToken).ConfigureAwait(false))
         {
+            ThrowIfRowCapExceeded(rowCount);
+
             for (int col = 0; col < fields.Count; col++)
             {
-                object? value = data.GetValueOrDefault(fields[col].PropertyPath);
-                SetCellValue(ws.Cell(row, col + 1), value, fields[col]);
+                SetCellValue(ws.Cell(rowNumber, col + 1), row[col], fields[col]);
             }
 
-            row++;
+            rowNumber++;
+            rowCount++;
         }
 
         ws.Columns().AdjustToContents();
         workbook.SaveAs(output);
+        return rowCount;
+    }
+
+    /// <summary>
+    /// Throws when writing one more data row would exceed <see cref="MaxDataRows"/>.
+    /// Internal so the guard is unit-testable without generating a million rows.
+    /// </summary>
+    /// <param name="dataRowsWritten">The number of data rows already written to the sheet.</param>
+    /// <exception cref="InvalidOperationException">The worksheet row cap is reached.</exception>
+    internal static void ThrowIfRowCapExceeded(long dataRowsWritten)
+    {
+        if (dataRowsWritten >= MaxDataRows)
+        {
+            string rowLimit = MaxRowsPerSheet.ToString("N0", CultureInfo.InvariantCulture);
+            string dataRowLimit = MaxDataRows.ToString("N0", CultureInfo.InvariantCulture);
+            throw new InvalidOperationException(
+                $"The xlsx format supports at most {rowLimit} rows per worksheet " +
+                $"({dataRowLimit} data rows plus 1 header row) and the export exceeds that limit. " +
+                "Use a streaming format such as 'csv' or 'json' for larger datasets, " +
+                "or narrow the export with filters.");
+        }
     }
 
     private static void SetCellValue(IXLCell cell, object? value, ExportFieldDescriptor field)

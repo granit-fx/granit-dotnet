@@ -28,20 +28,16 @@ internal sealed class ImportJobConfiguration : IEntityTypeConfiguration<ImportJo
             .IsRequired()
             .HasMaxLength(20);
 
-        builder.OwnsMany(e => e.Mappings, m =>
-        {
-            m.ToJson();
-            m.Property(p => p.SourceColumn);
-            m.Property(p => p.TargetProperty);
-            m.Property(p => p.Confidence);
-        });
-
-        // ImportReport is serialized as an opaque JSON string via the framework helper
-        // rather than .ToJson() owned mapping: ImportReport's nested IReadOnlyList<ImportRowError>
-        // + TimeSpan + enum compose awkwardly under EF Core 10 owned-types, while
-        // round-tripping through System.Text.Json is straightforward.
+        // Mappings and ImportReport are serialized as opaque JSON strings via the framework
+        // helper rather than .ToJson() owned mappings: the job aggregate is always written
+        // detached (store-per-call contexts), and EF Core 10 cannot save a detached owned
+        // JSON collection (unknown '__synthesizedOrdinal' shadow key). ImportReport's nested
+        // IReadOnlyList<ImportRowError> + TimeSpan + enum additionally compose awkwardly
+        // under owned-types, while round-tripping through System.Text.Json is straightforward.
+        builder.Property(e => e.Mappings).HasJsonConversion();
         builder.Property(e => e.Report).HasJsonConversion();
         builder.Property(e => e.CompletedAt);
+        builder.Property(e => e.FileDeletedAt);
         builder.Property(e => e.TenantId);
 
         // Audit trail (ISO 27001)

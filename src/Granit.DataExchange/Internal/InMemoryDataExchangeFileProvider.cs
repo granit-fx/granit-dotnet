@@ -48,6 +48,24 @@ internal sealed class InMemoryDataExchangeFileProvider : IDataExchangeFileProvid
     }
 
     /// <inheritdoc/>
+    public async Task<BlobReference> SaveAsync(
+        string fileName,
+        string contentType,
+        Func<Stream, CancellationToken, Task> writeAsync,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(writeAsync);
+
+        await using MemoryStream buffer = new();
+        await writeAsync(buffer, cancellationToken).ConfigureAwait(false);
+
+        string reference = $"mem-{Interlocked.Increment(ref _counter)}";
+        _store[reference] = buffer.ToArray();
+
+        return BlobReference.Create(reference);
+    }
+
+    /// <inheritdoc/>
     public Task DeleteAsync(BlobReference blobReference, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(blobReference);

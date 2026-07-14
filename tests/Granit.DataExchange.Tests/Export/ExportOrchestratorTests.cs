@@ -5,6 +5,7 @@ using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Exceptions;
+using Granit.DataExchange.Export.Internal;
 using Granit.DataExchange.Export.Messages;
 using Granit.Events;
 using Granit.Guids;
@@ -38,8 +39,21 @@ public sealed class ExportOrchestratorTests
     {
         _clock.Now.Returns(_now);
 
-        _fileProvider.SaveAsync(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
-            .Returns(Granit.Domain.ValueObjects.BlobReference.Create("blob-ref-export"));
+        _fileProvider.SaveAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<Func<Stream, CancellationToken, Task>>(),
+            Arg.Any<CancellationToken>())
+            .Returns(async call =>
+            {
+                // Mirror the real providers: invoke the streaming callback against a throwaway
+                // stream so the pipeline (and its row count) actually runs, then hand back the reference.
+                Func<Stream, CancellationToken, Task> writeAsync = call.Arg<Func<Stream, CancellationToken, Task>>();
+                CancellationToken cancellationToken = call.Arg<CancellationToken>();
+                await using MemoryStream stream = new();
+                await writeAsync(stream, cancellationToken);
+                return Granit.Domain.ValueObjects.BlobReference.Create("blob-ref-export");
+            });
 
         _jobReader.GetAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(call =>
@@ -83,6 +97,22 @@ public sealed class ExportOrchestratorTests
         // Arrange
         ExportOrchestrator sut = CreateOrchestrator();
         ExportRequest request = new("Unknown.Export", "csv", null, false, null, null, null, null);
+
+        // Act & Assert
+        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
+            () => sut.ExportAsync(request, TestContext.Current.CancellationToken));
+
+        // The miss message lists the registered definition names
+        ex.Message.ShouldContain("Unknown.Export");
+        ex.Message.ShouldContain("Test.Export");
+    }
+
+    [Fact]
+    public async Task ExportAsync_definition_lookup_is_case_sensitive()
+    {
+        // Arrange — registry lookups are ordinal (matching the import side)
+        ExportOrchestrator sut = CreateOrchestrator();
+        ExportRequest request = new("test.export", "csv", null, false, null, null, null, null);
 
         // Act & Assert
         await Should.ThrowAsync<InvalidOperationException>(
@@ -144,34 +174,17 @@ public sealed class ExportOrchestratorTests
     public async Task ExecuteAsync_with_selected_fields_filters_columns()
     {
         // Arrange
-        ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.Export", "csv", ["Name"], false, null, null, null, null);
         var job = ExportJob.Create(jobId, "Test.Export", "csv", request);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
-        IExportWriter capturedWriter = Substitute.For<IExportWriter>();
-        capturedWriter.CanWrite("csv").Returns(true);
-        capturedWriter.FileExtension.Returns(".csv");
-        capturedWriter.MimeType.Returns("text/csv");
-
         IReadOnlyList<ExportFieldDescriptor>? capturedFields = null;
-        capturedWriter.WriteAsync(
-            Arg.Any<Stream>(),
-            Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
-            Arg.Any<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>(),
-            Arg.Any<CancellationToken>())
-            .Returns(call =>
-            {
-                capturedFields = call.Arg<IReadOnlyList<ExportFieldDescriptor>>();
-                return Task.CompletedTask;
-            });
-
-        ExportOrchestrator sutWithCapture = CreateOrchestrator(capturedWriter);
-        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+        IExportWriter capturedWriter = CreateCsvWriter(captureFields: f => capturedFields = f);
+        ExportOrchestrator sut = CreateOrchestrator(capturedWriter);
 
         // Act
-        await sutWithCapture.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+        await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
 
         // Assert
         capturedFields.ShouldNotBeNull();
@@ -183,42 +196,22 @@ public sealed class ExportOrchestratorTests
     public async Task ExecuteAsync_with_navigation_field_resolves_dot_notation()
     {
         // Arrange
-        ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.Export", "csv", ["Company.Name"], false, null, null, null, null);
         var job = ExportJob.Create(jobId, "Test.Export", "csv", request);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
-        List<IReadOnlyDictionary<string, object?>> capturedRows = [];
-        IExportWriter capturedWriter = Substitute.For<IExportWriter>();
-        capturedWriter.CanWrite("csv").Returns(true);
-        capturedWriter.FileExtension.Returns(".csv");
-        capturedWriter.MimeType.Returns("text/csv");
-        capturedWriter.WriteAsync(
-            Arg.Any<Stream>(),
-            Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
-            Arg.Any<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>(),
-            Arg.Any<CancellationToken>())
-            .Returns(async call =>
-            {
-                IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows =
-                    call.Arg<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>();
-                await foreach (IReadOnlyDictionary<string, object?> row in rows)
-                {
-                    capturedRows.Add(row);
-                }
-            });
-
-        ExportOrchestrator sutWithCapture = CreateOrchestrator(capturedWriter);
-        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+        List<object?[]> capturedRows = [];
+        IExportWriter capturedWriter = CreateCsvWriter(captureRows: capturedRows);
+        ExportOrchestrator sut = CreateOrchestrator(capturedWriter);
 
         // Act
-        await sutWithCapture.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+        await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
 
-        // Assert
+        // Assert — single selected field "Company.Name" at index 0
         capturedRows.Count.ShouldBe(2);
-        capturedRows[0]["Company.Name"].ShouldBe("Acme Corp");
-        capturedRows[1]["Company.Name"].ShouldBeNull(); // Jane has no company
+        capturedRows[0][0].ShouldBe("Acme Corp");
+        capturedRows[1][0].ShouldBeNull(); // Jane has no company — null-propagating compiled getter
     }
 
     [Fact]
@@ -229,19 +222,8 @@ public sealed class ExportOrchestratorTests
         ExportJob job = BuildJob(jobId, ExportJobStatus.Queued);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
-        IExportWriter failingWriter = Substitute.For<IExportWriter>();
-        failingWriter.CanWrite("csv").Returns(true);
-        failingWriter.FileExtension.Returns(".csv");
-        failingWriter.MimeType.Returns("text/csv");
-        failingWriter.WriteAsync(
-            Arg.Any<Stream>(),
-            Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
-            Arg.Any<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>(),
-            Arg.Any<CancellationToken>())
-            .Returns<Task>(_ => throw new IOException("Disk full"));
-
+        IExportWriter failingWriter = CreateFailingWriter(new IOException("Disk full"));
         ExportOrchestrator sut = CreateOrchestrator(failingWriter);
-        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         // Act & Assert
         await Should.ThrowAsync<IOException>(
@@ -262,7 +244,9 @@ public sealed class ExportOrchestratorTests
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         FakeQueryEngine queryEngine = new();
-        ExportOrchestrator sut = CreateOrchestratorWithQueryEngine(queryEngine);
+        ExportOrchestrator sut = CreateOrchestrator(
+            definition: new TestQueryExportDefinition(),
+            queryEngine: queryEngine);
 
         // Act
         await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
@@ -279,33 +263,17 @@ public sealed class ExportOrchestratorTests
     public async Task ExecuteAsync_with_empty_selected_fields_returns_all()
     {
         // Arrange — empty list (not null) should behave like null: return all fields
-        ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.Export", "csv", [], false, null, null, null, null);
         var job = ExportJob.Create(jobId, "Test.Export", "csv", request);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         IReadOnlyList<ExportFieldDescriptor>? capturedFields = null;
-        IExportWriter capturedWriter = Substitute.For<IExportWriter>();
-        capturedWriter.CanWrite("csv").Returns(true);
-        capturedWriter.FileExtension.Returns(".csv");
-        capturedWriter.MimeType.Returns("text/csv");
-        capturedWriter.WriteAsync(
-            Arg.Any<Stream>(),
-            Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
-            Arg.Any<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>(),
-            Arg.Any<CancellationToken>())
-            .Returns(call =>
-            {
-                capturedFields = call.Arg<IReadOnlyList<ExportFieldDescriptor>>();
-                return Task.CompletedTask;
-            });
-
-        ExportOrchestrator sutWithCapture = CreateOrchestrator(capturedWriter);
-        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+        IExportWriter capturedWriter = CreateCsvWriter(captureFields: f => capturedFields = f);
+        ExportOrchestrator sut = CreateOrchestrator(capturedWriter);
 
         // Act
-        await sutWithCapture.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+        await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
 
         // Assert — all 3 fields from TestExportDefinition
         capturedFields.ShouldNotBeNull();
@@ -316,33 +284,17 @@ public sealed class ExportOrchestratorTests
     public async Task ExecuteAsync_with_selected_fields_preserves_user_order()
     {
         // Arrange — user asks for Email before Name
-        ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.Export", "csv", ["Email", "Name"], false, null, null, null, null);
         var job = ExportJob.Create(jobId, "Test.Export", "csv", request);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         IReadOnlyList<ExportFieldDescriptor>? capturedFields = null;
-        IExportWriter capturedWriter = Substitute.For<IExportWriter>();
-        capturedWriter.CanWrite("csv").Returns(true);
-        capturedWriter.FileExtension.Returns(".csv");
-        capturedWriter.MimeType.Returns("text/csv");
-        capturedWriter.WriteAsync(
-            Arg.Any<Stream>(),
-            Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
-            Arg.Any<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>(),
-            Arg.Any<CancellationToken>())
-            .Returns(call =>
-            {
-                capturedFields = call.Arg<IReadOnlyList<ExportFieldDescriptor>>();
-                return Task.CompletedTask;
-            });
-
-        ExportOrchestrator sutWithCapture = CreateOrchestrator(capturedWriter);
-        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+        IExportWriter capturedWriter = CreateCsvWriter(captureFields: f => capturedFields = f);
+        ExportOrchestrator sut = CreateOrchestrator(capturedWriter);
 
         // Act
-        await sutWithCapture.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+        await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
 
         // Assert — order preserved as user specified
         capturedFields.ShouldNotBeNull();
@@ -382,7 +334,9 @@ public sealed class ExportOrchestratorTests
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         FakeQueryEngine queryEngine = new();
-        ExportOrchestrator sut = CreateOrchestratorWithQueryEngine(queryEngine);
+        ExportOrchestrator sut = CreateOrchestrator(
+            definition: new TestQueryExportDefinition(),
+            queryEngine: queryEngine);
 
         // Act
         await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
@@ -432,19 +386,8 @@ public sealed class ExportOrchestratorTests
         job.CreatedBy = "user-99";
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
-        IExportWriter failingWriter = Substitute.For<IExportWriter>();
-        failingWriter.CanWrite("csv").Returns(true);
-        failingWriter.FileExtension.Returns(".csv");
-        failingWriter.MimeType.Returns("text/csv");
-        failingWriter.WriteAsync(
-            Arg.Any<Stream>(),
-            Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
-            Arg.Any<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>(),
-            Arg.Any<CancellationToken>())
-            .Returns<Task>(_ => throw new IOException("Disk full"));
-
+        IExportWriter failingWriter = CreateFailingWriter(new IOException("Disk full"));
         ExportOrchestrator sut = CreateOrchestrator(failingWriter);
-        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         // Act & Assert
         await Should.ThrowAsync<IOException>(
@@ -468,19 +411,8 @@ public sealed class ExportOrchestratorTests
         ExportJob job = BuildJob(jobId, ExportJobStatus.Queued);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
-        IExportWriter cancelWriter = Substitute.For<IExportWriter>();
-        cancelWriter.CanWrite("csv").Returns(true);
-        cancelWriter.FileExtension.Returns(".csv");
-        cancelWriter.MimeType.Returns("text/csv");
-        cancelWriter.WriteAsync(
-            Arg.Any<Stream>(),
-            Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
-            Arg.Any<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>(),
-            Arg.Any<CancellationToken>())
-            .Returns<Task>(_ => throw new OperationCanceledException());
-
+        IExportWriter cancelWriter = CreateFailingWriter(new OperationCanceledException());
         ExportOrchestrator sut = CreateOrchestrator(cancelWriter);
-        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         // Act & Assert — should propagate, NOT set job to Failed
         await Should.ThrowAsync<OperationCanceledException>(
@@ -493,7 +425,6 @@ public sealed class ExportOrchestratorTests
     public async Task GetDownloadAsync_completed_job_xlsx_returns_correct_mime_type()
     {
         // Arrange — xlsx format
-        ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         var job = ExportJob.Create(jobId, "Test.Export", "xlsx", new ExportRequest("Test.Export", "xlsx", null, false, null, null, null, null));
         job.MarkAsExporting();
@@ -508,28 +439,7 @@ public sealed class ExportOrchestratorTests
         _fileProvider.OpenAsync("blob-ref-xlsx", Arg.Any<CancellationToken>())
             .Returns(blobStream);
 
-        ServiceCollection services = new();
-        services.AddSingleton<IExportDefinitionDescriptor>(new TestExportDefinition());
-        services.AddSingleton<IExportDataSource<TestEntity>>(new TestDataSource());
-        services.AddSingleton(Options.Create(new ExportOptions()));
-        ServiceProvider sp = services.BuildServiceProvider();
-
-        ExportOrchestrator sutXlsx = new(
-            sp,
-            [xlsxWriter],
-            _jobReader,
-            _jobWriter,
-            _commandSender,
-            _fileProvider,
-            _clock,
-            new SimpleGuidGenerator(),
-            _eventBus,
-            _distributedEventBus,
-            _currentTenant,
-            new NullExtraExportFieldProvider(),
-            new NullExportExtraValueResolver(),
-            _metrics,
-            NullLogger<ExportOrchestrator>.Instance);
+        ExportOrchestrator sutXlsx = CreateOrchestrator(xlsxWriter);
 
         // Act
         ExportDownload? download = await sutXlsx.GetDownloadAsync(jobId, TestContext.Current.CancellationToken);
@@ -622,70 +532,27 @@ public sealed class ExportOrchestratorTests
     public async Task ExportAsync_complex_field_with_tabular_writer_Throw_policy_throws()
     {
         // Arrange — definition with ComplexField, writer is tabular (SupportsHierarchy = false)
-        ExportOrchestrator sut = CreateOrchestrator(CreateTabularWriter());
-        ServiceCollection services = new();
-        services.AddSingleton<IExportDefinitionDescriptor>(new ComplexExportDefinition());
-        services.AddSingleton<IExportDataSource<TestEntity>>(new TestDataSource());
-        services.AddSingleton(Options.Create(new ExportOptions()));
-        ServiceProvider sp = services.BuildServiceProvider();
-
         IExportWriter tabularWriter = CreateTabularWriter();
-        ExportOrchestrator sutComplex = new(
-            sp,
-            [tabularWriter],
-            _jobReader,
-            _jobWriter,
-            _commandSender,
-            _fileProvider,
-            _clock,
-            new SimpleGuidGenerator(),
-            _eventBus,
-            _distributedEventBus,
-            _currentTenant,
-            new NullExtraExportFieldProvider(),
-            new NullExportExtraValueResolver(),
-            _metrics,
-            NullLogger<ExportOrchestrator>.Instance);
+        ExportOrchestrator sut = CreateOrchestrator(tabularWriter, new ComplexExportDefinition());
 
         ExportRequest request = new("Test.Complex", "csv", null, false, null, null, null, null);
 
         // Act & Assert
         await Should.ThrowAsync<ExportProviderIncompatibleException>(
-            () => sutComplex.ExportAsync(request, TestContext.Current.CancellationToken));
+            () => sut.ExportAsync(request, TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public async Task ExportAsync_complex_field_with_tabular_writer_Skip_policy_creates_job()
     {
         // Arrange — Skip policy: ExportAsync succeeds, job queued
-        ServiceCollection services = new();
-        services.AddSingleton<IExportDefinitionDescriptor>(new SkipComplexExportDefinition());
-        services.AddSingleton<IExportDataSource<TestEntity>>(new TestDataSource());
-        services.AddSingleton(Options.Create(new ExportOptions()));
-        ServiceProvider sp = services.BuildServiceProvider();
-
         IExportWriter tabularWriter = CreateTabularWriter();
-        ExportOrchestrator sutComplex = new(
-            sp,
-            [tabularWriter],
-            _jobReader,
-            _jobWriter,
-            _commandSender,
-            _fileProvider,
-            _clock,
-            new SimpleGuidGenerator(),
-            _eventBus,
-            _distributedEventBus,
-            _currentTenant,
-            new NullExtraExportFieldProvider(),
-            new NullExportExtraValueResolver(),
-            _metrics,
-            NullLogger<ExportOrchestrator>.Instance);
+        ExportOrchestrator sut = CreateOrchestrator(tabularWriter, new SkipComplexExportDefinition());
 
         ExportRequest request = new("Test.SkipComplex", "csv", null, false, null, null, null, null);
 
         // Act — should NOT throw
-        ExportJobResult result = await sutComplex.ExportAsync(request, TestContext.Current.CancellationToken);
+        ExportJobResult result = await sut.ExportAsync(request, TestContext.Current.CancellationToken);
 
         result.Status.ShouldBe(ExportJobStatus.Queued);
     }
@@ -699,34 +566,12 @@ public sealed class ExportOrchestratorTests
         var job = ExportJob.Create(jobId, "Test.SkipComplex", "csv", request);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
-        ServiceCollection services = new();
-        services.AddSingleton<IExportDefinitionDescriptor>(new SkipComplexExportDefinition());
-        services.AddSingleton<IExportDataSource<TestEntity>>(new TestDataSource());
-        services.AddSingleton(Options.Create(new ExportOptions()));
-        ServiceProvider sp = services.BuildServiceProvider();
-
         IReadOnlyList<ExportFieldDescriptor>? capturedFields = null;
         IExportWriter captureWriter = CreateTabularWriter(captureFields: f => capturedFields = f);
-
-        ExportOrchestrator sutComplex = new(
-            sp,
-            [captureWriter],
-            _jobReader,
-            _jobWriter,
-            _commandSender,
-            _fileProvider,
-            _clock,
-            new SimpleGuidGenerator(),
-            _eventBus,
-            _distributedEventBus,
-            _currentTenant,
-            new NullExtraExportFieldProvider(),
-            new NullExportExtraValueResolver(),
-            _metrics,
-            NullLogger<ExportOrchestrator>.Instance);
+        ExportOrchestrator sut = CreateOrchestrator(captureWriter, new SkipComplexExportDefinition());
 
         // Act
-        await sutComplex.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+        await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
 
         // Assert — complex field stripped; only scalar fields remain
         capturedFields.ShouldNotBeNull();
@@ -744,48 +589,61 @@ public sealed class ExportOrchestratorTests
         var job = ExportJob.Create(jobId, "Test.Complex", "json", request);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
-        ServiceCollection services = new();
-        services.AddSingleton<IExportDefinitionDescriptor>(new ComplexExportDefinition());
-        services.AddSingleton<IExportDataSource<TestEntity>>(new TestDataSource());
-        services.AddSingleton(Options.Create(new ExportOptions()));
-        ServiceProvider sp = services.BuildServiceProvider();
-
-        List<IReadOnlyDictionary<string, object?>> capturedRows = [];
-        IExportWriter structuredWriter = CreateStructuredWriter(captureRows: capturedRows);
-
-        ExportOrchestrator sutComplex = new(
-            sp,
-            [structuredWriter],
-            _jobReader,
-            _jobWriter,
-            _commandSender,
-            _fileProvider,
-            _clock,
-            new SimpleGuidGenerator(),
-            _eventBus,
-            _distributedEventBus,
-            _currentTenant,
-            new NullExtraExportFieldProvider(),
-            new NullExportExtraValueResolver(),
-            _metrics,
-            NullLogger<ExportOrchestrator>.Instance);
+        IReadOnlyList<ExportFieldDescriptor>? capturedFields = null;
+        List<object?[]> capturedRows = [];
+        IExportWriter structuredWriter = CreateStructuredWriter(
+            captureFields: f => capturedFields = f,
+            captureRows: capturedRows);
+        ExportOrchestrator sut = CreateOrchestrator(structuredWriter, new ComplexExportDefinition());
 
         // Act
-        await sutComplex.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+        await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
 
-        // Assert — complex field "Tags" is present in every row
+        // Assert — complex field "Tags" kept, its selector value present in every row
+        capturedFields.ShouldNotBeNull();
+        int tagsIndex = IndexOfField(capturedFields!, "Tags");
+        tagsIndex.ShouldBeGreaterThanOrEqualTo(0);
         capturedRows.Count.ShouldBe(2);
-        capturedRows.ShouldAllBe(r => r.ContainsKey("Tags"));
+        capturedRows.ShouldAllBe(r => r.Length == capturedFields!.Count);
+        capturedRows[0][tagsIndex].ShouldBeAssignableTo<List<string>>();
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────
 
-    private ExportOrchestrator CreateOrchestrator(IExportWriter? writerOverride = null)
+    private static int IndexOfField(IReadOnlyList<ExportFieldDescriptor> fields, string propertyPath)
     {
+        for (int i = 0; i < fields.Count; i++)
+        {
+            if (fields[i].PropertyPath == propertyPath)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private ExportOrchestrator CreateOrchestrator(
+        IExportWriter? writerOverride = null,
+        ExportDefinition<TestEntity>? definition = null,
+        IQueryEngine<TestEntity>? queryEngine = null)
+    {
+        definition ??= new TestExportDefinition();
+
         ServiceCollection services = new();
-        services.AddSingleton<IExportDefinitionDescriptor>(new TestExportDefinition());
         services.AddSingleton<IExportDataSource<TestEntity>>(new TestDataSource());
         services.AddSingleton(Options.Create(new ExportOptions()));
+        services.AddSingleton<IExtraExportFieldProvider>(new NullExtraExportFieldProvider());
+        services.AddSingleton<IExportExtraValueResolver>(new NullExportExtraValueResolver());
+        if (queryEngine is not null)
+        {
+            services.AddSingleton(queryEngine);
+        }
+
+        ExportPipelineRegistry registry = new(
+            [new ExportEntityBinding<TestEntity>(definition)],
+            [],
+            new NullExtraExportFieldProvider());
 
         IExportWriter writer = writerOverride ?? CreateCsvWriter();
         ServiceProvider sp = services.BuildServiceProvider();
@@ -802,110 +660,87 @@ public sealed class ExportOrchestratorTests
             _eventBus,
             _distributedEventBus,
             _currentTenant,
+            registry,
             new NullExtraExportFieldProvider(),
-            new NullExportExtraValueResolver(),
             _metrics,
             NullLogger<ExportOrchestrator>.Instance);
     }
 
-    private ExportOrchestrator CreateOrchestratorWithQueryEngine(
-        IQueryEngine<TestEntity> queryEngine,
-        IExportWriter? writerOverride = null)
+    /// <summary>
+    /// Configures a substitute writer to consume the row stream (counting rows for the returned
+    /// total), optionally capturing fields and rows.
+    /// </summary>
+    private static void ConfigureWriterConsumption(
+        IExportWriter writer,
+        Action<IReadOnlyList<ExportFieldDescriptor>>? captureFields = null,
+        List<object?[]>? captureRows = null) =>
+        writer.WriteAsync(
+            Arg.Any<Stream>(),
+            Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
+            Arg.Any<IAsyncEnumerable<object?[]>>(),
+            Arg.Any<CancellationToken>())
+            .Returns(async call =>
+            {
+                captureFields?.Invoke(call.Arg<IReadOnlyList<ExportFieldDescriptor>>());
+                long count = 0;
+                await foreach (object?[] row in call.Arg<IAsyncEnumerable<object?[]>>())
+                {
+                    captureRows?.Add(row);
+                    count++;
+                }
+
+                return count;
+            });
+
+    private static IExportWriter CreateCsvWriter(
+        Action<IReadOnlyList<ExportFieldDescriptor>>? captureFields = null,
+        List<object?[]>? captureRows = null)
     {
-        ServiceCollection services = new();
-        services.AddSingleton<IExportDefinitionDescriptor>(new TestQueryExportDefinition());
-        services.AddSingleton<IExportDataSource<TestEntity>>(new TestDataSource());
-        services.AddSingleton(queryEngine);
-        services.AddSingleton(Options.Create(new ExportOptions()));
-
-        IExportWriter writer = writerOverride ?? CreateCsvWriter();
-        ServiceProvider sp = services.BuildServiceProvider();
-
-        return new ExportOrchestrator(
-            sp,
-            [writer],
-            _jobReader,
-            _jobWriter,
-            _commandSender,
-            _fileProvider,
-            _clock,
-            new SimpleGuidGenerator(),
-            _eventBus,
-            _distributedEventBus,
-            _currentTenant,
-            new NullExtraExportFieldProvider(),
-            new NullExportExtraValueResolver(),
-            _metrics,
-            NullLogger<ExportOrchestrator>.Instance);
+        IExportWriter writer = Substitute.For<IExportWriter>();
+        writer.CanWrite("csv").Returns(true);
+        writer.FileExtension.Returns(".csv");
+        writer.MimeType.Returns("text/csv");
+        ConfigureWriterConsumption(writer, captureFields, captureRows);
+        return writer;
     }
 
-    private static IExportWriter CreateTabularWriter(Action<IReadOnlyList<ExportFieldDescriptor>>? captureFields = null)
+    private static IExportWriter CreateTabularWriter(
+        Action<IReadOnlyList<ExportFieldDescriptor>>? captureFields = null)
     {
         IExportWriter writer = Substitute.For<IExportWriter>();
         writer.CanWrite(Arg.Any<string>()).Returns(true);
         writer.FileExtension.Returns(".csv");
         writer.MimeType.Returns("text/csv");
         writer.Capabilities.Returns(ExportFormatCapabilities.TabularOnly);
-        writer.WriteAsync(
-            Arg.Any<Stream>(),
-            Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
-            Arg.Any<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>(),
-            Arg.Any<CancellationToken>())
-            .Returns(async call =>
-            {
-                captureFields?.Invoke(call.Arg<IReadOnlyList<ExportFieldDescriptor>>());
-                IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows =
-                    call.Arg<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>();
-                await foreach (IReadOnlyDictionary<string, object?> _ in rows) { }
-            });
+        ConfigureWriterConsumption(writer, captureFields);
         return writer;
     }
 
-    private static IExportWriter CreateStructuredWriter(List<IReadOnlyDictionary<string, object?>> captureRows)
+    private static IExportWriter CreateStructuredWriter(
+        Action<IReadOnlyList<ExportFieldDescriptor>>? captureFields = null,
+        List<object?[]>? captureRows = null)
     {
         IExportWriter writer = Substitute.For<IExportWriter>();
         writer.CanWrite(Arg.Any<string>()).Returns(true);
         writer.FileExtension.Returns(".json");
         writer.MimeType.Returns("application/json");
         writer.Capabilities.Returns(ExportFormatCapabilities.Structured);
-        writer.WriteAsync(
-            Arg.Any<Stream>(),
-            Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
-            Arg.Any<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>(),
-            Arg.Any<CancellationToken>())
-            .Returns(async call =>
-            {
-                IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows =
-                    call.Arg<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>();
-                await foreach (IReadOnlyDictionary<string, object?> row in rows)
-                {
-                    captureRows.Add(row);
-                }
-            });
+        ConfigureWriterConsumption(writer, captureFields, captureRows);
         return writer;
     }
 
-    private static IExportWriter CreateCsvWriter()
+    private static IExportWriter CreateFailingWriter(Exception exception)
     {
         IExportWriter writer = Substitute.For<IExportWriter>();
         writer.CanWrite("csv").Returns(true);
         writer.FileExtension.Returns(".csv");
         writer.MimeType.Returns("text/csv");
-        // The writer must consume the async enumerable so the orchestrator can count rows
         writer.WriteAsync(
             Arg.Any<Stream>(),
             Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
-            Arg.Any<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>(),
+            Arg.Any<IAsyncEnumerable<object?[]>>(),
             Arg.Any<CancellationToken>())
-            .Returns(async call =>
-            {
-                IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows =
-                    call.Arg<IAsyncEnumerable<IReadOnlyDictionary<string, object?>>>();
-                await foreach (IReadOnlyDictionary<string, object?> _ in rows)
-                {
-                    // consume all rows
-                }
-            });
+            .Returns<Task<long>>(_ => throw exception);
         return writer;
     }
 

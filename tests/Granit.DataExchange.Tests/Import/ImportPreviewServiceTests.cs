@@ -1,7 +1,6 @@
 using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Internal;
-using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Parsing;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.Domain.ValueObjects;
@@ -17,8 +16,9 @@ public sealed class ImportPreviewServiceTests
     private readonly IImportJobReader _jobReader = Substitute.For<IImportJobReader>();
     private readonly IImportJobWriter _jobWriter = Substitute.For<IImportJobWriter>();
     private readonly IDataExchangeFileProvider _fileProvider = Substitute.For<IDataExchangeFileProvider>();
-    private readonly IMappingSuggestionService _mappingService = Substitute.For<IMappingSuggestionService>();
+    private readonly IImportPipelineRegistry _registry = Substitute.For<IImportPipelineRegistry>();
     private readonly IImportDefinitionDescriptor _descriptor = Substitute.For<IImportDefinitionDescriptor>();
+    private readonly IImportPipelineDescriptor _pipelineDescriptor = Substitute.For<IImportPipelineDescriptor>();
     private readonly IFileParser _parser = Substitute.For<IFileParser>();
     private readonly ImportPreviewService _sut;
 
@@ -31,6 +31,15 @@ public sealed class ImportPreviewServiceTests
             new ImportFieldMetadata("Email", "String", "Email address", null, false),
         ]);
 
+        _pipelineDescriptor.DefinitionName.Returns("Patients");
+        _pipelineDescriptor.Definition.Returns(_descriptor);
+        _pipelineDescriptor.SuggestMappingsAsync(
+                Arg.Any<IServiceProvider>(), Arg.Any<IReadOnlyList<string>>(),
+                Arg.Any<IReadOnlyList<string[]>?>(), Arg.Any<CancellationToken>())
+            .Returns([]);
+        _registry.Find(Arg.Any<string>()).Returns((IImportPipelineDescriptor?)null);
+        _registry.Find("Patients").Returns(_pipelineDescriptor);
+
         _parser.CanParse("text/csv").Returns(true);
         _parser.ExtractHeadersAsync(Arg.Any<Stream>(), Arg.Any<FileParsingOptions>(), Arg.Any<CancellationToken>())
             .Returns(new List<string>(["Name", "Email"]));
@@ -41,7 +50,6 @@ public sealed class ImportPreviewServiceTests
             .Returns(_ => Task.FromResult<Stream>(new MemoryStream(System.Text.Encoding.UTF8.GetBytes("Name,Email\nAlice,alice@test.com"))));
 
         var services = new ServiceCollection();
-        services.AddSingleton<IImportDefinitionDescriptor>(_descriptor);
         services.AddSingleton<IFileParser>(_parser);
         ServiceProvider sp = services.BuildServiceProvider();
 
@@ -49,7 +57,7 @@ public sealed class ImportPreviewServiceTests
             _jobReader,
             _jobWriter,
             _fileProvider,
-            _mappingService,
+            _registry,
             sp);
     }
 

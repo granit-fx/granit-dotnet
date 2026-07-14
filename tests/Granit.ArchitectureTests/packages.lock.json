@@ -2277,6 +2277,13 @@
           "Granit.DataExchange": "[0.1.0-dev, )"
         }
       },
+      "granit.dataexchange.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
+          "Granit.DataExchange": "[0.1.0-dev, )"
+        }
+      },
       "granit.dataexchange.blobstorage": {
         "type": "Project",
         "dependencies": {

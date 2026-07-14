@@ -93,6 +93,7 @@
       "src/Granit.Caching/Granit.Caching.csproj",
       "src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj",
       "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
+      "src/Granit.DataExchange.BackgroundJobs/Granit.DataExchange.BackgroundJobs.csproj",
       "src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj",
       "src/Granit.DataExchange.Csv/Granit.DataExchange.Csv.csproj",
       "src/Granit.DataExchange.Endpoints/Granit.DataExchange.Endpoints.csproj",

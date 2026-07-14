@@ -80,12 +80,26 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(DataExchangePermissions.Imports.Execute, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Imports.Execute))
             .AddPolicy(DataExchangePermissions.Exports.Execute, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Exports.Execute));
+        // Typed pipeline registry wrapping the descriptor substitute (PR3: registry replaces
+        // the reflective definition resolver; lookups are Ordinal).
+        IImportPipelineDescriptor pipelineDescriptor = Substitute.For<IImportPipelineDescriptor>();
+        pipelineDescriptor.DefinitionName.Returns("Test.Import");
+        pipelineDescriptor.Definition.Returns(_descriptor);
+        pipelineDescriptor.SuggestMappingsAsync(
+                Arg.Any<IServiceProvider>(), Arg.Any<IReadOnlyList<string>>(),
+                Arg.Any<IReadOnlyList<string[]>?>(), Arg.Any<CancellationToken>())
+            .Returns([]);
+        IImportPipelineRegistry registry = Substitute.For<IImportPipelineRegistry>();
+        registry.Find("Test.Import").Returns(pipelineDescriptor);
+        registry.GetAll().Returns([pipelineDescriptor]);
+
         builder.Services.AddSingleton(_jobReader);
         builder.Services.AddSingleton(_jobWriter);
         builder.Services.AddSingleton(_fileProvider);
         builder.Services.AddSingleton(_mappingService);
         builder.Services.AddSingleton(_clock);
         builder.Services.AddSingleton(_descriptor);
+        builder.Services.AddSingleton(registry);
         builder.Services.AddSingleton<IFileParser>(_parser);
         builder.Services.AddSingleton<IGuidGenerator>(new SimpleGuidGenerator());
 

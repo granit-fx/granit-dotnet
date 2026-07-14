@@ -2,6 +2,7 @@ using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Internal;
+using Granit.DataExchange.Export.Pipeline;
 using Granit.DataExchange.Exports;
 using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Domain;
@@ -10,6 +11,8 @@ using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.DataExchange.Internal;
 using Granit.DataExchange.Queries;
+using Granit.DataExchange.Retention;
+using Granit.DataExchange.Retention.Internal;
 using Granit.Diagnostics;
 using Granit.Events.Extensions;
 using Granit.QueryEngine.Extensions;
@@ -36,6 +39,11 @@ public static class ServiceCollectionExtensions
     ///     register <c>Granit.DataExchange.BlobStorage</c> or call
     ///     <see cref="AddInMemoryDataExchangeFileProvider"/>.</item>
     ///   <item><see cref="IImportOrchestrator"/> (scoped) — pipeline orchestrator.</item>
+    ///   <item><see cref="IDataExchangeRetentionStore"/> (scoped) — fail-fast null-object default;
+    ///     register <c>Granit.DataExchange.EntityFrameworkCore</c> for the durable implementation.
+    ///     Registered here (rather than in <see cref="AddGranitDataExport"/>) because the retention
+    ///     sweep spans both import and export jobs and <see cref="AddGranitDataImport"/> is always
+    ///     called by hosts that use data exchange.</item>
     /// </list>
     /// <para>
     /// At least one <see cref="Import.Parsing.IFileParser"/> must be registered separately.
@@ -61,9 +69,11 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IImportJobReader, NullImportJobStore>();
         services.TryAddScoped<IImportJobWriter, NullImportJobStore>();
         services.TryAddSingleton<IDataExchangeFileProvider, NullDataExchangeFileProvider>();
+        services.TryAddSingleton<IImportPipelineRegistry, ImportPipelineRegistry>();
         services.TryAddScoped<IImportOrchestrator, ImportOrchestrator>();
         services.TryAddScoped<IImportUploadService, ImportUploadService>();
         services.TryAddScoped<IImportPreviewService, ImportPreviewService>();
+        services.TryAddScoped<IDataExchangeRetentionStore, NullDataExchangeRetentionStore>();
 
         // Diagnostics
         services.TryAddSingleton<DataExchangeMetrics>();
@@ -109,7 +119,8 @@ public static class ServiceCollectionExtensions
             .ValidateOnStart();
 
         services.TryAddScoped<IExportOrchestrator, ExportOrchestrator>();
-        services.TryAddScoped<IExportDefinitionProvider, ExportDefinitionProvider>();
+        services.TryAddSingleton<IExportPipelineRegistry, ExportPipelineRegistry>();
+        services.TryAddSingleton<IExportDefinitionProvider, ExportDefinitionProvider>();
         services.TryAddScoped<IExportJobReader, NullExportJobStore>();
         services.TryAddScoped<IExportJobWriter, NullExportJobStore>();
         services.TryAddScoped<IExportPresetReader, NullExportPresetStore>();

@@ -30,6 +30,27 @@ public sealed class ODataHostExposureOptions
     /// <summary>All host-feed EntitySets registered so far. Internal — consumed by the route builder once the configuration closure returns.</summary>
     internal IReadOnlyList<ODataEntitySetDescriptor> Descriptors => _descriptors;
 
+    /// <summary>Permission gating the host-feed <c>$metadata</c> + service document. Consumed by the route builder. <see langword="null"/> until <see cref="RequireMetadataPermission"/> is called — the strict-config validator then refuses to start the host (#3005).</summary>
+    internal string? MetadataPermission { get; private set; }
+
+    /// <summary>
+    /// Gates the host-feed <c>$metadata</c> and service-document routes
+    /// behind the named permission — REQUIRED. The host-feed schema exposes
+    /// the cross-tenant BI surface (EntitySet names, columns, navigations);
+    /// there is deliberately no anonymous variant on this options surface.
+    /// The permission MUST resolve to a definition with
+    /// <c>MultiTenancySides.Host</c>, exactly like the per-set entity
+    /// permissions — <c>Tenant</c> and <c>Both</c> are rejected at startup.
+    /// Convention: <c>"OData.Host.{Module}.Metadata.Read"</c>.
+    /// </summary>
+    /// <param name="permission">Permission name checked by <c>IPermissionChecker</c> on every host-feed <c>$metadata</c> / service-document request.</param>
+    public ODataHostExposureOptions RequireMetadataPermission(string permission)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(permission);
+        MetadataPermission = permission;
+        return this;
+    }
+
     /// <summary>
     /// Registers a host-feed EntitySet backed by <typeparamref name="TQueryDefinition"/>.
     /// </summary>
@@ -152,7 +173,7 @@ public sealed class ODataHostEntitySetBuilder<TEntity>
     public ODataHostEntitySetBuilder<TEntity> EnableCount()
         => Update(_descriptor with { CountEnabled = true });
 
-    /// <summary>Whitelists top-level navigation properties. See <see cref="ODataEntitySetBuilder{TEntity}.ExpandWhitelist"/>.</summary>
+    /// <summary>Whitelists dotted navigation paths for <c>$expand</c>. See <see cref="ODataEntitySetBuilder{TEntity}.ExpandWhitelist"/>.</summary>
     public ODataHostEntitySetBuilder<TEntity> ExpandWhitelist(params string[] properties)
     {
         ArgumentNullException.ThrowIfNull(properties);
