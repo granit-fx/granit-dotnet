@@ -13,6 +13,7 @@ internal sealed class TestImportDefinition : ImportDefinition<TestEntity>
     {
         builder
             .HasBusinessKey(e => e.Niss)
+            .ExcludeOnUpdate(e => e.Age)
             .Property(e => e.Name, p => p.DisplayName("Name").Required())
             .Property(e => e.Email, p => p.DisplayName("Email"))
             .Property(e => e.Niss, p => p.DisplayName("NISS"))

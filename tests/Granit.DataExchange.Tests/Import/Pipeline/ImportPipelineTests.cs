@@ -122,6 +122,102 @@ public sealed class ImportPipelineTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_identity_resolver_is_called_in_chunks_of_batch_size()
+    {
+        FakeParser parser = new(
+        [
+            NewRow(1, "Alice", "30"),
+            NewRow(2, "Bob", "31"),
+            NewRow(3, "Carol", "32"),
+        ]);
+        CollectingExecutor executor = new();
+        StubIdentityResolver resolver = new();
+
+        IImportPipeline pipeline = CreatePipeline(services =>
+        {
+            services.AddSingleton<IFileParser>(parser);
+            services.AddSingleton<IImportExecutor<Patient>>(executor);
+            services.AddSingleton<Granit.DataExchange.Import.Identity.IRecordIdentityResolver<Patient>>(resolver);
+        });
+
+        ImportPipelineContext context = CreateContext() with
+        {
+            ExecutionOptions = new ImportExecutionOptions { BatchSize = 2 },
+        };
+
+        await pipeline.ExecuteAsync(context, TestContext.Current.CancellationToken);
+
+        // 3 rows, batch size 2 → one chunk of 2 and one chunk of 1 (never one call per row).
+        resolver.BatchSizesSeen.ShouldBe([2, 1]);
+
+        executor.Outcomes.Count.ShouldBe(3);
+        executor.Outcomes.Select(o => o.Entity!.Name).ShouldBe(["Alice", "Bob", "Carol"]);
+        executor.Outcomes.ShouldAllBe(o => o.Identity!.Operation == Granit.DataExchange.Import.Identity.RecordOperation.Upsert);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_no_resolver_and_no_business_key_defaults_to_insert()
+    {
+        FakeParser parser = new([NewRow(1, "Alice", "30")]);
+        CollectingExecutor executor = new();
+
+        IImportPipeline pipeline = CreatePipeline(services =>
+        {
+            services.AddSingleton<IFileParser>(parser);
+            services.AddSingleton<IImportExecutor<Patient>>(executor);
+        });
+
+        await pipeline.ExecuteAsync(CreateContext(), TestContext.Current.CancellationToken);
+
+        RowOutcome<Patient> outcome = executor.Outcomes.ShouldHaveSingleItem();
+        outcome.Identity!.Operation.ShouldBe(Granit.DataExchange.Import.Identity.RecordOperation.Insert);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_no_resolver_and_declared_business_key_defaults_to_upsert()
+    {
+        FakeParser parser = new([NewRow(1, "Alice", "30")]);
+        CollectingExecutor executor = new();
+
+        ServiceCollection services = new();
+        services.AddSingleton<IOptions<ImportOptions>>(Options.Create(new ImportOptions()));
+        services.AddSingleton<IFileParser>(parser);
+        services.AddSingleton<IImportExecutor<Patient>>(executor);
+        ServiceProvider provider = services.BuildServiceProvider();
+
+        PatientWithBusinessKeyDefinition definition = new();
+        IImportPipeline pipeline = new ImportPipelineDescriptor<Patient>(definition).Create(provider);
+
+        await pipeline.ExecuteAsync(CreateContext(), TestContext.Current.CancellationToken);
+
+        RowOutcome<Patient> outcome = executor.Outcomes.ShouldHaveSingleItem();
+        outcome.Identity!.Operation.ShouldBe(Granit.DataExchange.Import.Identity.RecordOperation.Upsert);
+        outcome.Identity.Key.ShouldBe(new Granit.DataExchange.Import.Identity.EntityKey("Alice"));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_no_resolver_missing_business_key_component_is_ambiguous()
+    {
+        FakeParser parser = new([NewRow(1, "", "30")]);
+        CollectingExecutor executor = new();
+
+        ServiceCollection services = new();
+        services.AddSingleton<IOptions<ImportOptions>>(Options.Create(new ImportOptions()));
+        services.AddSingleton<IFileParser>(parser);
+        services.AddSingleton<IImportExecutor<Patient>>(executor);
+        ServiceProvider provider = services.BuildServiceProvider();
+
+        PatientWithBusinessKeyDefinition definition = new();
+        IImportPipeline pipeline = new ImportPipelineDescriptor<Patient>(definition).Create(provider);
+
+        await pipeline.ExecuteAsync(CreateContext(), TestContext.Current.CancellationToken);
+
+        RowOutcome<Patient> outcome = executor.Outcomes.ShouldHaveSingleItem();
+        outcome.Identity!.Operation.ShouldBe(Granit.DataExchange.Import.Identity.RecordOperation.Ambiguous);
+        outcome.Identity.ReasonCodes.ShouldContain(Granit.DataExchange.Import.Identity.IdentityReasonCodes.MissingKeyComponent);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_no_parser_for_mime_type_lists_registered_parsers()
     {
         IImportPipeline pipeline = CreatePipeline(services =>
@@ -207,6 +303,17 @@ public sealed class ImportPipelineTests
                 .Property(e => e.Age);
     }
 
+    internal sealed class PatientWithBusinessKeyDefinition : ImportDefinition<Patient>
+    {
+        public override string Name => "Test.PatientsWithBusinessKey";
+
+        protected override void Configure(ImportDefinitionBuilder<Patient> builder) =>
+            builder
+                .HasBusinessKey(e => e.Name)
+                .Property(e => e.Name)
+                .Property(e => e.Age);
+    }
+
     private sealed class FakeParser(IReadOnlyList<RawImportRow> rows) : IFileParser
     {
         public bool CanParse(string mimeType) => mimeType == "text/fake";
@@ -280,9 +387,28 @@ public sealed class ImportPipelineTests
 
     private sealed class ThrowingIdentityResolver : Granit.DataExchange.Import.Identity.IRecordIdentityResolver<Patient>
     {
-        public Task<Granit.DataExchange.Import.Identity.RecordIdentity<Patient>> ResolveAsync(
-            Patient entity, CancellationToken cancellationToken = default) =>
+        public Task<IReadOnlyList<Granit.DataExchange.Import.Identity.RecordIdentity>> ResolveBatchAsync(
+            IReadOnlyList<Patient> batch, CancellationToken cancellationToken = default) =>
             throw new InvalidOperationException("ambiguous match");
+    }
+
+    /// <summary>Stamps every row as Upsert on a fixed key so the pipeline's batching can be observed.</summary>
+    private sealed class StubIdentityResolver : Granit.DataExchange.Import.Identity.IRecordIdentityResolver<Patient>
+    {
+        public List<int> BatchSizesSeen { get; } = [];
+
+        public Task<IReadOnlyList<Granit.DataExchange.Import.Identity.RecordIdentity>> ResolveBatchAsync(
+            IReadOnlyList<Patient> batch, CancellationToken cancellationToken = default)
+        {
+            BatchSizesSeen.Add(batch.Count);
+            IReadOnlyList<Granit.DataExchange.Import.Identity.RecordIdentity> identities =
+            [
+                .. batch.Select(p => Granit.DataExchange.Import.Identity.RecordIdentity.Upsert(
+                    new Granit.DataExchange.Import.Identity.EntityKey(p.Name),
+                    Granit.DataExchange.Import.Identity.EntityKeyKind.BusinessKey)),
+            ];
+            return Task.FromResult(identities);
+        }
     }
 
     private sealed class ConstantMapper : IDataMapper<Patient>

@@ -39,8 +39,21 @@ public sealed class ExportOrchestratorTests
     {
         _clock.Now.Returns(_now);
 
-        _fileProvider.SaveAsync(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
-            .Returns(Granit.Domain.ValueObjects.BlobReference.Create("blob-ref-export"));
+        _fileProvider.SaveAsync(
+            Arg.Any<string>(),
+            Arg.Any<string>(),
+            Arg.Any<Func<Stream, CancellationToken, Task>>(),
+            Arg.Any<CancellationToken>())
+            .Returns(async call =>
+            {
+                // Mirror the real providers: invoke the streaming callback against a throwaway
+                // stream so the pipeline (and its row count) actually runs, then hand back the reference.
+                Func<Stream, CancellationToken, Task> writeAsync = call.Arg<Func<Stream, CancellationToken, Task>>();
+                CancellationToken cancellationToken = call.Arg<CancellationToken>();
+                await using MemoryStream stream = new();
+                await writeAsync(stream, cancellationToken);
+                return Granit.Domain.ValueObjects.BlobReference.Create("blob-ref-export");
+            });
 
         _jobReader.GetAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(call =>

@@ -8,82 +8,61 @@ namespace Granit.DataExchange.EntityFrameworkCore.Tests.Identity;
 
 public sealed class CompositeKeyResolverTests
 {
-    private static string NewDb() => Guid.NewGuid().ToString();
-
-    private static CompositeKeyResolver<TestEntity, TestAppDbContext> CreateResolver(string dbName) =>
-        new(new InMemoryAppContextFactory(dbName), new TestCompositeKeyImportDefinition());
-
-    private static async Task SeedEntityAsync(string dbName, TestEntity entity)
-    {
-        InMemoryAppContextFactory factory = new(dbName);
-        await using TestAppDbContext context = factory.CreateDbContext();
-        context.TestEntities.Add(entity);
-        await context.SaveChangesAsync();
-    }
+    private static CompositeKeyResolver<TestEntity, TestAppDbContext> CreateResolver() =>
+        new(new TestCompositeKeyImportDefinition());
 
     [Fact]
-    public async Task ResolveAsync_returns_insert_when_no_match()
+    public async Task ResolveBatchAsync_returns_upsert_with_composite_key()
     {
-        // Arrange
-        string dbName = NewDb();
-        CompositeKeyResolver<TestEntity, TestAppDbContext> resolver = CreateResolver(dbName);
+        CompositeKeyResolver<TestEntity, TestAppDbContext> resolver = CreateResolver();
         TestEntity entity = new() { Name = "Alice", Email = "alice@test.com" };
 
-        // Act
-        RecordIdentity<TestEntity> result = await resolver.ResolveAsync(
-            entity, TestContext.Current.CancellationToken);
+        IReadOnlyList<RecordIdentity> results = await resolver.ResolveBatchAsync(
+            [entity], TestContext.Current.CancellationToken);
 
-        // Assert
-        result.Operation.ShouldBe(RecordOperation.Insert);
+        RecordIdentity result = results.ShouldHaveSingleItem();
+        result.Operation.ShouldBe(RecordOperation.Upsert);
+        result.KeyKind.ShouldBe(EntityKeyKind.BusinessKey);
+        result.Key.ShouldBe(new EntityKey("Alice", "alice@test.com"));
     }
 
     [Fact]
-    public async Task ResolveAsync_returns_update_when_composite_key_matches()
+    public async Task ResolveBatchAsync_missing_component_is_ambiguous()
     {
-        // Arrange
-        string dbName = NewDb();
-        TestEntity existing = new()
-        {
-            Id = Guid.NewGuid(),
-            Name = "Alice",
-            Email = "alice@test.com",
-        };
-        await SeedEntityAsync(dbName, existing);
+        CompositeKeyResolver<TestEntity, TestAppDbContext> resolver = CreateResolver();
+        TestEntity entity = new() { Name = "Alice", Email = null };
 
-        CompositeKeyResolver<TestEntity, TestAppDbContext> resolver = CreateResolver(dbName);
-        TestEntity incoming = new() { Name = "Alice", Email = "alice@test.com", Niss = "updated" };
+        IReadOnlyList<RecordIdentity> results = await resolver.ResolveBatchAsync(
+            [entity], TestContext.Current.CancellationToken);
 
-        // Act
-        RecordIdentity<TestEntity> result = await resolver.ResolveAsync(
-            incoming, TestContext.Current.CancellationToken);
-
-        // Assert
-        result.Operation.ShouldBe(RecordOperation.Update);
-        result.ExistingEntity.ShouldNotBeNull();
-        result.ExistingEntity.Id.ShouldBe(existing.Id);
+        results.ShouldHaveSingleItem().Operation.ShouldBe(RecordOperation.Ambiguous);
     }
 
     [Fact]
-    public async Task ResolveAsync_returns_insert_when_partial_key_matches()
+    public async Task ResolveBatchAsync_duplicate_composite_key_is_skipped()
     {
-        // Arrange
-        string dbName = NewDb();
-        TestEntity existing = new()
-        {
-            Id = Guid.NewGuid(),
-            Name = "Alice",
-            Email = "alice@test.com",
-        };
-        await SeedEntityAsync(dbName, existing);
+        CompositeKeyResolver<TestEntity, TestAppDbContext> resolver = CreateResolver();
+        TestEntity first = new() { Name = "Alice", Email = "alice@test.com" };
+        TestEntity second = new() { Name = "Alice", Email = "alice@test.com" };
 
-        CompositeKeyResolver<TestEntity, TestAppDbContext> resolver = CreateResolver(dbName);
-        TestEntity incoming = new() { Name = "Alice", Email = "different@test.com" };
+        IReadOnlyList<RecordIdentity> results = await resolver.ResolveBatchAsync(
+            [first, second], TestContext.Current.CancellationToken);
 
-        // Act
-        RecordIdentity<TestEntity> result = await resolver.ResolveAsync(
-            incoming, TestContext.Current.CancellationToken);
+        results[0].Operation.ShouldBe(RecordOperation.Upsert);
+        results[1].Operation.ShouldBe(RecordOperation.Skip);
+    }
 
-        // Assert
-        result.Operation.ShouldBe(RecordOperation.Insert);
+    [Fact]
+    public async Task ResolveBatchAsync_different_component_combination_is_not_duplicate()
+    {
+        CompositeKeyResolver<TestEntity, TestAppDbContext> resolver = CreateResolver();
+        TestEntity first = new() { Name = "Alice", Email = "alice@test.com" };
+        TestEntity second = new() { Name = "Alice", Email = "different@test.com" };
+
+        IReadOnlyList<RecordIdentity> results = await resolver.ResolveBatchAsync(
+            [first, second], TestContext.Current.CancellationToken);
+
+        results[0].Operation.ShouldBe(RecordOperation.Upsert);
+        results[1].Operation.ShouldBe(RecordOperation.Upsert);
     }
 }

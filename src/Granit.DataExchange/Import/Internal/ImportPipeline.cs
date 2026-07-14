@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Granit.DataExchange.Import.Execution;
 using Granit.DataExchange.Import.Identity;
@@ -13,7 +14,7 @@ using Microsoft.Extensions.Options;
 namespace Granit.DataExchange.Import.Internal;
 
 /// <summary>
-/// Typed <see cref="IImportPipeline"/>: Parse → Map → Validate → Resolve Identity → Execute,
+/// Typed <see cref="IImportPipeline"/>: Parse → Map → Validate → Resolve Identity (batched) → Execute,
 /// with errors carried as <see cref="RowOutcome{TEntity}"/> data — nothing is silently dropped.
 /// </summary>
 /// <typeparam name="TEntity">The target entity type.</typeparam>
@@ -48,9 +49,12 @@ internal sealed class ImportPipeline<TEntity>(
         IRowValidator<TEntity>? validator = scopedProvider.GetService<IRowValidator<TEntity>>();
         IRecordIdentityResolver<TEntity>? identityResolver = scopedProvider.GetService<IRecordIdentityResolver<TEntity>>();
         ImportOptions importOptions = scopedProvider.GetRequiredService<IOptions<ImportOptions>>().Value;
+        PropertyInfo[] businessKeyProperties = [.. definition.GetBusinessKeyProperties()
+            .Select(name => typeof(TEntity).GetProperty(name))
+            .Where(property => property is not null)!];
 
         IAsyncEnumerable<RowOutcome<TEntity>> rows = BuildOutcomesAsync(
-            parser, mapper, validator, identityResolver, importOptions, context, cancellationToken);
+            parser, mapper, validator, identityResolver, businessKeyProperties, importOptions, context, cancellationToken);
 
         return await executor.ExecuteAsync(rows, context.ExecutionOptions, context.Progress, cancellationToken)
             .ConfigureAwait(false);
@@ -74,37 +78,163 @@ internal sealed class ImportPipeline<TEntity>(
             "Ensure the corresponding module is added: GranitDataExchangeCsvModule for CSV, GranitDataExchangeExcelModule for Excel.");
     }
 
+    /// <summary>
+    /// Parses, maps, and validates every row, then resolves identity in chunks of
+    /// <see cref="ImportExecutionOptions.BatchSize"/> — one resolver call per chunk instead of
+    /// one per row — while preserving the original row order in the output stream.
+    /// </summary>
     private static async IAsyncEnumerable<RowOutcome<TEntity>> BuildOutcomesAsync(
         IFileParser parser,
         IDataMapper<TEntity> mapper,
         IRowValidator<TEntity>? validator,
         IRecordIdentityResolver<TEntity>? identityResolver,
+        PropertyInfo[] businessKeyProperties,
         ImportOptions importOptions,
         ImportPipelineContext context,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         FileParsingOptions parsingOptions = new() { MimeType = context.MimeType };
+        int batchSize = Math.Max(1, context.ExecutionOptions.BatchSize);
+        List<RowOutcome<TEntity>> buffer = new(batchSize);
 
         await foreach (RawImportRow row in parser.ParseAsync(context.FileStream, parsingOptions, cancellationToken)
             .WithCancellation(cancellationToken).ConfigureAwait(false))
         {
-            yield return await ProcessRowAsync(row, mapper, validator, identityResolver, importOptions, context, cancellationToken)
-                .ConfigureAwait(false);
+            buffer.Add(await MapAndValidateRowAsync(row, mapper, validator, context.Mappings, importOptions, cancellationToken).ConfigureAwait(false));
+
+            if (buffer.Count >= batchSize)
+            {
+                foreach (RowOutcome<TEntity> outcome in await ResolveIdentityChunkAsync(
+                    buffer, identityResolver, businessKeyProperties, cancellationToken).ConfigureAwait(false))
+                {
+                    yield return outcome;
+                }
+
+                buffer.Clear();
+            }
+        }
+
+        if (buffer.Count > 0)
+        {
+            foreach (RowOutcome<TEntity> outcome in await ResolveIdentityChunkAsync(
+                buffer, identityResolver, businessKeyProperties, cancellationToken).ConfigureAwait(false))
+            {
+                yield return outcome;
+            }
         }
     }
 
-    private static async Task<RowOutcome<TEntity>> ProcessRowAsync(
+    /// <summary>
+    /// Stamps identity onto the <c>Ok</c> outcomes of one chunk (in place, preserving order).
+    /// Failed/Skipped outcomes are never sent to the resolver.
+    /// </summary>
+    private static async Task<List<RowOutcome<TEntity>>> ResolveIdentityChunkAsync(
+        List<RowOutcome<TEntity>> chunk,
+        IRecordIdentityResolver<TEntity>? identityResolver,
+        PropertyInfo[] businessKeyProperties,
+        CancellationToken cancellationToken)
+    {
+        List<int> okIndexes = [];
+        List<TEntity> okEntities = [];
+
+        for (int i = 0; i < chunk.Count; i++)
+        {
+            if (chunk[i].Entity is TEntity entity)
+            {
+                okIndexes.Add(i);
+                okEntities.Add(entity);
+            }
+        }
+
+        if (okEntities.Count == 0)
+        {
+            return chunk;
+        }
+
+        IReadOnlyList<RecordIdentity>? identities = null;
+        string? resolverErrorMessage = null;
+
+        if (identityResolver is not null)
+        {
+            try
+            {
+                identities = await identityResolver.ResolveBatchAsync(okEntities, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                resolverErrorMessage = ex.Message;
+            }
+        }
+        else
+        {
+            identities = DefaultIdentities(okEntities, businessKeyProperties);
+        }
+
+        for (int i = 0; i < okIndexes.Count; i++)
+        {
+            int index = okIndexes[i];
+
+            chunk[index] = resolverErrorMessage is not null
+                ? RowOutcome<TEntity>.Failed(chunk[index].RowNumber, new ImportRowError(
+                    chunk[index].RowNumber,
+                    ImportRowErrorKind.Identity,
+                    [IdentityResolutionErrorCode],
+                    resolverErrorMessage))
+                : chunk[index] with { Identity = identities![i] };
+        }
+
+        return chunk;
+    }
+
+    /// <summary>
+    /// Default identity assignment when no <see cref="IRecordIdentityResolver{TEntity}"/> is
+    /// registered: business keys declared on the definition → <see cref="RecordOperation.Upsert"/>
+    /// keyed on those properties; otherwise plain <see cref="RecordOperation.Insert"/>.
+    /// </summary>
+    private static List<RecordIdentity> DefaultIdentities(
+        List<TEntity> entities, PropertyInfo[] businessKeyProperties)
+    {
+        if (businessKeyProperties.Length == 0)
+        {
+            return [.. entities.Select(static _ => RecordIdentity.Insert())];
+        }
+
+        List<RecordIdentity> results = new(entities.Count);
+        foreach (TEntity entity in entities)
+        {
+            object?[] components = new object?[businessKeyProperties.Length];
+            bool missing = false;
+
+            for (int i = 0; i < businessKeyProperties.Length; i++)
+            {
+                object? value = businessKeyProperties[i].GetValue(entity);
+                if (value is null || (value is string text && string.IsNullOrEmpty(text)))
+                {
+                    missing = true;
+                }
+
+                components[i] = value;
+            }
+
+            results.Add(missing
+                ? RecordIdentity.Ambiguous(IdentityReasonCodes.MissingKeyComponent)
+                : RecordIdentity.Upsert(new EntityKey(components), EntityKeyKind.BusinessKey));
+        }
+
+        return results;
+    }
+
+    private static async Task<RowOutcome<TEntity>> MapAndValidateRowAsync(
         RawImportRow row,
         IDataMapper<TEntity> mapper,
         IRowValidator<TEntity>? validator,
-        IRecordIdentityResolver<TEntity>? identityResolver,
+        IReadOnlyList<ImportColumnMapping> mappings,
         ImportOptions importOptions,
-        ImportPipelineContext context,
         CancellationToken cancellationToken)
     {
         // Map — conversion failures become Failed outcomes, all-empty rows become Skipped.
         MappingResult<TEntity> mappingResult = await mapper
-            .MapAsync(row, context.Mappings, importOptions, cancellationToken).ConfigureAwait(false);
+            .MapAsync(row, mappings, importOptions, cancellationToken).ConfigureAwait(false);
 
         if (mappingResult.Errors.Count > 0)
         {
@@ -138,25 +268,7 @@ internal sealed class ImportPipeline<TEntity>(
             }
         }
 
-        // Resolve identity — resolver exceptions are row-level failures, not job killers.
-        RecordIdentity<TEntity>? identity = null;
-        if (identityResolver is not null)
-        {
-            try
-            {
-                identity = await identityResolver.ResolveAsync(entity, cancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception ex) when (ex is not OperationCanceledException)
-            {
-                return RowOutcome<TEntity>.Failed(row.RowNumber, new ImportRowError(
-                    row.RowNumber,
-                    ImportRowErrorKind.Identity,
-                    [IdentityResolutionErrorCode],
-                    ex.Message));
-            }
-        }
-
-        return RowOutcome<TEntity>.Ok(row.RowNumber, entity, identity);
+        return RowOutcome<TEntity>.Ok(row.RowNumber, entity);
     }
 
     private static string FormatConversionError(CellConversionError error) =>

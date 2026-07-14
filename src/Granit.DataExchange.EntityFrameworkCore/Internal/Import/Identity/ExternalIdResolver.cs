@@ -1,3 +1,4 @@
+using System.Reflection;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Entities;
 using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Identity;
@@ -7,67 +8,74 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Import.Identity;
 
 /// <summary>
-/// Resolves entity identity using a dedicated external ID mapping table.
-/// Looks up the external ID in <see cref="DataExchangeDbContext"/>, then loads the entity from the application DbContext.
+/// Resolves entity identity using a dedicated external ID mapping table, one query per batch
+/// against <see cref="DataExchangeDbContext"/>. Never touches the application <c>DbContext</c> —
+/// found mappings resolve to <see cref="RecordOperation.Update"/> keyed on the mapped internal ID
+/// (a <see cref="EntityKeyKind.PrimaryKey"/>); the executor performs the actual prefetch.
 /// </summary>
 /// <typeparam name="TEntity">The entity type.</typeparam>
-/// <typeparam name="TContext">The application DbContext type.</typeparam>
+/// <typeparam name="TContext">The application DbContext type (kept for API symmetry with the other resolvers).</typeparam>
 internal sealed class ExternalIdResolver<TEntity, TContext>(
     IDbContextFactory<DataExchangeDbContext> importContextFactory,
-    IDbContextFactory<TContext> appContextFactory,
     ImportDefinition<TEntity> definition,
     ICurrentTenant currentTenant) : IRecordIdentityResolver<TEntity>
     where TEntity : class
     where TContext : DbContext
 {
+    private static readonly PropertyInfo? ExternalIdProperty = typeof(TEntity).GetProperty("ExternalId");
+
     /// <inheritdoc/>
-    public async Task<RecordIdentity<TEntity>> ResolveAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<RecordIdentity>> ResolveBatchAsync(
+        IReadOnlyList<TEntity> batch, CancellationToken cancellationToken = default)
     {
-        // External ID is stored as a special property on the entity
-        // The value is extracted from the mapped "ExternalId" column
-        string? externalId = ExtractExternalId(entity);
-        if (string.IsNullOrEmpty(externalId))
+        ArgumentNullException.ThrowIfNull(batch);
+
+        string?[] externalIds = [.. batch.Select(ExtractExternalId)];
+        string[] nonEmptyIds = [.. externalIds.Where(id => !string.IsNullOrEmpty(id)).Distinct(StringComparer.Ordinal)!];
+
+        Dictionary<string, Guid> mappedInternalIds = new(StringComparer.Ordinal);
+
+        if (nonEmptyIds.Length > 0)
         {
-            return new RecordIdentity<TEntity> { Operation = RecordOperation.Insert };
+            Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
+            string definitionName = definition.Name;
+
+            await using DataExchangeDbContext importContext =
+                await importContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+            List<ExternalIdMappingEntity> mappings = await importContext.ExternalIdMappings
+                .AsNoTracking()
+                .Where(e => e.DefinitionName == definitionName
+                    && e.TenantId == tenantId
+                    && nonEmptyIds.Contains(e.ExternalId))
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+            foreach (ExternalIdMappingEntity mapping in mappings)
+            {
+                mappedInternalIds[mapping.ExternalId] = mapping.InternalId;
+            }
         }
 
-        await using DataExchangeDbContext importContext = await importContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
-        string definitionName = definition.Name;
+        List<RecordIdentity> results = new(batch.Count);
 
-        ExternalIdMappingEntity? mapping = await importContext.ExternalIdMappings
-            .AsNoTracking()
-            .FirstOrDefaultAsync(
-                e => e.DefinitionName == definitionName
-                     && e.ExternalId == externalId
-                     && e.TenantId == tenantId,
-                cancellationToken).ConfigureAwait(false);
-
-        if (mapping is null)
+        for (int i = 0; i < batch.Count; i++)
         {
-            return new RecordIdentity<TEntity> { Operation = RecordOperation.Insert };
+            string? externalId = externalIds[i];
+
+            if (string.IsNullOrEmpty(externalId))
+            {
+                results.Add(RecordIdentity.Insert());
+                continue;
+            }
+
+            results.Add(mappedInternalIds.TryGetValue(externalId, out Guid internalId)
+                ? RecordIdentity.Update(new EntityKey(internalId), EntityKeyKind.PrimaryKey)
+                : RecordIdentity.Insert(externalId));
         }
 
-        await using TContext appContext = await appContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        TEntity? existing = await appContext.Set<TEntity>().FindAsync([mapping.InternalId], cancellationToken).ConfigureAwait(false);
-
-        if (existing is null)
-        {
-            return new RecordIdentity<TEntity> { Operation = RecordOperation.Insert };
-        }
-
-        return new RecordIdentity<TEntity>
-        {
-            Operation = RecordOperation.Update,
-            ExistingEntity = existing,
-        };
+        return results;
     }
 
-    private static string? ExtractExternalId(TEntity entity)
-    {
-        // The external ID is expected to be in a property named "ExternalId" on the entity,
-        // or via the first business key property if configured for external ID mode.
-        System.Reflection.PropertyInfo? prop = typeof(TEntity).GetProperty("ExternalId");
-        return prop?.GetValue(entity)?.ToString();
-    }
+    private static string? ExtractExternalId(TEntity entity) =>
+        ExternalIdProperty?.GetValue(entity)?.ToString();
 }

@@ -96,6 +96,14 @@ public sealed class ImportJob : AuditedAggregateRoot, IMultiTenant, IConcurrency
     public DateTimeOffset? CompletedAt { get; private set; }
 
     /// <summary>
+    /// Timestamp when the uploaded file behind <see cref="BlobReference"/> was purged by the
+    /// retention sweep (GDPR storage limitation). <see langword="null"/> while the file still
+    /// exists. The reference itself is kept for auditability — this marker records that the
+    /// underlying PII payload is gone without making <see cref="BlobReference"/> nullable.
+    /// </summary>
+    public DateTimeOffset? FileDeletedAt { get; private set; }
+
+    /// <summary>
     /// Tenant identifier. Soft dependency on <c>ICurrentTenant</c>.
     /// </summary>
     public Guid? TenantId { get; private set; }
@@ -186,5 +194,28 @@ public sealed class ImportJob : AuditedAggregateRoot, IMultiTenant, IConcurrency
         Status = finalStatus;
         Report = report;
         CompletedAt = completedAt;
+    }
+
+    /// <summary>
+    /// Records that the uploaded file behind <see cref="BlobReference"/> was deleted by the
+    /// retention sweep. Only valid on terminal jobs — deleting the source file of a live job
+    /// would break preview/execution.
+    /// </summary>
+    internal void MarkFileDeleted(DateTimeOffset deletedAt)
+    {
+        if (Status is not (ImportJobStatus.Completed
+            or ImportJobStatus.PartiallyCompleted
+            or ImportJobStatus.Failed
+            or ImportJobStatus.Cancelled))
+        {
+            throw new InvalidOperationException($"Cannot mark the file deleted while the job is '{Status}'.");
+        }
+
+        if (FileDeletedAt is not null)
+        {
+            throw new InvalidOperationException("The uploaded file was already marked deleted.");
+        }
+
+        FileDeletedAt = deletedAt;
     }
 }

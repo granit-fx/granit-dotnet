@@ -23,54 +23,46 @@ public sealed class ExternalIdResolverTests
     }
 
     private static ExternalIdResolver<TestEntity, TestAppDbContext> CreateResolver(
-        string importDbName, string appDbName, ICurrentTenant? tenant = null) =>
+        string importDbName, ICurrentTenant? tenant = null) =>
         new(
             new InMemoryDataExchangeContextFactory(importDbName),
-            new InMemoryAppContextFactory(appDbName),
             new TestExternalIdImportDefinition(),
             tenant ?? CreateTenant());
 
     [Fact]
-    public async Task ResolveAsync_returns_insert_when_no_external_id()
+    public async Task ResolveBatchAsync_returns_insert_when_no_external_id()
     {
-        // Arrange
         string dbName = NewDb();
-        ExternalIdResolver<TestEntity, TestAppDbContext> resolver = CreateResolver(dbName, dbName);
+        ExternalIdResolver<TestEntity, TestAppDbContext> resolver = CreateResolver(dbName);
         TestEntity entity = new() { Name = "Alice", ExternalId = null };
 
-        // Act
-        RecordIdentity<TestEntity> result = await resolver.ResolveAsync(
-            entity, TestContext.Current.CancellationToken);
+        IReadOnlyList<RecordIdentity> results = await resolver.ResolveBatchAsync(
+            [entity], TestContext.Current.CancellationToken);
 
-        // Assert
-        result.Operation.ShouldBe(RecordOperation.Insert);
+        results.ShouldHaveSingleItem().Operation.ShouldBe(RecordOperation.Insert);
     }
 
     [Fact]
-    public async Task ResolveAsync_returns_insert_when_external_id_not_mapped()
+    public async Task ResolveBatchAsync_returns_insert_with_external_id_when_not_mapped()
     {
-        // Arrange
         string dbName = NewDb();
-        ExternalIdResolver<TestEntity, TestAppDbContext> resolver = CreateResolver(dbName, dbName);
+        ExternalIdResolver<TestEntity, TestAppDbContext> resolver = CreateResolver(dbName);
         TestEntity entity = new() { Name = "Alice", ExternalId = "EXT-001" };
 
-        // Act
-        RecordIdentity<TestEntity> result = await resolver.ResolveAsync(
-            entity, TestContext.Current.CancellationToken);
+        IReadOnlyList<RecordIdentity> results = await resolver.ResolveBatchAsync(
+            [entity], TestContext.Current.CancellationToken);
 
-        // Assert
+        RecordIdentity result = results.ShouldHaveSingleItem();
         result.Operation.ShouldBe(RecordOperation.Insert);
+        result.ExternalId.ShouldBe("EXT-001");
     }
 
     [Fact]
-    public async Task ResolveAsync_returns_update_when_external_id_is_mapped()
+    public async Task ResolveBatchAsync_returns_update_with_primary_key_when_mapped()
     {
-        // Arrange
         string importDbName = NewDb();
-        string appDbName = NewDb();
         var internalId = Guid.NewGuid();
 
-        // Seed external ID mapping
         InMemoryDataExchangeContextFactory importFactory = new(importDbName);
         await using (DataExchangeDbContext importContext = importFactory.CreateDbContext())
         {
@@ -85,41 +77,37 @@ public sealed class ExternalIdResolverTests
             await importContext.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
-        // Seed the actual entity in app context
-        InMemoryAppContextFactory appFactory = new(appDbName);
-        await using (TestAppDbContext appContext = appFactory.CreateDbContext())
-        {
-            appContext.TestEntities.Add(new TestEntity
-            {
-                Id = internalId,
-                Name = "Alice",
-            });
-            await appContext.SaveChangesAsync(TestContext.Current.CancellationToken);
-        }
-
-        ExternalIdResolver<TestEntity, TestAppDbContext> resolver =
-            CreateResolver(importDbName, appDbName);
+        ExternalIdResolver<TestEntity, TestAppDbContext> resolver = CreateResolver(importDbName);
         TestEntity incoming = new() { Name = "Alice Updated", ExternalId = "EXT-001" };
 
-        // Act
-        RecordIdentity<TestEntity> result = await resolver.ResolveAsync(
-            incoming, TestContext.Current.CancellationToken);
+        IReadOnlyList<RecordIdentity> results = await resolver.ResolveBatchAsync(
+            [incoming], TestContext.Current.CancellationToken);
 
-        // Assert
+        RecordIdentity result = results.ShouldHaveSingleItem();
         result.Operation.ShouldBe(RecordOperation.Update);
-        result.ExistingEntity.ShouldNotBeNull();
-        result.ExistingEntity.Id.ShouldBe(internalId);
+        result.KeyKind.ShouldBe(EntityKeyKind.PrimaryKey);
+        result.Key.ShouldBe(new EntityKey(internalId));
     }
 
     [Fact]
-    public async Task ResolveAsync_returns_insert_when_entity_deleted()
+    public async Task ResolveBatchAsync_empty_external_id_returns_insert()
     {
-        // Arrange
-        string importDbName = NewDb();
-        string appDbName = NewDb();
-        var internalId = Guid.NewGuid();
+        string dbName = NewDb();
+        ExternalIdResolver<TestEntity, TestAppDbContext> resolver = CreateResolver(dbName);
+        TestEntity entity = new() { Name = "Alice", ExternalId = "" };
 
-        // Seed mapping but NOT the entity (simulating a deleted entity)
+        IReadOnlyList<RecordIdentity> results = await resolver.ResolveBatchAsync(
+            [entity], TestContext.Current.CancellationToken);
+
+        results.ShouldHaveSingleItem().Operation.ShouldBe(RecordOperation.Insert);
+    }
+
+    [Fact]
+    public async Task ResolveBatchAsync_issues_one_query_for_the_whole_batch()
+    {
+        string importDbName = NewDb();
+        var mappedId = Guid.NewGuid();
+
         InMemoryDataExchangeContextFactory importFactory = new(importDbName);
         await using (DataExchangeDbContext importContext = importFactory.CreateDbContext())
         {
@@ -127,38 +115,28 @@ public sealed class ExternalIdResolverTests
             {
                 Id = Guid.NewGuid(),
                 DefinitionName = "Test.ExternalIdImport",
-                ExternalId = "EXT-002",
-                InternalId = internalId,
+                ExternalId = "EXT-MAPPED",
+                InternalId = mappedId,
                 CreatedAt = DateTimeOffset.UtcNow,
             });
             await importContext.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
-        ExternalIdResolver<TestEntity, TestAppDbContext> resolver =
-            CreateResolver(importDbName, appDbName);
-        TestEntity incoming = new() { Name = "Ghost", ExternalId = "EXT-002" };
+        ExternalIdResolver<TestEntity, TestAppDbContext> resolver = CreateResolver(importDbName);
 
-        // Act
-        RecordIdentity<TestEntity> result = await resolver.ResolveAsync(
-            incoming, TestContext.Current.CancellationToken);
+        TestEntity mapped = new() { Name = "Mapped", ExternalId = "EXT-MAPPED" };
+        TestEntity unmapped = new() { Name = "Unmapped", ExternalId = "EXT-UNMAPPED" };
+        TestEntity noExternalId = new() { Name = "NoExternalId", ExternalId = null };
 
-        // Assert
-        result.Operation.ShouldBe(RecordOperation.Insert);
-    }
+        IReadOnlyList<RecordIdentity> results = await resolver.ResolveBatchAsync(
+            [mapped, unmapped, noExternalId], TestContext.Current.CancellationToken);
 
-    [Fact]
-    public async Task ResolveAsync_empty_external_id_returns_insert()
-    {
-        // Arrange
-        string dbName = NewDb();
-        ExternalIdResolver<TestEntity, TestAppDbContext> resolver = CreateResolver(dbName, dbName);
-        TestEntity entity = new() { Name = "Alice", ExternalId = "" };
-
-        // Act
-        RecordIdentity<TestEntity> result = await resolver.ResolveAsync(
-            entity, TestContext.Current.CancellationToken);
-
-        // Assert
-        result.Operation.ShouldBe(RecordOperation.Insert);
+        results.Count.ShouldBe(3);
+        results[0].Operation.ShouldBe(RecordOperation.Update);
+        results[0].Key.ShouldBe(new EntityKey(mappedId));
+        results[1].Operation.ShouldBe(RecordOperation.Insert);
+        results[1].ExternalId.ShouldBe("EXT-UNMAPPED");
+        results[2].Operation.ShouldBe(RecordOperation.Insert);
+        results[2].ExternalId.ShouldBeNull();
     }
 }

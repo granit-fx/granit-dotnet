@@ -113,14 +113,16 @@ public sealed partial class ExportOrchestrator(
                 Writer = writer,
             };
 
-            MemoryStream outputStream = new();
-            long writtenRows = await pipeline.WriteAsync(pipelineContext, outputStream, cancellationToken).ConfigureAwait(false);
-            int rowCount = checked((int)writtenRows);
-            outputStream.Position = 0;
-
-            // Store the generated file
+            // Store the generated file, streaming pipeline output directly into the provider's
+            // destination stream — no full in-memory buffer of the generated file.
             string fileName = $"{SanitizeFileName(request.DefinitionName)}_{clock.Now:yyyy-MM-dd_HHmmss}{writer.FileExtension}";
-            BlobReference blobReference = await fileProvider.SaveAsync(fileName, outputStream, cancellationToken).ConfigureAwait(false);
+            long writtenRows = 0;
+            BlobReference blobReference = await fileProvider.SaveAsync(
+                fileName,
+                writer.MimeType,
+                async (stream, ct) => writtenRows = await pipeline.WriteAsync(pipelineContext, stream, ct).ConfigureAwait(false),
+                cancellationToken).ConfigureAwait(false);
+            int rowCount = checked((int)writtenRows);
 
             stopwatch.Stop();
             job.Complete(blobReference, fileName, rowCount, clock.Now);

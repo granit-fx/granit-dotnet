@@ -65,6 +65,7 @@
       "projects": [
         "tests/Granit.DataExchange.AI.Tests",
         "tests/Granit.DataExchange.Abstractions.Tests",
+        "tests/Granit.DataExchange.BackgroundJobs.Tests",
         "tests/Granit.DataExchange.BlobStorage.Tests",
         "tests/Granit.DataExchange.Csv.Tests",
         "tests/Granit.DataExchange.Endpoints.Tests",
