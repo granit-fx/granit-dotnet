@@ -10,7 +10,7 @@ using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using static OpenIddict.Server.OpenIddictServerEvents;
 
-namespace Granit.OpenIddict.Server.Handlers;
+namespace Granit.OpenIddict.Server.DPoP.Handlers;
 
 /// <summary>
 /// OpenIddict server handler that validates the <c>DPoP</c> proof JWT presented at the
@@ -40,7 +40,7 @@ public sealed partial class DPoPTokenBindingHandler(
 {
     /// <summary>
     /// Descriptor registered with OpenIddict's server pipeline. Runs after
-    /// <see cref="ClientSideAuthorizationHandler"/> so the principal is finalized
+    /// <c>ClientSideAuthorizationHandler</c> so the principal is finalized
     /// before we attach the confirmation claim.
     /// </summary>
     public static OpenIddictServerHandlerDescriptor Descriptor { get; }

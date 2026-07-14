@@ -18,7 +18,6 @@
       "src/Granit.Auditing/Granit.Auditing.csproj",
       "src/Granit.Authentication.ApiKeys.Endpoints/Granit.Authentication.ApiKeys.Endpoints.csproj",
       "src/Granit.Authentication.ApiKeys/Granit.Authentication.ApiKeys.csproj",
-      "src/Granit.Authentication.DPoP/Granit.Authentication.DPoP.csproj",
       "src/Granit.Authentication.External/Granit.Authentication.External.csproj",
       "src/Granit.Authentication.OpenIddict/Granit.Authentication.OpenIddict.csproj",
       "src/Granit.Authentication/Granit.Authentication.csproj",

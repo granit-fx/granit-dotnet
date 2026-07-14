@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Granit.Authentication.DPoP.Extensions;
 using Granit.Authentication.Extensions;
 using Granit.Authentication.OpenIddict.Handlers;
 using Granit.OpenIddict.Options;
@@ -63,15 +62,6 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
                     + "Set EnableEntityCaching = false (default) or remove multi-tenancy.");
             }
         }
-
-        // The DPoP token-binding event handler (registered below via
-        // DPoPTokenBindingHandler.Descriptor) requires IDPoPProofValidator. Register it
-        // here so the OpenIddict server is self-contained — hosts that also call
-        // AddGranitDPoPValidation() on the resource side benefit from the same
-        // TryAddSingleton; without this, the OIDC server fails at sign-in time when no
-        // resource-side DPoP validation is registered (e.g. dedicated authorization-server
-        // deployments and integration tests).
-        builder.Services.AddGranitDPoPProofValidator();
 
         OpenIddictBuilder openIddict = builder.Services.AddOpenIddict();
 
@@ -226,11 +216,9 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
             // reject host users. See ClientSideAuthorizationHandler for semantics.
             options.AddEventHandler(ClientSideAuthorizationHandler.Descriptor);
 
-            // Validates the DPoP proof presented at /connect/token and stamps the
-            // resulting JWK Thumbprint as the cnf.jkt confirmation claim on the issued
-            // access token (RFC 9449 §6). In FAPI 2.0, a missing DPoP header rejects
-            // the request — see DPoPTokenBindingHandler for semantics.
-            options.AddEventHandler(DPoPTokenBindingHandler.Descriptor);
+            // The DPoP token-binding handler (cnf.jkt stamping at /connect/token) is wired
+            // by the opt-in Granit.OpenIddict.Server.DPoP package, which adds its descriptor
+            // to the server pipeline additively. The core server stays DPoP-free.
 
             // Announces a new user session (UserSessionCreatedEto) when the token endpoint
             // issues a refresh token, so consumers (anomaly detection, geo, notifications)

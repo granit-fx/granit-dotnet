@@ -2,7 +2,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using Granit.Authentication.DPoP.Validation;
 using Granit.OpenIddict.Options;
-using Granit.OpenIddict.Server.Handlers;
+using Granit.OpenIddict.Server.DPoP.Handlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -12,7 +12,7 @@ using Shouldly;
 using Xunit;
 using static OpenIddict.Server.OpenIddictServerEvents;
 
-namespace Granit.OpenIddict.Server.Tests.Handlers;
+namespace Granit.OpenIddict.Server.DPoP.Tests.Handlers;
 
 public sealed class DPoPTokenBindingHandlerTests
 {

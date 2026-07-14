@@ -2219,10 +2219,17 @@
       "name": "Granit.OpenIddict.Server",
       "deps": [
         "Granit.Authentication",
-        "Granit.Authentication.DPoP",
         "Granit.Authentication.OpenIddict",
         "Granit.OpenIddict",
         "Granit.Identity.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.OpenIddict.Server.DPoP",
+      "deps": [
+        "Granit.Authentication.DPoP",
+        "Granit.OpenIddict.Server"
       ],
       "framework": "net10.0"
     },
@@ -43018,7 +43025,14 @@
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictOptions.cs",
       "line": 10,
-      "members": []
+      "members": [
+        {
+          "name": "Issuer",
+          "kind": "property",
+          "signature": "Uri? Issuer",
+          "returnType": "Uri?"
+        }
+      ]
     },
     {
       "name": "GranitOpenIddictOptionsExtensions",
@@ -43026,7 +43040,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictOptions.cs",
-      "line": 148,
+      "line": 165,
       "members": [
         {
           "name": "WithFapi2Profile",
@@ -43074,6 +43088,15 @@
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
       "line": 59,
+      "members": []
+    },
+    {
+      "name": "SenderConstrainingMode",
+      "fqn": "Granit.OpenIddict.Options.SenderConstrainingMode",
+      "kind": "enum",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Options/SenderConstrainingMode.cs",
+      "line": 8,
       "members": []
     },
     {
@@ -43145,28 +43168,12 @@
       ]
     },
     {
-      "name": "OpenIddictServerHostApplicationBuilderExtensions",
-      "fqn": "Granit.OpenIddict.Server.Extensions.OpenIddictServerHostApplicationBuilderExtensions",
+      "name": "GranitOpenIddictServerDPoPModule",
+      "fqn": "Granit.OpenIddict.Server.DPoP.GranitOpenIddictServerDPoPModule",
       "kind": "class",
-      "project": "Granit.OpenIddict.Server",
-      "file": "src/Granit.OpenIddict.Server/Extensions/OpenIddictServerHostApplicationBuilderExtensions.cs",
-      "line": 22,
-      "members": [
-        {
-          "name": "AddGranitOpenIddictServer",
-          "kind": "method",
-          "signature": "AddGranitOpenIddictServer(this IHostApplicationBuilder builder)",
-          "returnType": "IHostApplicationBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitOpenIddictServerModule",
-      "fqn": "Granit.OpenIddict.Server.GranitOpenIddictServerModule",
-      "kind": "class",
-      "project": "Granit.OpenIddict.Server",
-      "file": "src/Granit.OpenIddict.Server/GranitOpenIddictServerModule.cs",
-      "line": 25,
+      "project": "Granit.OpenIddict.Server.DPoP",
+      "file": "src/Granit.OpenIddict.Server.DPoP/GranitOpenIddictServerDPoPModule.cs",
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",
@@ -43177,12 +43184,12 @@
       ]
     },
     {
-      "name": "ClientSideAuthorizationHandler",
-      "fqn": "Granit.OpenIddict.Server.Handlers.ClientSideAuthorizationHandler",
+      "name": "DPoPTokenBindingHandler",
+      "fqn": "Granit.OpenIddict.Server.DPoP.Handlers.DPoPTokenBindingHandler",
       "kind": "class",
-      "project": "Granit.OpenIddict.Server",
-      "file": "src/Granit.OpenIddict.Server/Handlers/ClientSideAuthorizationHandler.cs",
-      "line": 38,
+      "project": "Granit.OpenIddict.Server.DPoP",
+      "file": "src/Granit.OpenIddict.Server.DPoP/Handlers/DPoPTokenBindingHandler.cs",
+      "line": 35,
       "members": [
         {
           "name": "Descriptor",
@@ -43199,12 +43206,44 @@
       ]
     },
     {
-      "name": "DPoPTokenBindingHandler",
-      "fqn": "Granit.OpenIddict.Server.Handlers.DPoPTokenBindingHandler",
+      "name": "OpenIddictServerHostApplicationBuilderExtensions",
+      "fqn": "Granit.OpenIddict.Server.Extensions.OpenIddictServerHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
-      "file": "src/Granit.OpenIddict.Server/Handlers/DPoPTokenBindingHandler.cs",
-      "line": 35,
+      "file": "src/Granit.OpenIddict.Server/Extensions/OpenIddictServerHostApplicationBuilderExtensions.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "AddGranitOpenIddictServer",
+          "kind": "method",
+          "signature": "AddGranitOpenIddictServer(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitOpenIddictServerModule",
+      "fqn": "Granit.OpenIddict.Server.GranitOpenIddictServerModule",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Server",
+      "file": "src/Granit.OpenIddict.Server/GranitOpenIddictServerModule.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ClientSideAuthorizationHandler",
+      "fqn": "Granit.OpenIddict.Server.Handlers.ClientSideAuthorizationHandler",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Server",
+      "file": "src/Granit.OpenIddict.Server/Handlers/ClientSideAuthorizationHandler.cs",
+      "line": 38,
       "members": [
         {
           "name": "Descriptor",
@@ -43241,6 +43280,15 @@
           "returnType": "ValueTask"
         }
       ]
+    },
+    {
+      "name": "ISenderConstrainingMechanism",
+      "fqn": "Granit.OpenIddict.Server.SenderConstraining.ISenderConstrainingMechanism",
+      "kind": "interface",
+      "project": "Granit.OpenIddict.Server",
+      "file": "src/Granit.OpenIddict.Server/SenderConstraining/ISenderConstrainingMechanism.cs",
+      "line": 12,
+      "members": []
     },
     {
       "name": "ClaimsDestinations",

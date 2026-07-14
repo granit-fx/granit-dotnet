@@ -1,10 +1,10 @@
 using Granit.Authentication.DPoP.Options;
 using Granit.OpenIddict.Options;
-using Granit.OpenIddict.Server.Internal;
+using Granit.OpenIddict.Server.DPoP.Internal;
 using Shouldly;
 using Xunit;
 
-namespace Granit.OpenIddict.Server.Tests.Internal;
+namespace Granit.OpenIddict.Server.DPoP.Tests.Internal;
 
 public sealed class Fapi2DPoPOptionsConfiguratorTests
 {
