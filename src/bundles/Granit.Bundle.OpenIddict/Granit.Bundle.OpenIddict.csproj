@@ -10,6 +10,7 @@
     <ProjectReference Include="..\..\Granit.Authentication.OpenIddict\Granit.Authentication.OpenIddict.csproj" />
     <ProjectReference Include="..\..\Granit.OpenIddict\Granit.OpenIddict.csproj" />
     <ProjectReference Include="..\..\Granit.OpenIddict.Server\Granit.OpenIddict.Server.csproj" />
+    <ProjectReference Include="..\..\Granit.OpenIddict.Server.DPoP\Granit.OpenIddict.Server.DPoP.csproj" />
     <ProjectReference Include="..\..\Granit.OpenIddict.EntityFrameworkCore\Granit.OpenIddict.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\Granit.Identity.Local.AspNetIdentity\Granit.Identity.Local.AspNetIdentity.csproj" />
     <ProjectReference Include="..\..\Granit.Identity.Local.Endpoints\Granit.Identity.Local.Endpoints.csproj" />

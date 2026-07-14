@@ -855,6 +855,66 @@ public sealed class DPoPProofValidatorTests : IDisposable
         result.ServerNonce.ShouldNotBeNullOrEmpty("ServerNonce should be present even on signature failure");
     }
 
+    // ── ath access-token binding (RFC 9449 §4.3) ──
+
+    [Fact]
+    public async Task ValidateAsync_WithAccessToken_CorrectAth_ReturnsSuccess()
+    {
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        const string accessToken = "header.payload.signature-access-token";
+        string ath = ComputeAth(accessToken);
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, _clock.Now,
+            modifyPayload: p => p["ath"] = ath);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, accessToken, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeTrue(result.Error);
+    }
+
+    [Fact]
+    public async Task ValidateAsync_WithAccessToken_WrongAth_ReturnsFailure()
+    {
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, _clock.Now,
+            modifyPayload: p => p["ath"] = ComputeAth("a-different-access-token"));
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, "the-real-access-token", TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Error.ShouldBe("ath claim does not match the presented access token.");
+    }
+
+    [Fact]
+    public async Task ValidateAsync_WithAccessToken_MissingAth_ReturnsFailure()
+    {
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, _clock.Now);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, "an-access-token", TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Error.ShouldBe("Missing ath claim (required when bound to an access token).");
+    }
+
+    [Fact]
+    public async Task ValidateAsync_NullAccessToken_DoesNotEnforceAth_ReturnsSuccess()
+    {
+        // Token-endpoint overload: no access token is bound yet, so a proof without ath is valid.
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, _clock.Now);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, accessToken: null, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeTrue(result.Error);
+    }
+
+    private static string ComputeAth(string accessToken) =>
+        Base64UrlEncodeBytes(SHA256.HashData(Encoding.ASCII.GetBytes(accessToken)));
+
     // ── Helper: DPoP proof JWT builder ──
 
     private static string CreateDPoPProof(

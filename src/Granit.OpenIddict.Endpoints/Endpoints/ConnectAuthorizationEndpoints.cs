@@ -5,8 +5,8 @@ using Granit.Domain;
 using Granit.Identity.Local.Domain;
 using Granit.MultiTenancy;
 using Granit.OpenIddict.Diagnostics;
-using Granit.OpenIddict.Endpoints.Internal;
 using Granit.OpenIddict.Endpoints.Options;
+using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -149,8 +149,8 @@ internal static partial class ConnectAuthorizationEndpoints
 
         // Build the principal with requested scopes.
         ImmutableArray<string> scopes = request.GetScopes();
-        OidcPrincipalFactory principalFactory = context.RequestServices
-            .GetRequiredService<OidcPrincipalFactory>();
+        IOidcPrincipalFactory principalFactory = context.RequestServices
+            .GetRequiredService<IOidcPrincipalFactory>();
 
         ClaimsPrincipal principal = await principalFactory
             .CreateUserPrincipalAsync(

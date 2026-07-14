@@ -3,8 +3,8 @@ using System.Security.Claims;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Identity.Local.Domain;
-using Granit.OpenIddict.Endpoints.Internal;
 using Granit.OpenIddict.Endpoints.Options;
+using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -139,8 +139,8 @@ internal static partial class ConnectVerifyEndpoints
         // Build a principal from the authenticated user with the device authorization's requested scopes.
         // The principal from oidcResult carries the scopes originally requested by the device.
         ImmutableArray<string> scopes = oidcResult.Principal.GetScopes();
-        OidcPrincipalFactory principalFactory = context.RequestServices
-            .GetRequiredService<OidcPrincipalFactory>();
+        IOidcPrincipalFactory principalFactory = context.RequestServices
+            .GetRequiredService<IOidcPrincipalFactory>();
 
         ClaimsPrincipal principal = await principalFactory.CreateUserPrincipalAsync(
             user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,

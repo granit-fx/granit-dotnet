@@ -352,8 +352,8 @@
       "Microsoft.AspNetCore.OpenApi": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.9",
-        "contentHash": "1ihb8FO9cGgEK1/m3CTtT/SfnynwmiZib0W2pcDVj3KSWk/Sca4VOXEtaptKQc582zpFrzTFiwkGRCglt6H+WQ==",
+        "resolved": "10.0.10",
+        "contentHash": "d4Atx9IHq7JgX0F/h7Db+m9zAUzC+cKdI9k+OWnnyQIOUQtfvjIEuhvbjPigVMkAmPUgCbJ8Yp6M9ghUqHtJSQ==",
         "dependencies": {
           "Microsoft.OpenApi": "2.0.0"
         }
@@ -386,8 +386,8 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.18.0",
-        "contentHash": "PNE9Rml9pgF+7ucenFDQxFmlmgMnYP+9rwfwOJBGjvJY9bNCPqYmFSvYoBkZJbKTHRgR6kFwft0yf5HIr8qDbg==",
+        "resolved": "6.19.0",
+        "contentHash": "saSpwNcGxebBIyEymVpp/bz3MwEG2p7551lLLvOpS1POkinOyVSXqyC876m5dSLHG1ckz0Au2eELHe0rMeknpQ==",
         "dependencies": {
           "JasperFx": "2.27.0",
           "JasperFx.Events": "2.27.0",

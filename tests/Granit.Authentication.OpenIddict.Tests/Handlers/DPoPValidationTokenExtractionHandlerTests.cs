@@ -1,4 +1,4 @@
-using Granit.OpenIddict.Server.Handlers;
+using Granit.Authentication.OpenIddict.Handlers;
 using Microsoft.AspNetCore.Http;
 using OpenIddict.Abstractions;
 using OpenIddict.Validation;
@@ -6,7 +6,7 @@ using Shouldly;
 using Xunit;
 using static OpenIddict.Validation.OpenIddictValidationEvents;
 
-namespace Granit.OpenIddict.Server.Tests.Handlers;
+namespace Granit.Authentication.OpenIddict.Tests.Handlers;
 
 public sealed class DPoPValidationTokenExtractionHandlerTests
 {

@@ -12,13 +12,15 @@ namespace Granit.OpenIddict.BackgroundJobs.Services;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The heartbeat endpoint (<c>POST /api/account/session/heartbeat</c>) maintains a
-/// <c>session:{userId}:{jti}</c> key in <see cref="IFusionCache"/> with a TTL
-/// of <c>IdleSessionTimeout + 5 min</c>. When the cache entry expires (user stopped
-/// sending heartbeats), this job revokes the associated refresh token.
-/// </para>
-/// <para>
-/// Tokens with <c>remember_me = true</c> are skipped — those sessions never time out.
+/// <strong>Temporary safe-guard:</strong> revocation is intentionally disabled. The previous
+/// implementation probed a <see cref="IFusionCache"/> key <c>session:{subject}:{refreshTokenId}</c>
+/// that the heartbeat endpoint never wrote under the same identifier (it writes
+/// <c>session:{subject}:{accessTokenJti}</c>), so every refresh token looked idle and was
+/// revoked on the first run — a mass logout — and <c>remember_me</c> sessions (which the
+/// heartbeat deliberately never tracks) were revoked too. Until the correct mechanism ships
+/// (a persistent last-activity column on the token entry, replacing this three-party cache
+/// contract), the job scans and reports what it <em>would</em> revoke but does not revoke,
+/// favouring "no enforcement" over "log everyone out".
 /// </para>
 /// </remarks>
 public sealed partial class IdleSessionEnforcementService(
@@ -42,14 +44,14 @@ public sealed partial class IdleSessionEnforcementService(
 
         Log.IdleSessionEnforcementStarted(logger, timeoutMinutes);
 
-        // Strategy: the heartbeat endpoint sets a cache key session:{userId}:{jti}
-        // with TTL = IdleSessionTimeout + 5 min. When the cache entry expires naturally
-        // (user stopped sending heartbeats), the session is considered idle.
-        //
-        // This job iterates active refresh tokens in bounded pages and checks whether
-        // their corresponding cache entry still exists. If not, the refresh token is revoked.
+        // SAFE-GUARD: the cache-key contract below is broken (the heartbeat writes
+        // session:{subject}:{accessTokenJti} while this scan probes
+        // session:{subject}:{refreshTokenId}), so every entry looks idle. We scan and count
+        // what the old logic WOULD have revoked, but do NOT revoke — a cache miss here is not
+        // trustworthy evidence of idleness. The real mechanism (persistent last-activity on the
+        // token entry) replaces this loop wholesale; see the class remarks.
         const int pageSize = 1_000;
-        int revokedCount = 0;
+        int wouldRevokeCount = 0;
         int offset = 0;
         bool hasMore;
 
@@ -74,16 +76,14 @@ public sealed partial class IdleSessionEnforcementService(
                     continue;
                 }
 
-                // Check if session cache entry still exists
                 string cacheKey = $"session:{subject}:{tokenId}";
                 MaybeValue<UserSessionActivity> cachedEntry = await cache
                     .TryGetAsync<UserSessionActivity>(cacheKey, token: cancellationToken).ConfigureAwait(false);
 
                 if (!cachedEntry.HasValue)
                 {
-                    // Cache entry expired → session idle → revoke refresh token
-                    await tokenManager.TryRevokeAsync(token, cancellationToken).ConfigureAwait(false);
-                    revokedCount++;
+                    // Would revoke under the old (broken) contract — counted only, never revoked.
+                    wouldRevokeCount++;
                 }
             }
 
@@ -92,7 +92,7 @@ public sealed partial class IdleSessionEnforcementService(
         }
         while (hasMore);
 
-        Log.IdleSessionEnforcementCompleted(logger, revokedCount);
+        Log.IdleSessionEnforcementDeferred(logger, wouldRevokeCount);
     }
 
     private static partial class Log
@@ -103,7 +103,7 @@ public sealed partial class IdleSessionEnforcementService(
         [LoggerMessage(Level = LogLevel.Debug, Message = "Idle session enforcement started (timeout = {TimeoutMinutes} min).")]
         public static partial void IdleSessionEnforcementStarted(ILogger logger, int timeoutMinutes);
 
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Idle session enforcement completed. Revoked {RevokedCount} refresh tokens.")]
-        public static partial void IdleSessionEnforcementCompleted(ILogger logger, int revokedCount);
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Idle session enforcement is temporarily disabled (broken cache-key contract). Would have revoked {WouldRevokeCount} refresh token(s); none were revoked. Pending the persistent last-activity mechanism.")]
+        public static partial void IdleSessionEnforcementDeferred(ILogger logger, int wouldRevokeCount);
     }
 }

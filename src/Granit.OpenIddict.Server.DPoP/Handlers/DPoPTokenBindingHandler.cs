@@ -10,7 +10,7 @@ using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using static OpenIddict.Server.OpenIddictServerEvents;
 
-namespace Granit.OpenIddict.Server.Handlers;
+namespace Granit.OpenIddict.Server.DPoP.Handlers;
 
 /// <summary>
 /// OpenIddict server handler that validates the <c>DPoP</c> proof JWT presented at the
@@ -40,7 +40,7 @@ public sealed partial class DPoPTokenBindingHandler(
 {
     /// <summary>
     /// Descriptor registered with OpenIddict's server pipeline. Runs after
-    /// <see cref="ClientSideAuthorizationHandler"/> so the principal is finalized
+    /// <c>ClientSideAuthorizationHandler</c> so the principal is finalized
     /// before we attach the confirmation claim.
     /// </summary>
     public static OpenIddictServerHandlerDescriptor Descriptor { get; }
@@ -54,6 +54,16 @@ public sealed partial class DPoPTokenBindingHandler(
     public async ValueTask HandleAsync(ProcessSignInContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
+
+        // RFC 9449 §5: DPoP proofs are presented only at the token endpoint. This handler
+        // runs on every ProcessSignInContext (authorization, device, and end-user-verification
+        // sign-ins all flow through it); without this gate an interactive /connect/authorize
+        // sign-in — which carries no DPoP header — would be rejected under FAPI 2.0, breaking
+        // the authorization-code and device flows.
+        if (context.EndpointType is not OpenIddictServerEndpointType.Token)
+        {
+            return;
+        }
 
         HttpRequest? request = context.Transaction.GetHttpRequest();
         if (request is null)

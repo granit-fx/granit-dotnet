@@ -23,6 +23,28 @@ public interface IDPoPProofValidator
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Validates a DPoP proof JWT presented at a protected resource together with an access token,
+    /// additionally enforcing the <c>ath</c> access-token binding (RFC 9449 §4.3): the proof MUST
+    /// carry an <c>ath</c> claim equal to <c>base64url(SHA-256(accessToken))</c>. Use this overload
+    /// on the resource side; the parameterless-token overload is for the token endpoint, where no
+    /// access token exists yet.
+    /// </summary>
+    /// <param name="proofJwt">The DPoP proof JWT from the <c>DPoP</c> header.</param>
+    /// <param name="httpMethod">The HTTP method of the request (e.g., <c>"GET"</c>).</param>
+    /// <param name="httpUri">The full request URL (scheme + host + path, no query).</param>
+    /// <param name="accessToken">
+    /// The access token the proof is presented with. When non-null, the proof's <c>ath</c> claim is
+    /// required and must match its hash. When null, behaves like the token-endpoint overload.
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<DPoPValidationResult> ValidateAsync(
+        string proofJwt,
+        string httpMethod,
+        string httpUri,
+        string? accessToken,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Generates a fresh server nonce for the <c>DPoP-Nonce</c> response header (RFC 9449 §8).
     /// Returns <see langword="null"/> when nonce generation is not enabled.
     /// </summary>

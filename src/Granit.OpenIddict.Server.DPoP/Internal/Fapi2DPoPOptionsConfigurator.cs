@@ -2,7 +2,7 @@ using Granit.Authentication.DPoP.Options;
 using Granit.OpenIddict.Options;
 using Microsoft.Extensions.Options;
 
-namespace Granit.OpenIddict.Server.Internal;
+namespace Granit.OpenIddict.Server.DPoP.Internal;
 
 /// <summary>
 /// Forces the DPoP validation flags mandated by the FAPI 2.0 Security Profile when

@@ -2,7 +2,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using Granit.Authentication.DPoP.Validation;
 using Granit.OpenIddict.Options;
-using Granit.OpenIddict.Server.Handlers;
+using Granit.OpenIddict.Server.DPoP.Handlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -12,7 +12,7 @@ using Shouldly;
 using Xunit;
 using static OpenIddict.Server.OpenIddictServerEvents;
 
-namespace Granit.OpenIddict.Server.Tests.Handlers;
+namespace Granit.OpenIddict.Server.DPoP.Tests.Handlers;
 
 public sealed class DPoPTokenBindingHandlerTests
 {
@@ -84,6 +84,25 @@ public sealed class DPoPTokenBindingHandlerTests
         context.Principal!.FindFirst(OpenIddictConstants.Claims.Confirmation).ShouldBeNull();
     }
 
+    [Fact]
+    public async Task AuthorizationEndpoint_WithFapi2_NoHeader_DoesNotReject()
+    {
+        // RFC 9449: DPoP proofs are presented only at the token endpoint. An interactive
+        // /connect/authorize sign-in carries no DPoP header and must not be rejected even
+        // under FAPI 2.0 — otherwise the authorization-code flow breaks.
+        IDPoPProofValidator validator = Substitute.For<IDPoPProofValidator>();
+        DPoPTokenBindingHandler handler = Build(validator, fapi2: true);
+        ProcessSignInContext context = BuildContext(
+            dpopHeader: null, endpointType: OpenIddictServerEndpointType.Authorization);
+
+        await handler.HandleAsync(context);
+
+        context.IsRejected.ShouldBeFalse();
+        context.Principal!.FindFirst(OpenIddictConstants.Claims.Confirmation).ShouldBeNull();
+        await validator.DidNotReceiveWithAnyArgs()
+            .ValidateAsync(default!, default!, default!, TestContext.Current.CancellationToken);
+    }
+
     private static DPoPTokenBindingHandler Build(IDPoPProofValidator validator, bool fapi2) =>
         new(
             validator,
@@ -91,7 +110,9 @@ public sealed class DPoPTokenBindingHandlerTests
                 new GranitOpenIddictOptions { EnableFapi2Profile = fapi2 }),
             NullLogger<DPoPTokenBindingHandler>.Instance);
 
-    private static ProcessSignInContext BuildContext(string? dpopHeader)
+    private static ProcessSignInContext BuildContext(
+        string? dpopHeader,
+        OpenIddictServerEndpointType endpointType = OpenIddictServerEndpointType.Token)
     {
         DefaultHttpContext httpContext = new();
         httpContext.Request.Method = "POST";
@@ -105,6 +126,7 @@ public sealed class DPoPTokenBindingHandlerTests
 
         OpenIddictServerTransaction transaction = new()
         {
+            EndpointType = endpointType,
             Request = new OpenIddictRequest(),
             Response = new OpenIddictResponse(),
         };

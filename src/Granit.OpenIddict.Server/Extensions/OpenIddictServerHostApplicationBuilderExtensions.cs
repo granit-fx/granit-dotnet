@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using Granit.Authentication.DPoP.Extensions;
 using Granit.Authentication.Extensions;
+using Granit.Authentication.OpenIddict.Handlers;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Server.Handlers;
 using Microsoft.Extensions.Configuration;
@@ -35,6 +35,13 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
         GranitOpenIddictOptions granitOptions = new();
         builder.Configuration.GetSection(GranitOpenIddictOptions.SectionName).Bind(granitOptions);
 
+        // Database-backed key rotation is a valid persistent-key source: when enabled,
+        // DatabaseSigningKeyPostConfigure swaps the bootstrap ephemeral keys for DB keys
+        // at options resolution, so the ephemeral-key guard below must not reject it.
+        GranitKeyRotationOptions keyRotationOptions = new();
+        builder.Configuration.GetSection(GranitKeyRotationOptions.SectionName).Bind(keyRotationOptions);
+        bool keyRotationEnabled = keyRotationOptions.Enabled;
+
         // FAPI 2.0 profile: apply all mandatory server-side constraints
         if (granitOptions.EnableFapi2Profile)
         {
@@ -55,15 +62,6 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
                     + "Set EnableEntityCaching = false (default) or remove multi-tenancy.");
             }
         }
-
-        // The DPoP token-binding event handler (registered below via
-        // DPoPTokenBindingHandler.Descriptor) requires IDPoPProofValidator. Register it
-        // here so the OpenIddict server is self-contained — hosts that also call
-        // AddGranitDPoPValidation() on the resource side benefit from the same
-        // TryAddSingleton; without this, the OIDC server fails at sign-in time when no
-        // resource-side DPoP validation is registered (e.g. dedicated authorization-server
-        // deployments and integration tests).
-        builder.Services.AddGranitDPoPProofValidator();
 
         OpenIddictBuilder openIddict = builder.Services.AddOpenIddict();
 
@@ -144,17 +142,27 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
             // Ephemeral keys: regenerated at every process start. Only allowed in
             // Development OR when explicitly opted in via AllowEphemeralKeys = true
             // (typically for unit tests). Production deployments MUST replace with
-            // options.AddSigningCertificate() / options.AddEncryptionCertificate()
-            // or load keys from Vault via Granit.Vault.HashiCorp.
+            // options.AddSigningCertificate() / options.AddEncryptionCertificate(),
+            // load keys from Vault via Granit.Vault.HashiCorp, OR enable database-backed
+            // key rotation (OpenIddict:KeyRotation:Enabled = true), in which case
+            // DatabaseSigningKeyPostConfigure replaces the bootstrap ephemeral credentials
+            // below with the active/retired DB keys at options resolution.
+            bool persistentKeysFromRotation = keyRotationEnabled;
             bool ephemeralAllowed = builder.Environment.IsDevelopment()
-                || granitOptions.AllowEphemeralKeys;
+                || granitOptions.AllowEphemeralKeys
+                || persistentKeysFromRotation;
             if (!ephemeralAllowed)
             {
                 throw new InvalidOperationException(
                     "OpenIddict ephemeral signing/encryption keys are forbidden outside Development. " +
-                    "Configure persistent keys (AddSigningCertificate / AddEncryptionCertificate) " +
+                    "Configure persistent keys (AddSigningCertificate / AddEncryptionCertificate), " +
+                    "enable database-backed rotation (OpenIddict:KeyRotation:Enabled = true), " +
                     "or set GranitOpenIddictOptions.AllowEphemeralKeys = true at your own risk.");
             }
+
+            // Bootstrap ephemeral credentials. When key rotation is enabled these are
+            // cleared and replaced by DatabaseSigningKeyPostConfigure (base module) once
+            // DI is built; when disabled they are the development signing keys.
             options
                 .AddEphemeralEncryptionKey()
                 .AddEphemeralSigningKey();
@@ -208,11 +216,9 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
             // reject host users. See ClientSideAuthorizationHandler for semantics.
             options.AddEventHandler(ClientSideAuthorizationHandler.Descriptor);
 
-            // Validates the DPoP proof presented at /connect/token and stamps the
-            // resulting JWK Thumbprint as the cnf.jkt confirmation claim on the issued
-            // access token (RFC 9449 §6). In FAPI 2.0, a missing DPoP header rejects
-            // the request — see DPoPTokenBindingHandler for semantics.
-            options.AddEventHandler(DPoPTokenBindingHandler.Descriptor);
+            // The DPoP token-binding handler (cnf.jkt stamping at /connect/token) is wired
+            // by the opt-in Granit.OpenIddict.Server.DPoP package, which adds its descriptor
+            // to the server pipeline additively. The core server stays DPoP-free.
 
             // Announces a new user session (UserSessionCreatedEto) when the token endpoint
             // issues a refresh token, so consumers (anomaly detection, geo, notifications)

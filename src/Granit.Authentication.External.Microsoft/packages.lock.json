@@ -5,8 +5,8 @@
       "Microsoft.AspNetCore.Authentication.MicrosoftAccount": {
         "type": "Direct",
         "requested": "[10.*, )",
-        "resolved": "10.0.9",
-        "contentHash": "OEA+/MAr1bjSGTyTLs+h8uUalrH7ECABHfRRSWJ9NObfZicA2b9iu9Tv7ZxBF2DXU58jcIdugFUKwN5rY+Mx+g=="
+        "resolved": "10.0.10",
+        "contentHash": "7zcjkl9UkgSRNmaKJkH/3LdjOuP4tIF00dDPt/e8p+yxQKhuKDTAj8Y3ajUnKbxmGTKdqN43hMjNMCBjDBZOUw=="
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
         "type": "Direct",

@@ -2,7 +2,7 @@ using Granit.OpenIddict.Permissions;
 using Shouldly;
 using Xunit;
 
-namespace Granit.OpenIddict.Tests.Permissions;
+namespace Granit.OpenIddict.Abstractions.Tests.Permissions;
 
 public sealed class OpenIddictPermissionsTests
 {
