@@ -10,9 +10,10 @@ namespace Granit.DataExchange.Export;
 /// <c>Granit.DataExchange.Json</c>, <c>Granit.DataExchange.Xml</c>).
 /// </para>
 /// <para>
-/// The writer receives a stream of row dictionaries (property path → value) and writes them
-/// sequentially. For large datasets, the writer should process rows in a streaming fashion
-/// to minimize memory usage.
+/// The writer receives a stream of ordered row arrays — each value aligned to the index of its
+/// <see cref="ExportFieldDescriptor"/> in the field list — and writes them sequentially.
+/// For large datasets, the writer should process rows in a streaming fashion to minimize
+/// memory usage.
 /// </para>
 /// </remarks>
 public interface IExportWriter
@@ -48,11 +49,15 @@ public interface IExportWriter
     /// </summary>
     /// <param name="output">The target stream.</param>
     /// <param name="fields">Ordered field descriptors (defines columns).</param>
-    /// <param name="rows">Streaming row data (property path → value).</param>
+    /// <param name="rows">
+    /// Streaming row data. Each array holds the field values in the exact order of
+    /// <paramref name="fields"/> (value at index <c>i</c> belongs to <c>fields[i]</c>).
+    /// </param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    Task WriteAsync(
+    /// <returns>The number of data rows written (excluding headers).</returns>
+    Task<long> WriteAsync(
         Stream output,
         IReadOnlyList<ExportFieldDescriptor> fields,
-        IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows,
+        IAsyncEnumerable<object?[]> rows,
         CancellationToken cancellationToken = default);
 }

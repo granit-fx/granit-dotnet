@@ -14,7 +14,7 @@ internal sealed class ImportPreviewService(
     IImportJobReader jobReader,
     IImportJobWriter jobWriter,
     IDataExchangeFileProvider fileProvider,
-    IMappingSuggestionService mappingService,
+    IImportPipelineRegistry pipelineRegistry,
     IServiceProvider serviceProvider) : IImportPreviewService
 {
     /// <inheritdoc/>
@@ -26,8 +26,7 @@ internal sealed class ImportPreviewService(
             return null;
         }
 
-        IImportDefinitionDescriptor? descriptor =
-            ImportDefinitionResolver.FindByName(serviceProvider, job.DefinitionName);
+        IImportPipelineDescriptor? descriptor = pipelineRegistry.Find(job.DefinitionName);
         if (descriptor is null)
         {
             return null;
@@ -52,11 +51,11 @@ internal sealed class ImportPreviewService(
         IReadOnlyList<string[]> previewRows = await parser.ReadPreviewAsync(previewStream, parsingOptions, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        IReadOnlyList<ImportColumnMapping> suggestions =
-            await ImportDefinitionResolver.SuggestMappingsAsync(mappingService, descriptor.EntityType, headers, cancellationToken)
-                .ConfigureAwait(false);
+        IReadOnlyList<ImportColumnMapping> suggestions = await descriptor
+            .SuggestMappingsAsync(serviceProvider, headers, previewRows: null, cancellationToken)
+            .ConfigureAwait(false);
 
-        IReadOnlyList<ImportFieldMetadata> fieldMetadata = descriptor.GetFieldMetadata();
+        IReadOnlyList<ImportFieldMetadata> fieldMetadata = descriptor.Definition.GetFieldMetadata();
 
         job.MarkAsPreviewed();
         await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);

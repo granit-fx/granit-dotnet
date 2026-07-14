@@ -68,6 +68,7 @@
       "src/Granit.Templating.Scriban/Granit.Templating.Scriban.csproj",
       "src/Granit.Templating.Workflow/Granit.Templating.Workflow.csproj",
       "src/Granit.Templating/Granit.Templating.csproj",
+      "src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timeline.AI/Granit.Timeline.AI.csproj",
       "src/Granit.Timeline.Auditing/Granit.Timeline.Auditing.csproj",

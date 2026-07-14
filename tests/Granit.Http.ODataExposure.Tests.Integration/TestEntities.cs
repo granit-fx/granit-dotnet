@@ -14,7 +14,10 @@ namespace Granit.Http.ODataExposure.Tests.Integration;
 /// (the framework's required filter) and an IsDeleted soft-delete flag. The
 /// hostile <c>$filter</c> URL parameter targets these very columns;
 /// <c>ApplyGranitConventions</c> on the test DbContext is what enforces the
-/// AND-prefix.
+/// AND-prefix. Since #3005 the invoice also carries a real
+/// <see cref="Customer"/> navigation (with a nested <see cref="Address"/>)
+/// so the recursive <c>$expand</c> whitelist, depth cap, and ADR-050
+/// target-type minimization are exercised against actual SQL joins.
 /// </summary>
 internal sealed class Invoice : IMultiTenant, ISoftDeletable
 {
@@ -25,9 +28,35 @@ internal sealed class Invoice : IMultiTenant, ISoftDeletable
     public string Status { get; init; } = "Draft";
     public DateTimeOffset? PaidAt { get; init; }
     public string? InternalNote { get; init; }
+    public Guid? CustomerId { get; set; }
+    public Customer? Customer { get; set; }
     public bool IsDeleted { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
     public string? DeletedBy { get; set; }
+}
+
+/// <summary>
+/// $expand target for the Invoice set. <see cref="InternalScore"/> is
+/// deliberately NOT exported — per ADR-050 it must never surface in the EDM
+/// nor in an expanded payload, even though it is a public property.
+/// </summary>
+internal sealed class Customer : IMultiTenant
+{
+    public Guid Id { get; init; }
+    public Guid? TenantId { get; set; }
+    public string Name { get; init; } = string.Empty;
+    public string? Email { get; init; }
+    public int InternalScore { get; init; }
+    public Guid? AddressId { get; set; }
+    public Address? Address { get; set; }
+}
+
+/// <summary>Second-hop $expand target (Invoice → Customer → Address) for the depth + dotted-path suites. <see cref="Zip"/> is NOT exported.</summary>
+internal sealed class Address
+{
+    public Guid Id { get; init; }
+    public string City { get; init; } = string.Empty;
+    public string? Zip { get; init; }
 }
 
 internal sealed class TestDbContext(
@@ -37,8 +66,11 @@ internal sealed class TestDbContext(
     : GranitDbContext(options, currentTenant, dataFilter)
 {
     public DbSet<Invoice> Invoices => Set<Invoice>();
+    public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<Address> Addresses => Set<Address>();
 
-    protected override void OnGranitModelCreating(ModelBuilder modelBuilder) =>
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+    {
         // This override only configures the entity surface. GranitDbContext's sealed
         // OnModelCreating then wires the parameterised multi-tenant filter (built inside a
         // member of this context — CurrentTenantId — so EF Core emits @ef_filter__CurrentTenantId
@@ -51,7 +83,24 @@ internal sealed class TestDbContext(
             e.Property(i => i.Number).HasMaxLength(64).IsRequired();
             e.Property(i => i.Status).HasMaxLength(32).IsRequired();
             e.Property(i => i.InternalNote).HasMaxLength(256);
+            e.HasOne(i => i.Customer).WithMany().HasForeignKey(i => i.CustomerId);
         });
+
+        modelBuilder.Entity<Customer>(e =>
+        {
+            e.HasKey(c => c.Id);
+            e.Property(c => c.Name).HasMaxLength(128).IsRequired();
+            e.Property(c => c.Email).HasMaxLength(256);
+            e.HasOne(c => c.Address).WithMany().HasForeignKey(c => c.AddressId);
+        });
+
+        modelBuilder.Entity<Address>(e =>
+        {
+            e.HasKey(a => a.Id);
+            e.Property(a => a.City).HasMaxLength(128).IsRequired();
+            e.Property(a => a.Zip).HasMaxLength(16);
+        });
+    }
 }
 
 internal sealed class InvoiceQueryDefinition : QueryDefinition<Invoice>
@@ -110,4 +159,27 @@ internal sealed class InvoiceEntityDefinition : EntityDefinition<Invoice>
         builder
             .Query<InvoiceQueryDefinition>()
             .Export<InvoiceExportDefinition>();
+}
+
+/// <summary>
+/// #3005 — every type reachable through a whitelisted <c>$expand</c> path
+/// needs an export-derived scalar whitelist. Name + Email are exported;
+/// InternalScore is not and must stay out of $metadata AND payloads.
+/// </summary>
+internal sealed class CustomerExportDefinition : ExportDefinition<Customer>
+{
+    public override string Name => "Test.CustomerExport";
+
+    protected override void Configure(ExportDefinitionBuilder<Customer> builder) =>
+        builder
+            .Field(c => c.Name)
+            .Field(c => c.Email);
+}
+
+internal sealed class AddressExportDefinition : ExportDefinition<Address>
+{
+    public override string Name => "Test.AddressExport";
+
+    protected override void Configure(ExportDefinitionBuilder<Address> builder) =>
+        builder.Field(a => a.City);
 }

@@ -16,11 +16,14 @@
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.Testing" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.DataExchange.Csv\Granit.DataExchange.Csv.csproj" />
     <ProjectReference Include="..\..\src\Granit.DataExchange.EntityFrameworkCore\Granit.DataExchange.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Testing\Granit.Testing.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Testing.EntityFrameworkCore\Granit.Testing.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

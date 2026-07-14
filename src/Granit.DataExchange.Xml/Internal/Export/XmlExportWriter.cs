@@ -51,10 +51,10 @@ internal sealed class XmlExportWriter : IExportWriter
     public ExportFormatCapabilities Capabilities => ExportFormatCapabilities.Structured;
 
     /// <inheritdoc/>
-    public async Task WriteAsync(
+    public async Task<long> WriteAsync(
         Stream output,
         IReadOnlyList<ExportFieldDescriptor> fields,
-        IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows,
+        IAsyncEnumerable<object?[]> rows,
         CancellationToken cancellationToken = default)
     {
         // Pre-warm serializer cache for complex fields so GetOrAdd never runs inside the row loop
@@ -68,14 +68,16 @@ internal sealed class XmlExportWriter : IExportWriter
         await xmlWriter.WriteStartDocumentAsync().ConfigureAwait(false);
         await xmlWriter.WriteStartElementAsync(null, "Export", null).ConfigureAwait(false);
 
-        await foreach (IReadOnlyDictionary<string, object?> row in rows.WithCancellation(cancellationToken).ConfigureAwait(false))
+        long rowCount = 0;
+        await foreach (object?[] row in rows.WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             await xmlWriter.WriteStartElementAsync(null, "Row", null).ConfigureAwait(false);
 
-            foreach (ExportFieldDescriptor field in fields)
+            for (int i = 0; i < fields.Count; i++)
             {
+                ExportFieldDescriptor field = fields[i];
                 string elementName = field.PropertyPath.Replace('.', '_');
-                object? value = row.GetValueOrDefault(field.PropertyPath);
+                object? value = row[i];
 
                 await xmlWriter.WriteStartElementAsync(null, elementName, null).ConfigureAwait(false);
 
@@ -95,6 +97,7 @@ internal sealed class XmlExportWriter : IExportWriter
             }
 
             await xmlWriter.WriteEndElementAsync().ConfigureAwait(false);
+            rowCount++;
 
             // Flush after each row to keep buffer bounded on large exports
             await xmlWriter.FlushAsync().ConfigureAwait(false);
@@ -103,6 +106,7 @@ internal sealed class XmlExportWriter : IExportWriter
         await xmlWriter.WriteEndElementAsync().ConfigureAwait(false);
         await xmlWriter.WriteEndDocumentAsync().ConfigureAwait(false);
         await xmlWriter.FlushAsync().ConfigureAwait(false);
+        return rowCount;
     }
 
     private static void WriteComplexValue(XmlWriter xmlWriter, object value, ExportFieldDescriptor field)

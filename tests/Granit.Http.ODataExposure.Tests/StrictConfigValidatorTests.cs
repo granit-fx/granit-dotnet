@@ -85,7 +85,62 @@ public sealed class StrictConfigValidatorTests
         ex.Message.ShouldContain("Customers");
     }
 
-    private static void CallMap(Action<Options.ODataExposureOptions> configure)
+    [Fact]
+    public void Mount_WithoutMetadataStance_Throws()
+    {
+        // #3005 — $metadata + the service document expose the full schema.
+        // The mount must declare an explicit stance; an implicit default
+        // (anonymous OR gated) is rejected like every other strict-config
+        // omission.
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
+            CallMap(
+                opts => opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
+                    .AllowAnonymousAccess()
+                    .DisableExpand(),
+                declareMetadataStance: false));
+
+        ex.Message.ShouldContain("RequireMetadataPermission");
+        ex.Message.ShouldContain("AllowAnonymousMetadata");
+        ex.Message.ShouldContain("$metadata");
+    }
+
+    [Fact]
+    public void Mount_WithMetadataPermission_DoesNotThrow()
+    {
+        Should.NotThrow(() =>
+            CallMap(
+                opts =>
+                {
+                    opts.RequireMetadataPermission("OData.Test.Metadata.Read");
+                    opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
+                        .AllowAnonymousAccess()
+                        .DisableExpand();
+                },
+                declareMetadataStance: false));
+    }
+
+    [Fact]
+    public void Mount_MetadataStance_LastCallWins()
+    {
+        // The two stance methods are mutually exclusive by "last call wins",
+        // mirroring RequirePermission / AllowAnonymousAccess on the set
+        // builder — no silent merge of contradictory declarations.
+        Should.NotThrow(() =>
+            CallMap(
+                opts =>
+                {
+                    opts.RequireMetadataPermission("OData.Test.Metadata.Read");
+                    opts.AllowAnonymousMetadata();
+                    opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
+                        .AllowAnonymousAccess()
+                        .DisableExpand();
+                },
+                declareMetadataStance: false));
+    }
+
+    private static void CallMap(
+        Action<Options.ODataExposureOptions> configure,
+        bool declareMetadataStance = true)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -124,7 +179,18 @@ public sealed class StrictConfigValidatorTests
         });
 
         using WebApplication app = builder.Build();
-        app.MapGranitODataEndpoints("/api/granit/odata", configure);
+        app.MapGranitODataEndpoints("/api/granit/odata", opts =>
+        {
+            // #3005 — the metadata stance is mandatory; default it so the
+            // pre-existing per-set gate scenarios stay focused. Stance
+            // failure paths pass declareMetadataStance: false.
+            if (declareMetadataStance)
+            {
+                opts.AllowAnonymousMetadata();
+            }
+
+            configure(opts);
+        });
     }
 
     public sealed class Invoice

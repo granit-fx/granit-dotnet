@@ -7,6 +7,7 @@ namespace Granit.DataExchange.Endpoints.Internal.Export;
 /// Runtime resolution helper for export definitions.
 /// Uses <see cref="IExportDefinitionProvider"/> when available (explicit + auto-generated),
 /// falls back to raw DI enumeration for backward compatibility.
+/// Name lookups are ordinal (case-sensitive), matching the export pipeline registry.
 /// </summary>
 internal static class ExportDefinitionResolver
 {
@@ -27,7 +28,7 @@ internal static class ExportDefinitionResolver
         IEnumerable<IExportDefinitionDescriptor> descriptors =
             serviceProvider.GetServices<IExportDefinitionDescriptor>();
         return descriptors.FirstOrDefault(d =>
-            string.Equals(d.Name, definitionName, StringComparison.OrdinalIgnoreCase));
+            string.Equals(d.Name, definitionName, StringComparison.Ordinal));
     }
 
     /// <summary>

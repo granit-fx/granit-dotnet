@@ -27,6 +27,8 @@ builder.Services
 // after authentication + authorization middleware
 app.MapGranitODataEndpoints("/api/{version}/odata", opts =>
 {
+    opts.RequireMetadataPermission("OData.Invoicing.Metadata.Read");  // or AllowAnonymousMetadata()
+
     opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
         .RequirePermission("OData.Invoicing.Invoices.Read");
 
@@ -72,10 +74,15 @@ The OData EDM EntityType is built by:
    matching `ExportDefinition`.
 3. Whitelisting properties from `ExportDefinition.GetFields()` filtered to
    `IsNavigation == false` and `PropertyPath` containing no `.` (flat
-   scalar fields only for v1; navigation paths land in a follow-up that
-   derives `NavigationProperty` from `EntityDefinition.Relations`).
-4. Allowing the navigation properties listed in
-   `.ExpandWhitelist(...)` on the EntitySet builder (existing mechanism).
+   scalar fields — navigations are modelled as `NavigationProperty`, not
+   flattened columns).
+4. Allowing the navigation paths listed in `.ExpandWhitelist(...)` on the
+   EntitySet builder — and, per #3005, registering every navigation-TARGET
+   type reachable through a whitelisted path with the SAME export-derived
+   scalar whitelist (transitive closure). A target type without a
+   registered `ExportDefinition` is a startup error: it would otherwise
+   enter the EDM through convention discovery with every public property
+   exposed.
 
 Properties not in the whitelist are removed from the EDM via
 `EntityTypeConfiguration.RemoveProperty(...)` BEFORE convention discovery
@@ -177,14 +184,80 @@ The 400 contract (RFC 7807 Problem, title `Query option not supported`):
 > tools filter on as `Filterable()` in the `QueryDefinition`. Similarly,
 > `$orderby` now requires the column to be `Sortable()`.
 
-## Strict-config validator (C6 #1395)
+## `$expand` support (#3005)
 
-Every EntitySet MUST explicitly declare two security-sensitive intents:
+`ExpandWhitelist(...)` takes **dotted navigation paths**:
+
+```csharp
+opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
+    .RequirePermission("OData.Invoicing.Invoices.Read")
+    .ExpandWhitelist("Customer", "Customer.Address", "Lines")
+    .MaxExpansionDepth(2);   // "Customer.Address" is 2 levels deep
+```
+
+Semantics:
+
+- A **top-level entry** (`"Customer"`) allows expanding that navigation —
+  scalars only, no nested `$expand` beneath it.
+- A **dotted entry** (`"Customer.Address"`) additionally allows the nested
+  expand `Customer($expand=Address)`. Prefixes of a whitelisted path are
+  implicitly allowed (`$expand=Customer` alone works).
+- Matching is **case-insensitive**, and `$levels` literals are normalised
+  into repeated segments — `Manager($levels=2)` walks the same gates as
+  `Manager($expand=Manager)` (path `Manager.Manager`).
+
+**Startup gates** (strict-config, fail-fast at `Map*` time):
+
+1. Every path segment must exist as a navigation property on the CLR type
+   it is declared on — a typo or a scalar segment refuses to start the
+   host (pre-#3005 it was dead config producing raw parser errors).
+2. Every navigation-target type reachable through a whitelisted path must
+   have a registered `ExportDefinition` — its scalar fields become the
+   target's EDM whitelist. No export, no exposure (ADR-050).
+
+**Request-time gates** — the parsed `$expand` AST is walked recursively;
+each expanded navigation is checked as a dotted path against the resolved
+whitelist and against `MaxExpansionDepth` (default `1`, flat expand only).
+Rejections are `400` Problems tagged on `granit.odata.query.rejected`:
+
+- **`expand_not_whitelisted`** — the path is not in the whitelist (or the
+  set disabled expand entirely).
+- **`expand_depth_exceeded`** — nesting (or `$levels`) goes deeper than
+  `MaxExpansionDepth`. `$levels=max` always exceeds a finite cap.
+- **`odata_validation_failed`** — the clause failed to parse (e.g. a
+  navigation absent from the EDM).
+
+`ODataValidationSettings.MaxExpansionDepth` is set from the descriptor as
+well — belt and braces behind the AST check.
+
+## `$metadata` / service-document authorization stance (#3005)
+
+`$metadata` and the service document disclose the mount's full schema —
+EntitySet names, columns, navigations. That is reconnaissance material, so
+every mount MUST declare an explicit stance; there is no default:
+
+- `opts.RequireMetadataPermission("OData.{Module}.Metadata.Read")` — both
+  documents require an authenticated caller holding the permission
+  (`401` unauthenticated, `403` authenticated without it).
+- `opts.AllowAnonymousMetadata()` — both documents are public, by design
+  (public reference-data feeds, or BI connectors that probe the service
+  document before sign-in).
+
+Declaring neither is a startup error. On the **host-feed**,
+`RequireMetadataPermission(...)` is REQUIRED — there is no anonymous
+variant, and the permission must resolve to `MultiTenancySides.Host`
+exactly like the per-set entity permissions.
+
+## Strict-config validator (C6 #1395, extended by #3005)
+
+Every EntitySet MUST explicitly declare two security-sensitive intents, and
+every mount a third:
 
 1. **Permission** — call `.RequirePermission(...)` (gated) **OR** `.AllowAnonymousAccess()` (public-feed scenario, e.g. tenant-agnostic reference data).
-2. **`$expand` policy** — call `.ExpandWhitelist(...)` (allow listed navigations) **OR** `.DisableExpand()` (no navigation exposed).
+2. **`$expand` policy** — call `.ExpandWhitelist(...)` (allow listed navigation paths) **OR** `.DisableExpand()` (no navigation exposed). Whitelisted paths are validated at startup (see [`$expand` support](#expand-support-3005)).
+3. **`$metadata` stance** (mount-level) — `.RequireMetadataPermission(...)` **OR** `.AllowAnonymousMetadata()`.
 
-Without one of each, `MapGranitODataEndpoints` throws at host startup with a list of every misconfigured EntitySet. The framework deliberately does NOT default-deny silently — silent defaults let convention drift reach production unchecked. Failing fast at composition time is the equivalent of an architecture test for a config surface that lives inside a closure (and is therefore not statically reflectable).
+Without each of these, `MapGranitODataEndpoints` throws at host startup with a list of every misconfiguration. The framework deliberately does NOT default-deny silently — silent defaults let convention drift reach production unchecked. Failing fast at composition time is the equivalent of an architecture test for a config surface that lives inside a closure (and is therefore not statically reflectable).
 
 ## Hardening (per EntitySet)
 
@@ -194,7 +267,7 @@ data product warrants it:
 ```csharp
 opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
     .RequirePermission("OData.Invoicing.Invoices.Read")  // strict-config: required
-    .ExpandWhitelist("Customer")                         // strict-config: required (or DisableExpand())
+    .ExpandWhitelist("Customer", "Customer.Address")     // strict-config: required (or DisableExpand())
     .MaxTop(2500)                                        // default 5000 — silently clamps user $top
     .PageSize(500)                                       // default 1000 — used when caller omits $top
     .EnableCount()                                       // default disabled — opt in for cheap-to-count tables
@@ -209,9 +282,10 @@ Behaviour:
 - **`$count=true`** — returns `400 Bad Request` unless `.EnableCount()` was
   called; protects huge tables from full-table-scan counts on every
   refresh.
-- **`$expand=<prop>`** — returns `400 Bad Request` if the property is not
-  in `ExpandWhitelist`. An empty whitelist (or no call at all) disables
-  expand entirely.
+- **`$expand=<path>`** — returns `400 Bad Request` if the dotted path is
+  not in `ExpandWhitelist` or nests deeper than `MaxExpansionDepth`. An
+  empty whitelist (or no call at all) disables expand entirely. See
+  [`$expand` support](#expand-support-3005).
 - **OTel telemetry** — every rejected query bumps
   `granit.odata.query.rejected` (tagged with `entity_set`, `reason`,
   `tenant_id`); every clamped `$top` bumps `granit.odata.query.top_clamped`.
@@ -269,6 +343,8 @@ entries cross-tenant), capacity planning — use the dedicated host-feed mount.
 ```csharp
 app.MapGranitODataHostEndpoints("/api/{version}/odata/host", opts =>
 {
+    opts.RequireMetadataPermission("OData.Host.Platform.Metadata.Read");  // REQUIRED — no anonymous variant
+
     opts.EntitySet<Tenant, TenantQueryDefinition>("Tenants")
         .RequirePermission("OData.Host.Platform.Tenants.Read")  // MUST be MultiTenancySides.Host
         .DisableExpand();
@@ -281,7 +357,7 @@ app.MapGranitODataHostEndpoints("/api/{version}/odata/host", opts =>
 });
 ```
 
-Three strict-config gates are added on top of the tenant-feed validator:
+Four strict-config gates are added on top of the tenant-feed validator:
 
 1. **Permission must be `MultiTenancySides.Host`.** The validator resolves
    the permission name through `IPermissionDefinitionManager` at startup
@@ -294,6 +370,10 @@ Three strict-config gates are added on top of the tenant-feed validator:
    the framework filter `tenantId == currentTenant.Id` returns no rows for a
    tenantless caller — fail-closed. The bypass lambda is `q => q.IgnoreQueryFilters([GranitFilterNames.MultiTenant])`
    on EF Core; alternative providers can plug their own.
+4. **`RequireMetadataPermission(...)` mandatory (#3005).** The host-feed
+   `$metadata` / service document expose the cross-tenant BI schema; the
+   permission is validated `MultiTenancySides.Host` like the entity
+   permissions, and there is no `AllowAnonymousMetadata()` on this surface.
 
 Other distinctions:
 

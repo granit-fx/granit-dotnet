@@ -9,6 +9,7 @@ using Granit.QueryEngine.Extensions;
 using Granit.RateLimiting.Extensions;
 using Granit.RateLimiting.Options;
 using Granit.Users;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,7 @@ namespace Granit.Http.ODataExposure.Tests.Integration;
 /// rebuilding the host.
 /// </summary>
 /// <remarks>
+/// <para>
 /// The integration uses Granit's production <see cref="CurrentTenant"/>
 /// (AsyncLocal-based, registered as a singleton) behind a <see cref="TestDbContext"/>
 /// that inherits <c>GranitDbContext</c>. The multi-tenant filter is parameterised
@@ -34,6 +36,16 @@ namespace Granit.Http.ODataExposure.Tests.Integration;
 /// AsyncLocal value, so swapping the active tenant via the <c>X-Test-Tenant</c>
 /// header takes effect on every query instead of being constant-folded into the
 /// cached model at first build.
+/// </para>
+/// <para>
+/// #3005 additions: a header-driven test authentication scheme
+/// (<see cref="TestAuthenticationHandler"/>, <c>X-Test-User</c>) plus a
+/// configurable permission predicate so the $metadata authorization-stance
+/// matrix can drive 401 / 403 / 200 without a real identity stack. The
+/// mount declares <c>AllowAnonymousMetadata()</c> by default (pre-#3005
+/// behaviour for every legacy suite); pass <c>configureOptions</c>
+/// to override the stance or add extra EntitySets.
+/// </para>
 /// </remarks>
 internal sealed class ODataTestApp : IAsyncDisposable
 {
@@ -65,7 +77,9 @@ internal sealed class ODataTestApp : IAsyncDisposable
     public static async Task<ODataTestApp> CreateAsync(
         string connectionString,
         Action<ODataEntitySetBuilder<Invoice>>? configureEntitySet,
-        int? rateLimitPermitLimit)
+        int? rateLimitPermitLimit,
+        Action<ODataExposureOptions>? configureOptions = null,
+        Func<string, bool>? permissionPredicate = null)
     {
         // Development: single-instance TestServer — the rate-limiting in-memory
         // counter-store startup guard must not trip on it.
@@ -83,8 +97,17 @@ internal sealed class ODataTestApp : IAsyncDisposable
         // and the stock wall-clock are the right neutral defaults.
         builder.Services.AddSingleton<ICurrentUserService, SystemCurrentUserService>();
         builder.Services.AddSingleton(TimeProvider.System);
-        builder.Services.AddSingleton<IPermissionChecker, StubPermissionChecker>();
+        builder.Services.AddSingleton<IPermissionChecker>(new StubPermissionChecker(permissionPredicate));
         builder.Services.AddSingleton(sqlCapture);
+
+        // #3005 — header-driven test scheme; without X-Test-User the request
+        // is anonymous, so RequireAuthorization() on the gated metadata group
+        // challenges with 401 while AllowAnonymous routes stay reachable.
+        builder.Services
+            .AddAuthentication(TestAuthenticationHandler.SchemeName)
+            .AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>(
+                TestAuthenticationHandler.SchemeName, configureOptions: null);
+        builder.Services.AddAuthorizationBuilder();
 
         builder.Services.AddGranitQueryEngine();
         builder.Services.AddScoped(typeof(IQueryEngine<>),
@@ -103,9 +126,13 @@ internal sealed class ODataTestApp : IAsyncDisposable
 
         // ADR-050 plumbing: EntityDefinition gate + Export field source.
         // Singleton registrations match the production patterns used by
-        // AddEntityDefinition / AddExportDefinition.
+        // AddEntityDefinition / AddExportDefinition. #3005 adds the
+        // Customer / Address exports — every type reachable through a
+        // whitelisted $expand path must carry one (startup gate).
         builder.Services.AddSingleton<IEntityDefinitionDescriptor>(new InvoiceEntityDefinition());
         builder.Services.AddSingleton<IExportDefinitionDescriptor>(new InvoiceExportDefinition());
+        builder.Services.AddSingleton<IExportDefinitionDescriptor>(new CustomerExportDefinition());
+        builder.Services.AddSingleton<IExportDefinitionDescriptor>(new AddressExportDefinition());
 
         builder.Services.AddGranitODataExposure();
 
@@ -152,17 +179,21 @@ internal sealed class ODataTestApp : IAsyncDisposable
 
         app.MapGranitODataEndpoints("/api/granit/odata", opts =>
         {
-            // Strict-config validator (C6 #1395) requires every EntitySet to
-            // declare its permission and $expand intents. The integration
+            // Strict-config validator (C6 #1395, #3005) requires every
+            // EntitySet to declare its permission and $expand intents, and
+            // the mount to declare its $metadata stance. The integration
             // suites are about tenant isolation / query hardening / rate
             // limiting, not auth — apply safe defaults that the per-test
-            // configureEntitySet callback can override (e.g. by calling
-            // ExpandWhitelist(...) or RequirePermission(...)).
+            // callbacks can override (configureEntitySet for the Invoices
+            // set; configureOptions for the stance or extra sets).
+            opts.AllowAnonymousMetadata();
+
             ODataEntitySetBuilder<Invoice> builder =
                 opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
                     .AllowAnonymousAccess()
                     .DisableExpand();
             configureEntitySet?.Invoke(builder);
+            configureOptions?.Invoke(opts);
         });
 
         await app.StartAsync().ConfigureAwait(false);

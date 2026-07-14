@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Reflection;
 using Granit.Authorization;
 using Granit.DataExchange.Export;
@@ -48,17 +49,19 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// <summary>
     /// Maps the configured OData EntitySets under <paramref name="prefix"/>.
     /// Generates the EDM model at call time, exposes <c>$metadata</c> +
-    /// <c>$service-document</c>, and one <c>GET /{EntitySetName}</c> per
-    /// registered set. Each set's request flow is:
+    /// <c>$service-document</c> (behind the mount's explicit metadata
+    /// authorization stance — see <see cref="ODataExposureOptions.RequireMetadataPermission"/> /
+    /// <see cref="ODataExposureOptions.AllowAnonymousMetadata"/>), and one
+    /// <c>GET /{EntitySetName}</c> per registered set. Each set's request flow is:
     /// <list type="number">
     ///   <item>Authentication — required by the surrounding pipeline (the framework's bearer token / DPoP).</item>
     ///   <item>Permission gate — when the set declared one via <see cref="ODataEntitySetBuilder{TEntity}.RequirePermission"/>.</item>
-    ///   <item>C3 hardening (#1392) — <c>$count</c>, <c>$expand</c> whitelist enforcement against the per-set descriptor.</item>
+    ///   <item>C3 hardening (#1392, hardened by #3005) — <c>$count</c> gate, recursive <c>$expand</c> whitelist + depth enforcement over the parsed AST.</item>
     ///   <item>Resolve <c>IQueryableSource&lt;TEntity&gt;</c> — emits a queryable already filtered by tenant + soft-delete (via <c>ApplyGranitConventions</c> on the host's DbContext).</item>
     ///   <item>Translate the user's <c>$filter</c> AST into the engine's strict <c>QueryPredicate</c> tree (#3004) — untranslatable constructs return <c>400</c> with an actionable detail.</item>
     ///   <item>Apply the <c>QueryDefinition</c> filter pipeline via <c>IQueryEngine.BuildFilteredQuery(source, request, predicate)</c> — the framework's required filters AND the user's <c>$filter</c> are enforced by the engine's single enforcement point (filterable-column whitelist, operator inference, structural guards). Violations return <c>400</c> listing every offending field.</item>
-    ///   <item>Validate the remaining query options against the per-route <c>ODataValidationSettings</c> (allowed options, <c>$orderby</c> whitelist derived from the definition's sortable columns, node-count caps).</item>
-    ///   <item>Layer <c>$select</c> / <c>$top</c> / <c>$skip</c> / <c>$orderby</c> via <c>ODataQueryOptions&lt;TEntity&gt;.ApplyTo</c> with the per-set <c>PageSize</c> and <c>MaxTop</c> caps applied. <c>$filter</c> is passed as the ignore flag so it is never applied a second time.</item>
+    ///   <item>Validate the remaining query options against the per-route <c>ODataValidationSettings</c> (allowed options, <c>$orderby</c> whitelist derived from the definition's sortable columns, node-count caps, <c>MaxExpansionDepth</c>).</item>
+    ///   <item>Layer <c>$select</c> / <c>$expand</c> / <c>$top</c> / <c>$skip</c> / <c>$orderby</c> via <c>ODataQueryOptions&lt;TEntity&gt;.ApplyTo</c> with the per-set <c>PageSize</c> and <c>MaxTop</c> caps applied. <c>$filter</c> is passed as the ignore flag so it is never applied a second time.</item>
     /// </list>
     /// </summary>
     /// <param name="endpoints">Endpoint route builder (the host's <c>app</c>).</param>
@@ -66,6 +69,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// <param name="configure">Configuration callback declaring EntitySets via <see cref="ODataExposureOptions"/>.</param>
     /// <returns>The outer <see cref="RouteGroupBuilder"/> for further chaining.</returns>
     /// <exception cref="ArgumentException">No EntitySet was declared in <paramref name="configure"/>.</exception>
+    /// <exception cref="InvalidOperationException">Strict-config validation failed (missing permission or $expand intent, missing $metadata stance, invalid $expand path, expand target without ExportDefinition, ADR-050 gates).</exception>
     public static RouteGroupBuilder MapGranitODataEndpoints(
         this IEndpointRouteBuilder endpoints,
         string prefix,
@@ -91,7 +95,9 @@ public static class ODataExposureEndpointRouteBuilderExtensions
             options.Descriptors,
             ODataFeedKind.Tenant,
             RateLimitPolicyName,
-            ODataEdmModelBuilder.TenantContainerName);
+            ODataEdmModelBuilder.TenantContainerName,
+            options.MetadataPermission,
+            options.MetadataStanceDeclared);
     }
 
     /// <summary>
@@ -101,12 +107,13 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Three strict-config gates apply on top of the tenant-feed validator:
+    /// Four strict-config gates apply on top of the tenant-feed validator:
     /// </para>
     /// <list type="number">
     ///   <item>The required permission MUST resolve to a <c>PermissionDefinition</c> with <c>MultiTenancySides == Host</c>; <c>Tenant</c> and <c>Both</c> are rejected at startup.</item>
     ///   <item>Anonymous access is not allowed (the host builder does not expose <c>AllowAnonymousAccess</c>).</item>
     ///   <item>Every host-feed EntitySet whose entity implements <c>IMultiTenant</c> MUST have called <c>AcknowledgeCrossTenantExposure(q =&gt; q.IgnoreQueryFilters([GranitFilterNames.MultiTenant]))</c>. The bypass lambda is supplied by the host so this module stays free of an EF Core dependency, and so the explicit "I know what I'm doing" lives in code, not in a flag.</item>
+    ///   <item><see cref="ODataHostExposureOptions.RequireMetadataPermission"/> is REQUIRED (#3005) — the host-feed <c>$metadata</c> / service document have no anonymous variant, and the permission must be <c>MultiTenancySides.Host</c> like the entity permissions.</item>
     /// </list>
     /// <para>
     /// Container name for the EDM is <c>HostContainer</c> (vs <c>Container</c>
@@ -119,7 +126,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// <param name="configure">Configuration callback declaring host-feed EntitySets via <see cref="ODataHostExposureOptions"/>.</param>
     /// <returns>The outer <see cref="RouteGroupBuilder"/> for further chaining.</returns>
     /// <exception cref="ArgumentException">No EntitySet was declared in <paramref name="configure"/>.</exception>
-    /// <exception cref="InvalidOperationException">Strict-config validation failed (missing permission, wrong <c>MultiTenancySides</c>, missing <c>AcknowledgeCrossTenantExposure</c>, missing <c>$expand</c> intent, or unresolvable permission definition).</exception>
+    /// <exception cref="InvalidOperationException">Strict-config validation failed (missing permission, wrong <c>MultiTenancySides</c>, missing <c>AcknowledgeCrossTenantExposure</c>, missing <c>$expand</c> intent, missing metadata permission, or unresolvable permission definition).</exception>
     public static RouteGroupBuilder MapGranitODataHostEndpoints(
         this IEndpointRouteBuilder endpoints,
         string prefix,
@@ -145,17 +152,20 @@ public static class ODataExposureEndpointRouteBuilderExtensions
             options.Descriptors,
             ODataFeedKind.Host,
             HostRateLimitPolicyName,
-            ODataEdmModelBuilder.HostContainerName);
+            ODataEdmModelBuilder.HostContainerName,
+            options.MetadataPermission,
+            metadataStanceDeclared: options.MetadataPermission is not null);
     }
 
     /// <summary>
     /// Shared route-mapping pipeline used by both <see cref="MapGranitODataEndpoints"/>
     /// and <see cref="MapGranitODataHostEndpoints"/>. Validates strict-config
-    /// (feed-kind aware), resolves each entity's scalar property whitelist
-    /// from its <c>EntityDefinition</c>'s referenced <c>ExportDefinition</c>
-    /// (per ADR-050), builds the EDM model with the appropriate container
-    /// name, and wires the service document, <c>$metadata</c>, and per-set
-    /// routes under <paramref name="rateLimitPolicy"/>.
+    /// (feed-kind aware, including the mount's $metadata stance), resolves the
+    /// per-type EDM whitelists from the registered <c>ExportDefinition</c>s
+    /// (per ADR-050, including every navigation-target type reachable through
+    /// a whitelisted <c>$expand</c> path), builds the EDM model with the
+    /// appropriate container name, and wires the service document,
+    /// <c>$metadata</c>, and per-set routes under <paramref name="rateLimitPolicy"/>.
     /// </summary>
     private static RouteGroupBuilder MapEndpointsCore(
         IEndpointRouteBuilder endpoints,
@@ -163,12 +173,18 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         IReadOnlyList<ODataEntitySetDescriptor> descriptors,
         ODataFeedKind feedKind,
         string rateLimitPolicy,
-        string containerName)
+        string containerName,
+        string? metadataPermission,
+        bool metadataStanceDeclared)
     {
-        Dictionary<Type, IReadOnlyList<string>> scalarWhitelistByEntity =
-            ValidateAndResolveWhitelists(descriptors, endpoints.ServiceProvider);
+        Dictionary<Type, ODataEntityTypeWhitelist> whitelistByType = ValidateAndResolveWhitelists(
+            descriptors,
+            endpoints.ServiceProvider,
+            feedKind,
+            metadataPermission,
+            metadataStanceDeclared);
 
-        IEdmModel edmModel = ODataEdmModelBuilder.Build(descriptors, scalarWhitelistByEntity, containerName);
+        IEdmModel edmModel = ODataEdmModelBuilder.Build(descriptors, whitelistByType, containerName);
 
         string tagSuffix = feedKind == ODataFeedKind.Host ? "OData (Host)" : "OData";
         string serviceDocOpName = feedKind == ODataFeedKind.Host ? "ODataHostServiceDocument" : "ODataServiceDocument";
@@ -178,12 +194,17 @@ public static class ODataExposureEndpointRouteBuilderExtensions
             .WithTags(tagSuffix)
             .RequireGranitRateLimiting(rateLimitPolicy);
 
-        root.MapODataServiceDocument("", edmModel)
+        // #3005 — the schema-discovery documents live in a dedicated inner
+        // group carrying the mount's explicit authorization stance. Anonymous
+        // is a declared choice, never a default.
+        RouteGroupBuilder metadataGroup = CreateMetadataGroup(root, metadataPermission);
+
+        metadataGroup.MapODataServiceDocument("", edmModel)
             .WithName(serviceDocOpName)
             .WithSummary("OData v4 service document — lists every exposed EntitySet with its metadata link.")
             .WithDescription("BI clients (Power BI / Excel / Tableau) read this document to discover which EntitySets are available. Each set is queryable via the standard $filter / $select / $top / $skip / $orderby clauses.");
 
-        root.MapODataMetadata("$metadata", edmModel)
+        metadataGroup.MapODataMetadata("$metadata", edmModel)
             .WithName(metadataOpName)
             .WithSummary("OData v4 EDM metadata document (CSDL XML).")
             .WithDescription("BI tools consume this CSDL document to populate their Navigator / table picker. The EDM is built from the application's registered QueryDefinition&lt;T&gt; instances.");
@@ -201,42 +222,82 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     }
 
     /// <summary>
-    /// Strict-config validator (C6 #1395). Refuses to start the host when a
-    /// registered EntitySet hasn't acknowledged its security-sensitive
-    /// configuration choices: permission gating and <c>$expand</c> policy.
-    /// The framework deliberately does NOT default-deny and does NOT
-    /// silently apply safe defaults — those would let convention drift
-    /// reach production unchecked. Failing fast at <c>MapGranitODataEndpoints</c>
-    /// time is the equivalent of an architecture test for a config surface
-    /// that lives inside a closure (and is therefore not statically
-    /// reflectable).
+    /// Wraps the <c>$metadata</c> + service-document routes in an inner group
+    /// carrying the mount's declared authorization stance (#3005). Gated:
+    /// <c>RequireAuthorization()</c> + an endpoint filter resolving
+    /// <see cref="IPermissionChecker"/> per request (same in-handler pattern
+    /// as the entity routes), with 401/403 documented on the group. Anonymous:
+    /// explicit <c>AllowAnonymous()</c> so a host-level fallback authorization
+    /// policy cannot silently break BI discovery — the anonymity was declared.
     /// </summary>
+    private static RouteGroupBuilder CreateMetadataGroup(RouteGroupBuilder root, string? metadataPermission)
+    {
+        RouteGroupBuilder group = root.MapGroup(string.Empty);
+
+        if (metadataPermission is null)
+        {
+            group.AllowAnonymous();
+            return group;
+        }
+
+        group
+            .RequireAuthorization()
+            .AddEndpointFilter(async (context, next) =>
+            {
+                IPermissionChecker permissionChecker = context.HttpContext.RequestServices
+                    .GetRequiredService<IPermissionChecker>();
+                return await permissionChecker
+                    .IsGrantedAsync(metadataPermission, context.HttpContext.RequestAborted)
+                    .ConfigureAwait(false)
+                    ? await next(context).ConfigureAwait(false)
+                    : TypedResults.Forbid();
+            })
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden);
+
+        return group;
+    }
+
     /// <summary>
-    /// Validates the strict-config rules for every <see cref="ODataEntitySetDescriptor"/>
-    /// AND resolves the per-entity scalar property whitelist consumed by the
-    /// EDM builder (per ADR-050). Both passes share the same DI lookups, so
-    /// they are folded into a single helper to avoid resolving the registries
-    /// twice on the boot-time hot path.
+    /// Strict-config validator (C6 #1395, extended by ADR-050 and #3005).
+    /// Refuses to start the host when a registered EntitySet hasn't
+    /// acknowledged its security-sensitive configuration choices, when the
+    /// mount lacks a <c>$metadata</c> authorization stance, or when a
+    /// whitelisted <c>$expand</c> path is invalid — and resolves the
+    /// per-CLR-type EDM whitelist map consumed by the EDM builder. The
+    /// framework deliberately does NOT default-deny and does NOT silently
+    /// apply safe defaults — those would let convention drift reach
+    /// production unchecked. Failing fast at <c>Map*</c> time is the
+    /// equivalent of an architecture test for a config surface that lives
+    /// inside a closure (and is therefore not statically reflectable).
     /// </summary>
-    /// <returns>Per-entity scalar property names allowed on the EDM EntityType, derived from each entity's <c>ExportDefinition.GetFields()</c> filtered to <c>IsNavigation == false</c> and <c>PropertyPath</c> containing no <c>'.'</c>.</returns>
+    /// <returns>Per-CLR-type whitelist covering every EntitySet root (scalars from its <c>ExportDefinition.GetFields()</c>) and every navigation-target type reachable through a whitelisted <c>$expand</c> path (transitive closure).</returns>
     /// <exception cref="InvalidOperationException">
-    /// Any descriptor fails one of:
+    /// Any descriptor (or the mount) fails one of:
     /// (a) permission gate (missing or implicit anonymous);
     /// (b) <c>$expand</c>-intent gate (missing whitelist or DisableExpand);
     /// (c) host-feed gates (non-Host permission, missing AcknowledgeCrossTenantExposure on IMultiTenant);
-    /// (d) ADR-050 gates: no registered <c>EntityDefinition</c> for the entity type, or the <c>EntityDefinition</c> declares no <c>b.Export&lt;T&gt;()</c> reference, or no <c>IExportDefinitionDescriptor</c> is registered for the entity type.
+    /// (d) ADR-050 gates: no registered <c>EntityDefinition</c> for the entity type, no <c>b.Export&lt;T&gt;()</c> reference, or no <c>IExportDefinitionDescriptor</c>;
+    /// (e) #3005 gates: missing $metadata stance, $expand path segment that is not a navigation on its CLR type, or an $expand target type without a registered <c>IExportDefinitionDescriptor</c>.
     /// </exception>
-    private static Dictionary<Type, IReadOnlyList<string>> ValidateAndResolveWhitelists(
+    private static Dictionary<Type, ODataEntityTypeWhitelist> ValidateAndResolveWhitelists(
         IReadOnlyList<ODataEntitySetDescriptor> descriptors,
-        IServiceProvider services)
+        IServiceProvider services,
+        ODataFeedKind feedKind,
+        string? metadataPermission,
+        bool metadataStanceDeclared)
     {
         List<string> errors = [];
-        Dictionary<Type, IReadOnlyList<string>> whitelistByEntity = [];
+        Dictionary<Type, IReadOnlyList<string>> scalarsByType = [];
+        Dictionary<Type, HashSet<string>> navigationsByType = [];
 
         IPermissionDefinitionRegistry? permissionDefinitions =
-            descriptors.Any(d => d.FeedKind == ODataFeedKind.Host && d.RequiredPermission is not null)
+            feedKind == ODataFeedKind.Host
+            && (metadataPermission is not null || descriptors.Any(d => d.RequiredPermission is not null))
                 ? services.GetService<IPermissionDefinitionRegistry>()
                 : null;
+
+        ValidateMetadataStance(feedKind, metadataPermission, metadataStanceDeclared, permissionDefinitions, errors);
 
         // ADR-050 gates: resolve EntityDefinition + Export descriptors once.
         // Both abstractions live in their *.Abstractions packages so this
@@ -252,8 +313,10 @@ public static class ODataExposureEndpointRouteBuilderExtensions
 
             if (ResolveExportFields(descriptor, entityDefinitions, exportDefinitions, errors) is { } fields)
             {
-                whitelistByEntity[descriptor.EntityType] = fields;
+                scalarsByType[descriptor.EntityType] = fields;
             }
+
+            ValidateExpandClosure(descriptor, exportDefinitions, scalarsByType, navigationsByType, errors);
         }
 
         if (errors.Count > 0)
@@ -263,7 +326,61 @@ public static class ODataExposureEndpointRouteBuilderExtensions
                 + string.Join(Environment.NewLine, errors.Select(e => "  - " + e)));
         }
 
-        return whitelistByEntity;
+        Dictionary<Type, ODataEntityTypeWhitelist> whitelistByType = new(scalarsByType.Count);
+        foreach ((Type type, IReadOnlyList<string> scalars) in scalarsByType)
+        {
+            IReadOnlyList<string> navigations =
+                navigationsByType.TryGetValue(type, out HashSet<string>? set) ? [.. set] : [];
+            whitelistByType[type] = new ODataEntityTypeWhitelist(scalars, navigations);
+        }
+
+        return whitelistByType;
+    }
+
+    /// <summary>
+    /// #3005 — every mount must declare an explicit authorization stance for
+    /// <c>$metadata</c> + the service document. Tenant-feed: either
+    /// <c>RequireMetadataPermission(...)</c> or <c>AllowAnonymousMetadata()</c>.
+    /// Host-feed: <c>RequireMetadataPermission(...)</c> is REQUIRED and the
+    /// permission is validated to <see cref="MultiTenancySides.Host"/>,
+    /// mirroring the entity-permission gate.
+    /// </summary>
+    private static void ValidateMetadataStance(
+        ODataFeedKind feedKind,
+        string? metadataPermission,
+        bool metadataStanceDeclared,
+        IPermissionDefinitionRegistry? permissionDefinitions,
+        List<string> errors)
+    {
+        if (feedKind == ODataFeedKind.Tenant)
+        {
+            if (!metadataStanceDeclared)
+            {
+                errors.Add(
+                    "The OData mount must declare an explicit authorization stance for $metadata and the service document — call options.RequireMetadataPermission(\"...\") or options.AllowAnonymousMetadata(). Both documents expose the mount's full schema (EntitySet names, columns, navigations); anonymous schema reconnaissance must be a declared choice, never a default (#3005).");
+            }
+
+            return;
+        }
+
+        if (metadataPermission is null)
+        {
+            errors.Add(
+                "The OData host-feed mount must call options.RequireMetadataPermission(\"OData.Host.{Module}.Metadata.Read\") — the host-feed $metadata / service document expose the cross-tenant BI schema and have no anonymous variant (#3005).");
+            return;
+        }
+
+        PermissionDefinition? permission = permissionDefinitions?.Find(metadataPermission);
+        if (permission is null)
+        {
+            errors.Add(
+                $"Host-feed $metadata requires permission '{metadataPermission}' but no PermissionDefinition with that name is registered. Declare it in an IPermissionDefinitionProvider with MultiTenancySides.Host before mounting the host-feed.");
+        }
+        else if (permission.MultiTenancySides != MultiTenancySides.Host)
+        {
+            errors.Add(
+                $"Host-feed $metadata requires permission '{metadataPermission}' which is declared as MultiTenancySides.{permission.MultiTenancySides} — host-feed access requires MultiTenancySides.Host. Declare a dedicated host-side permission for the metadata documents.");
+        }
     }
 
     /// <summary>
@@ -284,12 +401,79 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         if (!descriptor.ExpandConfigurationAcknowledged)
         {
             errors.Add(
-                $"EntitySet '{descriptor.EntitySetName}' must call either ExpandWhitelist(...) or DisableExpand() — implicit \"$expand disabled\" is rejected by the strict-config validator (C6 #1395). Use DisableExpand() to declare the intent, or ExpandWhitelist(\"NavProp1\", ...) to allow specific navigations.");
+                $"EntitySet '{descriptor.EntitySetName}' must call either ExpandWhitelist(...) or DisableExpand() — implicit \"$expand disabled\" is rejected by the strict-config validator (C6 #1395). Use DisableExpand() to declare the intent, or ExpandWhitelist(\"NavProp1\", ...) to allow specific navigation paths.");
         }
 
         if (descriptor.FeedKind == ODataFeedKind.Host)
         {
             ValidateHostFeedGates(descriptor, permissionDefinitions, errors);
+        }
+    }
+
+    /// <summary>
+    /// #3005 / ADR-050 — walks every whitelisted <c>$expand</c> path segment
+    /// by segment via reflection, validating that (a) each segment exists as
+    /// a navigation-like property on the CLR type it is declared on, and
+    /// (b) every navigation-target type has a registered
+    /// <c>IExportDefinitionDescriptor</c> whose scalar fields become the
+    /// target's EDM whitelist. Records the traversed navigation names per
+    /// type (union across all descriptors) so the EDM builder exposes only
+    /// the navigations that some whitelisted path actually walks. Errors are
+    /// appended in place; a broken path stops at the first bad segment.
+    /// </summary>
+    private static void ValidateExpandClosure(
+        ODataEntitySetDescriptor descriptor,
+        IReadOnlyList<IExportDefinitionDescriptor> exportDefinitions,
+        Dictionary<Type, IReadOnlyList<string>> scalarsByType,
+        Dictionary<Type, HashSet<string>> navigationsByType,
+        List<string> errors)
+    {
+        foreach (string path in descriptor.ExpandWhitelist ?? [])
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                continue;
+            }
+
+            Type currentType = descriptor.EntityType;
+            foreach (string segment in path.Split('.', StringSplitOptions.TrimEntries))
+            {
+                PropertyInfo? navigation = Array.Find(
+                    currentType.GetProperties(BindingFlags.Public | BindingFlags.Instance),
+                    p => string.Equals(p.Name, segment, StringComparison.OrdinalIgnoreCase));
+
+                if (navigation is null || !ODataEdmModelBuilder.IsNavigationOrCollection(navigation.PropertyType))
+                {
+                    errors.Add(
+                        $"EntitySet '{descriptor.EntitySetName}' whitelists $expand path '{path}' but '{segment}' is not a navigation property on '{currentType.Name}'. Fix the path or remove it from ExpandWhitelist(...).");
+                    break;
+                }
+
+                if (!navigationsByType.TryGetValue(currentType, out HashSet<string>? navigations))
+                {
+                    navigations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    navigationsByType[currentType] = navigations;
+                }
+
+                navigations.Add(navigation.Name);
+
+                Type targetType = ODataEdmModelBuilder.ResolveNavigationTargetType(navigation.PropertyType);
+                if (!scalarsByType.ContainsKey(targetType))
+                {
+                    IExportDefinitionDescriptor? export = exportDefinitions
+                        .FirstOrDefault(e => e.EntityType == targetType);
+                    if (export is null)
+                    {
+                        errors.Add(
+                            $"EntitySet '{descriptor.EntitySetName}' whitelists $expand path '{path}' reaching target type '{targetType.Name}', which has no registered IExportDefinitionDescriptor. Per ADR-050 every type reachable through $expand needs an export-derived scalar whitelist — register an ExportDefinition for {targetType.Name} (services.AddExportDefinition<{targetType.Name}, {targetType.Name}ExportDefinition>()) or remove the path.");
+                        break;
+                    }
+
+                    scalarsByType[targetType] = ScalarFieldsOf(export);
+                }
+
+                currentType = targetType;
+            }
         }
     }
 
@@ -331,13 +515,19 @@ public static class ODataExposureEndpointRouteBuilderExtensions
             return null;
         }
 
-        // Scalars only (flat paths, IsNavigation == false). Flat paths (no dot) keep v1
-        // simple — nested navigation paths ("Customer.Name") will be lifted to OData
-        // NavigationProperty in a follow-up PR derived from EntityDefinition.Relations.
-        return [.. export.GetFields()
+        return ScalarFieldsOf(export);
+    }
+
+    /// <summary>
+    /// Scalars only (flat paths, <c>IsNavigation == false</c>). Dotted export
+    /// paths (<c>"Customer.Name"</c>) stay out of the EDM — navigations are
+    /// modelled as OData NavigationProperties reached through the $expand
+    /// whitelist closure, not flattened columns.
+    /// </summary>
+    private static IReadOnlyList<string> ScalarFieldsOf(IExportDefinitionDescriptor export) =>
+        [.. export.GetFields()
             .Where(f => !f.IsNavigation && !f.PropertyPath.Contains('.', StringComparison.Ordinal))
             .Select(f => f.PropertyPath)];
-    }
 
     /// <summary>
     /// Host-feed-only gates: the permission must resolve to <see cref="MultiTenancySides.Host"/>,
@@ -400,6 +590,10 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         // metadata is immutable) and shared by every subsequent request to this route.
         ODataValidationSettingsCache validationSettingsCache = new();
 
+        // #3005 — resolved allowed-path set for the AST validator: every
+        // whitelisted dotted path plus all of its prefixes, case-insensitive.
+        FrozenSet<string> allowedExpandPaths = BuildAllowedExpandPaths(descriptor.ExpandWhitelist);
+
         RouteHandlerBuilder route = root.MapGet(descriptor.EntitySetName, async Task<object?> (
                 ODataQueryOptions<TEntity> options,
                 HttpContext httpContext,
@@ -412,6 +606,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
                     descriptor,
                     crossTenantBypass,
                     validationSettingsCache,
+                    allowedExpandPaths,
                     options,
                     httpContext,
                     source,
@@ -433,14 +628,44 @@ public static class ODataExposureEndpointRouteBuilderExtensions
              .WithSummary($"Returns the {descriptor.EntitySetName} EntitySet, filtered by the framework's tenant + soft-delete pipeline.")
              .WithDescription($"OData v4 endpoint for the {descriptor.EntitySetName} set. Supports $filter, $select, $top, $skip, $orderby. Tenant and soft-delete filters are applied BEFORE any user $filter — the OData query never bypasses framework access control. Per-set caps: MaxTop={descriptor.MaxTop}, PageSize={descriptor.PageSize}, $count={(descriptor.CountEnabled ? "enabled" : "disabled")}, $expand={(descriptor.ExpandWhitelist is null or { Count: 0 } ? "disabled" : string.Join(",", descriptor.ExpandWhitelist))}.")
              .Produces(StatusCodes.Status200OK)
-             .ProducesProblem(StatusCodes.Status400BadRequest)
-             .ProducesProblem(StatusCodes.Status401Unauthorized)
-             .ProducesProblem(StatusCodes.Status403Forbidden);
+             .ProducesProblem(StatusCodes.Status400BadRequest);
 
+        // 401/403 are only reachable on gated sets — declaring them on an
+        // AllowAnonymousAccess() set would be false documentation (#3005).
         if (descriptor.RequiredPermission is not null)
         {
-            route.RequireAuthorization();
+            route.ProducesProblem(StatusCodes.Status401Unauthorized)
+                 .ProducesProblem(StatusCodes.Status403Forbidden)
+                 .RequireAuthorization();
         }
+    }
+
+    /// <summary>
+    /// Expands the descriptor's dotted <c>$expand</c> whitelist into the full
+    /// allowed-path set checked per request: every declared path AND every
+    /// prefix of it (whitelisting <c>"Customer.Address"</c> implies plain
+    /// <c>"Customer"</c> is expandable too). Case-insensitive to match OData's
+    /// EnableCaseInsensitive semantics.
+    /// </summary>
+    internal static FrozenSet<string> BuildAllowedExpandPaths(IReadOnlyList<string>? whitelist)
+    {
+        HashSet<string> paths = new(StringComparer.OrdinalIgnoreCase);
+
+        foreach (string path in whitelist ?? [])
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                continue;
+            }
+
+            string[] segments = path.Split('.', StringSplitOptions.TrimEntries);
+            for (int length = 1; length <= segments.Length; length++)
+            {
+                paths.Add(string.Join('.', segments[..length]));
+            }
+        }
+
+        return paths.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -455,6 +680,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         ODataEntitySetDescriptor descriptor,
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? crossTenantBypass,
         ODataValidationSettingsCache validationSettingsCache,
+        FrozenSet<string> allowedExpandPaths,
         ODataQueryOptions<TEntity> options,
         HttpContext httpContext,
         IQueryableSource<TEntity> source,
@@ -473,7 +699,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
 
         (string? tenantTag, string feedKindTag) = ResolveMetricsTags(descriptor, currentTenant);
 
-        if (TryRejectQueryShape(httpContext, descriptor, metrics, tenantTag, feedKindTag) is { } rejection)
+        if (TryRejectQueryShape(httpContext, options, descriptor, allowedExpandPaths, metrics, tenantTag, feedKindTag) is { } rejection)
         {
             return rejection;
         }
@@ -602,8 +828,8 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// set means "allow all" upstream — the opposite of what an empty whitelist must mean).
     /// <c>MaxTop</c> is deliberately NOT set: the existing contract is a silent clamp via
     /// <c>SetMaxTop</c> (pinned by <c>QueryHardeningTests</c>), not a validation rejection.
-    /// <c>MaxExpansionDepth</c> and the <c>$expand</c> whitelist stay with the dedicated
-    /// request-time gate (#3005 owns their evolution).
+    /// <c>MaxExpansionDepth</c> IS set from the descriptor (#3005) — the belt behind the AST
+    /// depth check, and the layer that caps <c>$levels</c> literals the AST walk normalises.
     /// </summary>
     private static ODataValidationSettings CreateValidationSettings(
         ODataEntitySetDescriptor descriptor,
@@ -631,6 +857,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         {
             MaxAnyAllExpressionDepth = 1,
             MaxNodeCount = 100,
+            MaxExpansionDepth = descriptor.MaxExpansionDepth,
         };
 
         if (metadata.SortableFields.Count > 0)
@@ -668,12 +895,15 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// Combines the $count and $expand gates into one rejection probe — keeps the
     /// route handler flat and records the matching metric reason on rejection.
     /// </summary>
-    private static ProblemHttpResult? TryRejectQueryShape(
+    private static ProblemHttpResult? TryRejectQueryShape<TEntity>(
         HttpContext httpContext,
+        ODataQueryOptions<TEntity> options,
         ODataEntitySetDescriptor descriptor,
+        FrozenSet<string> allowedExpandPaths,
         ODataExposureMetrics metrics,
         string? tenantTag,
         string feedKindTag)
+        where TEntity : class
     {
         if (RejectIfCountDisallowed(httpContext, descriptor) is { } countRejection)
         {
@@ -681,9 +911,11 @@ public static class ODataExposureEndpointRouteBuilderExtensions
             return countRejection;
         }
 
-        if (RejectIfExpandUnauthorised(httpContext, descriptor) is { } expandRejection)
+        (ProblemHttpResult? expandRejection, string expandReason) =
+            RejectIfExpandUnauthorised(options, descriptor, allowedExpandPaths);
+        if (expandRejection is not null)
         {
-            metrics.RecordRejectedQuery(descriptor.EntitySetName, "expand_not_whitelisted", tenantTag, feedKindTag);
+            metrics.RecordRejectedQuery(descriptor.EntitySetName, expandReason, tenantTag, feedKindTag);
             return expandRejection;
         }
 
@@ -717,64 +949,132 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     }
 
     /// <summary>
-    /// Validates the user's <c>$expand</c> clause against the EntitySet's
-    /// whitelist. Default whitelist is empty (or <see langword="null"/>) →
-    /// <c>$expand</c> rejected outright. Non-empty whitelist allows only the
-    /// listed top-level navigation properties; nested-expand depth is
-    /// enforced separately by <c>ODataMiniOptions.SetMaxTop</c> / the
-    /// framework's <c>MaxExpansionDepth</c> validator hook.
+    /// #3005 — validates the user's <c>$expand</c> against the EntitySet's
+    /// resolved path whitelist and <see cref="ODataEntitySetDescriptor.MaxExpansionDepth"/>
+    /// by walking the parsed <see cref="SelectExpandClause"/> AST recursively
+    /// (replaces the former string parser, which only saw top-level
+    /// segments). Empty whitelist → <c>$expand</c> rejected outright.
+    /// Returns the rejection plus the stable metric reason
+    /// (<c>expand_not_whitelisted</c> / <c>expand_depth_exceeded</c> /
+    /// <c>odata_validation_failed</c> for unparsable clauses).
     /// </summary>
-    private static ProblemHttpResult? RejectIfExpandUnauthorised(HttpContext httpContext, ODataEntitySetDescriptor descriptor)
+    private static (ProblemHttpResult? Rejection, string Reason) RejectIfExpandUnauthorised<TEntity>(
+        ODataQueryOptions<TEntity> options,
+        ODataEntitySetDescriptor descriptor,
+        FrozenSet<string> allowedExpandPaths)
+        where TEntity : class
     {
-        if (!httpContext.Request.Query.TryGetValue("$expand", out StringValues raw))
+        if (options.SelectExpand is not { RawExpand: { } rawExpand }
+            || string.IsNullOrWhiteSpace(rawExpand))
         {
-            return null;
+            return (null, string.Empty);
         }
 
-        string rawExpand = raw.ToString();
-        if (string.IsNullOrWhiteSpace(rawExpand))
+        if (allowedExpandPaths.Count == 0)
         {
-            return null;
-        }
-
-        IReadOnlyList<string>? whitelist = descriptor.ExpandWhitelist;
-        if (whitelist is null || whitelist.Count == 0)
-        {
-            return TypedResults.Problem(
+            return (TypedResults.Problem(
                 detail: $"$expand is not enabled on the '{descriptor.EntitySetName}' EntitySet.",
                 statusCode: StatusCodes.Status400BadRequest,
-                title: "Query option not allowed");
+                title: "Query option not allowed"), "expand_not_whitelisted");
         }
 
-        // Top-level navigation extraction — `Customer($expand=Lines),Address`
-        // → ["Customer", "Address"]. We only validate the first segment of
-        // each comma-split entry; nested expansion semantics are validated
-        // separately by MaxExpansionDepth.
-        string[] requested = [..
-            rawExpand.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .Select(segment =>
-                {
-                    int parenIndex = segment.IndexOf('(', StringComparison.Ordinal);
-                    return parenIndex >= 0 ? segment[..parenIndex].Trim() : segment;
-                })];
-
-        foreach (string property in requested)
+        SelectExpandClause clause;
+        try
         {
-            if (string.IsNullOrEmpty(property))
+            // SelectExpandClause parses lazily — a malformed $expand (or one
+            // referencing a navigation absent from the EDM, which after the
+            // #3005 startup gates means "absent from the whitelist closure")
+            // surfaces here as an ODataException.
+            clause = options.SelectExpand.SelectExpandClause;
+        }
+        catch (ODataException ex)
+        {
+            return (TypedResults.Problem(
+                detail: ex.Message,
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Query option not supported"), "odata_validation_failed");
+        }
+
+        return ValidateExpandItems(clause.SelectedItems, prefix: null, depth: 0, descriptor, allowedExpandPaths);
+    }
+
+    /// <summary>
+    /// Recursive AST walk over the expand items of one
+    /// <see cref="SelectExpandClause"/> level. Builds the dotted path for
+    /// every <see cref="ExpandedReferenceSelectItem"/> (which covers
+    /// <see cref="ExpandedNavigationSelectItem"/> and <c>$ref</c> expands),
+    /// checks depth against <see cref="ODataEntitySetDescriptor.MaxExpansionDepth"/>
+    /// FIRST (a too-deep path is a depth problem even when un-whitelisted),
+    /// then membership in the resolved allowed-path set. <c>$levels</c>
+    /// literals are normalised into extra depth AND extra repeated path
+    /// segments — <c>$expand=Manager($levels=2)</c> is equivalent to
+    /// <c>Manager.Manager</c> and both spellings pass through the same gates.
+    /// </summary>
+    internal static (ProblemHttpResult? Rejection, string Reason) ValidateExpandItems(
+        IEnumerable<SelectItem> items,
+        string? prefix,
+        int depth,
+        ODataEntitySetDescriptor descriptor,
+        FrozenSet<string> allowedExpandPaths)
+    {
+        foreach (ExpandedReferenceSelectItem item in items.OfType<ExpandedReferenceSelectItem>())
+        {
+            IReadOnlyList<string> navSegments = [.. item.PathToNavigationProperty
+                .OfType<NavigationPropertySegment>()
+                .Select(s => s.NavigationProperty.Name)];
+            if (navSegments.Count == 0)
             {
                 continue;
             }
 
-            if (!whitelist.Contains(property, StringComparer.OrdinalIgnoreCase))
+            string path = prefix is null
+                ? string.Join('.', navSegments)
+                : $"{prefix}.{string.Join('.', navSegments)}";
+            int itemDepth = depth + navSegments.Count;
+
+            long extraLevels = (item as ExpandedNavigationSelectItem)?.LevelsOption switch
             {
-                return TypedResults.Problem(
-                    detail: $"$expand of property '{property}' is not permitted on the '{descriptor.EntitySetName}' EntitySet. Allowed: {string.Join(", ", whitelist)}.",
+                null => 0,
+                { IsMaxLevel: true } => long.MaxValue,
+                { } levels => levels.Level - 1,
+            };
+
+            if (extraLevels == long.MaxValue || itemDepth + extraLevels > descriptor.MaxExpansionDepth)
+            {
+                return (TypedResults.Problem(
+                    detail: $"$expand nesting depth at '{path}' exceeds the maximum of {descriptor.MaxExpansionDepth} on the '{descriptor.EntitySetName}' EntitySet.",
                     statusCode: StatusCodes.Status400BadRequest,
-                    title: "Expand property not whitelisted");
+                    title: "Expand depth exceeded"), "expand_depth_exceeded");
+            }
+
+            // $levels repeats the LAST navigation segment — each repetition is
+            // a deeper dotted path and must be whitelisted like explicit nesting.
+            string levelPath = path;
+            for (long level = 0; level <= extraLevels; level++)
+            {
+                if (!allowedExpandPaths.Contains(levelPath))
+                {
+                    return (TypedResults.Problem(
+                        detail: $"$expand of '{levelPath}' is not permitted on the '{descriptor.EntitySetName}' EntitySet. Allowed paths: {string.Join(", ", allowedExpandPaths.Order(StringComparer.OrdinalIgnoreCase))}.",
+                        statusCode: StatusCodes.Status400BadRequest,
+                        title: "Expand path not whitelisted"), "expand_not_whitelisted");
+                }
+
+                levelPath = $"{levelPath}.{navSegments[^1]}";
+            }
+
+            if (item is ExpandedNavigationSelectItem { SelectAndExpand: { } nested })
+            {
+                (ProblemHttpResult? Rejection, string Reason) nestedResult =
+                    ValidateExpandItems(nested.SelectedItems, path, itemDepth, descriptor, allowedExpandPaths);
+                if (nestedResult.Rejection is not null)
+                {
+                    return nestedResult;
+                }
             }
         }
 
-        return null;
+        return (null, string.Empty);
     }
 
     /// <summary>

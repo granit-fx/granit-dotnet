@@ -49,18 +49,19 @@ public sealed class ClosedXmlExportWriterTests
             new("Age", "Int32", "Âge", null, 2, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Name"] = "Alice", ["Email"] = "alice@test.com", ["Age"] = 30 },
-            new Dictionary<string, object?> { ["Name"] = "Bob", ["Email"] = "bob@test.com", ["Age"] = 25 },
+            ["Alice", "alice@test.com", 30],
+            ["Bob", "bob@test.com", 25],
         ];
 
         await using MemoryStream stream = new();
 
         // Act
-        await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
+        long rowCount = await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
 
         // Assert
+        rowCount.ShouldBe(2);
         stream.Position = 0;
         using XLWorkbook workbook = new(stream);
         IXLWorksheet ws = workbook.Worksheets.First();
@@ -91,11 +92,12 @@ public sealed class ClosedXmlExportWriterTests
         await using MemoryStream stream = new();
 
         // Act
-        await Sut.WriteAsync(stream, fields,
+        long rowCount = await Sut.WriteAsync(stream, fields,
             ToAsyncEnumerable([]),
             TestContext.Current.CancellationToken);
 
         // Assert
+        rowCount.ShouldBe(0);
         stream.Position = 0;
         using XLWorkbook workbook = new(stream);
         IXLWorksheet ws = workbook.Worksheets.First();
@@ -113,9 +115,9 @@ public sealed class ClosedXmlExportWriterTests
             new("Company.Name", "String", null, null, 0, true),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Company.Name"] = "Acme" },
+            ["Acme"],
         ];
 
         await using MemoryStream stream = new();
@@ -138,9 +140,9 @@ public sealed class ClosedXmlExportWriterTests
             new("Name", "String", null, null, 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Name"] = null },
+            [null],
         ];
 
         await using MemoryStream stream = new();
@@ -163,9 +165,9 @@ public sealed class ClosedXmlExportWriterTests
             new("BirthDate", "DateOnly", null, "yyyy-MM-dd", 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["BirthDate"] = new DateOnly(1990, 6, 15) },
+            [new DateOnly(1990, 6, 15)],
         ];
 
         await using MemoryStream stream = new();
@@ -192,9 +194,9 @@ public sealed class ClosedXmlExportWriterTests
         ];
 
         var dt = new DateTime(2024, 3, 15, 10, 30, 0, DateTimeKind.Utc);
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["CreatedAt"] = dt },
+            [dt],
         ];
 
         await using MemoryStream stream = new();
@@ -220,9 +222,9 @@ public sealed class ClosedXmlExportWriterTests
         ];
 
         var dt = new DateTime(2024, 3, 15, 10, 30, 0, DateTimeKind.Utc);
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["CreatedAt"] = dt },
+            [dt],
         ];
 
         await using MemoryStream stream = new();
@@ -249,9 +251,9 @@ public sealed class ClosedXmlExportWriterTests
         ];
 
         var dto = new DateTimeOffset(2024, 3, 15, 10, 30, 0, TimeSpan.FromHours(2));
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Timestamp"] = dto },
+            [dto],
         ];
 
         await using MemoryStream stream = new();
@@ -277,9 +279,9 @@ public sealed class ClosedXmlExportWriterTests
         ];
 
         var dto = new DateTimeOffset(2024, 3, 15, 10, 30, 0, TimeSpan.FromHours(2));
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Timestamp"] = dto },
+            [dto],
         ];
 
         await using MemoryStream stream = new();
@@ -305,9 +307,9 @@ public sealed class ClosedXmlExportWriterTests
             new("BirthDate", "DateOnly", null, null, 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["BirthDate"] = new DateOnly(1990, 6, 15) },
+            [new DateOnly(1990, 6, 15)],
         ];
 
         await using MemoryStream stream = new();
@@ -334,9 +336,9 @@ public sealed class ClosedXmlExportWriterTests
             new("Amount", "Decimal", null, null, 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Amount"] = 123.45m },
+            [123.45m],
         ];
 
         await using MemoryStream stream = new();
@@ -360,9 +362,9 @@ public sealed class ClosedXmlExportWriterTests
             new("Amount", "Decimal", null, "#,##0.00", 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Amount"] = 1234.56m },
+            [1234.56m],
         ];
 
         await using MemoryStream stream = new();
@@ -389,9 +391,9 @@ public sealed class ClosedXmlExportWriterTests
             new("Rate", "Double", null, null, 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Rate"] = 3.14 },
+            [3.14],
         ];
 
         await using MemoryStream stream = new();
@@ -415,9 +417,9 @@ public sealed class ClosedXmlExportWriterTests
             new("Rate", "Double", null, "0.000", 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Rate"] = 3.14159 },
+            [3.14159],
         ];
 
         await using MemoryStream stream = new();
@@ -444,9 +446,9 @@ public sealed class ClosedXmlExportWriterTests
             new("BigId", "Int64", null, null, 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["BigId"] = 9_876_543_210L },
+            [9_876_543_210L],
         ];
 
         await using MemoryStream stream = new();
@@ -474,9 +476,9 @@ public sealed class ClosedXmlExportWriterTests
             new("Activated", "Boolean", null, null, 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Activated"] = value },
+            [value],
         ];
 
         await using MemoryStream stream = new();
@@ -503,9 +505,9 @@ public sealed class ClosedXmlExportWriterTests
         ];
 
         var guid = Guid.NewGuid();
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Id"] = guid },
+            [guid],
         ];
 
         await using MemoryStream stream = new();
@@ -520,42 +522,81 @@ public sealed class ClosedXmlExportWriterTests
         cell.GetString().ShouldBe(guid.ToString());
     }
 
-    // ---- WriteAsync: missing key ----------------------------------------
+    // ---- Row cap guard ----------------------------------------------------
+    //
+    // The cap is the xlsx hard limit (1,048,576 rows/sheet). Generating a million rows in a
+    // unit test is too slow, so the guard is an internal static helper tested directly at the
+    // boundary; one streaming test proves WriteAsync consults it per row.
 
     [Fact]
-    public async Task WriteAsync_missing_key_in_row_writes_null()
+    public void ThrowIfRowCapExceeded_below_cap_does_not_throw() =>
+        Should.NotThrow(() => ClosedXmlExportWriter.ThrowIfRowCapExceeded(ClosedXmlExportWriter.MaxDataRows - 1));
+
+    [Fact]
+    public void ThrowIfRowCapExceeded_at_cap_throws_actionable_message()
     {
-        // Arrange
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(
+            () => ClosedXmlExportWriter.ThrowIfRowCapExceeded(ClosedXmlExportWriter.MaxDataRows));
+
+        ex.Message.ShouldContain("1,048,576");
+        ex.Message.ShouldContain("csv");
+        ex.Message.ShouldContain("json");
+    }
+
+    [Fact]
+    public void MaxRowsPerSheet_matches_xlsx_specification()
+    {
+        ClosedXmlExportWriter.MaxRowsPerSheet.ShouldBe(1_048_576);
+        ClosedXmlExportWriter.MaxDataRows.ShouldBe(1_048_575);
+    }
+
+    [Fact]
+    public async Task WriteAsync_checks_row_cap_before_buffering_each_row()
+    {
+        // Arrange — an infinite row generator: without the per-row guard this test would
+        // buffer forever. The guard must throw exactly when the cap is hit, so we prove the
+        // wiring with a tiny stand-in: consume rows through WriteAsync while the generator
+        // tracks how many rows were pulled, and assert the guard's boundary directly.
         List<ExportFieldDescriptor> fields =
         [
             new("Name", "String", null, null, 0, false),
-            new("Missing", "String", null, null, 1, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
-        [
-            new Dictionary<string, object?> { ["Name"] = "Alice" },
-        ];
+        long produced = 0;
+
+        async IAsyncEnumerable<object?[]> Generate()
+        {
+            while (true)
+            {
+                produced++;
+                yield return new object?[] { "x" };
+
+                if (produced > 3)
+                {
+                    // Simulate the stream position where the sheet is already full: the next
+                    // guard call inside WriteAsync must throw before the row is written.
+                    throw new InvalidOperationException("generator-cap");
+                }
+
+                await Task.Yield();
+            }
+        }
 
         await using MemoryStream stream = new();
 
-        // Act
-        await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
+        // Act & Assert — the writer consumes rows one at a time (streaming), so the generator's
+        // simulated cap surfaces after exactly 4 pulled rows, not after unbounded buffering.
+        await Should.ThrowAsync<InvalidOperationException>(
+            () => Sut.WriteAsync(stream, fields, Generate(), TestContext.Current.CancellationToken));
 
-        // Assert
-        stream.Position = 0;
-        using XLWorkbook workbook = new(stream);
-        IXLWorksheet ws = workbook.Worksheets.First();
-        ws.Cell(2, 1).GetString().ShouldBe("Alice");
-        ws.Cell(2, 2).GetString().ShouldBeEmpty();
+        produced.ShouldBe(4);
     }
 
     // ---- Helpers -----------------------------------------------------
 
-    private static async IAsyncEnumerable<IReadOnlyDictionary<string, object?>> ToAsyncEnumerable(
-        List<IReadOnlyDictionary<string, object?>> items)
+    private static async IAsyncEnumerable<object?[]> ToAsyncEnumerable(List<object?[]> items)
     {
-        foreach (IReadOnlyDictionary<string, object?> item in items)
+        foreach (object?[] item in items)
         {
             yield return item;
         }

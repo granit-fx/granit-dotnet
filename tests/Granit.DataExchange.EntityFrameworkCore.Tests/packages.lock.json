@@ -52,6 +52,17 @@
           "SQLitePCLRaw.core": "2.1.11"
         }
       },
+      "Microsoft.Extensions.Diagnostics.Testing": {
+        "type": "Direct",
+        "requested": "[10.*, )",
+        "resolved": "10.7.0",
+        "contentHash": "2G1QonlvuybwwvJjguUcNXMnFN8jBnWiAn3Z3If5L8wkVvW1AEQyakF1RUZbad+bqAtgPoxJ6JBAwGj1MikcWQ==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "10.0.9",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "10.0.9",
+          "Microsoft.Extensions.Telemetry.Abstractions": "10.7.0"
+        }
+      },
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
         "requested": "[18.*, )",
@@ -126,6 +137,11 @@
           "System.Diagnostics.EventLog": "6.0.0"
         }
       },
+      "csFastFloat": {
+        "type": "Transitive",
+        "resolved": "4.1.5",
+        "contentHash": "TugPHQzrbr2iruO8lshMekUXoFIyBOZQLqNCwQF6BHv4FE6mBeMa41pj5cXW6FKlk9uHypIAAy4UmTFivWFjPA=="
+      },
       "DiffEngine": {
         "type": "Transitive",
         "resolved": "11.3.0",
@@ -190,6 +206,15 @@
           "Microsoft.Extensions.DependencyModel": "10.0.10",
           "Microsoft.Extensions.Logging": "10.0.10",
           "SQLitePCLRaw.core": "2.1.11"
+        }
+      },
+      "Microsoft.Extensions.Compliance.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.7.0",
+        "contentHash": "qbi6lg6dyvydBvpjXeBx3wLPvmgXWn3nwkKBOsgEck6w++BEsBcv8YhdcczME16Oq+a6wkdtna9/qCEkxsNw5A==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.9",
+          "Microsoft.Extensions.ObjectPool": "10.0.9"
         }
       },
       "Microsoft.Extensions.Configuration": {
@@ -416,10 +441,26 @@
           "Microsoft.Extensions.Primitives": "10.0.10"
         }
       },
+      "Microsoft.Extensions.ObjectPool": {
+        "type": "Transitive",
+        "resolved": "10.0.9",
+        "contentHash": "KZENCkfqO7Ciax6goUWQHDSxKH+x763hkBWMz9KpE87EyKW+EKEas9EFe9i1KgtQShG8KwKxaeJ5gd9sj6TuTQ=="
+      },
       "Microsoft.Extensions.Primitives": {
         "type": "Transitive",
         "resolved": "10.0.10",
         "contentHash": "5wu/GrYVd8mG2DVUw3vFJzF+O336TyTGg/Kmcgw9bfwYhCoFiV5lR5QeEmKecJyrW4W54nMfD3p3589E8a7czQ=="
+      },
+      "Microsoft.Extensions.Telemetry.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.7.0",
+        "contentHash": "ir1QKShZzfEmqO9LUWESVMUDZdnxYBSKQyulYPMeaye531lAuT8YTotthx+htrrS8hZY52HANeqowLQyCYBCZg==",
+        "dependencies": {
+          "Microsoft.Extensions.Compliance.Abstractions": "10.7.0",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.9",
+          "Microsoft.Extensions.ObjectPool": "10.0.9",
+          "Microsoft.Extensions.Options": "10.0.9"
+        }
       },
       "Microsoft.Testing.Extensions.Telemetry": {
         "type": "Transitive",
@@ -615,6 +656,13 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.dataexchange.csv": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.DataExchange": "[0.1.0-dev, )",
+          "Sep": "[0.*, )"
+        }
+      },
       "granit.dataexchange.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
@@ -700,6 +748,17 @@
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.Mvc.Testing": "[10.*, )"
+        }
+      },
+      "granit.testing.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.Testing": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.InMemory": "[10.*, )",
+          "Microsoft.EntityFrameworkCore.Sqlite": "[10.*, )",
+          "SQLitePCLRaw.bundle_e_sqlite3": "[3.0.3, )",
+          "SQLitePCLRaw.core": "[3.0.3, )"
         }
       },
       "granit.timing": {
@@ -916,6 +975,15 @@
         "requested": "[2.7.5, )",
         "resolved": "2.7.5",
         "contentHash": "0FA67RSnRM4tcBKqiqVu/HPdZ9+QOKbmeRjxRUGTCjPU4C0bmUhd97Dso7Yild5P7nOV6GxJ2xrK0Kv/O9xp0w=="
+      },
+      "Sep": {
+        "type": "CentralTransitive",
+        "requested": "[0.*, )",
+        "resolved": "0.15.0",
+        "contentHash": "x4euJeBMZaHwPx4vqYu2MUo5uefllW3CkSu0X/pdX0bn6sHTl3af2lDC+p5MuQLMfCHi7bOpt/rwdmcY42zbPg==",
+        "dependencies": {
+          "csFastFloat": "4.1.5"
+        }
       },
       "SmartFormat": {
         "type": "CentralTransitive",

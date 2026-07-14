@@ -66,10 +66,10 @@ public sealed class CsvRoundtripTests
             new("Email", "String", "Email", null, 1, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Name"] = "Alice", ["Email"] = "alice@test.com" },
-            new Dictionary<string, object?> { ["Name"] = "Bob", ["Email"] = "bob@test.com" },
+            ["Alice", "alice@test.com"],
+            ["Bob", "bob@test.com"],
         ];
 
         // Act
@@ -95,10 +95,10 @@ public sealed class CsvRoundtripTests
             new("Email", "String", "Email", null, 1, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Name"] = "Alice", ["Email"] = null },
-            new Dictionary<string, object?> { ["Name"] = null, ["Email"] = "bob@test.com" },
+            ["Alice", null],
+            [null, "bob@test.com"],
         ];
 
         // Act
@@ -122,9 +122,9 @@ public sealed class CsvRoundtripTests
             new("BirthDate", "DateOnly", "Date", "dd/MM/yyyy", 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["BirthDate"] = new DateOnly(1990, 6, 15) },
+            [new DateOnly(1990, 6, 15)],
         ];
 
         // Act
@@ -146,9 +146,9 @@ public sealed class CsvRoundtripTests
             new("Address", "String", "Adresse", null, 1, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Name"] = "Smith; John", ["Address"] = "123 \"Main\" St" },
+            ["Smith; John", "123 \"Main\" St"],
         ];
 
         // Act
@@ -170,10 +170,10 @@ public sealed class CsvRoundtripTests
             new("Id", "String", "Id", null, 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows = [];
+        List<object?[]> rows = [];
         for (int i = 1; i <= 50; i++)
         {
-            rows.Add(new Dictionary<string, object?> { ["Id"] = i.ToString() });
+            rows.Add([i.ToString()]);
         }
 
         // Act
@@ -189,7 +189,7 @@ public sealed class CsvRoundtripTests
 
     private static async Task<List<RawImportRow>> ExportThenImport(
         List<ExportFieldDescriptor> fields,
-        List<IReadOnlyDictionary<string, object?>> rows)
+        List<object?[]> rows)
     {
         await using MemoryStream stream = new();
 
@@ -209,10 +209,9 @@ public sealed class CsvRoundtripTests
         return imported;
     }
 
-    private static async IAsyncEnumerable<IReadOnlyDictionary<string, object?>> ToAsyncEnumerable(
-        List<IReadOnlyDictionary<string, object?>> items)
+    private static async IAsyncEnumerable<object?[]> ToAsyncEnumerable(List<object?[]> items)
     {
-        foreach (IReadOnlyDictionary<string, object?> item in items)
+        foreach (object?[] item in items)
         {
             yield return item;
         }

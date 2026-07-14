@@ -12,7 +12,7 @@ namespace Granit.DataExchange.Import.Internal;
 /// stores it via <see cref="IDataExchangeFileProvider"/>, and creates an <see cref="ImportJob"/>.
 /// </summary>
 internal sealed partial class ImportUploadService(
-    IServiceProvider serviceProvider,
+    IImportPipelineRegistry pipelineRegistry,
     IDataExchangeFileProvider fileProvider,
     IImportJobWriter jobWriter,
     IGuidGenerator guidGenerator,
@@ -28,10 +28,16 @@ internal sealed partial class ImportUploadService(
         string definitionName,
         CancellationToken cancellationToken = default)
     {
-        IImportDefinitionDescriptor? descriptor = ImportDefinitionResolver.FindByName(serviceProvider, definitionName);
+        IImportDefinitionDescriptor? descriptor = pipelineRegistry.Find(definitionName)?.Definition;
         if (descriptor is null)
         {
-            return ImportUploadResult.Failure($"Unknown import definition '{definitionName}'.");
+            IReadOnlyList<IImportPipelineDescriptor> registered = pipelineRegistry.GetAll();
+            string names = registered.Count > 0
+                ? string.Join(", ", registered.Select(d => d.DefinitionName))
+                : "none";
+            return ImportUploadResult.Failure(
+                $"Unknown import definition '{definitionName}' (lookup is case-sensitive). " +
+                $"Registered definitions: [{names}].");
         }
 
         if (fileSize == 0)
