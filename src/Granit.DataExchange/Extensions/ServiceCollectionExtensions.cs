@@ -32,7 +32,9 @@ public static class ServiceCollectionExtensions
     ///   <item><see cref="IMappingSuggestionService"/> (scoped) — 4-tier mapping facade.</item>
     ///   <item><see cref="ISemanticMappingService"/> (singleton) — null-object default.</item>
     ///   <item><see cref="IImportJobReader"/> / <see cref="IImportJobWriter"/> (scoped) — null-object default.</item>
-    ///   <item><see cref="IDataExchangeFileProvider"/> (scoped) — in-memory default.</item>
+    ///   <item><see cref="IDataExchangeFileProvider"/> (singleton) — fail-fast null-object default;
+    ///     register <c>Granit.DataExchange.BlobStorage</c> or call
+    ///     <see cref="AddInMemoryDataExchangeFileProvider"/>.</item>
     ///   <item><see cref="IImportOrchestrator"/> (scoped) — pipeline orchestrator.</item>
     /// </list>
     /// <para>
@@ -58,7 +60,7 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IMappingSuggestionService, MappingSuggestionService>();
         services.TryAddScoped<IImportJobReader, NullImportJobStore>();
         services.TryAddScoped<IImportJobWriter, NullImportJobStore>();
-        services.TryAddScoped<IDataExchangeFileProvider, InMemoryDataExchangeFileProvider>();
+        services.TryAddSingleton<IDataExchangeFileProvider, NullDataExchangeFileProvider>();
         services.TryAddScoped<IImportOrchestrator, ImportOrchestrator>();
         services.TryAddScoped<IImportUploadService, ImportUploadService>();
         services.TryAddScoped<IImportPreviewService, ImportPreviewService>();
@@ -128,6 +130,23 @@ public static class ServiceCollectionExtensions
         services.AddQueryDefinition<ExportJob, ExportJobQueryDefinition>();
         services.AddExportDefinition<ExportJob, ExportJobExportDefinition>();
 
+        return services;
+    }
+
+    /// <summary>
+    /// Replaces the default <see cref="IDataExchangeFileProvider"/> with the in-memory implementation.
+    /// </summary>
+    /// <remarks>
+    /// Registered <b>Singleton</b> so uploaded files survive across DI scopes (upload request,
+    /// preview request, message-handler execution). Files live in process memory and are lost on
+    /// restart — suitable for tests and single-process CLI tools only. Production hosts register
+    /// <c>Granit.DataExchange.BlobStorage</c> instead.
+    /// </remarks>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddInMemoryDataExchangeFileProvider(this IServiceCollection services)
+    {
+        services.Replace(ServiceDescriptor.Singleton<IDataExchangeFileProvider, InMemoryDataExchangeFileProvider>());
         return services;
     }
 

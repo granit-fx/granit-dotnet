@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using Granit.DataExchange.Export;
-using Granit.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,13 +8,13 @@ using Microsoft.Extensions.Logging;
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Export;
 
 /// <summary>
-/// Discovers entity types eligible for auto-generated export definitions
-/// by scanning all registered EF Core <see cref="DbContext"/> models.
+/// Discovers entity types eligible for auto-generated export definitions by reading the
+/// <see cref="IModel"/> of every context declared via <c>AddDataExchangeDbContext&lt;TContext&gt;()</c>.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Entity types are discovered lazily on first access by resolving each
-/// <see cref="DbContext"/> registered in DI and reading its <see cref="IModel"/>.
+/// Entity types are discovered lazily on first access by resolving each registered
+/// context and reading its <see cref="IModel"/>.
 /// Results are cached for the lifetime of the singleton (thread-safe via <see cref="Lazy{T}"/>).
 /// </para>
 /// <para>
@@ -84,33 +83,15 @@ internal sealed partial class DbContextAutoExportDefinitionSource(
         && entityType.FindPrimaryKey() is not null
         && !entityType.ClrType.IsAbstract;
 
-    private static ReadOnlyCollection<Type> FindDbContextTypes(IServiceProvider sp)
-    {
-        // Scan service descriptors for DbContext registrations.
-        // DbContexts are registered directly (via AddDbContextFactory)
-        // and resolved as their concrete type.
-        IServiceCollection? services = sp.GetService<IServiceCollection>();
-        HashSet<Type> contextTypes = services is not null
-            ? [.. services
-                .Where(d => d.ServiceType.IsGenericType
-                    && d.ServiceType.GetGenericTypeDefinition() == typeof(IDbContextFactory<>))
-                .Select(d => d.ServiceType.GetGenericArguments()[0])]
-            : [];
-
-        // Fallback: scan loaded assemblies for DbContext subclasses if no service collection
-        if (contextTypes.Count == 0)
-        {
-            contextTypes.UnionWith(ScanAssembliesForDbContexts());
-        }
-
-        return contextTypes.ToList().AsReadOnly();
-    }
-
-    private static IEnumerable<Type> ScanAssembliesForDbContexts() =>
-        AppDomain.CurrentDomain.GetAssemblies()
-            .Where(a => a.GetName().Name?.StartsWith("Granit", StringComparison.Ordinal) == true)
-            .SelectMany(SafeTypeLoader.GetLoadableTypes)
-            .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(DbContext)));
+    // Strictly registration-based (AddDataExchangeDbContext<TContext>()) so discovery stays
+    // symmetric with DbContextResolver: an entity gets an auto definition iff its data can
+    // also be resolved at export time.
+    private static ReadOnlyCollection<Type> FindDbContextTypes(IServiceProvider sp) =>
+        sp.GetServices<DataExchangeDbContextRegistration>()
+            .Select(r => r.ContextType)
+            .Distinct()
+            .ToList()
+            .AsReadOnly();
 
     [LoggerMessage(1, LogLevel.Warning, "Failed to scan DbContext '{DbContextName}' for entity types")]
     private static partial void LogDbContextScanFailed(ILogger logger, string dbContextName, Exception ex);

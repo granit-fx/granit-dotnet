@@ -5,13 +5,14 @@ namespace Granit.DataExchange.Internal;
 
 /// <summary>
 /// In-memory implementation of <see cref="IDataExchangeFileProvider"/>.
-/// Registered as the default fallback — suitable for tests, CLI tools,
-/// and minimal setups without blob storage.
+/// Opt-in via <c>AddInMemoryDataExchangeFileProvider()</c> — suitable for tests
+/// and single-process CLI tools.
 /// </summary>
 /// <remarks>
-/// Files are stored in a <see cref="ConcurrentDictionary{TKey,TValue}"/> keyed by
-/// a generated GUID reference. Data is lost on process restart. For production
-/// workloads, register <c>Granit.DataExchange.BlobStorage</c> or a custom implementation.
+/// Files are stored in an instance <see cref="ConcurrentDictionary{TKey,TValue}"/>, so the
+/// registration MUST be a singleton: a scoped instance would lose every file at scope end
+/// (upload and execution run in different scopes). Data is lost on process restart. For
+/// production workloads, register <c>Granit.DataExchange.BlobStorage</c> or a custom implementation.
 /// </remarks>
 internal sealed class InMemoryDataExchangeFileProvider : IDataExchangeFileProvider
 {

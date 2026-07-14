@@ -35,6 +35,9 @@ public static class DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensi
     {
         builder.Services.AddGranitDbContext<DataExchangeDbContext>(configure);
 
+        // Own context participates in data exchange (ImportJob/ExportJob exports).
+        builder.Services.AddDataExchangeDbContext<DataExchangeDbContext>();
+
         // Import stores
         builder.Services.AddScoped<IMappingReader, EfMappingStore>();
         builder.Services.AddScoped<IMappingWriter, EfMappingStore>();

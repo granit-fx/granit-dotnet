@@ -3,6 +3,7 @@ using Granit.DataExchange.Extensions;
 using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Pipeline;
+using Granit.DataExchange.Internal;
 using Granit.DataExchange.Tests.Mapping;
 using Granit.Events;
 using Microsoft.Extensions.DependencyInjection;
@@ -247,6 +248,63 @@ public sealed class ServiceCollectionExtensionsTests
 
         descriptor.Name.ShouldBe("Test.ExportEntity");
         descriptor.EntityType.ShouldBe(typeof(TestExportEntity));
+    }
+
+    [Fact]
+    public void AddGranitDataImport_registers_fail_fast_file_provider_singleton()
+    {
+        ServiceCollection services = new();
+
+        services.AddGranitDataImport();
+
+        services.ShouldContain(d =>
+            d.ServiceType == typeof(IDataExchangeFileProvider) &&
+            d.ImplementationType == typeof(NullDataExchangeFileProvider) &&
+            d.Lifetime == ServiceLifetime.Singleton);
+    }
+
+    [Fact]
+    public void AddInMemoryDataExchangeFileProvider_replaces_default_with_singleton()
+    {
+        ServiceCollection services = new();
+        services.AddGranitDataImport();
+
+        services.AddInMemoryDataExchangeFileProvider();
+
+        services.Count(d => d.ServiceType == typeof(IDataExchangeFileProvider)).ShouldBe(1);
+        services.ShouldContain(d =>
+            d.ServiceType == typeof(IDataExchangeFileProvider) &&
+            d.ImplementationType == typeof(InMemoryDataExchangeFileProvider) &&
+            d.Lifetime == ServiceLifetime.Singleton);
+    }
+
+    [Fact]
+    public async Task InMemory_file_provider_roundtrips_across_scopes()
+    {
+        // Upload happens in one DI scope (HTTP request), execution in another
+        // (second request or message handler) — the file must survive the scope change.
+        ServiceCollection services = new();
+        services.AddGranitDataImport();
+        services.AddInMemoryDataExchangeFileProvider();
+        await using ServiceProvider provider = services.BuildServiceProvider();
+
+        Granit.Domain.ValueObjects.BlobReference reference;
+        using (IServiceScope uploadScope = provider.CreateScope())
+        {
+            await using MemoryStream content = new([1, 2, 3]);
+            reference = await uploadScope.ServiceProvider
+                .GetRequiredService<IDataExchangeFileProvider>()
+                .SaveAsync("data.csv", content, TestContext.Current.CancellationToken);
+        }
+
+        using IServiceScope executionScope = provider.CreateScope();
+        await using Stream reopened = await executionScope.ServiceProvider
+            .GetRequiredService<IDataExchangeFileProvider>()
+            .OpenAsync(reference, TestContext.Current.CancellationToken);
+
+        MemoryStream buffer = new();
+        await reopened.CopyToAsync(buffer, TestContext.Current.CancellationToken);
+        buffer.ToArray().ShouldBe([1, 2, 3]);
     }
 
     // ---- Test helpers ------------------------------------------------

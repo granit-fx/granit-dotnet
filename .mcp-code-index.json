@@ -16632,6 +16632,15 @@
       "members": []
     },
     {
+      "name": "DataExchangeDbContextRegistration",
+      "fqn": "Granit.DataExchange.EntityFrameworkCore.DataExchangeDbContextRegistration",
+      "kind": "record",
+      "project": "Granit.DataExchange.EntityFrameworkCore",
+      "file": "src/Granit.DataExchange.EntityFrameworkCore/DataExchangeDbContextRegistration.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.DataExchange.EntityFrameworkCore.Extensions.DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
