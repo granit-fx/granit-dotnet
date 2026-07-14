@@ -1,10 +1,10 @@
 {
   "culture": "es",
   "texts": {
-    "DataExchangeEndpoints:Workspace.Exports": "Exports",
-    "DataExchangeEndpoints:Workspace.Imports": "Imports",
-    "DataExchangeEndpoints:Workspace.Section": "Data exchange",
-    "Validation:AtLeastOneMappingTarget": "Al menos una asignación debe tener una propiedad destino no nula.",
+    "DataExchangeEndpoints:Workspace.Exports": "Exportaciones",
+    "DataExchangeEndpoints:Workspace.Imports": "Importaciones",
+    "DataExchangeEndpoints:Workspace.Section": "Intercambio de datos",
+    "DataExchange:Validation:AtLeastOneMappingTarget": "Al menos una asignación debe tener una propiedad destino no nula.",
     "Permission:DataExchange.Exports.Execute": "Ejecutar exportaciones de datos (definiciones, ejecución, descarga, presets)",
     "Permission:DataExchange.Exports.Read": "Ver definiciones e historial de exportaciones",
     "Permission:DataExchange.Imports.Execute": "Ejecutar importaciones de datos (carga, mapeo, ejecución, informes)",

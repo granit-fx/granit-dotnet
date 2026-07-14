@@ -27,8 +27,6 @@ internal static class PairingExemptions
         "Granit.Authorization.Domain.PermissionGrant",                                    // [INFRA] RBAC config
         "Granit.Authorization.Domain.RoleMetadata",                                       // [INFRA] RBAC config
         "Granit.BackgroundJobs.Domain.BackgroundJobDefinition",                           // [INFRA] job config
-        "Granit.DataExchange.Export.Domain.ExportJob",                                    // [INFRA] transient export job
-        "Granit.DataExchange.Import.Domain.ImportJob",                                    // [INFRA] transient import job
         "Granit.Identity.Federated.Domain.FederatedIdentity",                                // [INFRA] internal user cache
         "Granit.Identity.Local.Domain.GranitRole",                                        // [INFRA] RBAC config
         "Granit.Identity.Local.Domain.GranitUserGroup",                                   // [INFRA] RBAC config

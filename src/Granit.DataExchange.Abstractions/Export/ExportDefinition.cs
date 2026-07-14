@@ -42,7 +42,18 @@ namespace Granit.DataExchange.Export;
 public abstract class ExportDefinition<TEntity> : IExportDefinitionDescriptor
     where TEntity : class
 {
-    private ExportDefinitionBuilder<TEntity>? _builder;
+    // Lazy<T> (default ExecutionAndPublication mode) ensures a concurrent reader can never
+    // observe a half-built definition: only one thread runs Configure, and every caller
+    // blocks until it completes, instead of racing on a plain nullable-backed cache field.
+    private readonly Lazy<ExportDefinitionBuilder<TEntity>> _builder;
+
+    protected ExportDefinition() =>
+        _builder = new Lazy<ExportDefinitionBuilder<TEntity>>(() =>
+        {
+            ExportDefinitionBuilder<TEntity> builder = new();
+            Configure(builder);
+            return builder;
+        });
 
     /// <summary>
     /// Unique name identifying this export definition (e.g. <c>"Acme.PatientExport"</c>).
@@ -73,19 +84,9 @@ public abstract class ExportDefinition<TEntity> : IExportDefinitionDescriptor
     protected abstract void Configure(ExportDefinitionBuilder<TEntity> builder);
 
     /// <summary>
-    /// Gets the built definition metadata (lazily initialized).
+    /// Gets the built definition metadata (lazily initialized, thread-safe).
     /// </summary>
-    internal ExportDefinitionBuilder<TEntity> GetBuilder()
-    {
-        if (_builder is not null)
-        {
-            return _builder;
-        }
-
-        _builder = new ExportDefinitionBuilder<TEntity>();
-        Configure(_builder);
-        return _builder;
-    }
+    internal ExportDefinitionBuilder<TEntity> GetBuilder() => _builder.Value;
 
     /// <inheritdoc/>
     public IReadOnlyList<ExportFieldDescriptor> GetFields() =>

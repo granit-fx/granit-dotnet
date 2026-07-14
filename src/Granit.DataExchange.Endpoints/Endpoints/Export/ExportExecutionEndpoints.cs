@@ -1,5 +1,5 @@
 using Granit.DataExchange.Endpoints.Dtos.Export;
-using Granit.DataExchange.Endpoints.Internal.Export;
+using Granit.DataExchange.Endpoints.Permissions;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.Timing;
@@ -26,14 +26,16 @@ internal static class ExportExecutionEndpoints
             .WithSummary("Creates and dispatches an export job (sync or background).")
             .WithDescription("Creates an export job for the given definition, format, and field selection. Small datasets may complete synchronously; larger ones are dispatched for background processing. Poll the status endpoint to track progress. Returns 400 if the definition name or format is invalid.")
             .Produces<ExportJobResponse>(StatusCodes.Status201Created)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .RequireAuthorization(DataExchangePermissions.Exports.Execute);
 
         group.MapGet("/jobs/{jobId:guid}", GetJobStatusAsync)
             .WithName("GetExportJobStatus")
             .WithSummary("Returns the current status of an export job.")
-            .WithDescription("Returns the current status of the export job (Created, Processing, Completed, Failed). Once the status is Completed, the download endpoint becomes available. Returns 404 if the job ID is not found.")
+            .WithDescription("Returns the current status of the export job (Queued, Exporting, Completed, Failed). Once the status is Completed, the download endpoint becomes available. Returns 404 if the job ID is not found.")
             .Produces<ExportJobResponse>()
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(DataExchangePermissions.Exports.Read);
 
         group.MapGet("/jobs/{jobId:guid}/download", DownloadAsync)
             .WithName("DownloadExportFile")
@@ -41,7 +43,8 @@ internal static class ExportExecutionEndpoints
             .WithDescription("Streams the generated export file (xlsx, csv, etc.) as a binary download. The Content-Type and Content-Disposition headers are set according to the export format. Returns 404 if the job does not exist, or 400 if the job has not completed yet.")
             .Produces(StatusCodes.Status200OK, contentType: "application/octet-stream")
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .RequireAuthorization(DataExchangePermissions.Exports.Read);
 
         return group;
     }
@@ -49,12 +52,11 @@ internal static class ExportExecutionEndpoints
     private static async Task<Results<Created<ExportJobResponse>, ProblemHttpResult>> CreateExportJobAsync(
         CreateExportJobRequest request,
         [FromServices] IExportOrchestrator orchestrator,
-        [FromServices] IServiceProvider serviceProvider,
+        [FromServices] IExportDefinitionProvider definitionProvider,
         [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
-        IExportDefinitionDescriptor? descriptor =
-            ExportDefinitionResolver.FindByName(serviceProvider, request.DefinitionName);
+        IExportDefinitionDescriptor? descriptor = definitionProvider.FindByName(request.DefinitionName);
         if (descriptor is null)
         {
             return TypedResults.Problem(
@@ -87,7 +89,7 @@ internal static class ExportExecutionEndpoints
             : new ExportJobResponse(result.JobId, request.DefinitionName, request.Format,
                 result.Status, null, null, null, clock.Now, null, null, null, string.Empty);
 
-        return TypedResults.Created($"/jobs/{result.JobId}", response);
+        return TypedResults.Created($"jobs/{result.JobId}", response);
     }
 
     private static async Task<Results<Ok<ExportJobResponse>, ProblemHttpResult>> GetJobStatusAsync(

@@ -1,4 +1,5 @@
 using Granit.DataExchange.Endpoints.Dtos.Import;
+using Granit.DataExchange.Endpoints.Permissions;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Parsing;
 using Granit.DataExchange.Import.Pipeline;
@@ -27,7 +28,8 @@ internal static class ImportReportEndpoints
             .WithSummary("Returns the import execution report for a completed job.")
             .WithDescription("Returns the detailed execution report including total rows processed, success/failure counts, and per-row error details. Available after execution or dry-run completes. Returns 404 if the job does not exist or no report has been generated yet.")
             .Produces<ImportReportResponse>()
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(DataExchangePermissions.Imports.Read);
 
         group.MapGet("/{jobId:guid}/correction-file", GetCorrectionFileAsync)
             .WithName("GetImportCorrectionFile")
@@ -35,7 +37,8 @@ internal static class ImportReportEndpoints
             .WithDescription("Generates and streams a file containing only the rows that failed validation or import, annotated with error messages. The file format matches the original upload. Users can fix the errors and re-upload. Returns 204 if there are no failed rows, or 404 if the job or report does not exist.")
             .Produces(StatusCodes.Status200OK, contentType: "application/octet-stream")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(DataExchangePermissions.Imports.Read);
 
         return group;
     }

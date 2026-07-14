@@ -1,10 +1,10 @@
 {
   "culture": "it",
   "texts": {
-    "DataExchangeEndpoints:Workspace.Exports": "Exports",
-    "DataExchangeEndpoints:Workspace.Imports": "Imports",
-    "DataExchangeEndpoints:Workspace.Section": "Data exchange",
-    "Validation:AtLeastOneMappingTarget": "Almeno una mappatura deve avere una proprietà destinazione non nulla.",
+    "DataExchangeEndpoints:Workspace.Exports": "Esportazioni",
+    "DataExchangeEndpoints:Workspace.Imports": "Importazioni",
+    "DataExchangeEndpoints:Workspace.Section": "Scambio dati",
+    "DataExchange:Validation:AtLeastOneMappingTarget": "Almeno una mappatura deve avere una proprietà destinazione non nulla.",
     "Permission:DataExchange.Exports.Execute": "Eseguire esportazioni di dati (definizioni, esecuzione, download, preset)",
     "Permission:DataExchange.Exports.Read": "Visualizzare definizioni e cronologia delle esportazioni",
     "Permission:DataExchange.Imports.Execute": "Eseguire importazioni di dati (caricamento, mappatura, esecuzione, rapporti)",

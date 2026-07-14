@@ -9,8 +9,9 @@ namespace Granit.DataExchange.BlobStorage;
 /// Replaces the default in-memory <see cref="IDataExchangeFileProvider"/> with a
 /// concrete implementation backed by the registered <c>IBlobStoreProvider</c>.
 /// </summary>
-[DependsOn(typeof(GranitDataExchangeModule))]
-[DependsOn(typeof(GranitBlobStorageModule))]
+[DependsOn(
+    typeof(GranitBlobStorageModule),
+    typeof(GranitDataExchangeModule))]
 public sealed class GranitDataExchangeBlobStorageModule : GranitModule
 {
     /// <inheritdoc/>

@@ -48,7 +48,9 @@ public sealed class ImportJobListEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(DataExchangePermissions.Imports.Execute, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Imports.Execute))
-            .AddPolicy(DataExchangePermissions.Exports.Execute, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Exports.Execute));
+            .AddPolicy(DataExchangePermissions.Exports.Execute, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Exports.Execute))
+            .AddPolicy(DataExchangePermissions.Imports.Read, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Imports.Read))
+            .AddPolicy(DataExchangePermissions.Exports.Read, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Exports.Read));
         builder.Services.AddSingleton(_jobReader);
         builder.Services.AddSingleton(Substitute.For<IImportJobWriter>());
         builder.Services.AddSingleton(Substitute.For<IDataExchangeFileProvider>());
@@ -68,7 +70,7 @@ public sealed class ImportJobListEndpointsTests : IAsyncDisposable
         _app.MapGranitDataExchange();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _adminClient = BuildClient(DataExchangePermissions.Imports.Execute, DataExchangePermissions.Exports.Execute);
+        _adminClient = BuildClient(DataExchangePermissions.Imports.Execute, DataExchangePermissions.Exports.Execute, DataExchangePermissions.Imports.Read, DataExchangePermissions.Exports.Read);
         _userClient = BuildClient(DataExchangePermissions.Imports.Read);
         _anonClient = _app.GetTestClient();
     }
@@ -199,10 +201,28 @@ public sealed class ImportJobListEndpointsTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task List_wrong_role_returns_403()
+    public async Task List_with_read_only_permission_returns_200()
     {
+        // Arrange — Imports.Read is sufficient for this read-only endpoint (least-privilege).
+        _jobReader.ListAsync(null, 1, 20, Arg.Any<CancellationToken>())
+            .Returns(new PagedResult<ImportJob>([], 0, HasMore: false));
+
         // Act
         HttpResponseMessage response = await _userClient.GetAsync(
+            $"{ImportPrefix}/jobs", TestContext.Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task List_wrong_role_returns_403()
+    {
+        // Arrange — a role with no DataExchange.Imports.* grant at all.
+        HttpClient wrongRoleClient = BuildClient(DataExchangePermissions.Exports.Execute);
+
+        // Act
+        HttpResponseMessage response = await wrongRoleClient.GetAsync(
             $"{ImportPrefix}/jobs", TestContext.Current.CancellationToken);
 
         // Assert

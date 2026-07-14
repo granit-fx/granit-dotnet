@@ -1,10 +1,10 @@
 {
   "culture": "zh",
   "texts": {
-    "DataExchangeEndpoints:Workspace.Exports": "Exports",
-    "DataExchangeEndpoints:Workspace.Imports": "Imports",
-    "DataExchangeEndpoints:Workspace.Section": "Data exchange",
-    "Validation:AtLeastOneMappingTarget": "至少一个映射必须具有非空的目标属性。",
+    "DataExchangeEndpoints:Workspace.Exports": "导出",
+    "DataExchangeEndpoints:Workspace.Imports": "导入",
+    "DataExchangeEndpoints:Workspace.Section": "数据交换",
+    "DataExchange:Validation:AtLeastOneMappingTarget": "至少一个映射必须具有非空的目标属性。",
     "Permission:DataExchange.Exports.Execute": "执行数据导出（定义、执行、下载、预设）",
     "Permission:DataExchange.Exports.Read": "查看导出定义和历史",
     "Permission:DataExchange.Imports.Execute": "执行数据导入（上传、映射、执行、报告）",

@@ -1,5 +1,3 @@
-using Granit.DataExchange.Export;
-using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Internal;
 using Shouldly;
 using Xunit;
@@ -11,31 +9,32 @@ public sealed class NullExportJobStoreTests
     private readonly NullExportJobStore _store = new();
 
     [Fact]
-    public async Task GetAsync_ReturnsNull()
+    public async Task GetAsync_ThrowsNotImplementedException()
     {
-        ExportJob? result = await _store.GetAsync(
-            Guid.NewGuid(), TestContext.Current.CancellationToken);
-
-        result.ShouldBeNull();
+        await Should.ThrowAsync<NotImplementedException>(() =>
+            _store.GetAsync(Guid.NewGuid(), TestContext.Current.CancellationToken));
     }
 
     [Fact]
-    public async Task CreateAsync_DoesNotThrow()
+    public async Task CreateAsync_ThrowsNotImplementedException()
     {
-        var job = ExportJob.Create(Guid.NewGuid(), "Test", "csv",
-            new ExportRequest("Test", "csv", null, false, null, null, null, null));
-
-        await Should.NotThrowAsync(() =>
-            _store.CreateAsync(job, TestContext.Current.CancellationToken));
+        await Should.ThrowAsync<NotImplementedException>(() =>
+            _store.CreateAsync(null!, TestContext.Current.CancellationToken));
     }
 
     [Fact]
-    public async Task UpdateAsync_DoesNotThrow()
+    public async Task UpdateAsync_ThrowsNotImplementedException()
     {
-        var job = ExportJob.Create(Guid.NewGuid(), "Test", "csv",
-            new ExportRequest("Test", "csv", null, false, null, null, null, null));
+        await Should.ThrowAsync<NotImplementedException>(() =>
+            _store.UpdateAsync(null!, TestContext.Current.CancellationToken));
+    }
 
-        await Should.NotThrowAsync(() =>
-            _store.UpdateAsync(job, TestContext.Current.CancellationToken));
+    [Fact]
+    public async Task ExceptionMessage_ContainsGuidance()
+    {
+        NotImplementedException ex = await Should.ThrowAsync<NotImplementedException>(() =>
+            _store.GetAsync(Guid.NewGuid(), TestContext.Current.CancellationToken));
+
+        ex.Message.ShouldContain("Granit.DataExchange.EntityFrameworkCore");
     }
 }

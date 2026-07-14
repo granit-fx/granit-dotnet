@@ -1,11 +1,11 @@
 using Granit.DataExchange.Endpoints.Endpoints.Export;
 using Granit.DataExchange.Endpoints.Endpoints.Import;
 using Granit.DataExchange.Endpoints.Options;
-using Granit.DataExchange.Endpoints.Permissions;
 using Granit.Validation.AspNetCore;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Granit.DataExchange.Endpoints.Extensions;
 
@@ -19,8 +19,12 @@ public static class DataExchangeEndpointRouteBuilderExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Import endpoints require the <c>DataExchange.Imports.Execute</c> permission;
-    /// export endpoints require <c>DataExchange.Exports.Execute</c>.
+    /// Each route declares its own least-privilege permission: read-only GET endpoints
+    /// (job listing, status, report, correction file, export definitions/fields, preset
+    /// listing, download) require <c>DataExchange.Imports.Read</c> / <c>DataExchange.Exports.Read</c>;
+    /// mutating endpoints (upload, mapping confirmation, execution, dry-run, cancellation,
+    /// export job creation, preset save/delete) require <c>DataExchange.Imports.Execute</c> /
+    /// <c>DataExchange.Exports.Execute</c>.
     /// </para>
     /// <para>Call this from your application route registration:</para>
     /// <code>
@@ -33,7 +37,7 @@ public static class DataExchangeEndpointRouteBuilderExtensions
     /// });
     /// </code>
     /// <para>
-    /// Exposes 10 import endpoints: GET /jobs, POST /, POST /{jobId}/preview,
+    /// Exposes 10 import endpoints: GET /jobs, POST /jobs, POST /{jobId}/preview,
     /// PUT /{jobId}/mappings, POST /{jobId}/execute, POST /{jobId}/dry-run,
     /// GET /{jobId}, DELETE /{jobId}, GET /{jobId}/report, GET /{jobId}/correction-file.
     /// </para>
@@ -55,46 +59,37 @@ public static class DataExchangeEndpointRouteBuilderExtensions
         this IEndpointRouteBuilder endpoints,
         Action<DataExchangeEndpointsOptions>? configure = null)
     {
-        DataExchangeEndpointsOptions options = new();
+        DataExchangeEndpointsOptions options = endpoints.ServiceProvider
+            .GetService<IOptions<DataExchangeEndpointsOptions>>()?.Value
+            ?? new DataExchangeEndpointsOptions();
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
-        // Import endpoints (listing, upload, mappings, execution, reports)
-        RouteGroupBuilder importGroup = group
-            .MapGranitGroup("import")
-            .RequireAuthorization(DataExchangePermissions.Imports.Execute);
+        // Import endpoints (listing, upload, mappings, execution, reports).
+        // Each route declares its own Imports.Read (GET) or Imports.Execute (mutation) permission.
+        RouteGroupBuilder importGroup = group.MapGranitGroup("import");
 
         importGroup.MapImportJobListEndpoints();
         importGroup.MapUploadEndpoints();
         importGroup.MapExecutionEndpoints();
         importGroup.MapReportEndpoints();
 
-        // Export job endpoints under /export/ sub-group
-        RouteGroupBuilder exportGroup = group
-            .MapGranitGroup("export")
-            .RequireAuthorization(DataExchangePermissions.Exports.Execute);
+        // Export job endpoints under /export/ sub-group.
+        // Each route declares its own Exports.Read (GET) or Exports.Execute (mutation) permission.
+        RouteGroupBuilder exportGroup = group.MapGranitGroup("export");
 
         exportGroup.MapExportJobListEndpoints();
         exportGroup.MapExportExecutionEndpoints();
 
-        // Shared metadata (definitions, presets) under /metadata/
-        // Export-specific write operations require DataExchange.Exports.Execute
-        RouteGroupBuilder metadataGroup = group
-            .MapGranitGroup("metadata")
-            .RequireAuthorization();
+        // Shared metadata (definitions, presets) under /metadata/.
+        // Each route declares its own Exports.Read (GET) or Exports.Execute (mutation) permission.
+        RouteGroupBuilder metadataGroup = group.MapGranitGroup("metadata");
 
         metadataGroup.MapExportDefinitionEndpoints();
-
-        // Empty sub-group to isolate authorization without adding a route segment.
-        // Preset endpoints already include /presets/ in their individual paths.
-        RouteGroupBuilder presetGroup = metadataGroup
-            .MapGranitGroup(string.Empty)
-            .RequireAuthorization(DataExchangePermissions.Exports.Execute);
-
-        presetGroup.MapExportPresetEndpoints();
+        metadataGroup.MapExportPresetEndpoints();
 
         return group;
     }

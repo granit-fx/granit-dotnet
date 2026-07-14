@@ -1,5 +1,5 @@
 using Granit.DataExchange.Endpoints.Dtos.Export;
-using Granit.DataExchange.Endpoints.Internal.Export;
+using Granit.DataExchange.Endpoints.Permissions;
 using Granit.DataExchange.Export;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -23,26 +23,27 @@ internal static class ExportDefinitionEndpoints
             .WithName("ListExportDefinitions")
             .WithSummary("Lists all registered export definitions.")
             .WithDescription("Returns all export definitions registered by application modules. Each definition describes an exportable dataset, its supported output formats, and metadata. Use the fields endpoint to discover selectable columns for a specific definition.")
-            .Produces<IReadOnlyList<ExportDefinitionResponse>>();
+            .Produces<IReadOnlyList<ExportDefinitionResponse>>()
+            .RequireAuthorization(DataExchangePermissions.Exports.Read);
 
         group.MapGet("/definitions/{name}/fields", GetFields)
             .WithName("GetExportDefinitionFields")
             .WithSummary("Returns the available fields for a given export definition.")
             .WithDescription("Returns the list of selectable fields for the named export definition — each with its property name, display label, and data type. Use this to populate a field picker UI before creating an export job. Returns 404 if the definition name is not registered.")
             .Produces<IReadOnlyList<ExportFieldResponse>>()
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(DataExchangePermissions.Exports.Read);
 
         return group;
     }
 
     private static Ok<IReadOnlyList<ExportDefinitionResponse>> ListDefinitions(
-        [FromServices] IServiceProvider serviceProvider,
+        [FromServices] IExportDefinitionProvider definitionProvider,
         [FromServices] IEnumerable<IExportWriter> writers)
     {
         IExportWriter[] writerArray = writers.ToArray();
 
-        IEnumerable<IExportDefinitionDescriptor> descriptors =
-            ExportDefinitionResolver.GetAll(serviceProvider);
+        IReadOnlyList<IExportDefinitionDescriptor> descriptors = definitionProvider.GetAll();
 
         IReadOnlyList<ExportDefinitionResponse> response = descriptors
             .Select(d => ExportDefinitionResponse.FromDescriptor(d, writerArray))
@@ -54,10 +55,9 @@ internal static class ExportDefinitionEndpoints
 
     private static Results<Ok<IReadOnlyList<ExportFieldResponse>>, ProblemHttpResult> GetFields(
         string name,
-        [FromServices] IServiceProvider serviceProvider)
+        [FromServices] IExportDefinitionProvider definitionProvider)
     {
-        IExportDefinitionDescriptor? descriptor =
-            ExportDefinitionResolver.FindByName(serviceProvider, name);
+        IExportDefinitionDescriptor? descriptor = definitionProvider.FindByName(name);
         if (descriptor is null)
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);

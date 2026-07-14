@@ -4,7 +4,7 @@
     "DataExchangeEndpoints:Workspace.Exports": "Exports",
     "DataExchangeEndpoints:Workspace.Imports": "Imports",
     "DataExchangeEndpoints:Workspace.Section": "Data exchange",
-    "Validation:AtLeastOneMappingTarget": "At least one mapping must have a non-null target property.",
+    "DataExchange:Validation:AtLeastOneMappingTarget": "At least one mapping must have a non-null target property.",
     "Permission:DataExchange.Exports.Execute": "Execute data exports (definitions, execution, download, presets)",
     "Permission:DataExchange.Exports.Read": "View data export definitions and history",
     "Permission:DataExchange.Imports.Execute": "Execute data imports (upload, mapping, execution, reports)",

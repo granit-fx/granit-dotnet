@@ -1,10 +1,10 @@
 {
   "culture": "hi",
   "texts": {
-    "DataExchangeEndpoints:Workspace.Exports": "Exports",
-    "DataExchangeEndpoints:Workspace.Imports": "Imports",
-    "DataExchangeEndpoints:Workspace.Section": "Data exchange",
-    "Validation:AtLeastOneMappingTarget": "कम से कम एक मैपिंग में नॉन-नल लक्ष्य प्रॉपर्टी होनी चाहिए।",
+    "DataExchangeEndpoints:Workspace.Exports": "निर्यात",
+    "DataExchangeEndpoints:Workspace.Imports": "आयात",
+    "DataExchangeEndpoints:Workspace.Section": "डेटा एक्सचेंज",
+    "DataExchange:Validation:AtLeastOneMappingTarget": "कम से कम एक मैपिंग में नॉन-नल लक्ष्य प्रॉपर्टी होनी चाहिए।",
     "Permission:DataExchange.Exports.Execute": "डेटा निर्यात करें (परिभाषाएँ, निष्पादन, डाउनलोड, प्रीसेट)",
     "Permission:DataExchange.Exports.Read": "डेटा निर्यात परिभाषाएँ और इतिहास देखें",
     "Permission:DataExchange.Imports.Execute": "डेटा आयात करें (अपलोड, मैपिंग, निष्पादन, रिपोर्ट)",

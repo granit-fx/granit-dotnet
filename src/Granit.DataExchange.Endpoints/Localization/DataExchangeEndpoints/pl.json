@@ -1,10 +1,10 @@
 {
   "culture": "pl",
   "texts": {
-    "DataExchangeEndpoints:Workspace.Exports": "Exports",
-    "DataExchangeEndpoints:Workspace.Imports": "Imports",
-    "DataExchangeEndpoints:Workspace.Section": "Data exchange",
-    "Validation:AtLeastOneMappingTarget": "Co najmniej jedno mapowanie musi mieć niepustą właściwość docelową.",
+    "DataExchangeEndpoints:Workspace.Exports": "Eksporty",
+    "DataExchangeEndpoints:Workspace.Imports": "Importy",
+    "DataExchangeEndpoints:Workspace.Section": "Wymiana danych",
+    "DataExchange:Validation:AtLeastOneMappingTarget": "Co najmniej jedno mapowanie musi mieć niepustą właściwość docelową.",
     "Permission:DataExchange.Exports.Execute": "Wykonywanie eksportu danych (definicje, wykonanie, pobieranie, szablony)",
     "Permission:DataExchange.Exports.Read": "Przeglądanie definicji i historii eksportów",
     "Permission:DataExchange.Imports.Execute": "Wykonywanie importu danych (przesyłanie, mapowanie, wykonanie, raporty)",

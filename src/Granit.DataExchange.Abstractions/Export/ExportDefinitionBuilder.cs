@@ -179,7 +179,7 @@ public sealed class ExportDefinitionBuilder<TEntity> where TEntity : class
             _ => null,
         };
 
-        if (member is null)
+        if (member is null || member.Expression is not ParameterExpression)
         {
             throw new ArgumentException(
                 "Expression must be a simple property access (e.g. x => x.Name).",

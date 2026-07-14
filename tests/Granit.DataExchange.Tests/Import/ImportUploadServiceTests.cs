@@ -3,7 +3,6 @@ using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Internal;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.Guids;
-using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
@@ -16,7 +15,6 @@ public sealed class ImportUploadServiceTests
     private readonly IDataExchangeFileProvider _fileProvider = Substitute.For<IDataExchangeFileProvider>();
     private readonly IImportJobWriter _jobWriter = Substitute.For<IImportJobWriter>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
-    private readonly IClock _clock = Substitute.For<IClock>();
     private readonly IImportPipelineRegistry _registry = Substitute.For<IImportPipelineRegistry>();
     private readonly IImportDefinitionDescriptor _descriptor = Substitute.For<IImportDefinitionDescriptor>();
     private readonly ImportUploadService _sut;
@@ -36,7 +34,6 @@ public sealed class ImportUploadServiceTests
         _registry.GetAll().Returns([pipelineDescriptor]);
 
         _guidGenerator.Create().Returns(Guid.NewGuid());
-        _clock.Now.Returns(new DateTimeOffset(2026, 4, 5, 12, 0, 0, TimeSpan.Zero));
         _fileProvider.SaveAsync(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
             .Returns(Granit.Domain.ValueObjects.BlobReference.Create("blob://test/file.csv"));
 
@@ -45,7 +42,6 @@ public sealed class ImportUploadServiceTests
             _fileProvider,
             _jobWriter,
             _guidGenerator,
-            _clock,
             NullLogger<ImportUploadService>.Instance);
     }
 
@@ -168,23 +164,6 @@ public sealed class ImportUploadServiceTests
         result.Succeeded.ShouldBeTrue();
         result.Job!.OriginalFileName.ShouldBe("passwd");
         await _fileProvider.Received(1).SaveAsync("passwd", stream, Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task UploadAsync_SetsCreatedAtFromClock()
-    {
-        // Arrange
-        var expectedTime = new DateTimeOffset(2026, 1, 15, 8, 30, 0, TimeSpan.Zero);
-        _clock.Now.Returns(expectedTime);
-        await using var stream = new MemoryStream("data"u8.ToArray());
-
-        // Act
-        ImportUploadResult result = await _sut.UploadAsync(
-            "file.csv", "text/csv", 4, stream, "Patients",
-            TestContext.Current.CancellationToken);
-
-        // Assert
-        result.Job!.CreatedAt.ShouldBe(expectedTime);
     }
 
     [Fact]

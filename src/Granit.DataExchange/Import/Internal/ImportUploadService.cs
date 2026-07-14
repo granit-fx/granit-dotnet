@@ -2,7 +2,6 @@ using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.Domain.ValueObjects;
 using Granit.Guids;
-using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.DataExchange.Import.Internal;
@@ -16,7 +15,6 @@ internal sealed partial class ImportUploadService(
     IDataExchangeFileProvider fileProvider,
     IImportJobWriter jobWriter,
     IGuidGenerator guidGenerator,
-    IClock clock,
     ILogger<ImportUploadService> logger) : IImportUploadService
 {
     /// <inheritdoc/>
@@ -67,7 +65,6 @@ internal sealed partial class ImportUploadService(
             contentType,
             fileSize,
             blobReference);
-        job.CreatedAt = clock.Now;
 
         await jobWriter.CreateAsync(job, cancellationToken).ConfigureAwait(false);
         LogImportJobCreated(logger, job.Id, definitionName, safeFileName);

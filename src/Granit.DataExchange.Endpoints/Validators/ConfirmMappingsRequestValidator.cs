@@ -18,7 +18,7 @@ internal sealed class ConfirmMappingsRequestValidator : GranitValidator<ConfirmM
         RuleFor(x => x.Mappings)
             .NotEmpty()
             .Must(m => m.Any(mapping => mapping.TargetProperty is not null))
-            .WithErrorCodeAndMessage("Validation:AtLeastOneMappingTarget");
+            .WithErrorCodeAndMessage("DataExchange:Validation:AtLeastOneMappingTarget");
 
         RuleForEach(x => x.Mappings).ChildRules(mapping =>
         {

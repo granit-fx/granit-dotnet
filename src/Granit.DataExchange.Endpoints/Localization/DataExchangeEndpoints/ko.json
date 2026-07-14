@@ -1,10 +1,10 @@
 {
   "culture": "ko",
   "texts": {
-    "DataExchangeEndpoints:Workspace.Exports": "Exports",
-    "DataExchangeEndpoints:Workspace.Imports": "Imports",
-    "DataExchangeEndpoints:Workspace.Section": "Data exchange",
-    "Validation:AtLeastOneMappingTarget": "하나 이상의 매핑에 null이 아닌 대상 속성이 있어야 합니다.",
+    "DataExchangeEndpoints:Workspace.Exports": "내보내기",
+    "DataExchangeEndpoints:Workspace.Imports": "가져오기",
+    "DataExchangeEndpoints:Workspace.Section": "데이터 교환",
+    "DataExchange:Validation:AtLeastOneMappingTarget": "하나 이상의 매핑에 null이 아닌 대상 속성이 있어야 합니다.",
     "Permission:DataExchange.Exports.Execute": "데이터 내보내기 실행 (정의, 실행, 다운로드, 프리셋)",
     "Permission:DataExchange.Exports.Read": "내보내기 정의 및 이력 조회",
     "Permission:DataExchange.Imports.Execute": "데이터 가져오기 실행 (업로드, 매핑, 실행, 보고서)",

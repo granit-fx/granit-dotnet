@@ -58,11 +58,18 @@ public sealed class ExportExecutionEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(DataExchangePermissions.Imports.Execute, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Imports.Execute))
-            .AddPolicy(DataExchangePermissions.Exports.Execute, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Exports.Execute));
+            .AddPolicy(DataExchangePermissions.Exports.Execute, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Exports.Execute))
+            .AddPolicy(DataExchangePermissions.Imports.Read, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Imports.Read))
+            .AddPolicy(DataExchangePermissions.Exports.Read, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Exports.Read));
         builder.Services.AddSingleton(_orchestrator);
         builder.Services.AddSingleton(_presetReader);
         builder.Services.AddSingleton(_presetWriter);
         builder.Services.AddSingleton(_descriptor);
+        IExportDefinitionProvider definitionProvider = Substitute.For<IExportDefinitionProvider>();
+        definitionProvider.FindByName(Arg.Any<string>()).Returns((IExportDefinitionDescriptor?)null);
+        definitionProvider.FindByName(_descriptor.Name).Returns(_descriptor);
+        definitionProvider.GetAll().Returns([_descriptor]);
+        builder.Services.AddSingleton(definitionProvider);
         builder.Services.AddSingleton(Substitute.For<IExportJobReader>());
 
         // Required by import endpoints (compiled at startup)
@@ -79,7 +86,7 @@ public sealed class ExportExecutionEndpointsTests : IAsyncDisposable
         _app.MapGranitDataExchange();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _adminClient = BuildClient(DataExchangePermissions.Imports.Execute, DataExchangePermissions.Exports.Execute);
+        _adminClient = BuildClient(DataExchangePermissions.Imports.Execute, DataExchangePermissions.Exports.Execute, DataExchangePermissions.Imports.Read, DataExchangePermissions.Exports.Read);
         _userClient = BuildClient(DataExchangePermissions.Imports.Read);
         _anonClient = _app.GetTestClient();
     }

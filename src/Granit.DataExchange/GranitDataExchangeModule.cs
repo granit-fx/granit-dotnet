@@ -28,6 +28,7 @@ namespace Granit.DataExchange;
 /// </para>
 /// </remarks>
 [DependsOn(
+    typeof(GranitDataExchangeAbstractionsModule),
     typeof(GranitEventsModule),
     typeof(GranitGuidsModule),
     typeof(GranitQueryEngineAbstractionsModule),

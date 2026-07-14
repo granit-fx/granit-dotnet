@@ -22,7 +22,7 @@ internal sealed class DataExchangeSchemaExampleProvider : ISchemaExampleProvider
                     {
                         ["sourceColumn"] = "Nom",
                         ["targetProperty"] = "LastName",
-                        ["confidence"] = 0.95,
+                        ["confidence"] = "Exact",
                     },
                 },
             },

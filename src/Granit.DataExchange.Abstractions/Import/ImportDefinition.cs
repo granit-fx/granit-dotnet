@@ -30,7 +30,18 @@ namespace Granit.DataExchange.Import;
 /// </remarks>
 public abstract class ImportDefinition<TEntity> : IImportDefinitionDescriptor where TEntity : class
 {
-    private ImportDefinitionBuilder<TEntity>? _builder;
+    // Lazy<T> (default ExecutionAndPublication mode) ensures a concurrent reader can never
+    // observe a half-built definition: only one thread runs Configure, and every caller
+    // blocks until it completes, instead of racing on a plain nullable-backed cache field.
+    private readonly Lazy<ImportDefinitionBuilder<TEntity>> _builder;
+
+    protected ImportDefinition() =>
+        _builder = new Lazy<ImportDefinitionBuilder<TEntity>>(() =>
+        {
+            ImportDefinitionBuilder<TEntity> builder = new();
+            Configure(builder);
+            return builder;
+        });
 
     /// <summary>
     /// Unique name identifying this import definition (e.g. <c>"Acme.PatientImport"</c>).
@@ -64,19 +75,9 @@ public abstract class ImportDefinition<TEntity> : IImportDefinitionDescriptor wh
     protected abstract void Configure(ImportDefinitionBuilder<TEntity> builder);
 
     /// <summary>
-    /// Gets the built definition metadata (lazily initialized).
+    /// Gets the built definition metadata (lazily initialized, thread-safe).
     /// </summary>
-    internal ImportDefinitionBuilder<TEntity> GetBuilder()
-    {
-        if (_builder is not null)
-        {
-            return _builder;
-        }
-
-        _builder = new ImportDefinitionBuilder<TEntity>();
-        Configure(_builder);
-        return _builder;
-    }
+    internal ImportDefinitionBuilder<TEntity> GetBuilder() => _builder.Value;
 
     /// <summary>
     /// Gets the declared importable properties.

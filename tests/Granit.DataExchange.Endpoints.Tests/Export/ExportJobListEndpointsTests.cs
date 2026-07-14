@@ -47,7 +47,9 @@ public sealed class ExportJobListEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(DataExchangePermissions.Imports.Execute, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Imports.Execute))
-            .AddPolicy(DataExchangePermissions.Exports.Execute, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Exports.Execute));
+            .AddPolicy(DataExchangePermissions.Exports.Execute, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Exports.Execute))
+            .AddPolicy(DataExchangePermissions.Imports.Read, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Imports.Read))
+            .AddPolicy(DataExchangePermissions.Exports.Read, policy => policy.RequireClaim(TestAuthHandler.PermissionClaimType, DataExchangePermissions.Exports.Read));
         builder.Services.AddSingleton(_jobReader);
         builder.Services.AddSingleton(Substitute.For<IExportOrchestrator>());
         builder.Services.AddSingleton(Substitute.For<IExportPresetReader>());
@@ -67,7 +69,7 @@ public sealed class ExportJobListEndpointsTests : IAsyncDisposable
         _app.MapGranitDataExchange();
         _app.StartAsync().GetAwaiter().GetResult();
 
-        _adminClient = BuildClient(DataExchangePermissions.Imports.Execute, DataExchangePermissions.Exports.Execute);
+        _adminClient = BuildClient(DataExchangePermissions.Imports.Execute, DataExchangePermissions.Exports.Execute, DataExchangePermissions.Imports.Read, DataExchangePermissions.Exports.Read);
         _userClient = BuildClient(DataExchangePermissions.Imports.Read);
         _anonClient = _app.GetTestClient();
     }

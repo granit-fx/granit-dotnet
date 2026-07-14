@@ -1,10 +1,10 @@
 {
   "culture": "nl",
   "texts": {
-    "DataExchangeEndpoints:Workspace.Exports": "Exports",
-    "DataExchangeEndpoints:Workspace.Imports": "Imports",
-    "DataExchangeEndpoints:Workspace.Section": "Data exchange",
-    "Validation:AtLeastOneMappingTarget": "Minstens één toewijzing moet een niet-null doeleigenschap hebben.",
+    "DataExchangeEndpoints:Workspace.Exports": "Exporten",
+    "DataExchangeEndpoints:Workspace.Imports": "Importen",
+    "DataExchangeEndpoints:Workspace.Section": "Gegevensuitwisseling",
+    "DataExchange:Validation:AtLeastOneMappingTarget": "Minstens één toewijzing moet een niet-null doeleigenschap hebben.",
     "Permission:DataExchange.Exports.Execute": "Gegevensexports uitvoeren (definities, uitvoering, download, presets)",
     "Permission:DataExchange.Exports.Read": "Exportdefinities en geschiedenis bekijken",
     "Permission:DataExchange.Imports.Execute": "Gegevensimports uitvoeren (upload, mapping, uitvoering, rapporten)",

@@ -834,7 +834,6 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.DataExchange",
-        "Granit.Guids",
         "Granit.Validation",
         "Granit.Workspaces.Abstractions"
       ],
@@ -16542,7 +16541,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.BlobStorage",
       "file": "src/Granit.DataExchange.BlobStorage/GranitDataExchangeBlobStorageModule.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -16727,7 +16726,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/GranitDataExchangeEndpointsModule.cs",
-      "line": 27,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
@@ -16999,6 +16998,12 @@
           "returnType": "IReadOnlyList<string>"
         },
         {
+          "name": "GetFields",
+          "kind": "method",
+          "signature": "GetFields()",
+          "returnType": "IReadOnlyList<ExportFieldDescriptor>"
+        },
+        {
           "name": "GetIncludeId",
           "kind": "method",
           "signature": "GetIncludeId()",
@@ -17115,15 +17120,8 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/ExportOptions.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "BackgroundThreshold",
-          "kind": "property",
-          "signature": "int BackgroundThreshold",
-          "returnType": "int"
-        }
-      ]
+      "line": 9,
+      "members": []
     },
     {
       "name": "ExportOrchestrator",
@@ -17637,7 +17635,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/GranitDataExchangeModule.cs",
-      "line": 36,
+      "line": 37,
       "members": [
         {
           "name": "ConfigureServices",
@@ -18041,6 +18039,12 @@
           "kind": "property",
           "signature": "IReadOnlyList<string> AllowedMimeTypes",
           "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "GetProperties",
+          "kind": "method",
+          "signature": "GetProperties()",
+          "returnType": "IReadOnlyList<PropertyMapping>"
         },
         {
           "name": "GetFieldMetadata",

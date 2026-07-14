@@ -1,4 +1,5 @@
 using Granit.DataExchange.Endpoints.Dtos.Import;
+using Granit.DataExchange.Endpoints.Permissions;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Pipeline;
 using Microsoft.AspNetCore.Builder;
@@ -15,7 +16,7 @@ namespace Granit.DataExchange.Endpoints.Endpoints.Import;
 internal static class ImportUploadEndpoints
 {
     /// <summary>
-    /// Registers POST /, POST /{jobId}/preview, PUT /{jobId}/mappings onto the given route group.
+    /// Registers POST /jobs, POST /{jobId}/preview, PUT /{jobId}/mappings onto the given route group.
     /// </summary>
     internal static RouteGroupBuilder MapUploadEndpoints(this RouteGroupBuilder group)
     {
@@ -25,14 +26,16 @@ internal static class ImportUploadEndpoints
             .WithDescription("Accepts a multipart/form-data upload with the file and a definitionName field. Validates MIME type and file size against the import definition's constraints. Creates an import job in 'Created' status. The next step is to call the preview endpoint to inspect headers and mapping suggestions.")
             .Produces<ImportJobResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .DisableAntiforgery();
+            .DisableAntiforgery()
+            .RequireAuthorization(DataExchangePermissions.Imports.Execute);
 
         group.MapPost("/{jobId:guid}/preview", PreviewAsync)
             .WithName("PreviewImportJob")
             .WithSummary("Extracts headers, preview rows, and mapping suggestions for an import job.")
             .WithDescription("Parses the uploaded file to extract column headers, a preview of the first rows, available target field metadata, and AI-assisted mapping suggestions. Transitions the job to 'Previewed' status. Returns 404 if the job does not exist.")
             .Produces<ImportPreviewResponse>()
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(DataExchangePermissions.Imports.Execute);
 
         group.MapPut("/{jobId:guid}/mappings", ConfirmMappingsAsync)
             .WithName("ConfirmImportMappings")
@@ -41,7 +44,8 @@ internal static class ImportUploadEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status409Conflict);
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .RequireAuthorization(DataExchangePermissions.Imports.Execute);
 
         return group;
     }
@@ -64,7 +68,7 @@ internal static class ImportUploadEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        return TypedResults.Created($"/data-exchange/import/{result.Job!.Id}", ImportJobResponse.FromJob(result.Job));
+        return TypedResults.Created($"{result.Job!.Id}", ImportJobResponse.FromJob(result.Job));
     }
 
     private static async Task<Results<Ok<ImportPreviewResponse>, ProblemHttpResult>> PreviewAsync(

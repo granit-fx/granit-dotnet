@@ -1,4 +1,5 @@
 using Granit.DataExchange.Endpoints.Dtos.Export;
+using Granit.DataExchange.Endpoints.Permissions;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.QueryEngine;
@@ -23,8 +24,9 @@ internal static class ExportJobListEndpoints
         group.MapGet("/jobs", ListAsync)
             .WithName("ListExportJobs")
             .WithSummary("Lists export jobs with optional status filter and pagination.")
-            .WithDescription("Returns a paginated list of export jobs ordered by creation date descending. Supports filtering by job status (Created, Processing, Completed, Failed). Intended for admin dashboards monitoring export activity.")
-            .Produces<PagedResult<ExportJobResponse>>();
+            .WithDescription("Returns a paginated list of export jobs ordered by creation date descending. Supports filtering by job status (Queued, Exporting, Completed, Failed). Intended for admin dashboards monitoring export activity.")
+            .Produces<PagedResult<ExportJobResponse>>()
+            .RequireAuthorization(DataExchangePermissions.Exports.Read);
 
         return group;
     }

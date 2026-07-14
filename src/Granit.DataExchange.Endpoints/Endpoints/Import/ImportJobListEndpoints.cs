@@ -1,4 +1,5 @@
 using Granit.DataExchange.Endpoints.Dtos.Import;
+using Granit.DataExchange.Endpoints.Permissions;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.QueryEngine;
@@ -24,7 +25,8 @@ internal static class ImportJobListEndpoints
             .WithName("ListImportJobs")
             .WithSummary("Lists import jobs with optional status filter and pagination.")
             .WithDescription("Returns a paginated list of import jobs ordered by creation date descending. Supports filtering by job status. Intended for admin dashboards monitoring import activity.")
-            .Produces<PagedResult<ImportJobResponse>>();
+            .Produces<PagedResult<ImportJobResponse>>()
+            .RequireAuthorization(DataExchangePermissions.Imports.Read);
 
         return group;
     }

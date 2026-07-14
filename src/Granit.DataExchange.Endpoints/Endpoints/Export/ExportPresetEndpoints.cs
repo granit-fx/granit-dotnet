@@ -1,6 +1,6 @@
 using Granit.Authorization.Extensions;
 using Granit.DataExchange.Endpoints.Dtos.Export;
-using Granit.DataExchange.Endpoints.Internal.Export;
+using Granit.DataExchange.Endpoints.Permissions;
 using Granit.DataExchange.Export;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -26,21 +26,24 @@ internal static class ExportPresetEndpoints
             .WithSummary("Lists saved export presets for a given definition.")
             .WithDescription("Returns all saved export presets for the given export definition. Presets store a reusable field selection, output format, and sorting configuration so users can quickly re-export without reconfiguring.")
             .Produces<IReadOnlyList<ExportPresetResponse>>()
-            .AllowHostAccess();
+            .AllowHostAccess()
+            .RequireAuthorization(DataExchangePermissions.Exports.Read);
 
         group.MapPost("/presets", SavePresetAsync)
             .WithName("SaveExportPreset")
             .WithSummary("Saves or updates an export preset.")
             .WithDescription("Creates or updates a named preset for the given export definition. If a preset with the same definition and name already exists, it is overwritten. The definition name must reference a registered export definition. At least one selected field is required.")
             .Produces(StatusCodes.Status201Created)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .RequireAuthorization(DataExchangePermissions.Exports.Execute);
 
         group.MapDelete("/presets/{definitionName}/{presetName}", DeletePresetAsync)
             .WithName("DeleteExportPreset")
             .WithSummary("Deletes a saved export preset.")
             .WithDescription("Permanently removes the named export preset. Returns 404 if the preset does not exist.")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(DataExchangePermissions.Exports.Execute);
 
         return group;
     }
@@ -64,11 +67,10 @@ internal static class ExportPresetEndpoints
     private static async Task<Results<Created, ProblemHttpResult>> SavePresetAsync(
         SaveExportPresetRequest request,
         [FromServices] IExportPresetWriter presetWriter,
-        [FromServices] IServiceProvider serviceProvider,
+        [FromServices] IExportDefinitionProvider definitionProvider,
         CancellationToken cancellationToken)
     {
-        IExportDefinitionDescriptor? descriptor =
-            ExportDefinitionResolver.FindByName(serviceProvider, request.DefinitionName);
+        IExportDefinitionDescriptor? descriptor = definitionProvider.FindByName(request.DefinitionName);
         if (descriptor is null)
         {
             return TypedResults.Problem(
@@ -99,7 +101,7 @@ internal static class ExportPresetEndpoints
 
         await presetWriter.SaveAsync(preset, cancellationToken).ConfigureAwait(false);
 
-        return TypedResults.Created($"/presets/{request.DefinitionName}");
+        return TypedResults.Created($"presets/{request.DefinitionName}");
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> DeletePresetAsync(
