@@ -45,8 +45,8 @@
       "System.Composition.AttributedModel": {
         "type": "Direct",
         "requested": "[9.*, )",
-        "resolved": "9.0.17",
-        "contentHash": "mNrWk7IdZJsN3dgpH9ydkx9IachioF56GANMU2rb2PBXzBfvt1QQ7avm7WENXAZ41qNmt2XhLW9X6mNS5JmT3g=="
+        "resolved": "9.0.18",
+        "contentHash": "ZAq7HYk+wFdk/UUpvDy0S1adas7cQI6ZxDqK3wvw8Bv92sL/JFJfcJenNYX0VYFNZrPHRPZQ7SsLvNmev1E0FQ=="
       },
       "Humanizer.Core": {
         "type": "Transitive",

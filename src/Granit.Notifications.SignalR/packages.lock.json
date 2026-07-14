@@ -15,10 +15,10 @@
       "Microsoft.AspNetCore.SignalR.StackExchangeRedis": {
         "type": "Direct",
         "requested": "[10.*, )",
-        "resolved": "10.0.9",
-        "contentHash": "/SYWdoRSmisGd2At8cJDA3/zfsw1A0eysPEROzgqNIfPPYfLzlb4Ta6wa6KIcNfRuVO5fFAkmICwLo14OVQ4Ag==",
+        "resolved": "10.0.10",
+        "contentHash": "mC/dQrt0Etdc9B1hdNy7KDO/E43FfhzHgMajw6Lupryp8XL7B7/3aEN3Zqfagz7LKTbDZadfMvT+XG8flLkKJA==",
         "dependencies": {
-          "MessagePack": "2.5.301",
+          "MessagePack": "2.5.302",
           "StackExchange.Redis": "2.7.27"
         }
       },

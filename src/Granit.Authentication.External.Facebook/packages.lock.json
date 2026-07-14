@@ -5,8 +5,8 @@
       "Microsoft.AspNetCore.Authentication.Facebook": {
         "type": "Direct",
         "requested": "[10.*, )",
-        "resolved": "10.0.9",
-        "contentHash": "rVcrrkOnVmo2R7EH66dmR/znYaJluqO7LukiGClyzxo4C3R/YkkLmgEXhoYI5pAIQ2mj+2iryeG9jnZ9kwYciw=="
+        "resolved": "10.0.10",
+        "contentHash": "zOi8BQ51ln0NgQMwbLX/Y6w425TQo1+YiRX+r5B8HRpWNYuYZ4Y7fkG/0AWRYZmH84lRjxASAeOgt2kiPJqDow=="
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
         "type": "Direct",

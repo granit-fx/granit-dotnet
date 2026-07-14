@@ -194,8 +194,8 @@
       "Microsoft.Extensions.Caching.StackExchangeRedis": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.9",
-        "contentHash": "PkscI6VZkG+dVvKSPoR8eq/l3zl1ONPio4286+rvB/hVh2a50Du7w9jqbTWknggKobb+WnODdd4RZzSVY4Ir5g==",
+        "resolved": "10.0.10",
+        "contentHash": "E+3pfEY68WQh1ZVFTGDNK0JCoayzL3aIDgVHHM85HIbQO7MiABG14A7+ajHH2P/y3a4W2Rla5p2nzut3+mzoyQ==",
         "dependencies": {
           "StackExchange.Redis": "2.7.27"
         }
