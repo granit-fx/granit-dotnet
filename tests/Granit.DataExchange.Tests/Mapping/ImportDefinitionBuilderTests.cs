@@ -101,40 +101,6 @@ public sealed class ImportDefinitionBuilderTests
     }
 
     [Fact]
-    public void GroupBy_sets_column_name()
-    {
-        // Arrange
-        ImportDefinitionBuilder<TestEntity> builder = new();
-
-        // Act
-        builder.GroupBy("OrderNumber");
-
-        // Assert
-        builder.GroupByColumn.ShouldBe("OrderNumber");
-    }
-
-    [Fact]
-    public void HasMany_registers_child_properties()
-    {
-        // Arrange
-        ImportDefinitionBuilder<TestParentEntity> builder = new();
-
-        // Act
-        builder.HasMany(e => e.Lines, child =>
-        {
-            child.Property(l => l.ProductName, p => p.DisplayName("Produit"));
-            child.Property(l => l.Quantity, p => p.DisplayName("Quantité"));
-        });
-
-        // Assert
-        builder.Properties.Count.ShouldBe(2);
-        builder.Properties[0].PropertyPath.ShouldBe("Lines.ProductName");
-        builder.Properties[0].DisplayName.ShouldBe("Produit");
-        builder.Properties[0].IsChildCollection.ShouldBeTrue();
-        builder.Properties[1].PropertyPath.ShouldBe("Lines.Quantity");
-    }
-
-    [Fact]
     public void Property_with_invalid_expression_throws()
     {
         // Arrange
@@ -170,16 +136,4 @@ public sealed class TestEntity
     public string Email { get; set; } = string.Empty;
     public DateTimeOffset BirthDate { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
-}
-
-public sealed class TestParentEntity
-{
-    public string OrderNumber { get; set; } = string.Empty;
-    public ICollection<TestLineEntity> Lines { get; set; } = [];
-}
-
-public sealed class TestLineEntity
-{
-    public string ProductName { get; set; } = string.Empty;
-    public int Quantity { get; set; }
 }

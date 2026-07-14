@@ -49,18 +49,6 @@ public sealed class PropertyMappingToFieldMetadataTests
     }
 
     [Fact]
-    public void PropertyMapping_IsChildCollection_DefaultIsFalse()
-    {
-        PropertyMapping mapping = new()
-        {
-            PropertyPath = "Name",
-            ClrTypeName = "String",
-        };
-
-        mapping.IsChildCollection.ShouldBeFalse();
-    }
-
-    [Fact]
     public void PropertyMapping_Aliases_DefaultsToEmpty()
     {
         PropertyMapping mapping = new()

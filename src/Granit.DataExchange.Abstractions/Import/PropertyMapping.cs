@@ -26,9 +26,6 @@ public sealed class PropertyMapping
     /// <summary>Expected format for type conversion, or <c>null</c>.</summary>
     public string? Format { get; init; }
 
-    /// <summary>Whether this is a child collection property (declared via <c>HasMany</c>).</summary>
-    public bool IsChildCollection { get; init; }
-
     /// <summary>
     /// Converts this mapping to a <see cref="ImportFieldMetadata"/> for the mapping suggestion pipeline.
     /// </summary>

@@ -18,7 +18,6 @@ public sealed class PropertyMappingTests
             Description = "Adresse email du patient",
             IsRequired = true,
             Format = "email",
-            IsChildCollection = false,
         };
 
         // Act
@@ -65,17 +64,4 @@ public sealed class PropertyMappingTests
         mapping.Aliases.ShouldBeEmpty();
     }
 
-    [Fact]
-    public void IsChildCollection_defaults_to_false()
-    {
-        // Arrange & Act
-        PropertyMapping mapping = new()
-        {
-            PropertyPath = "Name",
-            ClrTypeName = "String",
-        };
-
-        // Assert
-        mapping.IsChildCollection.ShouldBeFalse();
-    }
 }
