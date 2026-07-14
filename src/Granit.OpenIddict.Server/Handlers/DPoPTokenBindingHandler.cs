@@ -55,6 +55,16 @@ public sealed partial class DPoPTokenBindingHandler(
     {
         ArgumentNullException.ThrowIfNull(context);
 
+        // RFC 9449 §5: DPoP proofs are presented only at the token endpoint. This handler
+        // runs on every ProcessSignInContext (authorization, device, and end-user-verification
+        // sign-ins all flow through it); without this gate an interactive /connect/authorize
+        // sign-in — which carries no DPoP header — would be rejected under FAPI 2.0, breaking
+        // the authorization-code and device flows.
+        if (context.EndpointType is not OpenIddictServerEndpointType.Token)
+        {
+            return;
+        }
+
         HttpRequest? request = context.Transaction.GetHttpRequest();
         if (request is null)
         {

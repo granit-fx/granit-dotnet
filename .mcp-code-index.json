@@ -42291,7 +42291,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.BackgroundJobs",
       "file": "src/Granit.OpenIddict.BackgroundJobs/Services/IdleSessionEnforcementService.cs",
-      "line": 24,
+      "line": 26,
       "members": [
         {
           "name": "ExecuteAsync",
