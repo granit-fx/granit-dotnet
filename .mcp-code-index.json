@@ -26327,7 +26327,7 @@
       "kind": "class",
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/Extensions/ODataExposureEndpointRouteBuilderExtensions.cs",
-      "line": 31,
+      "line": 37,
       "members": [
         {
           "name": "MapGranitODataEndpoints",

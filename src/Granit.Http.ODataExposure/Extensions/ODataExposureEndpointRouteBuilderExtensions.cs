@@ -9,6 +9,9 @@ using Granit.Http.ODataExposure.Options;
 using Granit.Http.RateLimiting.AspNetCore;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
+using Granit.QueryEngine.Filtering;
+using Granit.QueryEngine.Filtering.Exceptions;
+using Granit.QueryEngine.Meta;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -16,10 +19,13 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
+using Microsoft.OData.UriParser;
 
 namespace Granit.Http.ODataExposure.Extensions;
 
@@ -49,8 +55,10 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     ///   <item>Permission gate — when the set declared one via <see cref="ODataEntitySetBuilder{TEntity}.RequirePermission"/>.</item>
     ///   <item>C3 hardening (#1392) — <c>$count</c>, <c>$expand</c> whitelist enforcement against the per-set descriptor.</item>
     ///   <item>Resolve <c>IQueryableSource&lt;TEntity&gt;</c> — emits a queryable already filtered by tenant + soft-delete (via <c>ApplyGranitConventions</c> on the host's DbContext).</item>
-    ///   <item>Apply the <c>QueryDefinition</c> filter pipeline via <c>IQueryEngine.BuildFilteredQuery</c> with an empty <c>QueryRequest</c> — composes the framework's required filters.</item>
-    ///   <item>Layer the user's <c>$filter</c> / <c>$select</c> / <c>$top</c> / <c>$skip</c> / <c>$orderby</c> via <c>ODataQueryOptions&lt;TEntity&gt;.ApplyTo</c> with the per-set <c>PageSize</c> and <c>MaxTop</c> caps applied — user filters compose ON TOP of framework filters, never bypassing them.</item>
+    ///   <item>Translate the user's <c>$filter</c> AST into the engine's strict <c>QueryPredicate</c> tree (#3004) — untranslatable constructs return <c>400</c> with an actionable detail.</item>
+    ///   <item>Apply the <c>QueryDefinition</c> filter pipeline via <c>IQueryEngine.BuildFilteredQuery(source, request, predicate)</c> — the framework's required filters AND the user's <c>$filter</c> are enforced by the engine's single enforcement point (filterable-column whitelist, operator inference, structural guards). Violations return <c>400</c> listing every offending field.</item>
+    ///   <item>Validate the remaining query options against the per-route <c>ODataValidationSettings</c> (allowed options, <c>$orderby</c> whitelist derived from the definition's sortable columns, node-count caps).</item>
+    ///   <item>Layer <c>$select</c> / <c>$top</c> / <c>$skip</c> / <c>$orderby</c> via <c>ODataQueryOptions&lt;TEntity&gt;.ApplyTo</c> with the per-set <c>PageSize</c> and <c>MaxTop</c> caps applied. <c>$filter</c> is passed as the ignore flag so it is never applied a second time.</item>
     /// </list>
     /// </summary>
     /// <param name="endpoints">Endpoint route builder (the host's <c>app</c>).</param>
@@ -388,6 +396,10 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         // Captured once at Map time — typed Func used per-request without a cast.
         var crossTenantBypass = descriptor.CrossTenantBypass as Func<IQueryable<TEntity>, IQueryable<TEntity>>;
 
+        // Per-route validation settings, computed once on first request (QueryDefinition
+        // metadata is immutable) and shared by every subsequent request to this route.
+        ODataValidationSettingsCache validationSettingsCache = new();
+
         RouteHandlerBuilder route = root.MapGet(descriptor.EntitySetName, async Task<object?> (
                 ODataQueryOptions<TEntity> options,
                 HttpContext httpContext,
@@ -399,6 +411,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
                 CancellationToken cancellationToken) => await HandleEntitySetRequestAsync(
                     descriptor,
                     crossTenantBypass,
+                    validationSettingsCache,
                     options,
                     httpContext,
                     source,
@@ -432,13 +445,16 @@ public static class ODataExposureEndpointRouteBuilderExtensions
 
     /// <summary>
     /// Executes one OData EntitySet GET: permission gate, $count / $expand rejection
-    /// gates, MaxTop header emission, and finally the filtered queryable returned to
-    /// the <c>WithODataResult</c> filter. Extracted from the route lambda to keep both
-    /// the parameter list and the cognitive complexity tractable.
+    /// gates, MaxTop header emission, $filter → <see cref="QueryPredicate"/> translation
+    /// (#3004), engine-side strict predicate enforcement, per-route OData validation, and
+    /// finally the filtered queryable returned to the <c>WithODataResult</c> filter.
+    /// Extracted from the route lambda to keep both the parameter list and the cognitive
+    /// complexity tractable.
     /// </summary>
     private static async Task<object?> HandleEntitySetRequestAsync<TEntity>(
         ODataEntitySetDescriptor descriptor,
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? crossTenantBypass,
+        ODataValidationSettingsCache validationSettingsCache,
         ODataQueryOptions<TEntity> options,
         HttpContext httpContext,
         IQueryableSource<TEntity> source,
@@ -464,6 +480,16 @@ public static class ODataExposureEndpointRouteBuilderExtensions
 
         ApplyMaxTopAppliedHeader(httpContext, descriptor, metrics, tenantTag, feedKindTag);
 
+        // #3004 — the user's $filter is translated into the engine's strict predicate tree
+        // instead of being composed as arbitrary LINQ by ApplyTo. Untranslatable constructs
+        // return 400 here; field-level violations return 400 from BuildFilteredQuery below.
+        (QueryPredicate? predicate, ProblemHttpResult? filterRejection) =
+            TranslateFilter(options, descriptor, metrics, tenantTag, feedKindTag);
+        if (filterRejection is not null)
+        {
+            return filterRejection;
+        }
+
         // Host-feed: apply the host-supplied per-query bypass BEFORE the QueryEngine
         // pipeline runs, so the QueryEngine sees an already-untenanted queryable.
         // Tenant-feed: no bypass; the QueryEngine receives the source as-is.
@@ -473,7 +499,39 @@ public static class ODataExposureEndpointRouteBuilderExtensions
             baseQueryable = crossTenantBypass(baseQueryable);
         }
 
-        IQueryable<TEntity> filtered = engine.BuildFilteredQuery(baseQueryable, new QueryRequest());
+        IQueryable<TEntity> filtered;
+        try
+        {
+            filtered = engine.BuildFilteredQuery(baseQueryable, new QueryRequest(), predicate);
+        }
+        catch (QueryPredicateValidationException ex)
+        {
+            // BREAKING (#3004): filtering on an EDM-visible but non-Filterable() column used
+            // to pass through ApplyTo silently; the engine's strict validation now rejects it
+            // with the offending fields listed.
+            metrics.RecordRejectedQuery(descriptor.EntitySetName, "filter_field_rejected", tenantTag, feedKindTag);
+            return TypedResults.Problem(
+                detail: "The $filter was rejected by the query definition: "
+                    + string.Join("; ", ex.Errors.Select(e =>
+                        e.Field is null ? $"[{e.Code}] {e.Message}" : $"[{e.Code}] {e.Field}: {e.Message}")),
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Query option not supported");
+        }
+
+        ODataValidationSettings validationSettings = validationSettingsCache.GetOrCreate(
+            () => CreateValidationSettings(descriptor, engine.GetMetadata()));
+        try
+        {
+            options.Validate(validationSettings);
+        }
+        catch (ODataException ex)
+        {
+            metrics.RecordRejectedQuery(descriptor.EntitySetName, "odata_validation_failed", tenantTag, feedKindTag);
+            return TypedResults.Problem(
+                detail: ex.Message,
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Query option not supported");
+        }
 
         ODataQuerySettings querySettings = new() { PageSize = descriptor.PageSize };
 
@@ -482,7 +540,110 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         // would short-circuit the filter — its IResult-check returns the inner
         // Ok<IQueryable> unwrapped, which serializes as a bare JSON array and breaks
         // every BI-tool consumer expecting v4.
-        return options.ApplyTo(filtered, querySettings);
+        // AllowedQueryOptions.Filter is the IGNORE flag: $filter was already enforced by
+        // the engine above, so ApplyTo must never apply it a second time.
+        return options.ApplyTo(filtered, querySettings, AllowedQueryOptions.Filter);
+    }
+
+    /// <summary>
+    /// Translates <c>options.Filter</c> (when present) into the engine's strict
+    /// <see cref="QueryPredicate"/> tree. Returns the predicate on success, or a
+    /// <c>400</c> Problem when the clause fails to parse (<c>odata_validation_failed</c>)
+    /// or contains constructs the translation layer rejects
+    /// (<c>filter_not_translatable</c>).
+    /// </summary>
+    private static (QueryPredicate? Predicate, ProblemHttpResult? Rejection) TranslateFilter<TEntity>(
+        ODataQueryOptions<TEntity> options,
+        ODataEntitySetDescriptor descriptor,
+        ODataExposureMetrics metrics,
+        string? tenantTag,
+        string feedKindTag)
+        where TEntity : class
+    {
+        if (options.Filter is null)
+        {
+            return (null, null);
+        }
+
+        FilterClause filterClause;
+        try
+        {
+            // FilterClause parses lazily — a malformed $filter (or one referencing a
+            // property absent from the EDM) surfaces here as an ODataException.
+            filterClause = options.Filter.FilterClause;
+        }
+        catch (ODataException ex)
+        {
+            metrics.RecordRejectedQuery(descriptor.EntitySetName, "odata_validation_failed", tenantTag, feedKindTag);
+            return (null, TypedResults.Problem(
+                detail: ex.Message,
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Query option not supported"));
+        }
+
+        ODataFilterTranslationResult translation = ODataFilterTranslator.Translate(filterClause);
+        if (translation.RejectionDetail is not null)
+        {
+            metrics.RecordRejectedQuery(descriptor.EntitySetName, "filter_not_translatable", tenantTag, feedKindTag);
+            return (null, TypedResults.Problem(
+                detail: translation.RejectionDetail,
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Query option not supported"));
+        }
+
+        return (translation.Predicate, null);
+    }
+
+    /// <summary>
+    /// Builds the per-route <see cref="ODataValidationSettings"/> from the descriptor and the
+    /// query definition's immutable metadata. <c>$orderby</c> is whitelisted from the
+    /// definition's sortable columns; when the definition declares none, the OrderBy option is
+    /// removed entirely (an empty <see cref="ODataValidationSettings.AllowedOrderByProperties"/>
+    /// set means "allow all" upstream — the opposite of what an empty whitelist must mean).
+    /// <c>MaxTop</c> is deliberately NOT set: the existing contract is a silent clamp via
+    /// <c>SetMaxTop</c> (pinned by <c>QueryHardeningTests</c>), not a validation rejection.
+    /// <c>MaxExpansionDepth</c> and the <c>$expand</c> whitelist stay with the dedicated
+    /// request-time gate (#3005 owns their evolution).
+    /// </summary>
+    private static ODataValidationSettings CreateValidationSettings(
+        ODataEntitySetDescriptor descriptor,
+        QueryMetadata metadata)
+    {
+        // SkipToken stays allowed alongside Skip/Top: server-driven paging (PageSize) emits
+        // @odata.nextLink continuations that BI clients follow with $skiptoken.
+        AllowedQueryOptions allowed = AllowedQueryOptions.Filter
+            | AllowedQueryOptions.Select
+            | AllowedQueryOptions.Top
+            | AllowedQueryOptions.Skip
+            | AllowedQueryOptions.SkipToken;
+
+        if (descriptor.CountEnabled)
+        {
+            allowed |= AllowedQueryOptions.Count;
+        }
+
+        if (descriptor.ExpandWhitelist is { Count: > 0 })
+        {
+            allowed |= AllowedQueryOptions.Expand;
+        }
+
+        ODataValidationSettings settings = new()
+        {
+            MaxAnyAllExpressionDepth = 1,
+            MaxNodeCount = 100,
+        };
+
+        if (metadata.SortableFields.Count > 0)
+        {
+            allowed |= AllowedQueryOptions.OrderBy;
+            foreach (SortableField field in metadata.SortableFields)
+            {
+                settings.AllowedOrderByProperties.Add(field.Name);
+            }
+        }
+
+        settings.AllowedQueryOptions = allowed;
+        return settings;
     }
 
     /// <summary>
