@@ -1,6 +1,12 @@
 # Granit.Http.ApiDocumentation
 
-OpenAPI documentation and Scalar UI for Granit applications. Generates one OpenAPI document per declared API version, with JWT Bearer security scheme and endpoint filtering.
+OpenAPI documentation and URL-based API versioning for Granit applications.
+Generates one OpenAPI document per declared API version
+(`Http:ApiDocumentation:MajorVersions`), registers `Asp.Versioning` with URL
+segment and query string readers, applies the JWT Bearer / OAuth2 security
+schemes and `[InternalApi]` endpoint filtering, and emits RFC 8594
+deprecation headers (`Deprecation`, `Sunset`, `Link`) from
+`DeprecatedAttribute` endpoint metadata alone.
 
 Part of the [granit](https://granit-fx.dev) framework.
 
@@ -12,19 +18,31 @@ dotnet add package Granit.Http.ApiDocumentation
 
 ## Usage
 
-Call `app.UseGranitApiDocumentation()` in `Program.cs` (after `UseAuthorization`)
-to map the OpenAPI JSON endpoints (`/openapi/v{n}.json`) and the Scalar UI:
+Call `app.MapGranitOpenApiDocuments()` in `Program.cs` to map the OpenAPI JSON
+endpoints (`/openapi/v{n}.json`, one per major version):
 
 ```csharp
-app.UseGranitApiDocumentation();
+app.MapGranitOpenApiDocuments();
 ```
 
-Without this call no documentation endpoints are exposed.
+Without this call no documentation endpoints are exposed. For the interactive
+Scalar UI, add the optional `Granit.Http.ApiDocumentation.Scalar` companion
+package and call `app.UseGranitApiDocumentation()` instead — it maps the JSON
+endpoints and layers the UI on top.
+
+Mark an endpoint as deprecated (headers and `deprecated: true` in the document
+come for free):
+
+```csharp
+app.MapGet("/api/v1/users", GetUsersAsync)
+    .Deprecated(sunsetDate: new DateOnly(2026, 12, 31), link: "https://docs.example.com/migration");
+```
 
 ## Dependencies
 
-- `Granit.Http.ApiVersioning`
-- `Granit.Http.SecurityHeaders.Abstractions`
+- `Granit`
+- `Asp.Versioning.Mvc` + `Asp.Versioning.Mvc.ApiExplorer`
+- `Granit.Http.ApiDocumentation.Scalar` (optional UI companion)
 
 ## Documentation
 

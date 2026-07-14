@@ -49,10 +49,18 @@ public sealed class ApiDocumentationOptionsTests
     }
 
     [Fact]
-    public void EnableInProduction_DefaultsToFalse()
+    public void DefaultMajorVersion_DefaultsToOne()
     {
         ApiDocumentationOptions options = new();
 
-        options.EnableInProduction.ShouldBeFalse();
+        options.DefaultMajorVersion.ShouldBe(1);
+    }
+
+    [Fact]
+    public void ReportApiVersions_DefaultsToTrue()
+    {
+        ApiDocumentationOptions options = new();
+
+        options.ReportApiVersions.ShouldBeTrue();
     }
 }

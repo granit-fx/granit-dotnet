@@ -34,7 +34,13 @@ public sealed class SingleValueObjectJsonConverterFactory : JsonConverterFactory
         return (JsonConverter)Activator.CreateInstance(converterType)!;
     }
 
-    private static Type? GetSingleValueObjectPrimitiveType(Type type)
+    /// <summary>
+    /// Returns the primitive <c>T</c> when <paramref name="type"/> derives from
+    /// <see cref="SingleValueObject{T}"/>, otherwise <c>null</c>. Shared with
+    /// <c>Granit.Http.ApiDocumentation</c> (via <c>InternalsVisibleTo</c>) so the
+    /// OpenAPI schema rewrite stays in lockstep with the wire format produced here.
+    /// </summary>
+    internal static Type? GetSingleValueObjectPrimitiveType(Type type)
     {
         Type? current = type;
         while (current is not null && current != typeof(object))

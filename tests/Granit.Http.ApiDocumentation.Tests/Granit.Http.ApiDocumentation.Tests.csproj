@@ -16,6 +16,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Http.SecurityHeaders\Granit.Http.SecurityHeaders.csproj" />
   </ItemGroup>
 </Project>

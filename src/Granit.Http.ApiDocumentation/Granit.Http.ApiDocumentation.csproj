@@ -1,12 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>Granit.Http.ApiDocumentation</PackageId>
-    <Description>OpenAPI documentation and Scalar UI for Granit applications. Generates one OpenAPI document per declared API version, with JWT Bearer security scheme and [InternalApi] endpoint filtering.</Description>
+    <Description>OpenAPI documentation and URL-based API versioning for Granit applications. Generates one OpenAPI document per declared API version, with JWT Bearer security scheme, [InternalApi] endpoint filtering, and RFC 8594 deprecation headers. Pair with Granit.Http.ApiDocumentation.Scalar for the interactive UI.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Http.ApiDocumentation.Tests" />
+    <!-- The Scalar UI companion reads OAuth2Options.IsConfigured to decide whether to wire
+         the Authorization Code popup and CSP relaxations. -->
+    <InternalsVisibleTo Include="Granit.Http.ApiDocumentation.Scalar" />
+    <InternalsVisibleTo Include="Granit.Http.ApiDocumentation.Scalar.Tests" />
   </ItemGroup>
 
   <ItemGroup>
@@ -14,12 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Mvc" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Scalar.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Http.ApiVersioning\Granit.Http.ApiVersioning.csproj" />
-    <ProjectReference Include="..\Granit.Http.SecurityHeaders.Abstractions\Granit.Http.SecurityHeaders.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit\Granit.csproj" />
   </ItemGroup>
 </Project>

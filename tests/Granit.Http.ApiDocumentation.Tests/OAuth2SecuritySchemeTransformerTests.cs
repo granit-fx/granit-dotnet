@@ -15,7 +15,6 @@ public sealed class OAuth2SecuritySchemeTransformerTests
 {
     private const string AuthorizationUrl = "https://keycloak.example.com/realms/test/protocol/openid-connect/auth";
     private const string TokenUrl = "https://keycloak.example.com/realms/test/protocol/openid-connect/token";
-    private const string ClientId = "test-frontend";
 
     [Fact]
     public async Task TransformAsync_NoJwtBearerScheme_DocumentUnchanged()
@@ -221,7 +220,6 @@ public sealed class OAuth2SecuritySchemeTransformerTests
             {
                 AuthorizationUrl = AuthorizationUrl,
                 TokenUrl = TokenUrl,
-                ClientId = ClientId,
                 Scopes = scopes ?? ["openid"],
             };
         }

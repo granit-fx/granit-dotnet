@@ -8,6 +8,9 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Tests" />
+    <!-- SingleValueObjectSchemaTransformer reuses GetSingleValueObjectPrimitiveType so the
+         OpenAPI schema rewrite cannot drift from the JSON wire format. -->
+    <InternalsVisibleTo Include="Granit.Http.ApiDocumentation" />
   </ItemGroup>
 
   <ItemGroup>

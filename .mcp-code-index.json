@@ -1155,15 +1155,15 @@
     {
       "name": "Granit.Http.ApiDocumentation",
       "deps": [
-        "Granit.Http.ApiVersioning",
-        "Granit.Http.SecurityHeaders.Abstractions"
+        "Granit"
       ],
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Http.ApiVersioning",
+      "name": "Granit.Http.ApiDocumentation.Scalar",
       "deps": [
-        "Granit"
+        "Granit.Http.ApiDocumentation",
+        "Granit.Http.SecurityHeaders.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -24790,17 +24790,42 @@
       "members": []
     },
     {
-      "name": "ApiDocumentationApplicationBuilderExtensions",
-      "fqn": "Granit.Http.ApiDocumentation.Extensions.ApiDocumentationApplicationBuilderExtensions",
+      "name": "DeprecatedAttribute",
+      "fqn": "Granit.Http.ApiDocumentation.Deprecation.DeprecatedAttribute",
       "kind": "class",
       "project": "Granit.Http.ApiDocumentation",
-      "file": "src/Granit.Http.ApiDocumentation/Extensions/ApiDocumentationApplicationBuilderExtensions.cs",
-      "line": 16,
+      "file": "src/Granit.Http.ApiDocumentation/Deprecation/DeprecatedAttribute.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "DeprecationEndpointExtensions",
+      "fqn": "Granit.Http.ApiDocumentation.Deprecation.DeprecationEndpointExtensions",
+      "kind": "class",
+      "project": "Granit.Http.ApiDocumentation",
+      "file": "src/Granit.Http.ApiDocumentation/Deprecation/DeprecationEndpointExtensions.cs",
+      "line": 8,
       "members": [
         {
-          "name": "UseGranitApiDocumentation",
+          "name": "Deprecated",
           "kind": "method",
-          "signature": "UseGranitApiDocumentation(this WebApplication app)",
+          "signature": "Deprecated(this RouteHandlerBuilder builder, DateOnly? sunsetDate = null, string? link = null)",
+          "returnType": "RouteHandlerBuilder"
+        }
+      ]
+    },
+    {
+      "name": "ApiDocumentationEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Http.ApiDocumentation.Extensions.ApiDocumentationEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Http.ApiDocumentation",
+      "file": "src/Granit.Http.ApiDocumentation/Extensions/ApiDocumentationEndpointRouteBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "MapGranitOpenApiDocuments",
+          "kind": "method",
+          "signature": "MapGranitOpenApiDocuments(this WebApplication app, Action<IEndpointConventionBuilder>? configureEndpoint = null)",
           "returnType": "WebApplication"
         }
       ]
@@ -24811,12 +24836,12 @@
       "kind": "class",
       "project": "Granit.Http.ApiDocumentation",
       "file": "src/Granit.Http.ApiDocumentation/Extensions/ApiDocumentationServiceCollectionExtensions.cs",
-      "line": 19,
+      "line": 23,
       "members": [
         {
           "name": "AddGranitApiDocumentation",
           "kind": "method",
-          "signature": "AddGranitApiDocumentation(this IHostApplicationBuilder builder)",
+          "signature": "AddGranitApiDocumentation(this IHostApplicationBuilder builder, IReadOnlyList<Assembly>? moduleAssemblies = null)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -24827,7 +24852,7 @@
       "kind": "class",
       "project": "Granit.Http.ApiDocumentation",
       "file": "src/Granit.Http.ApiDocumentation/GranitHttpApiDocumentationModule.cs",
-      "line": 18,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
@@ -24859,13 +24884,25 @@
       "kind": "class",
       "project": "Granit.Http.ApiDocumentation",
       "file": "src/Granit.Http.ApiDocumentation/Options/ApiDocumentationOptions.cs",
-      "line": 4,
+      "line": 10,
       "members": [
         {
           "name": "MajorVersions",
           "kind": "property",
           "signature": "IList<int> MajorVersions",
           "returnType": "IList<int>"
+        },
+        {
+          "name": "DefaultMajorVersion",
+          "kind": "property",
+          "signature": "int DefaultMajorVersion",
+          "returnType": "int"
+        },
+        {
+          "name": "ReportApiVersions",
+          "kind": "property",
+          "signature": "bool ReportApiVersions",
+          "returnType": "bool"
         },
         {
           "name": "Title",
@@ -24883,7 +24920,7 @@
           "name": "new",
           "kind": "method",
           "signature": "new()",
-          "returnType": "string? AuthorizationPolicy { get; set; } public OAuth2Options OAuth2 { get; set; } ="
+          "returnType": "OAuth2Options OAuth2 { get; set; } ="
         }
       ]
     },
@@ -24893,76 +24930,55 @@
       "kind": "class",
       "project": "Granit.Http.ApiDocumentation",
       "file": "src/Granit.Http.ApiDocumentation/Options/OAuth2Options.cs",
-      "line": 8,
+      "line": 9,
       "members": [
         {
           "name": "AuthorizationUrl",
           "kind": "property",
           "signature": "string? AuthorizationUrl",
           "returnType": "string?"
-        },
-        {
-          "name": "Scopes",
-          "kind": "property",
-          "signature": "IList<string> Scopes",
-          "returnType": "IList<string>"
-        },
-        {
-          "name": "RedirectUri",
-          "kind": "property",
-          "signature": "string? RedirectUri",
-          "returnType": "string?"
         }
       ]
     },
     {
-      "name": "DeprecatedAttribute",
-      "fqn": "Granit.Http.ApiVersioning.Deprecation.DeprecatedAttribute",
+      "name": "ApiDocumentationApplicationBuilderExtensions",
+      "fqn": "Granit.Http.ApiDocumentation.Scalar.Extensions.ApiDocumentationApplicationBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Http.ApiVersioning",
-      "file": "src/Granit.Http.ApiVersioning/Deprecation/DeprecatedAttribute.cs",
-      "line": 20,
-      "members": []
+      "project": "Granit.Http.ApiDocumentation.Scalar",
+      "file": "src/Granit.Http.ApiDocumentation.Scalar/Extensions/ApiDocumentationApplicationBuilderExtensions.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "UseGranitApiDocumentation",
+          "kind": "method",
+          "signature": "UseGranitApiDocumentation(this WebApplication app)",
+          "returnType": "WebApplication"
+        }
+      ]
     },
     {
-      "name": "DeprecationEndpointExtensions",
-      "fqn": "Granit.Http.ApiVersioning.Deprecation.DeprecationEndpointExtensions",
+      "name": "ScalarServiceCollectionExtensions",
+      "fqn": "Granit.Http.ApiDocumentation.Scalar.Extensions.ScalarServiceCollectionExtensions",
       "kind": "class",
-      "project": "Granit.Http.ApiVersioning",
-      "file": "src/Granit.Http.ApiVersioning/Deprecation/DeprecationEndpointExtensions.cs",
+      "project": "Granit.Http.ApiDocumentation.Scalar",
+      "file": "src/Granit.Http.ApiDocumentation.Scalar/Extensions/ScalarServiceCollectionExtensions.cs",
       "line": 9,
       "members": [
         {
-          "name": "Deprecated",
+          "name": "AddGranitApiDocumentationScalar",
           "kind": "method",
-          "signature": "Deprecated(this RouteHandlerBuilder builder, string? sunsetDate = null, string? link = null)",
-          "returnType": "RouteHandlerBuilder"
-        }
-      ]
-    },
-    {
-      "name": "ApiVersioningServiceCollectionExtensions",
-      "fqn": "Granit.Http.ApiVersioning.Extensions.ApiVersioningServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Http.ApiVersioning",
-      "file": "src/Granit.Http.ApiVersioning/Extensions/ApiVersioningServiceCollectionExtensions.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "AddGranitApiVersioning",
-          "kind": "method",
-          "signature": "AddGranitApiVersioning(this IServiceCollection services)",
+          "signature": "AddGranitApiDocumentationScalar(this IServiceCollection services)",
           "returnType": "IServiceCollection"
         }
       ]
     },
     {
-      "name": "GranitHttpApiVersioningModule",
-      "fqn": "Granit.Http.ApiVersioning.GranitHttpApiVersioningModule",
+      "name": "GranitHttpApiDocumentationScalarModule",
+      "fqn": "Granit.Http.ApiDocumentation.Scalar.GranitHttpApiDocumentationScalarModule",
       "kind": "class",
-      "project": "Granit.Http.ApiVersioning",
-      "file": "src/Granit.Http.ApiVersioning/GranitHttpApiVersioningModule.cs",
-      "line": 11,
+      "project": "Granit.Http.ApiDocumentation.Scalar",
+      "file": "src/Granit.Http.ApiDocumentation.Scalar/GranitHttpApiDocumentationScalarModule.cs",
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
@@ -24973,24 +24989,34 @@
       ]
     },
     {
-      "name": "GranitApiVersioningOptions",
-      "fqn": "Granit.Http.ApiVersioning.Options.GranitApiVersioningOptions",
+      "name": "ScalarOAuth2Options",
+      "fqn": "Granit.Http.ApiDocumentation.Scalar.Options.ScalarOAuth2Options",
       "kind": "class",
-      "project": "Granit.Http.ApiVersioning",
-      "file": "src/Granit.Http.ApiVersioning/Options/GranitApiVersioningOptions.cs",
-      "line": 4,
+      "project": "Granit.Http.ApiDocumentation.Scalar",
+      "file": "src/Granit.Http.ApiDocumentation.Scalar/Options/ScalarOAuth2Options.cs",
+      "line": 9,
       "members": [
         {
-          "name": "DefaultMajorVersion",
+          "name": "ClientId",
           "kind": "property",
-          "signature": "int DefaultMajorVersion",
-          "returnType": "int"
-        },
+          "signature": "string? ClientId",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "ScalarOptions",
+      "fqn": "Granit.Http.ApiDocumentation.Scalar.Options.ScalarOptions",
+      "kind": "class",
+      "project": "Granit.Http.ApiDocumentation.Scalar",
+      "file": "src/Granit.Http.ApiDocumentation.Scalar/Options/ScalarOptions.cs",
+      "line": 8,
+      "members": [
         {
-          "name": "ReportApiVersions",
-          "kind": "property",
-          "signature": "bool ReportApiVersions",
-          "returnType": "bool"
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "string? FaviconUrl { get; set; } public bool EnableInProduction { get; set; } public string? AuthorizationPolicy { get; set; } public ScalarOAuth2Options OAuth2 { get; set; } ="
         }
       ]
     },

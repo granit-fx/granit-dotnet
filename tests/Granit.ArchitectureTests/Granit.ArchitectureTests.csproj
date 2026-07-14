@@ -163,7 +163,7 @@
     <ProjectReference Include="..\..\src\Granit.Html.AngleSharp\Granit.Html.AngleSharp.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Idempotency.Abstractions\Granit.Http.Idempotency.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Http.ApiVersioning\Granit.Http.ApiVersioning.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.ApiDocumentation.Scalar\Granit.Http.ApiDocumentation.Scalar.csproj" />
     <ProjectReference Include="..\..\src\Granit.Bulkhead\Granit.Bulkhead.csproj" />
     <ProjectReference Include="..\..\src\Granit.Bulkhead.Wolverine\Granit.Bulkhead.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Bulkhead\Granit.Http.Bulkhead.csproj" />

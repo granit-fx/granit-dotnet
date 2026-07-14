@@ -2600,19 +2600,19 @@
       "granit.http.apidocumentation": {
         "type": "Project",
         "dependencies": {
-          "Granit.Http.ApiVersioning": "[0.1.0-dev, )",
-          "Granit.Http.SecurityHeaders.Abstractions": "[0.1.0-dev, )",
-          "Microsoft.AspNetCore.OpenApi": "[10.*, )",
-          "Microsoft.OpenApi": "[2.7.5, )",
-          "Scalar.AspNetCore": "[2.*, )"
-        }
-      },
-      "granit.http.apiversioning": {
-        "type": "Project",
-        "dependencies": {
           "Asp.Versioning.Mvc": "[10.*, )",
           "Asp.Versioning.Mvc.ApiExplorer": "[10.*, )",
-          "Granit": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.OpenApi": "[10.*, )",
+          "Microsoft.OpenApi": "[2.7.5, )"
+        }
+      },
+      "granit.http.apidocumentation.scalar": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Http.SecurityHeaders.Abstractions": "[0.1.0-dev, )",
+          "Scalar.AspNetCore": "[2.*, )"
         }
       },
       "granit.http.bulkhead": {
@@ -4676,10 +4676,10 @@
       "Google.Cloud.SecretManager.V1": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.7.0",
-        "contentHash": "5Ol6+VCNOI1X7T3WthLB0Y5YyHRKFRycG93QOLU1m9xqrbgXGftwzwzsRiPUWGsWJgVCnYobQiqw2VYYPWyC9w==",
+        "resolved": "2.8.0",
+        "contentHash": "S5bDJUkR50TzEnZdaTwSY4S8q+VlTu3W00Te10x5fK0PdjY++3sOGj0cNxFSy9QjX34Iz4Fn1OxltvQ+qoHmPw==",
         "dependencies": {
-          "Google.Api.Gax.Grpc": "[4.12.1, 5.0.0)",
+          "Google.Api.Gax.Grpc": "[4.13.1, 5.0.0)",
           "Google.Cloud.Iam.V1": "[3.5.0, 4.0.0)",
           "Google.Cloud.Location": "[2.4.0, 3.0.0)"
         }

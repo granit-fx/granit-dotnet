@@ -5,7 +5,7 @@
 // sont normalisés en type: [integer, null].
 // =============================================================================
 
-using Granit.Http.ApiDocumentation.Transformers;
+using Granit.Http.ApiDocumentation.Transformers.Compatibility;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.OpenApi;

@@ -2,13 +2,12 @@
 
   <PropertyGroup>
     <PackageId>Granit.Bundle.Api</PackageId>
-    <Description>Meta-package grouping Granit modules for a complete REST API: Bundle.Essentials + ApiVersioning, ApiDocumentation, Idempotency, Localization, Localization.EntityFrameworkCore, Caching.</Description>
+    <Description>Meta-package grouping Granit modules for a complete REST API: Bundle.Essentials + ApiDocumentation (OpenAPI + API versioning), Idempotency, Localization, Localization.EntityFrameworkCore, Caching.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Bundle.Essentials\Granit.Bundle.Essentials.csproj" />
-    <ProjectReference Include="..\..\Granit.Http.ApiVersioning\Granit.Http.ApiVersioning.csproj" />
     <ProjectReference Include="..\..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\..\Granit.Http.Idempotency\Granit.Http.Idempotency.csproj" />
     <ProjectReference Include="..\..\Granit.Localization\Granit.Localization.csproj" />

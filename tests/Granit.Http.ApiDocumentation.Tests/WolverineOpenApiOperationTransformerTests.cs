@@ -7,7 +7,7 @@
 //   - réponse 200 fantôme avec IResult supprimée
 // =============================================================================
 
-using Granit.Http.ApiDocumentation.Transformers;
+using Granit.Http.ApiDocumentation.Transformers.Compatibility;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;

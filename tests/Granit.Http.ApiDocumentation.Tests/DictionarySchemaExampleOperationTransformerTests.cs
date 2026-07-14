@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using Granit.Http.ApiDocumentation.Transformers;
+using Granit.Http.ApiDocumentation.Transformers.Compatibility;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.OpenApi;

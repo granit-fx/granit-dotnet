@@ -137,7 +137,7 @@
         "tests/Granit.Caching.Vault.Tests",
         "tests/Granit.Http.Idempotency.Abstractions.Tests",
         "tests/Granit.Http.ApiDocumentation.Tests",
-        "tests/Granit.Http.ApiVersioning.Tests",
+        "tests/Granit.Http.ApiDocumentation.Scalar.Tests",
         "tests/Granit.Bulkhead.Tests",
         "tests/Granit.Bulkhead.Wolverine.Tests",
         "tests/Granit.Http.Bulkhead.Tests",

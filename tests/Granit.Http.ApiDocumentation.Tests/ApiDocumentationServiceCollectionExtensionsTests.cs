@@ -31,7 +31,6 @@ public sealed class ApiDocumentationServiceCollectionExtensionsTests
         {
             ["Http:ApiDocumentation:Title"] = "Test API",
             ["Http:ApiDocumentation:MajorVersions:0"] = "2",
-            ["Http:ApiDocumentation:EnableInProduction"] = "false",
         });
 
         // Act
@@ -43,7 +42,6 @@ public sealed class ApiDocumentationServiceCollectionExtensionsTests
             sp.GetRequiredService<IOptions<ApiDocumentationOptions>>().Value;
         options.Title.ShouldBe("Test API");
         options.MajorVersions.ShouldContain(2);
-        options.EnableInProduction.ShouldBeFalse();
     }
 
     [Fact]

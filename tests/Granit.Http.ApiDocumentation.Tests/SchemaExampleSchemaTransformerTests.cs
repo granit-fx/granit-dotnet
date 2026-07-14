@@ -10,6 +10,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
 using Granit.Http.ApiDocumentation.Transformers;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.OpenApi;
 using NSubstitute;
 using Shouldly;
@@ -31,7 +32,7 @@ public sealed class SchemaExampleSchemaTransformerTests
         // Arrange
         JsonObject example = new() { ["name"] = "Alice", ["age"] = 30 };
         ISchemaExampleProvider provider = CreateProvider(typeof(SampleRequest), example);
-        SchemaExampleSchemaTransformer transformer = new([provider]);
+        SchemaExampleSchemaTransformer transformer = new([provider], NullLogger<SchemaExampleSchemaTransformer>.Instance);
 
         OpenApiSchema schema = new();
         OpenApiSchemaTransformerContext context = BuildContext<SampleRequest>();
@@ -54,7 +55,7 @@ public sealed class SchemaExampleSchemaTransformerTests
         // Arrange
         JsonObject example = new() { ["name"] = "Alice" };
         ISchemaExampleProvider provider = CreateProvider(typeof(SampleRequest), example);
-        SchemaExampleSchemaTransformer transformer = new([provider]);
+        SchemaExampleSchemaTransformer transformer = new([provider], NullLogger<SchemaExampleSchemaTransformer>.Instance);
 
         OpenApiSchema schema = new();
         OpenApiSchemaTransformerContext context = BuildContext<OtherRequest>();
@@ -74,7 +75,7 @@ public sealed class SchemaExampleSchemaTransformerTests
         // Arrange
         JsonObject example = new() { ["value"] = "original" };
         ISchemaExampleProvider provider = CreateProvider(typeof(SampleRequest), example);
-        SchemaExampleSchemaTransformer transformer = new([provider]);
+        SchemaExampleSchemaTransformer transformer = new([provider], NullLogger<SchemaExampleSchemaTransformer>.Instance);
 
         OpenApiSchema schema1 = new();
         OpenApiSchema schema2 = new();
@@ -99,7 +100,7 @@ public sealed class SchemaExampleSchemaTransformerTests
         ISchemaExampleProvider provider2 = CreateProvider(
             typeof(OtherRequest), new JsonObject { ["value"] = "test" });
 
-        SchemaExampleSchemaTransformer transformer = new([provider1, provider2]);
+        SchemaExampleSchemaTransformer transformer = new([provider1, provider2], NullLogger<SchemaExampleSchemaTransformer>.Instance);
 
         OpenApiSchema schema1 = new();
         OpenApiSchema schema2 = new();
@@ -126,7 +127,7 @@ public sealed class SchemaExampleSchemaTransformerTests
         ISchemaExampleProvider provider2 = CreateProvider(
             typeof(SampleRequest), new JsonObject { ["name"] = "Second" });
 
-        SchemaExampleSchemaTransformer transformer = new([provider1, provider2]);
+        SchemaExampleSchemaTransformer transformer = new([provider1, provider2], NullLogger<SchemaExampleSchemaTransformer>.Instance);
 
         OpenApiSchema schema = new();
 
@@ -143,7 +144,7 @@ public sealed class SchemaExampleSchemaTransformerTests
     public async Task TransformAsync_NoProviders_DoesNotThrow()
     {
         // Arrange
-        SchemaExampleSchemaTransformer transformer = new([]);
+        SchemaExampleSchemaTransformer transformer = new([], NullLogger<SchemaExampleSchemaTransformer>.Instance);
         OpenApiSchema schema = new();
 
         // Act & Assert
