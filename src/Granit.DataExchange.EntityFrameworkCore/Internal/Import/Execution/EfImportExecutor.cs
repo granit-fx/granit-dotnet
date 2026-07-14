@@ -10,7 +10,8 @@ namespace Granit.DataExchange.EntityFrameworkCore.Internal.Import.Execution;
 
 /// <summary>
 /// EF Core implementation of <see cref="IImportExecutor{TEntity}"/>.
-/// Persists validated entities in batches using the application DbContext.
+/// Persists successful row outcomes in batches using the application DbContext;
+/// failed and skipped outcomes are counted into the report without a persistence attempt.
 /// </summary>
 /// <typeparam name="TEntity">The entity type.</typeparam>
 /// <typeparam name="TContext">The application DbContext type.</typeparam>
@@ -21,7 +22,7 @@ internal sealed class EfImportExecutor<TEntity, TContext>(
 {
     /// <inheritdoc/>
     public async Task<ImportReport> ExecuteAsync(
-        IAsyncEnumerable<ValidatedRow<TEntity>> entities,
+        IAsyncEnumerable<RowOutcome<TEntity>> rows,
         ImportExecutionOptions options,
         IProgress<ImportProgress>? progress = null,
         CancellationToken cancellationToken = default)
@@ -31,6 +32,7 @@ internal sealed class EfImportExecutor<TEntity, TContext>(
         int totalRows = 0;
         int succeededRows = 0;
         int failedRows = 0;
+        int skippedRows = 0;
         int insertedRows = 0;
         int updatedRows = 0;
         int batchCount = 0;
@@ -40,9 +42,25 @@ internal sealed class EfImportExecutor<TEntity, TContext>(
 
         try
         {
-            await foreach (ValidatedRow<TEntity> row in entities.WithCancellation(cancellationToken))
+            await foreach (RowOutcome<TEntity> row in rows.WithCancellation(cancellationToken))
             {
                 totalRows++;
+
+                if (row.IsSkipped)
+                {
+                    skippedRows++;
+                    continue;
+                }
+
+                if (row.Error is not null || row.Entity is null)
+                {
+                    failedRows++;
+                    errors.Add(row.Error ?? new ImportRowError(
+                        row.RowNumber, ImportRowErrorKind.Conversion,
+                        ["Granit:DataExchange:Conversion:Unexpected"],
+                        "Row outcome carried neither an entity nor an error."));
+                    continue;
+                }
 
                 try
                 {
@@ -97,9 +115,16 @@ internal sealed class EfImportExecutor<TEntity, TContext>(
 
             await CommitOrRollbackAsync(transaction, options.DryRun, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception) when (options.ErrorBehavior != ImportErrorBehavior.FailFast)
+        catch (OperationCanceledException)
         {
-            await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
+            throw;
+        }
+        catch (Exception)
+        {
+            // Roll back and rethrow: the orchestrator folds unexpected exceptions into a
+            // failed report and logs them — swallowing here produced false-success reports.
+            await transaction.RollbackAsync(CancellationToken.None).ConfigureAwait(false);
+            throw;
         }
 
         stopwatch.Stop();
@@ -111,7 +136,7 @@ internal sealed class EfImportExecutor<TEntity, TContext>(
             TotalRows = totalRows,
             SucceededRows = succeededRows,
             FailedRows = failedRows,
-            SkippedRows = 0,
+            SkippedRows = skippedRows,
             InsertedRows = insertedRows,
             UpdatedRows = updatedRows,
             Duration = stopwatch.Elapsed,
@@ -120,7 +145,7 @@ internal sealed class EfImportExecutor<TEntity, TContext>(
         };
     }
 
-    private static bool IsUpdateOperation(ValidatedRow<TEntity> row) =>
+    private static bool IsUpdateOperation(RowOutcome<TEntity> row) =>
         row.Identity?.Operation == RecordOperation.Update && row.Identity.ExistingEntity is not null;
 
     private static async Task CommitOrRollbackAsync(

@@ -17,7 +17,7 @@ public sealed class EfImportExecutorTests
     private static EfImportExecutor<TestEntity, TestAppDbContext> CreateExecutor(string dbName) =>
         new(new InMemoryAppContextFactory(dbName));
 
-    private static async IAsyncEnumerable<ValidatedRow<TestEntity>> CreateInsertRows(int count)
+    private static async IAsyncEnumerable<RowOutcome<TestEntity>> CreateInsertRows(int count)
     {
         for (int i = 0; i < count; i++)
         {
@@ -27,7 +27,7 @@ public sealed class EfImportExecutorTests
                 Name = $"Entity-{i}",
                 Email = $"entity{i}@test.com",
             };
-            yield return new ValidatedRow<TestEntity>(i + 1, entity);
+            yield return RowOutcome<TestEntity>.Ok(i + 1, entity);
         }
 
         await Task.CompletedTask;
@@ -151,9 +151,9 @@ public sealed class EfImportExecutorTests
             ExistingEntity = existingEntity,
         };
 
-        async IAsyncEnumerable<ValidatedRow<TestEntity>> CreateUpdateRows()
+        async IAsyncEnumerable<RowOutcome<TestEntity>> CreateUpdateRows()
         {
-            yield return new ValidatedRow<TestEntity>(1, updatedEntity, identity);
+            yield return RowOutcome<TestEntity>.Ok(1, updatedEntity, identity);
             await Task.CompletedTask;
         }
 
@@ -197,7 +197,7 @@ public sealed class EfImportExecutorTests
         EfImportExecutor<TestEntity, TestAppDbContext> executor = CreateExecutor(dbName);
         ImportExecutionOptions options = new();
 
-        static async IAsyncEnumerable<ValidatedRow<TestEntity>> EmptyStream()
+        static async IAsyncEnumerable<RowOutcome<TestEntity>> EmptyStream()
         {
             await Task.CompletedTask;
             yield break;
@@ -211,6 +211,70 @@ public sealed class EfImportExecutorTests
         report.TotalRows.ShouldBe(0);
         report.SucceededRows.ShouldBe(0);
         report.FinalStatus.ShouldBe(ImportJobStatus.Completed);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_counts_failed_and_skipped_outcomes_without_persisting()
+    {
+        // Arrange
+        string dbName = NewDb();
+        EfImportExecutor<TestEntity, TestAppDbContext> executor = CreateExecutor(dbName);
+        ImportExecutionOptions options = new() { BatchSize = 100 };
+
+        ImportRowError conversionError = new(
+            3, ImportRowErrorKind.Conversion,
+            ["Granit:DataExchange:Conversion:InvalidFormat"],
+            "Column 'Age' → Age: Granit:DataExchange:Conversion:InvalidFormat (value: 'abc')");
+
+        static async IAsyncEnumerable<RowOutcome<TestEntity>> MixedRows(ImportRowError error)
+        {
+            yield return RowOutcome<TestEntity>.Ok(1, new TestEntity { Id = Guid.NewGuid(), Name = "A" });
+            yield return RowOutcome<TestEntity>.Ok(2, new TestEntity { Id = Guid.NewGuid(), Name = "B" });
+            yield return RowOutcome<TestEntity>.Failed(3, error);
+            yield return RowOutcome<TestEntity>.Skipped(4);
+            await Task.CompletedTask;
+        }
+
+        // Act
+        ImportReport report = await executor.ExecuteAsync(
+            MixedRows(conversionError), options, null, TestContext.Current.CancellationToken);
+
+        // Assert — every outcome is accounted for, nothing silently dropped
+        report.TotalRows.ShouldBe(4);
+        report.SucceededRows.ShouldBe(2);
+        report.FailedRows.ShouldBe(1);
+        report.SkippedRows.ShouldBe(1);
+        report.InsertedRows.ShouldBe(2);
+        report.FinalStatus.ShouldBe(ImportJobStatus.PartiallyCompleted);
+        report.RowErrors.ShouldHaveSingleItem();
+        report.RowErrors[0].ShouldBeSameAs(conversionError);
+
+        // Failed/skipped rows are never persisted
+        InMemoryAppContextFactory factory = new(dbName);
+        await using TestAppDbContext context = factory.CreateDbContext();
+        int count = await context.TestEntities.CountAsync(TestContext.Current.CancellationToken);
+        count.ShouldBe(2);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_unexpected_exception_is_rethrown_not_swallowed()
+    {
+        // Arrange — the outer catch used to swallow exceptions into a false-success report
+        string dbName = NewDb();
+        EfImportExecutor<TestEntity, TestAppDbContext> executor = CreateExecutor(dbName);
+        ImportExecutionOptions options = new();
+
+        static async IAsyncEnumerable<RowOutcome<TestEntity>> ThrowingStream()
+        {
+            yield return RowOutcome<TestEntity>.Ok(1, new TestEntity { Id = Guid.NewGuid(), Name = "A" });
+            await Task.CompletedTask;
+            throw new InvalidOperationException("boom");
+        }
+
+        // Act + Assert
+        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(() =>
+            executor.ExecuteAsync(ThrowingStream(), options, null, TestContext.Current.CancellationToken));
+        ex.Message.ShouldBe("boom");
     }
 
     [Fact]

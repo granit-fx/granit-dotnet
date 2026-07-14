@@ -61,6 +61,7 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IImportJobReader, NullImportJobStore>();
         services.TryAddScoped<IImportJobWriter, NullImportJobStore>();
         services.TryAddSingleton<IDataExchangeFileProvider, NullDataExchangeFileProvider>();
+        services.TryAddSingleton<IImportPipelineRegistry, ImportPipelineRegistry>();
         services.TryAddScoped<IImportOrchestrator, ImportOrchestrator>();
         services.TryAddScoped<IImportUploadService, ImportUploadService>();
         services.TryAddScoped<IImportPreviewService, ImportPreviewService>();
