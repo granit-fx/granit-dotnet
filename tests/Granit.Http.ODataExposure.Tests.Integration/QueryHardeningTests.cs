@@ -150,43 +150,23 @@ public sealed class QueryHardeningTests(PostgresFixture postgres)
     }
 
     [Fact]
-    public async Task Expand_InWhitelist_AcceptedThoughTheNavigationDoesntExist()
+    public async Task ExpandWhitelist_NavigationDoesNotExist_FailsAtStartup()
     {
-        // The Invoice entity has no Customer navigation in the test schema;
-        // OData responds with a parser-level error (it throws an
-        // ODataException straight up, which TestServer re-raises as a
-        // SendAsync exception). What we pin here is that the C3 whitelist
-        // check does NOT pre-empt the request when the property name matches
-        // the whitelist — so the failure must come from the OData parser
-        // itself, never from the framework's "not permitted" rejection.
-        using HttpRequestMessage request = new(HttpMethod.Get,
-            "/api/granit/odata/Invoices?$expand=Customer");
-        request.Headers.Add("X-Test-Tenant", TenantA.ToString());
+        // FLIPPED by #3005. The predecessor test
+        // (Expand_InWhitelist_AcceptedThoughTheNavigationDoesntExist)
+        // documented the lax behaviour: a whitelist entry naming a
+        // nonexistent navigation sailed through startup and produced a raw
+        // parser error per request — dead config, and the marker of the
+        // nested-$expand hole. The strict-config validator now walks every
+        // whitelisted path against the CLR type at Map time and refuses to
+        // start the host.
+        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(() =>
+            ODataTestApp.CreateAsync(
+                _postgres.ConnectionString,
+                builder => builder.ExpandWhitelist("Ghost")));
 
-        // Either the request returns a response (200 with empty navigation
-        // or 400 from the translator) OR it throws an ODataException because
-        // the EDM has no Customer navigation. Both outcomes prove the C3
-        // layer let the request through; only a "not permitted" payload
-        // would indicate the whitelist short-circuited.
-        string body = string.Empty;
-        try
-        {
-            HttpResponseMessage response = await _appExpandWhitelist.Client.SendAsync(
-                request, TestContext.Current.CancellationToken);
-            body = response.Content.Headers.ContentLength is > 0
-                ? await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)
-                : string.Empty;
-        }
-        catch (Microsoft.OData.ODataException)
-        {
-            // Expected when OData can't find the Customer navigation in the
-            // EDM. The exception itself proves the C3 check accepted the
-            // expand — assertion satisfied trivially.
-            return;
-        }
-
-        body.ShouldNotContain("not permitted");
-        body.ShouldNotContain("not whitelisted");
+        ex.Message.ShouldContain("Ghost");
+        ex.Message.ShouldContain("not a navigation property");
     }
 
     [Fact]

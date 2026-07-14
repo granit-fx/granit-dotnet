@@ -27,6 +27,46 @@ public sealed class ODataExposureOptions
     /// </summary>
     internal IReadOnlyList<ODataEntitySetDescriptor> Descriptors => _descriptors;
 
+    /// <summary>Permission gating <c>$metadata</c> + the service document, or <see langword="null"/> when <see cref="AllowAnonymousMetadata"/> was called. Consumed by the route builder.</summary>
+    internal string? MetadataPermission { get; private set; }
+
+    /// <summary>Whether either <see cref="RequireMetadataPermission"/> or <see cref="AllowAnonymousMetadata"/> was called. The strict-config validator refuses to start the host until one of them is — an implicit stance on schema disclosure is rejected (#3005).</summary>
+    internal bool MetadataStanceDeclared { get; private set; }
+
+    /// <summary>
+    /// Gates the <c>$metadata</c> and service-document routes behind the
+    /// named permission. The two documents disclose the mount's full schema
+    /// (EntitySet names, columns, navigations) — for most business feeds that
+    /// is reconnaissance material and should require authentication.
+    /// Mutually exclusive with <see cref="AllowAnonymousMetadata"/>; the last
+    /// call wins. One of the two MUST be called — the strict-config validator
+    /// throws at <c>MapGranitODataEndpoints</c> time otherwise.
+    /// </summary>
+    /// <param name="permission">Permission name checked by <c>IPermissionChecker</c> on every <c>$metadata</c> / service-document request.</param>
+    public ODataExposureOptions RequireMetadataPermission(string permission)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(permission);
+        MetadataPermission = permission;
+        MetadataStanceDeclared = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Explicit opt-in: the <c>$metadata</c> and service-document routes ARE
+    /// anonymous-readable, by design. Use case: a public reference-data feed
+    /// whose schema is not sensitive, or BI connectors that must probe the
+    /// service document before the user signs in. Mutually exclusive with
+    /// <see cref="RequireMetadataPermission"/>; the last call wins. One of
+    /// the two MUST be called — the strict-config validator throws at
+    /// <c>MapGranitODataEndpoints</c> time otherwise.
+    /// </summary>
+    public ODataExposureOptions AllowAnonymousMetadata()
+    {
+        MetadataPermission = null;
+        MetadataStanceDeclared = true;
+        return this;
+    }
+
     /// <summary>
     /// Registers an EntitySet backed by <typeparamref name="TQueryDefinition"/>.
     /// </summary>
@@ -149,13 +189,25 @@ public sealed class ODataEntitySetBuilder<TEntity>
         => Update(_descriptor with { CountEnabled = true });
 
     /// <summary>
-    /// Whitelists the top-level navigation properties allowed in
-    /// <c>$expand</c>. Default behaviour is <c>$expand</c> disabled —
-    /// without this call, any <c>$expand</c> request returns
-    /// <c>400 Bad Request</c>. An empty list still disables expand
-    /// (explicit "I want zero navigations exposed").
+    /// Whitelists the navigation paths allowed in <c>$expand</c>. Entries
+    /// are DOTTED paths: <c>"Customer"</c> allows expanding the
+    /// <c>Customer</c> navigation (scalars only, no nested expand);
+    /// <c>"Customer.Address"</c> additionally allows nesting
+    /// <c>$expand=Customer($expand=Address)</c>. Whitelisting a nested path
+    /// implicitly whitelists its prefixes. Default behaviour is
+    /// <c>$expand</c> disabled — without this call, any <c>$expand</c>
+    /// request returns <c>400 Bad Request</c>. An empty list still disables
+    /// expand (explicit "I want zero navigations exposed").
     /// </summary>
-    /// <param name="properties">Navigation property names allowed at the top level (e.g. <c>"Customer"</c>, <c>"Lines"</c>).</param>
+    /// <remarks>
+    /// Startup gates (#3005, ADR-050): every segment must exist as a
+    /// navigation property on the CLR type it is declared on, and every
+    /// navigation-target type reachable through a whitelisted path must have
+    /// a registered <c>ExportDefinition</c> — its scalar fields become the
+    /// target's EDM whitelist. Nested paths deeper than
+    /// <see cref="MaxExpansionDepth"/> are rejected per request.
+    /// </remarks>
+    /// <param name="properties">Dotted navigation paths allowed for <c>$expand</c> (e.g. <c>"Customer"</c>, <c>"Customer.Address"</c>).</param>
     public ODataEntitySetBuilder<TEntity> ExpandWhitelist(params string[] properties)
     {
         ArgumentNullException.ThrowIfNull(properties);

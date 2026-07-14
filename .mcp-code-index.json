@@ -26327,7 +26327,7 @@
       "kind": "class",
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/Extensions/ODataExposureEndpointRouteBuilderExtensions.cs",
-      "line": 37,
+      "line": 38,
       "members": [
         {
           "name": "MapGranitODataEndpoints",
@@ -26375,7 +26375,7 @@
       "kind": "class",
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/Options/ODataExposureOptions.cs",
-      "line": 75,
+      "line": 115,
       "members": [
         {
           "name": "MaxTop",
@@ -26412,7 +26412,7 @@
       "kind": "class",
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/Options/ODataHostExposureOptions.cs",
-      "line": 86,
+      "line": 107,
       "members": [
         {
           "name": "ExpandWhitelist",
