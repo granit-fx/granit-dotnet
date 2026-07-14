@@ -1,4 +1,3 @@
-using Granit.Authentication.External;
 using Granit.Caching;
 using Granit.DataExchange;
 using Granit.DataExchange.Extensions;
@@ -37,16 +36,16 @@ namespace Granit.OpenIddict;
 /// and Identity cookie configuration (neutral names, env-aware __Host- prefix).
 /// </summary>
 [DependsOn(
-    typeof(GranitAuthenticationExternalModule),
     typeof(GranitCachingModule),
     typeof(GranitDataExchangeAbstractionsModule),
     typeof(GranitEncryptionModule),
     typeof(GranitEntitiesAbstractionsModule),
     typeof(GranitHttpCookiesModule),
+    typeof(GranitIdentityAbstractionsModule),
     typeof(GranitIdentityLocalAspNetIdentityModule),
     typeof(GranitIdentityLocalModule),
-    typeof(GranitQueryEngineAbstractionsModule),
-    typeof(GranitIdentityAbstractionsModule))]
+    typeof(GranitOpenIddictAbstractionsModule),
+    typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitOpenIddictModule : GranitModule
 {
     /// <inheritdoc/>
@@ -72,9 +71,8 @@ public sealed class GranitOpenIddictModule : GranitModule
             .BindConfiguration(GranitKeyRotationOptions.SectionName);
 
         context.Services.TryAddScoped<IClaimsDestinationProvider, DefaultClaimsDestinationProvider>();
+        context.Services.TryAddScoped<IOidcPrincipalFactory, OidcPrincipalFactory>();
         context.Services.TryAddScoped<ITotpService, DefaultTotpService>();
-        context.Services.TryAddScoped<ExternalClaimsMapper>();
-        context.Services.TryAddScoped<IExternalLoginService, Internal.AspNetExternalLoginService>();
         context.Services.TryAddScoped<IAccountDeletionService, Internal.AspNetAccountDeletionService>();
         context.Services.TryAddScoped<IImpersonationService, Internal.AspNetImpersonationService>();
         context.Services.TryAddScoped<IKeyRotationService, Internal.KeyRotationService>();

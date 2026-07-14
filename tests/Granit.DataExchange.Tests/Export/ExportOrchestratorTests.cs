@@ -7,7 +7,6 @@ using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Exceptions;
 using Granit.DataExchange.Export.Internal;
 using Granit.DataExchange.Export.Messages;
-using Granit.Events;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
@@ -29,8 +28,6 @@ public sealed class ExportOrchestratorTests
     private readonly ICommandSender _commandSender = Substitute.For<ICommandSender>();
     private readonly IDataExchangeFileProvider _fileProvider = Substitute.For<IDataExchangeFileProvider>();
     private readonly IClock _clock = Substitute.For<IClock>();
-    private readonly ILocalEventBus _eventBus = Substitute.For<ILocalEventBus>();
-    private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly DataExchangeMetrics _metrics = new(new ServiceCollection().AddMetrics().BuildServiceProvider().GetRequiredService<IMeterFactory>());
     private readonly DateTimeOffset _now = new(2026, 3, 3, 10, 0, 0, TimeSpan.Zero);
@@ -353,7 +350,7 @@ public sealed class ExportOrchestratorTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_completed_publishes_ExportJobCompletedEto()
+    public async Task ExecuteAsync_completed_buffers_ExportJobCompletedEto_on_the_aggregate()
     {
         // Arrange
         ExportOrchestrator sut = CreateOrchestrator();
@@ -365,20 +362,20 @@ public sealed class ExportOrchestratorTests
         // Act
         await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
 
-        // Assert
-        await _eventBus.Received(1).PublishAsync(
-            Arg.Is<ExportJobCompletedEto>(e =>
-                e.ExportJobId == jobId &&
-                e.DefinitionName == "Test.Export" &&
-                e.Status == ExportJobStatus.Completed &&
-                e.UserId == "user-42" &&
-                e.RowCount == 2 &&
-                e.ErrorMessage == null),
-            Arg.Any<CancellationToken>());
+        // Assert — Complete() buffers the Eto on the aggregate itself (transactional outbox);
+        // no event bus is involved — DomainEventDispatcherInterceptor drains IntegrationEvents
+        // pre-commit on the next SaveChanges.
+        ExportJobCompletedEto eto = job.IntegrationEvents.OfType<ExportJobCompletedEto>().ShouldHaveSingleItem();
+        eto.ExportJobId.ShouldBe(jobId);
+        eto.DefinitionName.ShouldBe("Test.Export");
+        eto.Status.ShouldBe(ExportJobStatus.Completed);
+        eto.UserId.ShouldBe("user-42");
+        eto.RowCount.ShouldBe(2);
+        eto.ErrorMessage.ShouldBeNull();
     }
 
     [Fact]
-    public async Task ExecuteAsync_failed_publishes_ExportJobCompletedEto_with_error()
+    public async Task ExecuteAsync_failed_buffers_ExportJobCompletedEto_with_error_on_the_aggregate()
     {
         // Arrange
         var jobId = Guid.NewGuid();
@@ -393,14 +390,118 @@ public sealed class ExportOrchestratorTests
         await Should.ThrowAsync<IOException>(
             () => sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken));
 
-        await _eventBus.Received(1).PublishAsync(
-            Arg.Is<ExportJobCompletedEto>(e =>
-                e.ExportJobId == jobId &&
-                e.Status == ExportJobStatus.Failed &&
-                e.UserId == "user-99" &&
-                e.RowCount == null &&
-                e.ErrorMessage == "Disk full"),
-            Arg.Any<CancellationToken>());
+        // Assert — the failure Eto folds into the same ExportJobCompletedEto (Status
+        // disambiguates); the former dedicated ExportJobFailedEto no longer exists.
+        ExportJobCompletedEto eto = job.IntegrationEvents.OfType<ExportJobCompletedEto>().ShouldHaveSingleItem();
+        eto.ExportJobId.ShouldBe(jobId);
+        eto.Status.ShouldBe(ExportJobStatus.Failed);
+        eto.UserId.ShouldBe("user-99");
+        eto.RowCount.ShouldBeNull();
+        eto.ErrorMessage.ShouldBe("Disk full");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_redelivered_completed_job_returns_without_reexecuting()
+    {
+        // Arrange — simulates Wolverine at-least-once redelivery of a command whose job already
+        // reached a terminal state on a prior delivery.
+        var jobId = Guid.NewGuid();
+        ExportJob job = BuildJob(jobId, ExportJobStatus.Completed);
+        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+
+        IExportWriter writer = CreateCsvWriter();
+        ExportOrchestrator sut = CreateOrchestrator(writer);
+
+        // Act
+        await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+
+        // Assert — no re-execution, no throw
+        job.Status.ShouldBe(ExportJobStatus.Completed);
+        await writer.DidNotReceive().WriteAsync(
+            Arg.Any<Stream>(), Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
+            Arg.Any<IAsyncEnumerable<object?[]>>(), Arg.Any<CancellationToken>());
+        await _jobWriter.DidNotReceive().UpdateAsync(Arg.Any<ExportJob>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_redelivered_failed_job_returns_without_reexecuting()
+    {
+        // Arrange
+        var jobId = Guid.NewGuid();
+        ExportJob job = BuildJob(jobId, ExportJobStatus.Failed);
+        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+
+        IExportWriter writer = CreateCsvWriter();
+        ExportOrchestrator sut = CreateOrchestrator(writer);
+
+        // Act
+        await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+
+        // Assert — no re-execution, no throw
+        job.Status.ShouldBe(ExportJobStatus.Failed);
+        await writer.DidNotReceive().WriteAsync(
+            Arg.Any<Stream>(), Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
+            Arg.Any<IAsyncEnumerable<object?[]>>(), Arg.Any<CancellationToken>());
+        await _jobWriter.DidNotReceive().UpdateAsync(Arg.Any<ExportJob>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_job_already_exporting_returns_without_reexecuting()
+    {
+        // Arrange — another (or an earlier in-flight) delivery already owns this run.
+        var jobId = Guid.NewGuid();
+        ExportJob job = BuildJob(jobId, ExportJobStatus.Exporting);
+        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+
+        IExportWriter writer = CreateCsvWriter();
+        ExportOrchestrator sut = CreateOrchestrator(writer);
+
+        // Act
+        await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+
+        // Assert — no re-execution, no throw
+        job.Status.ShouldBe(ExportJobStatus.Exporting);
+        await writer.DidNotReceive().WriteAsync(
+            Arg.Any<Stream>(), Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
+            Arg.Any<IAsyncEnumerable<object?[]>>(), Arg.Any<CancellationToken>());
+        await _jobWriter.DidNotReceive().UpdateAsync(Arg.Any<ExportJob>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_failure_when_job_already_terminal_does_not_throw_masking_exception()
+    {
+        // Arrange — simulates a concurrent delivery racing this one to a terminal state (Failed)
+        // moments before the pipeline throws on this instance. Without the catch-block guard,
+        // job.Fail() would be invoked a second time from a terminal state, throwing an
+        // InvalidOperationException that masks the original IOException.
+        var jobId = Guid.NewGuid();
+        ExportJob job = BuildJob(jobId, ExportJobStatus.Queued);
+        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+
+        IExportWriter writer = Substitute.For<IExportWriter>();
+        writer.CanWrite("csv").Returns(true);
+        writer.FileExtension.Returns(".csv");
+        writer.MimeType.Returns("text/csv");
+        writer.WriteAsync(
+            Arg.Any<Stream>(),
+            Arg.Any<IReadOnlyList<ExportFieldDescriptor>>(),
+            Arg.Any<IAsyncEnumerable<object?[]>>(),
+            Arg.Any<CancellationToken>())
+            .Returns<Task<long>>(_ =>
+            {
+                job.Fail("Concurrent delivery already failed this job", DateTimeOffset.UtcNow);
+                throw new IOException("Disk full");
+            });
+
+        ExportOrchestrator sut = CreateOrchestrator(writer);
+
+        // Act & Assert — the original exception propagates unmasked
+        IOException ex = await Should.ThrowAsync<IOException>(
+            () => sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken));
+
+        ex.Message.ShouldBe("Disk full");
+        job.Status.ShouldBe(ExportJobStatus.Failed);
+        job.ErrorMessage.ShouldBe("Concurrent delivery already failed this job"); // not overwritten by a second Fail() call
     }
 
     [Fact]
@@ -657,8 +758,6 @@ public sealed class ExportOrchestratorTests
             _fileProvider,
             _clock,
             new SimpleGuidGenerator(),
-            _eventBus,
-            _distributedEventBus,
             _currentTenant,
             registry,
             new NullExtraExportFieldProvider(),

@@ -124,6 +124,23 @@ public sealed class GranitOpenIddictOptions
     public bool EnableFapi2Profile { get; set; }
 
     /// <summary>
+    /// Gets or sets the sender-constraining (proof-of-possession) mechanism issued access
+    /// tokens are bound to.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The core server package is mechanism-agnostic. Each mechanism ships as an opt-in
+    /// package the host references: <c>Granit.OpenIddict.Server.DPoP</c> for
+    /// <see cref="SenderConstrainingMode.DPoP"/> (a future <c>.Mtls</c> package for
+    /// <see cref="SenderConstrainingMode.Mtls"/>). A startup validator rejects a mode whose
+    /// mechanism package is not referenced, and rejects <see cref="SenderConstrainingMode.None"/>
+    /// under <see cref="EnableFapi2Profile"/>.
+    /// </para>
+    /// <para>Default: <see cref="SenderConstrainingMode.None"/>. Set to DPoP by <c>WithFapi2Profile</c>.</para>
+    /// </remarks>
+    public SenderConstrainingMode SenderConstraining { get; set; } = SenderConstrainingMode.None;
+
+    /// <summary>
     /// Gets or sets a value indicating whether the OpenIddict server is allowed to start with
     /// ephemeral signing and encryption keys (regenerated at every process start).
     /// </summary>
@@ -160,6 +177,11 @@ public static class GranitOpenIddictOptionsExtensions
         options.RequirePar = true;
         options.RequireJar = true;
         options.UseReferenceTokens = true;
+        if (options.SenderConstraining == SenderConstrainingMode.None)
+        {
+            options.SenderConstraining = SenderConstrainingMode.DPoP;
+        }
+
         return options;
     }
 }

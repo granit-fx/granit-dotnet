@@ -1,5 +1,6 @@
 using Granit.DataExchange.Import.Events;
 using Granit.DataExchange.Import.Mapping;
+using Granit.DataExchange.Import.Messages;
 using Granit.DataExchange.Import.Reporting;
 using Granit.Domain;
 using Granit.Domain.ValueObjects;
@@ -182,7 +183,10 @@ public sealed class ImportJob : AuditedAggregateRoot, IMultiTenant, IConcurrency
     }
 
     /// <summary>
-    /// Marks the import as completed with a final status and report.
+    /// Marks the import as completed with a final status and report, and buffers an
+    /// <see cref="ImportJobCompletedEto"/> for atomic dispatch via the transactional outbox
+    /// (<c>DomainEventDispatcherInterceptor</c> publishes it pre-commit, alongside the state
+    /// write, on the next <c>SaveChanges</c>).
     /// </summary>
     internal void Complete(ImportJobStatus finalStatus, ImportReport report, DateTimeOffset completedAt)
     {
@@ -194,6 +198,11 @@ public sealed class ImportJob : AuditedAggregateRoot, IMultiTenant, IConcurrency
         Status = finalStatus;
         Report = report;
         CompletedAt = completedAt;
+
+        AddDistributedEvent(new ImportJobCompletedEto(
+            Id, DefinitionName, finalStatus, CreatedBy,
+            report.TotalRows, report.SucceededRows, report.FailedRows,
+            report.InsertedRows, report.UpdatedRows, report.SkippedRows));
     }
 
     /// <summary>

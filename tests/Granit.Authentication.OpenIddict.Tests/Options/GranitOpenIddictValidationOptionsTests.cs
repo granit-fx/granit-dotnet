@@ -11,10 +11,6 @@ public sealed class GranitOpenIddictValidationOptionsTests
         GranitOpenIddictValidationOptions.SectionName.ShouldBe("Authentication:OpenIddict");
 
     [Fact]
-    public void RequireDPoP_DefaultsToFalse() =>
-        new GranitOpenIddictValidationOptions().RequireDPoP.ShouldBeFalse();
-
-    [Fact]
     public void Issuer_DefaultsToNull() =>
         new GranitOpenIddictValidationOptions().Issuer.ShouldBeNull();
 

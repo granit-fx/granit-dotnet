@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.OpenIddict.Server.DPoP</PackageId>
+    <Description>Opt-in DPoP (RFC 9449) sender-constraining for the Granit OpenIddict server. Reference this package to bind issued access tokens to a DPoP proof key (cnf.jkt) at the token endpoint and to satisfy FAPI 2.0 sender-constraining. The core Granit.OpenIddict.Server package carries no DPoP dependency, so mTLS-only or Bearer-only deployments do not pull it in.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.OpenIddict.Server.DPoP.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Authentication.DPoP\Granit.Authentication.DPoP.csproj" />
+    <ProjectReference Include="..\Granit.OpenIddict.Server\Granit.OpenIddict.Server.csproj" />
+  </ItemGroup>
+
+</Project>

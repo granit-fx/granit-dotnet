@@ -2,12 +2,10 @@ using System.Diagnostics;
 using Granit.Commands;
 using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export.Domain;
-using Granit.DataExchange.Export.Events;
 using Granit.DataExchange.Export.Exceptions;
 using Granit.DataExchange.Export.Messages;
 using Granit.DataExchange.Export.Pipeline;
 using Granit.Domain.ValueObjects;
-using Granit.Events;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timing;
@@ -32,8 +30,6 @@ public sealed partial class ExportOrchestrator(
     IDataExchangeFileProvider fileProvider,
     IClock clock,
     IGuidGenerator guidGenerator,
-    ILocalEventBus eventBus,
-    IDistributedEventBus distributedEventBus,
     ICurrentTenant currentTenant,
     IExportPipelineRegistry pipelineRegistry,
     IExtraExportFieldProvider extraFieldProvider,
@@ -81,6 +77,23 @@ public sealed partial class ExportOrchestrator(
         if (job is null)
         {
             LogJobNotFound(jobId);
+            return;
+        }
+
+        // Wolverine delivers commands at-least-once. A terminal job means a previous delivery
+        // already ran the pipeline to completion — re-executing would duplicate the export and
+        // re-buffer a stale Eto. An Exporting job means another worker (or an earlier delivery
+        // still in flight) owns the run; the concurrency stamp already guards the write race, so
+        // there's nothing productive to do here but back off.
+        if (job.Status is ExportJobStatus.Completed or ExportJobStatus.Failed)
+        {
+            LogRedeliveryIgnored(jobId, job.Status);
+            return;
+        }
+
+        if (job.Status is ExportJobStatus.Exporting)
+        {
+            LogPossibleDuplicateWorker(jobId);
             return;
         }
 
@@ -132,10 +145,6 @@ public sealed partial class ExportOrchestrator(
                 request.DefinitionName, request.Format, rowCount,
                 job.TenantId?.ToString(), stopwatch.Elapsed);
 
-            await eventBus.PublishAsync(new ExportJobCompletedEto(
-                jobId, request.DefinitionName, ExportJobStatus.Completed,
-                job.CreatedBy, rowCount, ErrorMessage: null), cancellationToken).ConfigureAwait(false);
-
             LogExportCompleted(jobId, request.DefinitionName, rowCount);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
@@ -144,18 +153,18 @@ public sealed partial class ExportOrchestrator(
             string sanitizedError = ex.Message.Length > 500
                 ? $"{ex.Message.AsSpan(0, 500)}… [truncated]"
                 : ex.Message;
-            job.Fail(sanitizedError, clock.Now);
-            await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
-            metrics.RecordExportFailed(
-                job.DefinitionName, job.Format, job.TenantId?.ToString(), stopwatch.Elapsed);
+            // Guard against a masking second exception: if the job somehow already reached a
+            // terminal state (e.g. a concurrent delivery raced this one to completion), calling
+            // Fail() again would throw from a terminal state and hide the original failure.
+            if (job.Status is not (ExportJobStatus.Completed or ExportJobStatus.Failed))
+            {
+                job.Fail(sanitizedError, clock.Now);
+                await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
-            await eventBus.PublishAsync(new ExportJobCompletedEto(
-                jobId, job.DefinitionName, ExportJobStatus.Failed,
-                job.CreatedBy, RowCount: null, sanitizedError), cancellationToken).ConfigureAwait(false);
-
-            await distributedEventBus.PublishAsync(new ExportJobFailedEto(
-                jobId, job.DefinitionName, sanitizedError), cancellationToken).ConfigureAwait(false);
+                metrics.RecordExportFailed(
+                    job.DefinitionName, job.Format, job.TenantId?.ToString(), stopwatch.Elapsed);
+            }
 
             LogExportFailed(jobId, ex);
             throw;
@@ -346,4 +355,12 @@ public sealed partial class ExportOrchestrator(
         "Export definition '{DefinitionName}' has complex fields that are not supported by format '{Format}'. " +
         "{SkippedCount} complex field(s) were skipped (OnIncompatibleField = Skip).")]
     private partial void LogComplexFieldsSkipped(string definitionName, string format, int skippedCount);
+
+    [LoggerMessage(6, LogLevel.Information,
+        "Export job {ExportJobId} redelivery ignored — already in terminal state '{Status}'")]
+    private partial void LogRedeliveryIgnored(Guid exportJobId, ExportJobStatus status);
+
+    [LoggerMessage(7, LogLevel.Warning,
+        "Export job {ExportJobId} is already 'Exporting' — ignoring possible duplicate worker/redelivery")]
+    private partial void LogPossibleDuplicateWorker(Guid exportJobId);
 }

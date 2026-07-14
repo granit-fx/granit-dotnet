@@ -1,7 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Granit.Authentication.OpenIddict.Internal;
 using Granit.Authentication.OpenIddict.Options;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -45,6 +43,12 @@ public static class OpenIddictValidationHostApplicationBuilderExtensions
 
                 options.UseSystemNetHttp();
                 options.UseAspNetCore();
+
+                // OpenIddict's built-in extractor only accepts the Bearer scheme. Register the
+                // DPoP-scheme token extractor (RFC 9449 §7.1) so a remote resource server can
+                // authenticate `Authorization: DPoP <token>` requests. Harmless when no DPoP
+                // client is used — it only acts as a fallback after the Bearer extractor.
+                options.AddEventHandler(Handlers.DPoPValidationTokenExtractionHandler.Descriptor);
             });
 
         // Normalize OIDC short-name "role" claims emitted by OpenIddict.Validation into
@@ -53,31 +57,6 @@ public static class OpenIddictValidationHostApplicationBuilderExtensions
         // implicitly via TokenValidationParameters.RoleClaimType.
         builder.Services.AddGranitOpenIddictRoleClaimNormalization();
 
-        // Store RequireDPoP flag for middleware registration
-        if (validationOptions.RequireDPoP)
-        {
-            builder.Services.AddSingleton(validationOptions);
-        }
-
         return builder;
-    }
-
-    /// <summary>
-    /// Adds DPoP enforcement middleware when <see cref="GranitOpenIddictValidationOptions.RequireDPoP"/>
-    /// is enabled. Must be called <strong>after</strong> <c>UseAuthentication()</c>.
-    /// </summary>
-    /// <param name="app">The application builder.</param>
-    /// <returns>The application builder for chaining.</returns>
-    public static IApplicationBuilder UseGranitDPoPEnforcement(this IApplicationBuilder app)
-    {
-        GranitOpenIddictValidationOptions? options = app.ApplicationServices
-            .GetService<GranitOpenIddictValidationOptions>();
-
-        if (options?.RequireDPoP == true)
-        {
-            app.UseMiddleware<RequireDPoPMiddleware>();
-        }
-
-        return app;
     }
 }

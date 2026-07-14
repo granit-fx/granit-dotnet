@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.OpenIddict</PackageId>
-    <Description>Self-hosted OpenID Connect authorization server for Granit applications. OIDC abstractions, service interfaces, permission/feature/setting definitions, and integration events.</Description>
+    <Description>Self-hosted OpenID Connect authorization server for Granit applications: claims-destination and key-rotation implementations, impersonation/external-login/account services, diagnostics, options, and declarative query/export definitions. Contracts live in Granit.OpenIddict.Abstractions.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Authentication.External\Granit.Authentication.External.csproj" />
     <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
     <ProjectReference Include="..\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Encryption\Granit.Encryption.csproj" />
@@ -30,6 +29,7 @@
     <ProjectReference Include="..\Granit.Http.Cookies\Granit.Http.Cookies.csproj" />
     <ProjectReference Include="..\Granit.Identity.Local\Granit.Identity.Local.csproj" />
     <ProjectReference Include="..\Granit.Identity.Local.AspNetIdentity\Granit.Identity.Local.AspNetIdentity.csproj" />
+    <ProjectReference Include="..\Granit.OpenIddict.Abstractions\Granit.OpenIddict.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Identity.Abstractions\Granit.Identity.Abstractions.csproj" />
   </ItemGroup>
