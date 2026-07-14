@@ -30,6 +30,7 @@ internal sealed class ExportJobConfiguration : IEntityTypeConfiguration<ExportJo
         builder.Property(e => e.RowCount);
         builder.Property(e => e.ErrorMessage).HasMaxLength(2000);
         builder.Property(e => e.CompletedAt);
+        builder.Property(e => e.FileDeletedAt);
         builder.Property(e => e.TenantId);
 
         // Audit fields from AuditedEntity

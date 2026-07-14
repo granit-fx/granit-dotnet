@@ -9,4 +9,10 @@ internal sealed class TestAppDbContext(DbContextOptions<TestAppDbContext> option
     : DbContext(options)
 {
     public DbSet<TestEntity> TestEntities { get; set; } = null!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // A unique constraint the executor's poison-row-isolation tests can violate on purpose.
+        modelBuilder.Entity<TestEntity>().HasIndex(e => e.Niss).IsUnique();
+    }
 }

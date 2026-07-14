@@ -82,6 +82,14 @@ public sealed class ExportJob : AuditedAggregateRoot, IMultiTenant, IConcurrency
     public DateTimeOffset? CompletedAt { get; private set; }
 
     /// <summary>
+    /// Timestamp when the generated file behind <see cref="BlobReference"/> was purged by the
+    /// retention sweep (GDPR storage limitation). <see langword="null"/> while the file still
+    /// exists. The reference itself is kept for auditability — this marker records that the
+    /// underlying payload is gone.
+    /// </summary>
+    public DateTimeOffset? FileDeletedAt { get; private set; }
+
+    /// <summary>
     /// Tenant identifier. Soft dependency on <c>ICurrentTenant</c>.
     /// </summary>
     public Guid? TenantId { get; private set; }
@@ -142,5 +150,25 @@ public sealed class ExportJob : AuditedAggregateRoot, IMultiTenant, IConcurrency
         Status = ExportJobStatus.Failed;
         ErrorMessage = errorMessage;
         CompletedAt = completedAt;
+    }
+
+    /// <summary>
+    /// Records that the generated file behind <see cref="BlobReference"/> was deleted by the
+    /// retention sweep. Only valid on terminal jobs holding a blob reference — a queued or
+    /// running export has no file yet, and a failed export never produced one.
+    /// </summary>
+    internal void MarkFileDeleted(DateTimeOffset deletedAt)
+    {
+        if (Status is not (ExportJobStatus.Completed or ExportJobStatus.Failed) || BlobReference is null)
+        {
+            throw new InvalidOperationException($"Cannot mark the file deleted while the job is '{Status}' without a stored file.");
+        }
+
+        if (FileDeletedAt is not null)
+        {
+            throw new InvalidOperationException("The generated file was already marked deleted.");
+        }
+
+        FileDeletedAt = deletedAt;
     }
 }

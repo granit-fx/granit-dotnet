@@ -18,7 +18,7 @@ public sealed record RowOutcome<TEntity> where TEntity : class
     public TEntity? Entity { get; init; }
 
     /// <summary>The identity resolution result, or <c>null</c> for insert-only imports.</summary>
-    public RecordIdentity<TEntity>? Identity { get; init; }
+    public RecordIdentity? Identity { get; init; }
 
     /// <summary>The row-level error. Non-null only for failed outcomes.</summary>
     public ImportRowError? Error { get; init; }
@@ -33,7 +33,7 @@ public sealed record RowOutcome<TEntity> where TEntity : class
     /// <param name="rowNumber">One-based source row number.</param>
     /// <param name="entity">The mapped, validated entity.</param>
     /// <param name="identity">Optional identity resolution result.</param>
-    public static RowOutcome<TEntity> Ok(int rowNumber, TEntity entity, RecordIdentity<TEntity>? identity = null)
+    public static RowOutcome<TEntity> Ok(int rowNumber, TEntity entity, RecordIdentity? identity = null)
     {
         ArgumentNullException.ThrowIfNull(entity);
         return new() { RowNumber = rowNumber, Entity = entity, Identity = identity };
