@@ -17697,8 +17697,8 @@
         {
           "name": "Ok",
           "kind": "method",
-          "signature": "Ok(int rowNumber, TEntity entity, RecordIdentity<TEntity>? identity = null)",
-          "returnType": "required int RowNumber { get; init; } public TEntity? Entity { get; init; } public RecordIdentity<TEntity>? Identity { get; init; } public ImportRowError? Error { get; init; } public bool IsSkipped { get; init; } public RowOutcome<TEntity>"
+          "signature": "Ok(int rowNumber, TEntity entity, RecordIdentity? identity = null)",
+          "returnType": "required int RowNumber { get; init; } public TEntity? Entity { get; init; } public RecordIdentity? Identity { get; init; } public ImportRowError? Error { get; init; } public bool IsSkipped { get; init; } public RowOutcome<TEntity>"
         }
       ]
     },
@@ -17744,20 +17744,66 @@
       "members": []
     },
     {
+      "name": "EntityKey",
+      "fqn": "Granit.DataExchange.Import.Identity.EntityKey",
+      "kind": "struct",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Import/Identity/EntityKey.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Equals",
+          "kind": "method",
+          "signature": "Equals(EntityKey other)",
+          "returnType": "bool"
+        },
+        {
+          "name": "GetHashCode",
+          "kind": "method",
+          "signature": "GetHashCode()",
+          "returnType": "int"
+        },
+        {
+          "name": "operator",
+          "kind": "property",
+          "signature": "bool operator",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "EntityKeyKind",
+      "fqn": "Granit.DataExchange.Import.Identity.EntityKeyKind",
+      "kind": "enum",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Import/Identity/EntityKeyKind.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "IRecordIdentityResolver",
       "fqn": "Granit.DataExchange.Import.Identity.IRecordIdentityResolver",
       "kind": "interface",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Import/Identity/IRecordIdentityResolver.cs",
-      "line": 15,
+      "line": 20,
       "members": [
         {
-          "name": "ResolveAsync",
+          "name": "ResolveBatchAsync",
           "kind": "method",
-          "signature": "ResolveAsync(TEntity entity, CancellationToken cancellationToken = default)",
-          "returnType": "Task<RecordIdentity<TEntity>>"
+          "signature": "ResolveBatchAsync(IReadOnlyList<TEntity> batch, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<RecordIdentity>>"
         }
       ]
+    },
+    {
+      "name": "IdentityReasonCodes",
+      "fqn": "Granit.DataExchange.Import.Identity.IdentityReasonCodes",
+      "kind": "class",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Import/Identity/IdentityReasonCodes.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "RecordIdentity",
@@ -17765,8 +17811,45 @@
       "kind": "record",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Import/Identity/RecordIdentity.cs",
-      "line": 8,
-      "members": []
+      "line": 15,
+      "members": [
+        {
+          "name": "Operation",
+          "kind": "property",
+          "signature": "required RecordOperation Operation",
+          "returnType": "required RecordOperation"
+        },
+        {
+          "name": "Insert",
+          "kind": "method",
+          "signature": "Insert(string? externalId = null)",
+          "returnType": "RecordIdentity"
+        },
+        {
+          "name": "Update",
+          "kind": "method",
+          "signature": "Update(EntityKey key, EntityKeyKind keyKind, string? externalId = null)",
+          "returnType": "RecordIdentity"
+        },
+        {
+          "name": "Upsert",
+          "kind": "method",
+          "signature": "Upsert(EntityKey key, EntityKeyKind keyKind)",
+          "returnType": "RecordIdentity"
+        },
+        {
+          "name": "Skip",
+          "kind": "method",
+          "signature": "Skip(params ReadOnlySpan<string> reasonCodes)",
+          "returnType": "RecordIdentity"
+        },
+        {
+          "name": "Ambiguous",
+          "kind": "method",
+          "signature": "Ambiguous(params ReadOnlySpan<string> reasonCodes)",
+          "returnType": "RecordIdentity"
+        }
+      ]
     },
     {
       "name": "RecordOperation",

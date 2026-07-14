@@ -74,6 +74,7 @@ public sealed class ImportEndToEndTests : IDisposable
         services.AddGranitDataExchangeCsv();
         services.AddImportDefinition<TestEntity, TestImportDefinition>();
         services.AddImportExecutor<TestEntity, TestAppDbContext>();
+        services.AddBusinessKeyResolver<TestEntity, TestAppDbContext>();
 
         _provider = services.BuildServiceProvider();
     }
@@ -188,10 +189,55 @@ public sealed class ImportEndToEndTests : IDisposable
         after.Status.ShouldBe(ImportJobStatus.Mapped);
     }
 
-    private static async Task<Guid> UploadAsync(IServiceProvider sp, CancellationToken cancellationToken)
+    [Fact]
+    public async Task Reimporting_an_overlapping_file_updates_existing_rows_without_duplicating()
+    {
+        const string firstCsv = "Name,Email,NISS,Age\nAlice,alice@test.com,111,30\nBob,bob@test.com,222,40\n";
+        const string secondCsv = "Name,Email,NISS,Age\nAlice,alice@newdomain.com,111,99\nCarol,carol@test.com,333,50\n";
+
+        CancellationToken cancellationToken = TestContext.Current.CancellationToken;
+
+        using (IServiceScope firstScope = _provider.CreateScope())
+        {
+            ImportReport firstReport = await RunImportAsync(firstScope.ServiceProvider, firstCsv, cancellationToken);
+            firstReport.InsertedRows.ShouldBe(2);
+            firstReport.UpdatedRows.ShouldBe(0);
+        }
+
+        using (IServiceScope secondScope = _provider.CreateScope())
+        {
+            ImportReport secondReport = await RunImportAsync(secondScope.ServiceProvider, secondCsv, cancellationToken);
+
+            // Alice (NISS 111) already existed → UPDATE; Carol (NISS 333) is brand new → INSERT.
+            secondReport.UpdatedRows.ShouldBe(1);
+            secondReport.InsertedRows.ShouldBe(1);
+            secondReport.FailedRows.ShouldBe(0);
+        }
+
+        // Re-read the database: exactly 3 rows (Alice, Bob, Carol) — no duplicate for Alice, and
+        // her row was actually updated in place (the historical bug left this silently at 0 rows
+        // updated and would have produced a 4th, duplicate Alice row instead).
+        await using TestAppDbContext appDb = _appFactory.CreateDbContext();
+        List<TestEntity> entities = await appDb.TestEntities.OrderBy(e => e.Name).ToListAsync(cancellationToken);
+
+        entities.Count.ShouldBe(3);
+        entities[0].Name.ShouldBe("Alice");
+        entities[0].Email.ShouldBe("alice@newdomain.com");
+        entities[0].Niss.ShouldBe("111");
+        // Age is declared ExcludeOnUpdate on TestImportDefinition — the original value survives the update.
+        entities[0].Age.ShouldBe(30);
+        entities[1].Name.ShouldBe("Bob");
+        entities[2].Name.ShouldBe("Carol");
+        entities[2].Age.ShouldBe(50);
+    }
+
+    private static async Task<Guid> UploadAsync(IServiceProvider sp, CancellationToken cancellationToken) =>
+        await UploadAsync(sp, Csv, cancellationToken);
+
+    private static async Task<Guid> UploadAsync(IServiceProvider sp, string csv, CancellationToken cancellationToken)
     {
         IImportUploadService uploadService = sp.GetRequiredService<IImportUploadService>();
-        byte[] bytes = Encoding.UTF8.GetBytes(Csv);
+        byte[] bytes = Encoding.UTF8.GetBytes(csv);
         await using MemoryStream stream = new(bytes);
 
         ImportUploadResult result = await uploadService.UploadAsync(
@@ -199,6 +245,24 @@ public sealed class ImportEndToEndTests : IDisposable
 
         result.Succeeded.ShouldBeTrue(result.ErrorDetail);
         return result.Job!.Id;
+    }
+
+    /// <summary>Upload → preview → confirm mappings → execute, in one call, for re-import scenarios.</summary>
+    private static async Task<ImportReport> RunImportAsync(IServiceProvider sp, string csv, CancellationToken cancellationToken)
+    {
+        Guid jobId = await UploadAsync(sp, csv, cancellationToken);
+
+        IImportPreviewService previewService = sp.GetRequiredService<IImportPreviewService>();
+        ImportPreviewResult preview = (await previewService.PreviewAsync(jobId, cancellationToken))!;
+
+        IImportJobReader jobReader = sp.GetRequiredService<IImportJobReader>();
+        IImportJobWriter jobWriter = sp.GetRequiredService<IImportJobWriter>();
+        ImportJob job = (await jobReader.GetAsync(jobId, cancellationToken))!;
+        job.ConfirmMappings(preview.Suggestions);
+        await jobWriter.UpdateAsync(job, job.ConcurrencyStamp, cancellationToken);
+
+        IImportOrchestrator orchestrator = sp.GetRequiredService<IImportOrchestrator>();
+        return await orchestrator.ExecuteAsync(jobId, cancellationToken);
     }
 
     // ── Test infrastructure ──────────────────────────────────────────────────
