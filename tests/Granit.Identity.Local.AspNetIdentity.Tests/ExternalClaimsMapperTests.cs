@@ -1,9 +1,8 @@
 using System.Security.Claims;
-using Granit.OpenIddict.Services;
 using Shouldly;
 using Xunit;
 
-namespace Granit.OpenIddict.Tests.Services;
+namespace Granit.Identity.Local.AspNetIdentity.Tests;
 
 public sealed class ExternalClaimsMapperTests
 {

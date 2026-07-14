@@ -1506,7 +1506,9 @@
     {
       "name": "Granit.Identity.Local.AspNetIdentity",
       "deps": [
+        "Granit.Authentication.External",
         "Granit.Caching",
+        "Granit.Events",
         "Granit.Guids",
         "Granit.Identity",
         "Granit.Identity.Local",
@@ -2157,7 +2159,6 @@
     {
       "name": "Granit.OpenIddict",
       "deps": [
-        "Granit.Authentication.External",
         "Granit.Caching",
         "Granit.DataExchange.Abstractions",
         "Granit.Encryption",
@@ -30471,12 +30472,37 @@
       ]
     },
     {
+      "name": "ExternalClaimsMapper",
+      "fqn": "Granit.Identity.Local.AspNetIdentity.ExternalClaimsMapper",
+      "kind": "class",
+      "project": "Granit.Identity.Local.AspNetIdentity",
+      "file": "src/Granit.Identity.Local.AspNetIdentity/ExternalClaimsMapper.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MapToUserProperties",
+          "kind": "method",
+          "signature": "MapToUserProperties(ClaimsPrincipal principal, string provider)",
+          "returnType": "ExternalUserProperties"
+        }
+      ]
+    },
+    {
+      "name": "ExternalUserProperties",
+      "fqn": "Granit.Identity.Local.AspNetIdentity.ExternalUserProperties",
+      "kind": "class",
+      "project": "Granit.Identity.Local.AspNetIdentity",
+      "file": "src/Granit.Identity.Local.AspNetIdentity/ExternalClaimsMapper.cs",
+      "line": 42,
+      "members": []
+    },
+    {
       "name": "GranitIdentityLocalAspNetIdentityModule",
       "fqn": "Granit.Identity.Local.AspNetIdentity.GranitIdentityLocalAspNetIdentityModule",
       "kind": "class",
       "project": "Granit.Identity.Local.AspNetIdentity",
       "file": "src/Granit.Identity.Local.AspNetIdentity/GranitIdentityLocalAspNetIdentityModule.cs",
-      "line": 33,
+      "line": 37,
       "members": [
         {
           "name": "ConfigureServices",
@@ -42950,7 +42976,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 51,
+      "line": 49,
       "members": [
         {
           "name": "ConfigureServices",
@@ -43314,31 +43340,6 @@
           "returnType": "IEnumerable<string>"
         }
       ]
-    },
-    {
-      "name": "ExternalClaimsMapper",
-      "fqn": "Granit.OpenIddict.Services.ExternalClaimsMapper",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/ExternalClaimsMapper.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "MapToUserProperties",
-          "kind": "method",
-          "signature": "MapToUserProperties(ClaimsPrincipal principal, string provider)",
-          "returnType": "ExternalUserProperties"
-        }
-      ]
-    },
-    {
-      "name": "ExternalUserProperties",
-      "fqn": "Granit.OpenIddict.Services.ExternalUserProperties",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/ExternalClaimsMapper.cs",
-      "line": 42,
-      "members": []
     },
     {
       "name": "IClaimsDestinationProvider",

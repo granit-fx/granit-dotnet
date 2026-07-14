@@ -617,7 +617,9 @@
         "type": "Project",
         "dependencies": {
           "Fido2.AspNet": "[4.*, )",
+          "Granit.Authentication.External": "[0.1.0-dev, )",
           "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Events": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.Identity.Local": "[0.1.0-dev, )",
@@ -634,7 +636,6 @@
       "granit.openiddict": {
         "type": "Project",
         "dependencies": {
-          "Granit.Authentication.External": "[0.1.0-dev, )",
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Encryption": "[0.1.0-dev, )",

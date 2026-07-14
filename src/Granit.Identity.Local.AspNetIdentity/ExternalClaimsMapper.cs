@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace Granit.OpenIddict.Services;
+namespace Granit.Identity.Local.AspNetIdentity;
 
 /// <summary>
 /// Maps claims from an external identity provider to user properties.

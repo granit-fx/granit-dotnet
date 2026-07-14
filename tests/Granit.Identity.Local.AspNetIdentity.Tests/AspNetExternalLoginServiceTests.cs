@@ -1,18 +1,17 @@
 using System.Security.Claims;
 using Granit.Authentication.External.Options;
 using Granit.Events;
+using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
-using Granit.OpenIddict.Internal;
-using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 using GranitExternalLoginInfo = Granit.Identity.Local.Services.ExternalLoginInfo;
 
-namespace Granit.OpenIddict.Tests;
+namespace Granit.Identity.Local.AspNetIdentity.Tests;
 
 public sealed class AspNetExternalLoginServiceTests
 {

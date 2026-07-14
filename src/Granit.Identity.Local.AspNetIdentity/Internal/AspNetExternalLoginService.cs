@@ -4,12 +4,11 @@ using Granit.Events;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
-using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using GranitExternalLoginInfo = Granit.Identity.Local.Services.ExternalLoginInfo;
 
-namespace Granit.OpenIddict.Internal;
+namespace Granit.Identity.Local.AspNetIdentity.Internal;
 
 /// <summary>
 /// <see cref="IExternalLoginService"/> implementation backed by ASP.NET Core Identity's

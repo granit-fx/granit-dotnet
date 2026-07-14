@@ -1,3 +1,5 @@
+using Granit.Authentication.External;
+using Granit.Events;
 using Granit.Identity.Extensions;
 using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
@@ -27,6 +29,8 @@ namespace Granit.Identity.Local.AspNetIdentity;
 /// </para>
 /// </remarks>
 [DependsOn(
+    typeof(GranitAuthenticationExternalModule),
+    typeof(GranitEventsModule),
     typeof(GranitIdentityLocalModule),
     typeof(GranitIdentityModule),
     typeof(GranitPersistenceEntityFrameworkCoreModule))]
@@ -71,6 +75,8 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
         context.Services.AddTransient<IHostDataSeedContributor, IdentityLocalRoleSeedContributor>();
 
         // ASP.NET Core Identity service implementations (depend on UserManager<LocalIdentity>)
+        context.Services.TryAddScoped<ExternalClaimsMapper>();
+        context.Services.TryAddScoped<IExternalLoginService, AspNetExternalLoginService>();
         context.Services.TryAddScoped<ITotpService, TotpService>();
         context.Services.TryAddScoped<ITwoFactorService, AspNetTwoFactorService>();
         context.Services.TryAddScoped<IAuthenticatorTwoFactorService, AspNetAuthenticatorTwoFactorService>();

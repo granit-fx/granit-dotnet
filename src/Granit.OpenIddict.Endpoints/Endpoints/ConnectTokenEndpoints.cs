@@ -47,8 +47,6 @@ internal static partial class ConnectTokenEndpoints
         OpenIddictRequest request = context.GetOpenIddictServerRequest()
             ?? throw new InvalidOperationException("The OpenIddict server request is not available.");
 
-        IOidcPrincipalFactory principalFactory = context.RequestServices
-            .GetRequiredService<IOidcPrincipalFactory>();
         OpenIddictMetrics metrics = context.RequestServices
             .GetRequiredService<OpenIddictMetrics>();
         ILogger logger = context.RequestServices
@@ -61,7 +59,7 @@ internal static partial class ConnectTokenEndpoints
         if (request.IsAuthorizationCodeGrantType() || request.IsRefreshTokenGrantType())
         {
             return await HandleCodeOrRefreshAsync(
-                context, request, principalFactory, metrics, tenantId)
+                context, request, metrics, tenantId)
                 .ConfigureAwait(false);
         }
 
@@ -73,14 +71,14 @@ internal static partial class ConnectTokenEndpoints
         if (request.GrantType == TwoFactorGrantType)
         {
             return await HandleTwoFactorAsync(
-                context, request, principalFactory, metrics, tenantId)
+                context, request, metrics, tenantId)
                 .ConfigureAwait(false);
         }
 
         if (request.GrantType == PasskeyGrantType)
         {
             return await HandlePasskeyAsync(
-                context, request, principalFactory, metrics, tenantId)
+                context, request, metrics, tenantId)
                 .ConfigureAwait(false);
         }
 
@@ -92,7 +90,6 @@ internal static partial class ConnectTokenEndpoints
     private static async Task<IResult> HandleCodeOrRefreshAsync(
         HttpContext context,
         OpenIddictRequest request,
-        IOidcPrincipalFactory principalFactory,
         OpenIddictMetrics metrics,
         string? tenantId)
     {
@@ -153,6 +150,8 @@ internal static partial class ConnectTokenEndpoints
             // Preserve scopes from the original principal (including offline_access for refresh tokens).
             ImmutableArray<string> scopes = authenticateResult.Principal.GetScopes();
 
+            IOidcPrincipalFactory principalFactory = context.RequestServices
+                .GetRequiredService<IOidcPrincipalFactory>();
             ClaimsPrincipal principal = await principalFactory.CreateUserPrincipalAsync(
                 user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
                 .ConfigureAwait(false);
@@ -222,7 +221,6 @@ internal static partial class ConnectTokenEndpoints
     private static async Task<IResult> HandleTwoFactorAsync(
         HttpContext context,
         OpenIddictRequest request,
-        IOidcPrincipalFactory principalFactory,
         OpenIddictMetrics metrics,
         string? tenantId)
     {
@@ -285,6 +283,7 @@ internal static partial class ConnectTokenEndpoints
         }
 
         ImmutableArray<string> scopes = request.GetScopes();
+        IOidcPrincipalFactory principalFactory = context.RequestServices.GetRequiredService<IOidcPrincipalFactory>();
         ClaimsPrincipal principal = await principalFactory.CreateUserPrincipalAsync(
             user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
             .ConfigureAwait(false);
@@ -325,7 +324,6 @@ internal static partial class ConnectTokenEndpoints
     private static async Task<IResult> HandlePasskeyAsync(
         HttpContext context,
         OpenIddictRequest request,
-        IOidcPrincipalFactory principalFactory,
         OpenIddictMetrics metrics,
         string? tenantId)
     {
@@ -376,6 +374,7 @@ internal static partial class ConnectTokenEndpoints
         }
 
         ImmutableArray<string> scopes = request.GetScopes();
+        IOidcPrincipalFactory principalFactory = context.RequestServices.GetRequiredService<IOidcPrincipalFactory>();
         ClaimsPrincipal principal = await principalFactory.CreateUserPrincipalAsync(
             user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
             .ConfigureAwait(false);
