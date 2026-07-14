@@ -100,11 +100,6 @@ public abstract class ImportDefinition<TEntity> : IImportDefinitionDescriptor wh
     public IReadOnlyList<string> GetExcludedOnUpdateProperties() => GetBuilder().ExcludedOnUpdateProperties.AsReadOnly();
 
     /// <summary>
-    /// Gets the group-by column name, or <c>null</c> if no grouping is configured.
-    /// </summary>
-    public string? GetGroupByColumn() => GetBuilder().GroupByColumn;
-
-    /// <summary>
     /// Gets whether External ID-based identity resolution is enabled.
     /// </summary>
     public bool GetHasExternalId() => GetBuilder().HasExternalIdFlag;

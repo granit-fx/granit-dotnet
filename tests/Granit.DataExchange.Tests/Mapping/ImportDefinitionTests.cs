@@ -99,16 +99,6 @@ public sealed class ImportDefinitionTests
     }
 
     [Fact]
-    public void GetGroupByColumn_returns_null_when_not_configured()
-    {
-        // Arrange
-        TestPatientImportDefinition definition = new();
-
-        // Assert
-        definition.GetGroupByColumn().ShouldBeNull();
-    }
-
-    [Fact]
     public void GetBuilder_is_idempotent()
     {
         // Arrange

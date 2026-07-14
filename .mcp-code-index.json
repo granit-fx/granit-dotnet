@@ -17456,15 +17456,6 @@
       ]
     },
     {
-      "name": "ChildCollectionBuilder",
-      "fqn": "Granit.DataExchange.Import.ChildCollectionBuilder",
-      "kind": "class",
-      "project": "Granit.DataExchange.Abstractions",
-      "file": "src/Granit.DataExchange.Abstractions/Import/ChildCollectionBuilder.cs",
-      "line": 9,
-      "members": []
-    },
-    {
       "name": "ImportJob",
       "fqn": "Granit.DataExchange.Import.Domain.ImportJob",
       "kind": "class",
@@ -17603,31 +17594,6 @@
       "members": []
     },
     {
-      "name": "GroupedRows",
-      "fqn": "Granit.DataExchange.Import.Grouping.GroupedRows",
-      "kind": "record",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Import/Grouping/GroupedRows.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "IRowGrouper",
-      "fqn": "Granit.DataExchange.Import.Grouping.IRowGrouper",
-      "kind": "interface",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Import/Grouping/IRowGrouper.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "GroupAsync",
-          "kind": "method",
-          "signature": "GroupAsync(IAsyncEnumerable<RawImportRow> rows, CancellationToken cancellationToken = default)",
-          "returnType": "IAsyncEnumerable<GroupedRows>"
-        }
-      ]
-    },
-    {
       "name": "IImportDefinitionDescriptor",
       "fqn": "Granit.DataExchange.Import.IImportDefinitionDescriptor",
       "kind": "interface",
@@ -17720,12 +17686,6 @@
           "kind": "method",
           "signature": "GetExcludedOnUpdateProperties()",
           "returnType": "IReadOnlyList<string>"
-        },
-        {
-          "name": "GetGroupByColumn",
-          "kind": "method",
-          "signature": "GetGroupByColumn()",
-          "returnType": "string?"
         },
         {
           "name": "GetHasExternalId",
@@ -18166,7 +18126,7 @@
           "name": "ToFieldMetadata",
           "kind": "method",
           "signature": "ToFieldMetadata()",
-          "returnType": "bool IsRequired { get; init; } public string? Format { get; init; } public bool IsChildCollection { get; init; } internal ImportFieldMetadata"
+          "returnType": "bool IsRequired { get; init; } public string? Format { get; init; } internal ImportFieldMetadata"
         }
       ]
     },

@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 namespace Granit.DataExchange.Import;
 
 /// <summary>
-/// Fluent builder for declaring importable properties, business keys, and grouping
+/// Fluent builder for declaring importable properties and business keys
 /// within an <see cref="ImportDefinition{TEntity}"/>.
 /// </summary>
 /// <typeparam name="TEntity">The target entity type.</typeparam>
@@ -13,7 +13,6 @@ public sealed class ImportDefinitionBuilder<TEntity> where TEntity : class
     internal List<string> BusinessKeyProperties { get; } = [];
     internal List<string> ExcludedOnUpdateProperties { get; } = [];
     internal bool HasExternalIdFlag { get; private set; }
-    internal string? GroupByColumn { get; private set; }
 
     /// <summary>
     /// Declares an importable property on the target entity.
@@ -91,38 +90,6 @@ public sealed class ImportDefinitionBuilder<TEntity> where TEntity : class
         Expression<Func<TEntity, TProp>> property)
     {
         ExcludedOnUpdateProperties.Add(GetPropertyName(property));
-        return this;
-    }
-
-    /// <summary>
-    /// Declares a group-by column for parent/child import.
-    /// Consecutive rows sharing the same value in this column are grouped into a single entity.
-    /// The file must be sorted by this column.
-    /// </summary>
-    /// <param name="columnName">The source column name to group by.</param>
-    public ImportDefinitionBuilder<TEntity> GroupBy(string columnName)
-    {
-        GroupByColumn = columnName;
-        return this;
-    }
-
-    /// <summary>
-    /// Declares a child collection property for parent/child import.
-    /// Each row in a group maps to one child entity.
-    /// Requires <see cref="GroupBy"/> to be set.
-    /// </summary>
-    /// <typeparam name="TChild">The child entity type.</typeparam>
-    /// <param name="collection">Expression selecting the collection property.</param>
-    /// <param name="configure">Configuration for the child properties.</param>
-    public ImportDefinitionBuilder<TEntity> HasMany<TChild>(
-        Expression<Func<TEntity, IEnumerable<TChild>>> collection,
-        Action<ChildCollectionBuilder<TChild>> configure)
-        where TChild : class
-    {
-        string collectionName = GetPropertyName(collection);
-        ChildCollectionBuilder<TChild> childBuilder = new(collectionName);
-        configure(childBuilder);
-        Properties.AddRange(childBuilder.Properties);
         return this;
     }
 
