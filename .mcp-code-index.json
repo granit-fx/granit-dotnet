@@ -49365,12 +49365,30 @@
       "members": []
     },
     {
+      "name": "AndPredicate",
+      "fqn": "Granit.QueryEngine.Filtering.AndPredicate",
+      "kind": "record",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/QueryPredicate.cs",
+      "line": 111,
+      "members": []
+    },
+    {
       "name": "DateFilterDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.DateFilterDescriptor",
       "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Filtering/DateFilterDescriptor.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "QueryPredicateValidationException",
+      "fqn": "Granit.QueryEngine.Filtering.Exceptions.QueryPredicateValidationException",
+      "kind": "class",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/Exceptions/QueryPredicateValidationException.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -49433,12 +49451,39 @@
       ]
     },
     {
+      "name": "FilterPredicate",
+      "fqn": "Granit.QueryEngine.Filtering.FilterPredicate",
+      "kind": "record",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/QueryPredicate.cs",
+      "line": 105,
+      "members": []
+    },
+    {
       "name": "GroupByDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.GroupByDescriptor",
       "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Filtering/GroupByDescriptor.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "NotPredicate",
+      "fqn": "Granit.QueryEngine.Filtering.NotPredicate",
+      "kind": "record",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/QueryPredicate.cs",
+      "line": 124,
+      "members": []
+    },
+    {
+      "name": "OrPredicate",
+      "fqn": "Granit.QueryEngine.Filtering.OrPredicate",
+      "kind": "record",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/QueryPredicate.cs",
+      "line": 117,
       "members": []
     },
     {
@@ -49449,6 +49494,144 @@
       "file": "src/Granit.QueryEngine.Abstractions/Filtering/PresetDescriptor.cs",
       "line": 8,
       "members": []
+    },
+    {
+      "name": "QueryPredicate",
+      "fqn": "Granit.QueryEngine.Filtering.QueryPredicate",
+      "kind": "record",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/QueryPredicate.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "Criterion",
+          "kind": "method",
+          "signature": "Criterion(string field, FilterOperator op, string value)",
+          "returnType": "QueryPredicate"
+        },
+        {
+          "name": "And",
+          "kind": "method",
+          "signature": "And(params ReadOnlySpan<QueryPredicate> operands)",
+          "returnType": "QueryPredicate"
+        },
+        {
+          "name": "Or",
+          "kind": "method",
+          "signature": "Or(params ReadOnlySpan<QueryPredicate> operands)",
+          "returnType": "QueryPredicate"
+        },
+        {
+          "name": "Not",
+          "kind": "method",
+          "signature": "Not(QueryPredicate operand)",
+          "returnType": "QueryPredicate"
+        }
+      ]
+    },
+    {
+      "name": "QueryPredicateError",
+      "fqn": "Granit.QueryEngine.Filtering.QueryPredicateError",
+      "kind": "record",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/QueryPredicateError.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(UnknownField)",
+          "returnType": "const string UnknownField ="
+        },
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(FieldNotFilterable)",
+          "returnType": "const string FieldNotFilterable ="
+        },
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(OperatorNotAllowed)",
+          "returnType": "const string OperatorNotAllowed ="
+        },
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(ValueNotConvertible)",
+          "returnType": "const string ValueNotConvertible ="
+        },
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(NullCheckOnNonNullable)",
+          "returnType": "const string NullCheckOnNonNullable ="
+        },
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(TreeTooDeep)",
+          "returnType": "const string TreeTooDeep ="
+        },
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(TooManyCriteria)",
+          "returnType": "const string TooManyCriteria ="
+        }
+      ]
+    },
+    {
+      "name": "QueryPredicateErrorCodes",
+      "fqn": "Granit.QueryEngine.Filtering.QueryPredicateErrorCodes",
+      "kind": "class",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/QueryPredicateError.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(UnknownField)",
+          "returnType": "const string UnknownField ="
+        },
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(FieldNotFilterable)",
+          "returnType": "const string FieldNotFilterable ="
+        },
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(OperatorNotAllowed)",
+          "returnType": "const string OperatorNotAllowed ="
+        },
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(ValueNotConvertible)",
+          "returnType": "const string ValueNotConvertible ="
+        },
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(NullCheckOnNonNullable)",
+          "returnType": "const string NullCheckOnNonNullable ="
+        },
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(TreeTooDeep)",
+          "returnType": "const string TreeTooDeep ="
+        },
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(TooManyCriteria)",
+          "returnType": "const string TooManyCriteria ="
+        }
+      ]
     },
     {
       "name": "QuickFilterDescriptor",
@@ -49543,7 +49726,7 @@
       "kind": "interface",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/IQueryEngine.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -49574,6 +49757,24 @@
           "kind": "method",
           "signature": "BuildFilteredQuery(IQueryable<TEntity> source, QueryRequest request)",
           "returnType": "IQueryable<TEntity>"
+        },
+        {
+          "name": "BuildFilteredQuery",
+          "kind": "method",
+          "signature": "BuildFilteredQuery(IQueryable<TEntity> source, QueryRequest request, QueryPredicate? predicate)",
+          "returnType": "IQueryable<TEntity>"
+        },
+        {
+          "name": "BuildFilteredQuery",
+          "kind": "method",
+          "signature": "BuildFilteredQuery(source, request)",
+          "returnType": "predicate is null ?"
+        },
+        {
+          "name": "NotSupportedException",
+          "kind": "method",
+          "signature": "NotSupportedException($\"{GetType()",
+          "returnType": ": throw"
         }
       ]
     },

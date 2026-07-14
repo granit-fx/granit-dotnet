@@ -313,6 +313,28 @@ internal sealed class QueryEngine<TEntity>(
     }
 
     /// <inheritdoc/>
+    public IQueryable<TEntity> BuildFilteredQuery(
+        IQueryable<TEntity> source,
+        QueryRequest request,
+        QueryPredicate? predicate)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(request);
+
+        IQueryable<TEntity> query = ApplyCommonFilters(source.AsNoTracking(), request);
+
+        if (predicate is not null)
+        {
+            // Strict path: PredicateExpressionBuilder throws QueryPredicateValidationException
+            // (listing every violation) instead of silently dropping criteria like the lenient
+            // QueryRequest.Filter pipeline above.
+            query = query.Where(PredicateExpressionBuilder.BuildStrict(predicate, _builder, _logger));
+        }
+
+        return query;
+    }
+
+    /// <inheritdoc/>
     public QueryMetadata GetMetadata()
     {
         IStringLocalizer? localizer = ResolveLocalizer();
@@ -336,7 +358,8 @@ internal sealed class QueryEngine<TEntity>(
                 .Select(c => new FilterableField(
                     c.PropertyName,
                     c.ClrType.Name,
-                    FilterOperatorInference.GetOperators(c.ClrType),
+                    FilterOperatorInference.GetOperators(
+                        c.ClrType, FilterOperatorInference.IsNullableColumnType(c.ClrType)),
                     GetEnumValues(c.ClrType),
                     c.Lookup))
                 .ToList(),

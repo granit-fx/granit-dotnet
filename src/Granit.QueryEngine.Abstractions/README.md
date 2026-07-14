@@ -2,7 +2,8 @@
 
 Contracts and core services for Granit.QueryEngine: declarative `QueryDefinition<T>`
 fluent API, typed filters with operator inference, composable FilterGroups/presets/
-DatePeriod, `PagedResult<T>`, `QueryRequest`, `QueryMetadata` for frontend
+DatePeriod, the programmatic `QueryPredicate` tree (strictly validated boolean filter
+logic for protocol adapters), `PagedResult<T>`, `QueryRequest`, `QueryMetadata` for frontend
 auto-configuration, plus `QueryEngineOptions` and OpenTelemetry metrics. Modules that
 declare queries reference this package; hosts that execute them add
 `Granit.QueryEngine.EntityFrameworkCore`.

@@ -33,12 +33,15 @@ internal static class QueryableFilterExtensions
             shadowColumns = shadows.ToDictionary(c => c.PropertyName, StringComparer.OrdinalIgnoreCase);
         }
 
-        // Build operator whitelist per field type for runtime validation (CWE-20)
+        // Build operator whitelist per field type for runtime validation (CWE-20). The
+        // nullable-aware overload keeps this whitelist in sync with GetMetadata: isNull/isNotNull
+        // are accepted on nullable (reference or Nullable<T>) columns exactly where advertised.
         var fieldOperators = builder.Columns
             .Where(c => c.IsFilterable)
             .ToDictionary(
                 c => c.PropertyName,
-                c => FilterOperatorInference.GetOperators(c.ClrType),
+                c => FilterOperatorInference.GetOperators(
+                    c.ClrType, FilterOperatorInference.IsNullableColumnType(c.ClrType)),
                 StringComparer.OrdinalIgnoreCase);
 
         IQueryable<TEntity> query = source;
@@ -221,15 +224,5 @@ internal static class QueryableFilterExtensions
         }
 
         return query;
-    }
-
-    /// <summary>
-    /// Replaces one parameter expression with another in an expression tree.
-    /// </summary>
-    private sealed class ParameterReplacer(ParameterExpression oldParam, ParameterExpression newParam)
-        : ExpressionVisitor
-    {
-        protected override Expression VisitParameter(ParameterExpression node) =>
-            node == oldParam ? newParam : base.VisitParameter(node);
     }
 }

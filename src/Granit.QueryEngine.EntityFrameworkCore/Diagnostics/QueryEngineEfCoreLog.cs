@@ -50,4 +50,11 @@ internal static partial class QueryEngineEfCoreLog
         Level = LogLevel.Warning,
         Message = "A query definition enables cursor pagination but QueryEngineOptions.CursorHmacKey is not configured — cursors are unsigned and forgeable (CWE-565). Configure a Base64 256-bit key in production. This warning is emitted once per process.")]
     public static partial void UnsignedCursorPagination(ILogger logger);
+
+    [LoggerMessage(
+        EventId = 8206,
+        Level = LogLevel.Debug,
+        Message = "Null-check filter (isNull/isNotNull) on field '{Field}' of non-nullable value type {ColumnType} is ignored — the column can never be NULL")]
+    public static partial void NullCheckOnNonNullableColumnIgnored(
+        ILogger logger, string field, string columnType);
 }

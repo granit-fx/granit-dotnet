@@ -90,6 +90,9 @@ internal static class FilterExpressionBuilder
         Expression? body = criteria.Operator switch
         {
             FilterOperator.Eq => BuildEqualsExpression(member, criteria.Value, propertyType, logger, criteria.Field),
+            FilterOperator.Ne => BuildNotEqualsExpression(member, criteria.Value, propertyType, logger, criteria.Field),
+            FilterOperator.IsNull => BuildNullCheckExpression(member, isNull: true, logger, criteria.Field),
+            FilterOperator.IsNotNull => BuildNullCheckExpression(member, isNull: false, logger, criteria.Field),
             FilterOperator.Contains => BuildStringMethodExpression(member, criteria.Value, StringContainsMethod, logger, criteria.Field),
             FilterOperator.StartsWith => BuildStringMethodExpression(member, criteria.Value, StringStartsWithMethod, logger, criteria.Field),
             FilterOperator.EndsWith => BuildStringMethodExpression(member, criteria.Value, StringEndsWithMethod, logger, criteria.Field),
@@ -126,6 +129,49 @@ internal static class FilterExpressionBuilder
 
         ConstantExpression constant = Expression.Constant(converted, member.Type);
         return Expression.Equal(member, constant);
+    }
+
+    private static BinaryExpression? BuildNotEqualsExpression(
+        Expression member, string value, Type propertyType,
+        ILogger? logger = null, string? field = null)
+    {
+        object? converted = ConvertValue(value, propertyType, logger, field);
+        if (converted is null)
+        {
+            // Same stance as Eq: a failed conversion drops the criterion instead of building
+            // `column != null` and silently matching the wrong rows. See issue #2767.
+            return null;
+        }
+
+        // C# two-valued (lifted) semantics: a NULL column value is "not equal" to any
+        // non-null constant, so NULL rows MATCH the Ne criterion — consistent both in-memory
+        // and under EF Core's relational null-semantics compensation.
+        ConstantExpression constant = Expression.Constant(converted, member.Type);
+        return Expression.NotEqual(member, constant);
+    }
+
+    private static BinaryExpression? BuildNullCheckExpression(
+        Expression member, bool isNull,
+        ILogger? logger = null, string? field = null)
+    {
+        if (member.Type.IsValueType && Nullable.GetUnderlyingType(member.Type) is null)
+        {
+            // A non-nullable value-type column can never be NULL: the lenient path drops the
+            // criterion (this method returns null); the strict predicate path surfaces it as a
+            // NullCheckOnNonNullable validation error before ever reaching this builder.
+            if (logger is not null)
+            {
+                QueryEngineEfCoreLog.NullCheckOnNonNullableColumnIgnored(
+                    logger, field ?? "(unknown)", member.Type.Name);
+            }
+
+            return null;
+        }
+
+        ConstantExpression nullConstant = Expression.Constant(null, member.Type);
+        return isNull
+            ? Expression.Equal(member, nullConstant)
+            : Expression.NotEqual(member, nullConstant);
     }
 
     private static BinaryExpression? BuildStringMethodExpression(

@@ -34,4 +34,13 @@ public enum FilterOperator
 
     /// <summary>Value is between two bounds (inclusive).</summary>
     Between,
+
+    /// <summary>Not equal (<c>!=</c>). Follows C# two-valued semantics: a NULL column matches.</summary>
+    Ne,
+
+    /// <summary>Column is NULL (<c>IS NULL</c>). The criterion value is ignored (convention: empty string).</summary>
+    IsNull,
+
+    /// <summary>Column is not NULL (<c>IS NOT NULL</c>). The criterion value is ignored (convention: empty string).</summary>
+    IsNotNull,
 }

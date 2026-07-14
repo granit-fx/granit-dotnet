@@ -1,4 +1,6 @@
 using System.Linq.Expressions;
+using Granit.QueryEngine.Filtering;
+using Granit.QueryEngine.Filtering.Exceptions;
 using Granit.QueryEngine.Meta;
 
 namespace Granit.QueryEngine;
@@ -119,4 +121,50 @@ public interface IQueryEngine<TEntity> where TEntity : class
     /// </para>
     /// </remarks>
     IQueryable<TEntity> BuildFilteredQuery(IQueryable<TEntity> source, QueryRequest request);
+
+    /// <summary>
+    /// Applies the <see cref="QueryDefinition{TEntity}"/>'s filter pipeline (as
+    /// <see cref="BuildFilteredQuery(IQueryable{TEntity}, QueryRequest)"/>), then a strictly
+    /// validated <see cref="QueryPredicate"/> tree on top.
+    /// </summary>
+    /// <param name="source">The base queryable.</param>
+    /// <param name="request">The query parameters (only filter-related fields are applied).</param>
+    /// <param name="predicate">
+    /// An optional programmatic predicate tree, AND-combined with the request's filter pipeline.
+    /// <see langword="null"/> is equivalent to the two-argument overload.
+    /// </param>
+    /// <returns>The filtered queryable, ready for downstream aggregation.</returns>
+    /// <remarks>
+    /// <para>
+    /// <b>Strict vs lenient.</b> <see cref="QueryRequest.Filter"/> is the lenient, UI-tolerant
+    /// path: unknown fields, disallowed operators, and unconvertible values are silently dropped
+    /// so a stale grid bookmark still renders. The <paramref name="predicate"/> tree is the
+    /// strict path for protocol adapters (e.g. OData): any violation — unknown field,
+    /// non-filterable field, disallowed operator, unconvertible value, null check on a
+    /// non-nullable column, structural guard breach — throws
+    /// <see cref="QueryPredicateValidationException"/> listing <b>every</b> violation, because a
+    /// silently dropped criterion inside OR/NOT would change result semantics and a protocol
+    /// adapter must never return a superset of the requested rows.
+    /// </para>
+    /// </remarks>
+    /// <exception cref="QueryPredicateValidationException">
+    /// The predicate tree failed strict validation against the query definition.
+    /// </exception>
+    /// <exception cref="NotSupportedException">
+    /// The implementation predates this member and a non-<see langword="null"/> predicate was
+    /// supplied (see the default implementation note below).
+    /// </exception>
+    // Default interface implementation: a pre-1.0 courtesy so out-of-repo IQueryEngine<TEntity>
+    // implementors keep compiling across this minor release. It delegates when no predicate is
+    // supplied and throws NotSupportedException otherwise. Remove at 1.0 — implementations must
+    // then provide strict predicate support themselves.
+    IQueryable<TEntity> BuildFilteredQuery(
+        IQueryable<TEntity> source,
+        QueryRequest request,
+        QueryPredicate? predicate) =>
+        predicate is null
+            ? BuildFilteredQuery(source, request)
+            : throw new NotSupportedException(
+                $"{GetType().Name} does not implement BuildFilteredQuery with a QueryPredicate. " +
+                "Override the three-argument overload to support strict predicate trees.");
 }
