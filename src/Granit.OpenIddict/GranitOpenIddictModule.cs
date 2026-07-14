@@ -73,6 +73,7 @@ public sealed class GranitOpenIddictModule : GranitModule
             .BindConfiguration(GranitKeyRotationOptions.SectionName);
 
         context.Services.TryAddScoped<IClaimsDestinationProvider, DefaultClaimsDestinationProvider>();
+        context.Services.TryAddScoped<IOidcPrincipalFactory, OidcPrincipalFactory>();
         context.Services.TryAddScoped<ITotpService, DefaultTotpService>();
         context.Services.TryAddScoped<ExternalClaimsMapper>();
         context.Services.TryAddScoped<IExternalLoginService, Internal.AspNetExternalLoginService>();

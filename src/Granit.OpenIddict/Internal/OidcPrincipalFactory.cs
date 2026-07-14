@@ -6,7 +6,7 @@ using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Identity;
 using OpenIddict.Abstractions;
 
-namespace Granit.OpenIddict.Endpoints.Internal;
+namespace Granit.OpenIddict.Internal;
 
 /// <summary>
 /// Builds a <see cref="ClaimsPrincipal"/> from a <see cref="LocalIdentity"/> for OIDC token issuance.
@@ -15,6 +15,7 @@ namespace Granit.OpenIddict.Endpoints.Internal;
 internal sealed class OidcPrincipalFactory(
     UserManager<LocalIdentity> userManager,
     IClaimsDestinationProvider destinationProvider)
+    : IOidcPrincipalFactory
 {
     /// <summary>
     /// Creates a <see cref="ClaimsPrincipal"/> with standard OIDC claims from the user,
@@ -25,7 +26,7 @@ internal sealed class OidcPrincipalFactory(
     /// <param name="authenticationScheme">The authentication scheme for the <see cref="ClaimsIdentity"/>.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A principal ready for token issuance.</returns>
-    internal async Task<ClaimsPrincipal> CreateUserPrincipalAsync(
+    public async Task<ClaimsPrincipal> CreateUserPrincipalAsync(
         LocalIdentity user,
         ImmutableArray<string> scopes,
         string authenticationScheme,
@@ -104,7 +105,7 @@ internal sealed class OidcPrincipalFactory(
     /// <summary>
     /// Creates a <see cref="ClaimsPrincipal"/> for client credentials (no user).
     /// </summary>
-    internal static ClaimsPrincipal CreateClientPrincipal(
+    public ClaimsPrincipal CreateClientPrincipal(
         string clientId,
         ImmutableArray<string> scopes,
         string authenticationScheme)

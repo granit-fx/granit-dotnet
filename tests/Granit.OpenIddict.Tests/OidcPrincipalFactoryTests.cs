@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using System.Security.Claims;
 using Granit.Identity.Local.Domain;
-using Granit.OpenIddict.Endpoints.Internal;
+using Granit.OpenIddict.Internal;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
@@ -9,7 +9,7 @@ using OpenIddict.Abstractions;
 using Shouldly;
 using Xunit;
 
-namespace Granit.OpenIddict.Endpoints.Tests.Integration;
+namespace Granit.OpenIddict.Tests;
 
 public sealed class OidcPrincipalFactoryTests
 {
@@ -315,7 +315,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public void CreateClientPrincipal_SetsSubjectToClientId()
     {
-        ClaimsPrincipal principal = OidcPrincipalFactory.CreateClientPrincipal(
+        ClaimsPrincipal principal = _factory.CreateClientPrincipal(
             "my-client", [], "TestScheme");
 
         ClaimsIdentity identity = principal.Identity.ShouldBeOfType<ClaimsIdentity>();
@@ -325,7 +325,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public void CreateClientPrincipal_SetsAuthenticationScheme()
     {
-        ClaimsPrincipal principal = OidcPrincipalFactory.CreateClientPrincipal(
+        ClaimsPrincipal principal = _factory.CreateClientPrincipal(
             "my-client", [], "CustomScheme");
 
         ClaimsIdentity identity = principal.Identity.ShouldBeOfType<ClaimsIdentity>();
@@ -337,7 +337,7 @@ public sealed class OidcPrincipalFactoryTests
     {
         ImmutableArray<string> scopes = ["api", "openid"];
 
-        ClaimsPrincipal principal = OidcPrincipalFactory.CreateClientPrincipal(
+        ClaimsPrincipal principal = _factory.CreateClientPrincipal(
             "my-client", scopes, "TestScheme");
 
         principal.ShouldNotBeNull();

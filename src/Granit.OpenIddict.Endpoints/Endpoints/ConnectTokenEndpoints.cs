@@ -7,7 +7,7 @@ using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
 using Granit.OpenIddict.Diagnostics;
-using Granit.OpenIddict.Endpoints.Internal;
+using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -47,8 +47,8 @@ internal static partial class ConnectTokenEndpoints
         OpenIddictRequest request = context.GetOpenIddictServerRequest()
             ?? throw new InvalidOperationException("The OpenIddict server request is not available.");
 
-        OidcPrincipalFactory principalFactory = context.RequestServices
-            .GetRequiredService<OidcPrincipalFactory>();
+        IOidcPrincipalFactory principalFactory = context.RequestServices
+            .GetRequiredService<IOidcPrincipalFactory>();
         OpenIddictMetrics metrics = context.RequestServices
             .GetRequiredService<OpenIddictMetrics>();
         ILogger logger = context.RequestServices
@@ -92,7 +92,7 @@ internal static partial class ConnectTokenEndpoints
     private static async Task<IResult> HandleCodeOrRefreshAsync(
         HttpContext context,
         OpenIddictRequest request,
-        OidcPrincipalFactory principalFactory,
+        IOidcPrincipalFactory principalFactory,
         OpenIddictMetrics metrics,
         string? tenantId)
     {
@@ -205,7 +205,9 @@ internal static partial class ConnectTokenEndpoints
             .GetRequiredService<ILoggerFactory>()
             .CreateLogger(LoggerCategory);
 
-        ClaimsPrincipal principal = OidcPrincipalFactory.CreateClientPrincipal(
+        IOidcPrincipalFactory principalFactory = context.RequestServices
+            .GetRequiredService<IOidcPrincipalFactory>();
+        ClaimsPrincipal principal = principalFactory.CreateClientPrincipal(
             request.ClientId!,
             request.GetScopes(),
             OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
@@ -220,7 +222,7 @@ internal static partial class ConnectTokenEndpoints
     private static async Task<IResult> HandleTwoFactorAsync(
         HttpContext context,
         OpenIddictRequest request,
-        OidcPrincipalFactory principalFactory,
+        IOidcPrincipalFactory principalFactory,
         OpenIddictMetrics metrics,
         string? tenantId)
     {
@@ -323,7 +325,7 @@ internal static partial class ConnectTokenEndpoints
     private static async Task<IResult> HandlePasskeyAsync(
         HttpContext context,
         OpenIddictRequest request,
-        OidcPrincipalFactory principalFactory,
+        IOidcPrincipalFactory principalFactory,
         OpenIddictMetrics metrics,
         string? tenantId)
     {

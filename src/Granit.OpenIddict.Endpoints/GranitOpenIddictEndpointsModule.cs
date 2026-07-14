@@ -11,7 +11,6 @@ using Granit.QueryEngine;
 using Granit.Validation;
 using Granit.Workspaces;
 using Granit.Workspaces.Extensions;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.OpenIddict.Endpoints;
 
@@ -43,7 +42,6 @@ public sealed class GranitOpenIddictEndpointsModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddLocalizationResource<OpenIddictEndpointsLocalizationResource>();
-        context.Services.TryAddScoped<OidcPrincipalFactory>();
         context.Services.AddFeatureProvider<OpenIddictFeatureProvider>();
     }
 }

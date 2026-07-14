@@ -42608,7 +42608,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/GranitOpenIddictEndpointsModule.cs",
-      "line": 40,
+      "line": 39,
       "members": [
         {
           "name": "ConfigureServices",
@@ -43369,6 +43369,28 @@
           "kind": "method",
           "signature": "RotateAsync(CancellationToken cancellationToken = default)",
           "returnType": "Task<KeyRotationResult>"
+        }
+      ]
+    },
+    {
+      "name": "IOidcPrincipalFactory",
+      "fqn": "Granit.OpenIddict.Services.IOidcPrincipalFactory",
+      "kind": "interface",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/IOidcPrincipalFactory.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "CreateUserPrincipalAsync",
+          "kind": "method",
+          "signature": "CreateUserPrincipalAsync(LocalIdentity user, ImmutableArray<string> scopes, string authenticationScheme, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ClaimsPrincipal>"
+        },
+        {
+          "name": "CreateClientPrincipal",
+          "kind": "method",
+          "signature": "CreateClientPrincipal(string clientId, ImmutableArray<string> scopes, string authenticationScheme)",
+          "returnType": "ClaimsPrincipal"
         }
       ]
     },
