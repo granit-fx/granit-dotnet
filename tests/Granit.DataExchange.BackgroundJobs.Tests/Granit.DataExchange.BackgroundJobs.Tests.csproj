@@ -3,7 +3,6 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
-    <NoWarn>$(NoWarn);EF1001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,15 +11,13 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Shouldly" />
-    <PackageReference Include="Bogus" />
     <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.Testing" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.DataExchange.EntityFrameworkCore\Granit.DataExchange.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Testing\Granit.Testing.csproj" />
+    <ProjectReference Include="..\..\src\Granit.DataExchange.BackgroundJobs\Granit.DataExchange.BackgroundJobs.csproj" />
   </ItemGroup>
 
 </Project>

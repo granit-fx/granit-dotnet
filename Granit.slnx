@@ -181,6 +181,7 @@
   <Folder Name="/src/Application/">
     <Project Path="src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj" />
     <Project Path="src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj" />
+    <Project Path="src/Granit.DataExchange.BackgroundJobs/Granit.DataExchange.BackgroundJobs.csproj" />
     <Project Path="src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj" />
     <Project Path="src/Granit.DataExchange.Csv/Granit.DataExchange.Csv.csproj" />
     <Project Path="src/Granit.DataExchange.Endpoints/Granit.DataExchange.Endpoints.csproj" />
@@ -567,6 +568,7 @@
   <Folder Name="/tests/Application/">
     <Project Path="tests/Granit.DataExchange.AI.Tests/Granit.DataExchange.AI.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Abstractions.Tests/Granit.DataExchange.Abstractions.Tests.csproj" />
+    <Project Path="tests/Granit.DataExchange.BackgroundJobs.Tests/Granit.DataExchange.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.BlobStorage.Tests/Granit.DataExchange.BlobStorage.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Csv.Tests/Granit.DataExchange.Csv.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Endpoints.Tests/Granit.DataExchange.Endpoints.Tests.csproj" />

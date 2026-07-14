@@ -2,11 +2,13 @@ using Granit.DataExchange.EntityFrameworkCore.Internal;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Export;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Stores;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Stores;
+using Granit.DataExchange.EntityFrameworkCore.Internal.Retention;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Pipeline;
+using Granit.DataExchange.Retention;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +64,11 @@ public static class DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensi
         // ImportJobQuery / ExportJobQuery.
         builder.Services.AddScoped<IQueryableSource<ImportJob>, EfImportJobQueryableSource>();
         builder.Services.AddScoped<IQueryableSource<ExportJob>, EfExportJobQueryableSource>();
+
+        // Retention sweep store (replaces the fail-fast null-object default from Granit.DataExchange).
+        builder.Services.AddScoped<EfImportJobRetentionStore>();
+        builder.Services.AddScoped<EfExportJobRetentionStore>();
+        builder.Services.AddScoped<IDataExchangeRetentionStore, EfDataExchangeRetentionStore>();
 
         return builder;
     }

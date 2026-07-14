@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.DataExchange.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.DataExchange: GDPR retention sweep (file/record purge, stuck-job recovery) via the Granit.BackgroundJobs recurring-job pattern.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.DataExchange.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.DataExchange\Granit.DataExchange.csproj" />
+  </ItemGroup>
+
+</Project>
