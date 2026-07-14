@@ -38,7 +38,11 @@ public sealed class CacheEncryptionConventionTests
     [
         "Granit.Bff.BffTokenSet",                              // OAuth tokens + DPoP private key
         "Granit.Vault.SecretDescriptor",                      // Vault-cached secret payload
-        "Granit.Http.Idempotency.Models.IdempotencyEntry",    // captured response bodies/headers (PII, tokens)
+        // Granit.Http.Idempotency.Models.IdempotencyEntry no longer flows through the
+        // Granit.Caching L2 (#3002): it has its own IIdempotencyStore, and the Redis
+        // provider encrypts unconditionally via ICacheValueEncryptor — enforced by
+        // RedisIdempotencyStoreTests (ciphertext assertion) and the fail-closed
+        // RedisIdempotencyEncryptionStartupValidator, not by [CacheEncrypted].
     ];
 
     [Fact]

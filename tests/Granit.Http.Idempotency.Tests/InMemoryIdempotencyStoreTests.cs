@@ -1,29 +1,17 @@
-using Granit.Caching.Internal;
-using Granit.Caching.Options;
 using Granit.Http.Idempotency.Internal;
 using Granit.Http.Idempotency.Models;
-using Granit.MultiTenancy;
 using Granit.Testing.Fakes;
-using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 
 namespace Granit.Http.Idempotency.Tests;
 
-public sealed class ConditionalCacheIdempotencyStoreTests
+public sealed class InMemoryIdempotencyStoreTests
 {
     private readonly FakeTimeProvider _timeProvider = new(new DateTimeOffset(2026, 3, 21, 12, 0, 0, TimeSpan.Zero));
-    private readonly ConditionalCacheIdempotencyStore _store;
+    private readonly InMemoryIdempotencyStore _store;
 
-    public ConditionalCacheIdempotencyStoreTests()
-    {
-        InMemoryConditionalCache cache = new(
-            _timeProvider,
-            new ConditionalCacheKeyComposer(
-                Microsoft.Extensions.Options.Options.Create(new CachingOptions()),
-                NullTenantContext.Instance));
-        _store = new ConditionalCacheIdempotencyStore(cache, NullLogger<ConditionalCacheIdempotencyStore>.Instance);
-    }
+    public InMemoryIdempotencyStoreTests() => _store = new InMemoryIdempotencyStore(_timeProvider);
 
     private static IdempotencyEntry CreateEntry(
         IdempotencyState state = IdempotencyState.InProgress,
@@ -34,6 +22,16 @@ public sealed class ConditionalCacheIdempotencyStoreTests
             PayloadHash = payloadHash,
             CreatedAt = DateTimeOffset.UtcNow,
         };
+
+    // =========================================================================
+    // Contract surface
+    // =========================================================================
+
+    [Fact]
+    public void IsDistributed_IsFalse() => _store.IsDistributed.ShouldBeFalse();
+
+    [Fact]
+    public void BackendName_IsTypeName() => _store.BackendName.ShouldBe(nameof(InMemoryIdempotencyStore));
 
     // =========================================================================
     // TryAcquireAsync
@@ -78,6 +76,20 @@ public sealed class ConditionalCacheIdempotencyStoreTests
         bool acquired = await _store.TryAcquireAsync("key-1", CreateEntry(), TimeSpan.FromMinutes(5), CancellationToken.None);
 
         acquired.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task TryAcquireAsync_ParallelRace_ExactlyOneWinner()
+    {
+        // 16 concurrent acquisitions of the same key — the create-if-absent
+        // transition must admit exactly one winner.
+        const int Contenders = 16;
+
+        bool[] results = await Task.WhenAll(Enumerable.Range(0, Contenders)
+            .Select(_ => Task.Run(() =>
+                _store.TryAcquireAsync("contended-key", CreateEntry(), TimeSpan.FromMinutes(5), CancellationToken.None))));
+
+        results.Count(r => r).ShouldBe(1);
     }
 
     // =========================================================================
@@ -133,11 +145,11 @@ public sealed class ConditionalCacheIdempotencyStoreTests
     }
 
     // =========================================================================
-    // SetCompletedAsync
+    // CompleteAsync
     // =========================================================================
 
     [Fact]
-    public async Task SetCompletedAsync_ExistingKey_UpdatesEntry()
+    public async Task CompleteAsync_ExistingKey_UpdatesEntryAndReturnsTrue()
     {
         await _store.TryAcquireAsync("key-1", CreateEntry(), TimeSpan.FromMinutes(5), CancellationToken.None);
 
@@ -150,8 +162,9 @@ public sealed class ConditionalCacheIdempotencyStoreTests
             CompletedAt = DateTimeOffset.UtcNow,
         };
 
-        await _store.SetCompletedAsync("key-1", completedEntry, TimeSpan.FromHours(24), CancellationToken.None);
+        bool written = await _store.CompleteAsync("key-1", completedEntry, TimeSpan.FromHours(24), CancellationToken.None);
 
+        written.ShouldBeTrue();
         IdempotencyEntry? result = await _store.GetAsync("key-1", CancellationToken.None);
         result.ShouldNotBeNull();
         result.State.ShouldBe(IdempotencyState.Completed);
@@ -159,7 +172,7 @@ public sealed class ConditionalCacheIdempotencyStoreTests
     }
 
     [Fact]
-    public async Task SetCompletedAsync_NonExistentKey_DoesNotCreate()
+    public async Task CompleteAsync_NonExistentKey_DoesNotCreateAndReturnsFalse()
     {
         IdempotencyEntry completedEntry = new()
         {
@@ -169,15 +182,30 @@ public sealed class ConditionalCacheIdempotencyStoreTests
             StatusCode = 200,
         };
 
-        // SET XX on a non-existent key should not create it
-        await _store.SetCompletedAsync("new-key", completedEntry, TimeSpan.FromHours(24), CancellationToken.None);
+        // SET XX semantics: a non-existent key must not be created
+        bool written = await _store.CompleteAsync("new-key", completedEntry, TimeSpan.FromHours(24), CancellationToken.None);
 
+        written.ShouldBeFalse();
         IdempotencyEntry? result = await _store.GetAsync("new-key", CancellationToken.None);
         result.ShouldBeNull();
     }
 
     [Fact]
-    public async Task SetCompletedAsync_UpdatesTtl()
+    public async Task CompleteAsync_AfterExpiry_ReturnsFalse()
+    {
+        await _store.TryAcquireAsync("key-1", CreateEntry(), TimeSpan.FromSeconds(10), CancellationToken.None);
+
+        _timeProvider.Advance(TimeSpan.FromSeconds(11));
+
+        bool written = await _store.CompleteAsync(
+            "key-1", CreateEntry(IdempotencyState.Completed), TimeSpan.FromHours(24), CancellationToken.None);
+
+        written.ShouldBeFalse();
+        (await _store.GetAsync("key-1", CancellationToken.None)).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task CompleteAsync_UpdatesTtl()
     {
         await _store.TryAcquireAsync("key-1", CreateEntry(), TimeSpan.FromSeconds(10), CancellationToken.None);
 
@@ -189,13 +217,51 @@ public sealed class ConditionalCacheIdempotencyStoreTests
             StatusCode = 200,
         };
 
-        await _store.SetCompletedAsync("key-1", completedEntry, TimeSpan.FromHours(1), CancellationToken.None);
+        await _store.CompleteAsync("key-1", completedEntry, TimeSpan.FromHours(1), CancellationToken.None);
 
         // Advance past original TTL but not the new one
         _timeProvider.Advance(TimeSpan.FromMinutes(30));
 
         IdempotencyEntry? result = await _store.GetAsync("key-1", CancellationToken.None);
         result.ShouldNotBeNull();
+    }
+
+    // =========================================================================
+    // TombstoneAsync
+    // =========================================================================
+
+    [Fact]
+    public async Task TombstoneAsync_ExistingKey_WritesTombstoneAndReturnsTrue()
+    {
+        await _store.TryAcquireAsync("key-1", CreateEntry(), TimeSpan.FromMinutes(5), CancellationToken.None);
+
+        IdempotencyEntry tombstone = new()
+        {
+            State = IdempotencyState.Tombstoned,
+            PayloadHash = "hash-value",
+            CreatedAt = DateTimeOffset.UtcNow,
+            StatusCode = 200,
+            CompletedAt = DateTimeOffset.UtcNow,
+            TombstoneReason = IdempotencyTombstoneReason.ResponseTooLarge,
+        };
+
+        bool written = await _store.TombstoneAsync("key-1", tombstone, TimeSpan.FromHours(24), CancellationToken.None);
+
+        written.ShouldBeTrue();
+        IdempotencyEntry? result = await _store.GetAsync("key-1", CancellationToken.None);
+        result.ShouldNotBeNull();
+        result.State.ShouldBe(IdempotencyState.Tombstoned);
+        result.TombstoneReason.ShouldBe(IdempotencyTombstoneReason.ResponseTooLarge);
+    }
+
+    [Fact]
+    public async Task TombstoneAsync_NonExistentKey_DoesNotCreateAndReturnsFalse()
+    {
+        bool written = await _store.TombstoneAsync(
+            "ghost", CreateEntry(IdempotencyState.Tombstoned), TimeSpan.FromHours(24), CancellationToken.None);
+
+        written.ShouldBeFalse();
+        (await _store.GetAsync("ghost", CancellationToken.None)).ShouldBeNull();
     }
 
     // =========================================================================
@@ -218,7 +284,7 @@ public sealed class ConditionalCacheIdempotencyStoreTests
         await Should.NotThrowAsync(() => _store.DeleteAsync("nonexistent", CancellationToken.None));
 
     // =========================================================================
-    // Cleanup (called during SetIfAbsentAsync → TryAcquireAsync)
+    // Cleanup (opportunistic sweep during TryAcquireAsync)
     // =========================================================================
 
     [Fact]
@@ -243,5 +309,4 @@ public sealed class ConditionalCacheIdempotencyStoreTests
         expired2.ShouldBeNull();
         kept.ShouldNotBeNull();
     }
-
 }

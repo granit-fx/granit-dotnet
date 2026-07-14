@@ -33,11 +33,11 @@
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
         "requested": "[18.*, )",
-        "resolved": "18.7.0",
-        "contentHash": "49xH9j4UzCh2hMohJp53g3wUTvyycECw7CtVht4gfCz5ykudB1uBcF6D0TtgJPjCtP76UPW53bQElKdCeX+dUg==",
+        "resolved": "18.8.0",
+        "contentHash": "hPDKx0E8VRtSFoKI0T745tISQX86u9Ta7t7GwSEHE88j0HZJCrRADf0hfEytEyxB5qPetmzzmvDzUZ+/POGFrA==",
         "dependencies": {
-          "Microsoft.CodeCoverage": "18.7.0",
-          "Microsoft.TestPlatform.TestHost": "18.7.0"
+          "Microsoft.CodeCoverage": "18.8.0",
+          "Microsoft.TestPlatform.TestHost": "18.8.0"
         }
       },
       "NSubstitute": {
@@ -116,8 +116,8 @@
       },
       "Microsoft.CodeCoverage": {
         "type": "Transitive",
-        "resolved": "18.7.0",
-        "contentHash": "+wFfx9s7D9wegM0RziXMj2kvYDT4qcqXXtyjiQwSZOGQ2wwcOAJQcD6eQXk02jt0MvRNawtp8TJxTrV+wD8X1g=="
+        "resolved": "18.8.0",
+        "contentHash": "qPdM0iW4hyQXyCxbvM1p8cVxfGJGj6W93FYd53p7QqJBxCRniCgvK1r+OyOdi52MeprgaUbUsh4+L8Mx79lVZA=="
       },
       "Microsoft.Extensions.DependencyModel": {
         "type": "Transitive",
@@ -156,27 +156,21 @@
       },
       "Microsoft.TestPlatform.ObjectModel": {
         "type": "Transitive",
-        "resolved": "18.7.0",
-        "contentHash": "6rmgU4q3/WOpOPcncI0YW0Q/QpcQtwR2TTEXDR5+4TfSimPBAk6Z/BgKLeGgp1SOun0ROVUCCafXhRLwsHaPpA=="
+        "resolved": "18.8.0",
+        "contentHash": "0DQ0L9UFk+z+xh259aRwkzPf6Dja0BKP6IHSArfz3PRUuzgZc0Sc1WWaw5d9ezK7cnD94amoVwVWHPFc8qt5Mg=="
       },
       "Microsoft.TestPlatform.TestHost": {
         "type": "Transitive",
-        "resolved": "18.7.0",
-        "contentHash": "kYwfmebCs8992zaxEDkvG7S+YEouTeKfYVKUFEkwh1W2dIoOaevBt80XSKVXCUFEhusjOIm1sFfHBnoJgygrRA==",
+        "resolved": "18.8.0",
+        "contentHash": "8tBtOmz1u5i+utmMPmyz5A7pl3LCJC4aYc7r+uQOgQyP0jxmlnIp4UuJtjvYrWB6sc9I8xz5bmAqWGiKilqpug==",
         "dependencies": {
-          "Microsoft.TestPlatform.ObjectModel": "18.7.0",
-          "Newtonsoft.Json": "13.0.3"
+          "Microsoft.TestPlatform.ObjectModel": "18.8.0"
         }
       },
       "Microsoft.Win32.Registry": {
         "type": "Transitive",
         "resolved": "5.0.0",
         "contentHash": "dDoKi0PnDz31yAyETfRntsLArTlVAVzUzCIvvEDsDsucrl33Dl8pIJG06ePTJTI3tGpeyHS9Cq7Foc/s4EeKcg=="
-      },
-      "Newtonsoft.Json": {
-        "type": "Transitive",
-        "resolved": "13.0.3",
-        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
       },
       "System.CodeDom": {
         "type": "Transitive",
@@ -261,15 +255,6 @@
       "granit": {
         "type": "Project"
       },
-      "granit.caching": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "ZiggyCreatures.FusionCache": "[2.*, )",
-          "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
-        }
-      },
       "granit.guids": {
         "type": "Project",
         "dependencies": {
@@ -279,7 +264,7 @@
       "granit.http.idempotency": {
         "type": "Project",
         "dependencies": {
-          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Http.Idempotency.Abstractions": "[0.1.0-dev, )",
           "Microsoft.IO.RecyclableMemoryStream": "[3.*, )"
         }
@@ -314,21 +299,6 @@
         "requested": "[3.*, )",
         "resolved": "3.0.1",
         "contentHash": "s/s20YTVY9r9TPfTrN5g8zPF1YhwxyqO6PxUkrYTGI2B+OGPe9AdajWZrLhFqXIvqIW23fnUE4+ztrUWNU1+9g=="
-      },
-      "ZiggyCreatures.FusionCache": {
-        "type": "CentralTransitive",
-        "requested": "[2.*, )",
-        "resolved": "2.6.0",
-        "contentHash": "BCe+/SkwQZfaMpq2ZGDZB2pyx6BdGnP+zxqjMM/5K+4PBuH6hljZeIqH4KVzQ26khSbPsQ7IiYZl0Fve4OZOog=="
-      },
-      "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": {
-        "type": "CentralTransitive",
-        "requested": "[2.*, )",
-        "resolved": "2.6.0",
-        "contentHash": "A00mNC7xrkC8LUAQMkeB3OtVTfGzyTyHxTgAOwfqaFdazO/54d3fT8LFoekpgSslkvDjKAIPlyafqsFBPLgQIw==",
-        "dependencies": {
-          "ZiggyCreatures.FusionCache": "2.6.0"
-        }
       }
     }
   }

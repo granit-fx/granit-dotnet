@@ -1,23 +1,21 @@
-using Granit.Caching;
-
 namespace Granit.Http.Idempotency.Models;
 
 /// <summary>
-/// Represents a stored idempotency entry (serialized to Redis).
+/// Represents a stored idempotency entry (serialized by distributed stores).
 /// </summary>
 /// <remarks>
-/// SECURITY: <see cref="CacheEncryptedAttribute"/> forces AES-256-GCM encryption of the
-/// captured response before it is written to the L2 (Redis) store, independently of the global
-/// <see cref="Granit.Caching.Options.CachingOptions.EncryptValues"/> flag. A completed entry
-/// replays the original status code, headers, and full response body — any of which may carry
-/// PII or bearer tokens — so it must never sit in plaintext in a Redis snapshot, AOF file, or
-/// behind an ACL bypass. The attribute is honoured by the store's serializer path
-/// (<c>RedisConditionalCache</c> resolves it via <c>CacheEncryptionResolver</c>) and is a no-op
-/// on the L1 in-memory store, which holds live .NET object graphs rather than serialized bytes —
-/// same threat model as <c>IMemoryCache</c>. Set-Cookie and WWW-Authenticate are already stripped
-/// upstream by the middleware, so a rotated cookie or auth challenge is never captured to begin with.
+/// SECURITY: a completed entry replays the original status code, headers, and full response
+/// body — any of which may carry PII or bearer tokens — so it must never sit in plaintext in
+/// a Redis snapshot, AOF file, or behind an ACL bypass. At-rest encryption is the
+/// responsibility of every distributed <see cref="Abstractions.IIdempotencyStore"/>
+/// implementation: the shipped Redis provider (<c>Granit.Http.Idempotency.StackExchangeRedis</c>)
+/// encrypts unconditionally with AES-256-GCM via <c>ICacheValueEncryptor</c> — the same
+/// pipeline formerly triggered by <c>[CacheEncrypted]</c> when entries flowed through
+/// <c>Granit.Caching</c>. The in-memory Development store holds live .NET object graphs rather
+/// than serialized bytes, so encryption does not apply there — same threat model as
+/// <c>IMemoryCache</c>. Set-Cookie and WWW-Authenticate are already stripped upstream by the
+/// middleware, so a rotated cookie or auth challenge is never captured to begin with.
 /// </remarks>
-[CacheEncrypted]
 public sealed record IdempotencyEntry
 {
     /// <summary>Current state of the entry.</summary>

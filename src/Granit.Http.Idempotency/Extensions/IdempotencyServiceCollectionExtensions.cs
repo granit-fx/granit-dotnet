@@ -59,8 +59,10 @@ public static class IdempotencyServiceCollectionExtensions
         services.AddSingleton<IValidateOptions<IdempotencyOptions>, IdempotencyOptionsValidator>();
         services.TryAddSingleton<IdempotencyMetrics>();
 
-        // IConditionalCache provides the backend (InMemory default, Redis via Granit.Caching.StackExchangeRedis).
-        services.TryAddScoped<IIdempotencyStore, ConditionalCacheIdempotencyStore>();
+        // Per-process Development default. Granit.Http.Idempotency.StackExchangeRedis replaces
+        // this descriptor deterministically (services.Replace) with the distributed Redis store.
+        // Singleton: entries must survive across requests within the process.
+        services.TryAddSingleton<IIdempotencyStore, InMemoryIdempotencyStore>();
 
         // RecyclableMemoryStreamManager is thread-safe and should be a singleton
         services.TryAddSingleton<RecyclableMemoryStreamManager>();
