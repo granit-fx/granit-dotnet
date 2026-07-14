@@ -71,9 +71,37 @@ public sealed class OpenIddictIdleSessionEnforcementHandlerTests
             Arg.Any<object>(), Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task ExecuteAsync_SettingEnabled_IdleRefreshToken_DoesNotRevoke()
+    {
+        // Safe-guard: even when a refresh token has no session cache entry (which the broken
+        // key contract makes universal), the job must NOT revoke — otherwise every session is
+        // logged out on the first run.
+        object token = new();
+        _settingProvider.GetOrNullAsync(OpenIddictSettingNames.IdleSessionTimeout, Arg.Any<CancellationToken>())
+            .Returns("30");
+        _tokenManager.ListAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(SingleAsync(token));
+        _tokenManager.GetTypeAsync(token, Arg.Any<CancellationToken>())
+            .Returns(OpenIddictConstants.TokenTypeHints.RefreshToken);
+        _tokenManager.GetSubjectAsync(token, Arg.Any<CancellationToken>()).Returns("user-1");
+        _tokenManager.GetIdAsync(token, Arg.Any<CancellationToken>()).Returns("refresh-token-1");
+
+        await CreateService().ExecuteAsync(TestContext.Current.CancellationToken);
+
+        await _tokenManager.DidNotReceive().TryRevokeAsync(
+            Arg.Any<object>(), Arg.Any<CancellationToken>());
+    }
+
     private static async IAsyncEnumerable<object> EmptyAsync()
     {
         await Task.CompletedTask;
         yield break;
+    }
+
+    private static async IAsyncEnumerable<object> SingleAsync(object item)
+    {
+        await Task.CompletedTask;
+        yield return item;
     }
 }
