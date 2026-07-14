@@ -167,6 +167,7 @@
     <Project Path="src/Granit.Identity.Local/Granit.Identity.Local.csproj" />
     <Project Path="src/Granit.Identity.Notifications/Granit.Identity.Notifications.csproj" />
     <Project Path="src/Granit.Identity/Granit.Identity.csproj" />
+    <Project Path="src/Granit.OpenIddict.Abstractions/Granit.OpenIddict.Abstractions.csproj" />
     <Project Path="src/Granit.OpenIddict.BackgroundJobs/Granit.OpenIddict.BackgroundJobs.csproj" />
     <Project Path="src/Granit.OpenIddict.Endpoints/Granit.OpenIddict.Endpoints.csproj" />
     <Project Path="src/Granit.OpenIddict.EntityFrameworkCore/Granit.OpenIddict.EntityFrameworkCore.csproj" />

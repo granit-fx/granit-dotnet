@@ -249,6 +249,7 @@
       "src/Granit.Oidc/Granit.Oidc.csproj",
       "src/Granit.OpenApi.Generation/Granit.OpenApi.Generation.csproj",
       "src/Granit.OpenApi.Generator/Granit.OpenApi.Generator.csproj",
+      "src/Granit.OpenIddict.Abstractions/Granit.OpenIddict.Abstractions.csproj",
       "src/Granit.OpenIddict.BackgroundJobs/Granit.OpenIddict.BackgroundJobs.csproj",
       "src/Granit.OpenIddict.Endpoints/Granit.OpenIddict.Endpoints.csproj",
       "src/Granit.OpenIddict.EntityFrameworkCore/Granit.OpenIddict.EntityFrameworkCore.csproj",

@@ -86,6 +86,7 @@
       "src/Granit.MultiTenancy/Granit.MultiTenancy.csproj",
       "src/Granit.Notifications.Abstractions/Granit.Notifications.Abstractions.csproj",
       "src/Granit.Oidc/Granit.Oidc.csproj",
+      "src/Granit.OpenIddict.Abstractions/Granit.OpenIddict.Abstractions.csproj",
       "src/Granit.OpenIddict.BackgroundJobs/Granit.OpenIddict.BackgroundJobs.csproj",
       "src/Granit.OpenIddict.Endpoints/Granit.OpenIddict.Endpoints.csproj",
       "src/Granit.OpenIddict.EntityFrameworkCore/Granit.OpenIddict.EntityFrameworkCore.csproj",

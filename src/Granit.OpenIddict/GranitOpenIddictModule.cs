@@ -43,10 +43,11 @@ namespace Granit.OpenIddict;
     typeof(GranitEncryptionModule),
     typeof(GranitEntitiesAbstractionsModule),
     typeof(GranitHttpCookiesModule),
+    typeof(GranitIdentityAbstractionsModule),
     typeof(GranitIdentityLocalAspNetIdentityModule),
     typeof(GranitIdentityLocalModule),
-    typeof(GranitQueryEngineAbstractionsModule),
-    typeof(GranitIdentityAbstractionsModule))]
+    typeof(GranitOpenIddictAbstractionsModule),
+    typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitOpenIddictModule : GranitModule
 {
     /// <inheritdoc/>

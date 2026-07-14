@@ -2165,8 +2165,16 @@
         "Granit.Http.Cookies",
         "Granit.Identity.Local",
         "Granit.Identity.Local.AspNetIdentity",
+        "Granit.OpenIddict.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.Identity.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.OpenIddict.Abstractions",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -42383,8 +42391,8 @@
       "name": "SigningKey",
       "fqn": "Granit.OpenIddict.Domain.SigningKey",
       "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Domain/SigningKey.cs",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Domain/SigningKey.cs",
       "line": 22,
       "members": [
         {
@@ -42447,8 +42455,8 @@
       "name": "SigningKeyStatus",
       "fqn": "Granit.OpenIddict.Domain.SigningKeyStatus",
       "kind": "enum",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Domain/SigningKey.cs",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Domain/SigningKey.cs",
       "line": 100,
       "members": []
     },
@@ -42892,12 +42900,21 @@
       ]
     },
     {
+      "name": "GranitOpenIddictAbstractionsModule",
+      "fqn": "Granit.OpenIddict.GranitOpenIddictAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/GranitOpenIddictAbstractionsModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "GranitOpenIddictModule",
       "fqn": "Granit.OpenIddict.GranitOpenIddictModule",
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 50,
+      "line": 51,
       "members": [
         {
           "name": "ConfigureServices",
@@ -42911,8 +42928,8 @@
       "name": "OpenIddictFeatureNames",
       "fqn": "Granit.OpenIddict.OpenIddictFeatureNames",
       "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/OpenIddictFeatureNames.cs",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/OpenIddictFeatureNames.cs",
       "line": 10,
       "members": []
     },
@@ -42920,8 +42937,8 @@
       "name": "OpenIddictSettingNames",
       "fqn": "Granit.OpenIddict.OpenIddictSettingNames",
       "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/OpenIddictSettingNames.cs",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/OpenIddictSettingNames.cs",
       "line": 12,
       "members": []
     },
@@ -43034,8 +43051,8 @@
       "name": "Applications",
       "fqn": "Granit.OpenIddict.Permissions.Applications",
       "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Permissions/OpenIddictPermissions.cs",
       "line": 17,
       "members": []
     },
@@ -43043,8 +43060,8 @@
       "name": "Authorizations",
       "fqn": "Granit.OpenIddict.Permissions.Authorizations",
       "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Permissions/OpenIddictPermissions.cs",
       "line": 40,
       "members": []
     },
@@ -43052,8 +43069,8 @@
       "name": "OpenIddictPermissions",
       "fqn": "Granit.OpenIddict.Permissions.OpenIddictPermissions",
       "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Permissions/OpenIddictPermissions.cs",
       "line": 11,
       "members": []
     },
@@ -43061,8 +43078,8 @@
       "name": "Scopes",
       "fqn": "Granit.OpenIddict.Permissions.Scopes",
       "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Permissions/OpenIddictPermissions.cs",
       "line": 30,
       "members": []
     },
@@ -43222,8 +43239,8 @@
       "name": "ClaimsDestinations",
       "fqn": "Granit.OpenIddict.Services.ClaimsDestinations",
       "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IClaimsDestinationProvider.cs",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Services/IClaimsDestinationProvider.cs",
       "line": 38,
       "members": []
     },
@@ -43272,8 +43289,8 @@
       "name": "IClaimsDestinationProvider",
       "fqn": "Granit.OpenIddict.Services.IClaimsDestinationProvider",
       "kind": "interface",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IClaimsDestinationProvider.cs",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Services/IClaimsDestinationProvider.cs",
       "line": 20,
       "members": [
         {
@@ -43288,8 +43305,8 @@
       "name": "IKeyRotationService",
       "fqn": "Granit.OpenIddict.Services.IKeyRotationService",
       "kind": "interface",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IKeyRotationService.cs",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Services/IKeyRotationService.cs",
       "line": 11,
       "members": [
         {
@@ -43304,8 +43321,8 @@
       "name": "ISigningKeyStore",
       "fqn": "Granit.OpenIddict.Services.ISigningKeyStore",
       "kind": "interface",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/ISigningKeyStore.cs",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Services/ISigningKeyStore.cs",
       "line": 8,
       "members": [
         {
@@ -43350,8 +43367,8 @@
       "name": "KeyRotationResult",
       "fqn": "Granit.OpenIddict.Services.KeyRotationResult",
       "kind": "record",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IKeyRotationService.cs",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Services/IKeyRotationService.cs",
       "line": 29,
       "members": []
     },

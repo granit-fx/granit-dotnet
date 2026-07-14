@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.OpenIddict.Abstractions</PackageId>
+    <Description>Runtime-agnostic OpenIddict contracts for Granit: signing-key store and rotation interfaces, the SigningKey aggregate, claims-destination provider, and the permission/feature/setting name catalogues. Reference this package to consume the OpenIddict server's contracts without taking a dependency on OpenIddict, EF Core, or ASP.NET Core.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.OpenIddict.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>
