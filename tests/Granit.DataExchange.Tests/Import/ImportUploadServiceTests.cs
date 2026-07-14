@@ -4,7 +4,6 @@ using Granit.DataExchange.Import.Internal;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.Guids;
 using Granit.Timing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
@@ -18,6 +17,7 @@ public sealed class ImportUploadServiceTests
     private readonly IImportJobWriter _jobWriter = Substitute.For<IImportJobWriter>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
     private readonly IClock _clock = Substitute.For<IClock>();
+    private readonly IImportPipelineRegistry _registry = Substitute.For<IImportPipelineRegistry>();
     private readonly IImportDefinitionDescriptor _descriptor = Substitute.For<IImportDefinitionDescriptor>();
     private readonly ImportUploadService _sut;
 
@@ -28,17 +28,20 @@ public sealed class ImportUploadServiceTests
         _descriptor.MaxFileSizeMb.Returns(10);
         _descriptor.AllowedMimeTypes.Returns(new[] { "text/csv", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
 
+        IImportPipelineDescriptor pipelineDescriptor = Substitute.For<IImportPipelineDescriptor>();
+        pipelineDescriptor.DefinitionName.Returns("Patients");
+        pipelineDescriptor.Definition.Returns(_descriptor);
+        _registry.Find(Arg.Any<string>()).Returns((IImportPipelineDescriptor?)null);
+        _registry.Find("Patients").Returns(pipelineDescriptor);
+        _registry.GetAll().Returns([pipelineDescriptor]);
+
         _guidGenerator.Create().Returns(Guid.NewGuid());
         _clock.Now.Returns(new DateTimeOffset(2026, 4, 5, 12, 0, 0, TimeSpan.Zero));
         _fileProvider.SaveAsync(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
             .Returns(Granit.Domain.ValueObjects.BlobReference.Create("blob://test/file.csv"));
 
-        var services = new ServiceCollection();
-        services.AddSingleton<IImportDefinitionDescriptor>(_descriptor);
-        ServiceProvider sp = services.BuildServiceProvider();
-
         _sut = new ImportUploadService(
-            sp,
+            _registry,
             _fileProvider,
             _jobWriter,
             _guidGenerator,
@@ -185,17 +188,19 @@ public sealed class ImportUploadServiceTests
     }
 
     [Fact]
-    public async Task UploadAsync_CaseInsensitiveDefinitionName()
+    public async Task UploadAsync_DefinitionLookupIsCaseSensitive()
     {
-        // Arrange
+        // Arrange — registry lookups are Ordinal; the failure message lists registered names
         await using var stream = new MemoryStream("data"u8.ToArray());
 
         // Act
         ImportUploadResult result = await _sut.UploadAsync(
-            "file.csv", "text/csv", 4, stream, "patients", // lowercase
+            "file.csv", "text/csv", 4, stream, "patients", // lowercase — no ordinal match
             TestContext.Current.CancellationToken);
 
         // Assert
-        result.Succeeded.ShouldBeTrue();
+        result.Succeeded.ShouldBeFalse();
+        result.ErrorDetail!.ShouldContain("Unknown import definition 'patients'");
+        result.ErrorDetail!.ShouldContain("Patients");
     }
 }

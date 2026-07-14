@@ -8,17 +8,20 @@ namespace Granit.Http.ODataExposure.Tests;
 /// <summary>
 /// Locks the EDM model shape produced by the explicit-whitelist builder
 /// (per ADR-050) — one EntitySet per descriptor, EntityType columns
-/// strictly limited to the property whitelist passed by
-/// <c>ValidateAndResolveWhitelists</c> (resolved from <c>ExportDefinition.GetFields()</c>),
-/// key auto-detected on <c>Id</c>. Properties absent from the whitelist —
-/// notably the framework-internal <c>DomainEvents</c> /
-/// <c>IntegrationEvents</c> collections from <c>AggregateRoot</c> — must
-/// not appear in the EDM.
+/// strictly limited to the per-type whitelist resolved by
+/// <c>ValidateAndResolveWhitelists</c> (scalars from <c>ExportDefinition.GetFields()</c>,
+/// navigations from the <c>$expand</c> whitelist closure), key auto-detected
+/// on <c>Id</c>. Properties absent from the whitelist — notably the
+/// framework-internal <c>DomainEvents</c> / <c>IntegrationEvents</c>
+/// collections from <c>AggregateRoot</c> — must not appear in the EDM.
+/// Since #3005, navigation-TARGET types are registered explicitly and run
+/// through the same whitelist, closing the data-minimization leak where the
+/// convention builder exposed every public property of a target type.
 /// </summary>
 public sealed class ODataEdmModelBuilderTests
 {
-    private static Dictionary<Type, IReadOnlyList<string>> Whitelist(Type t, params string[] names) =>
-        new() { [t] = names };
+    private static Dictionary<Type, ODataEntityTypeWhitelist> Whitelist(Type t, params string[] scalars) =>
+        new() { [t] = new ODataEntityTypeWhitelist(scalars, []) };
 
     [Fact]
     public void Build_SingleEntitySet_RegistersInTheModel()
@@ -47,10 +50,10 @@ public sealed class ODataEdmModelBuilderTests
             new("Customers", typeof(Customer), typeof(string), "OData.Test.Customers.Read"),
         ];
 
-        Dictionary<Type, IReadOnlyList<string>> whitelist = new()
+        Dictionary<Type, ODataEntityTypeWhitelist> whitelist = new()
         {
-            [typeof(Invoice)] = [nameof(Invoice.Number), nameof(Invoice.Total)],
-            [typeof(Customer)] = [nameof(Customer.Name)],
+            [typeof(Invoice)] = new([nameof(Invoice.Number), nameof(Invoice.Total)], []),
+            [typeof(Customer)] = new([nameof(Customer.Name)], []),
         };
 
         IEdmModel model = ODataEdmModelBuilder.Build(descriptors, whitelist);
@@ -109,18 +112,22 @@ public sealed class ODataEdmModelBuilderTests
     }
 
     [Fact]
-    public void Build_NavigationProperty_AppearsOnlyWhenInExpandWhitelist()
+    public void Build_NavigationProperty_AppearsOnlyWhenInNavigationWhitelist()
     {
         // Customer is a navigation-like property (custom class). With it in
-        // ExpandWhitelist, the EDM must expose it; without, it must be
-        // suppressed even though it is a public property.
+        // the type's navigation whitelist, the EDM must expose it; without,
+        // it must be suppressed even though it is a public property.
         ODataEntitySetDescriptor withExpand = new(
             "Invoices", typeof(InvoiceWithCustomerNav), typeof(string), null,
             ExpandWhitelist: ["Customer"]);
 
-        IEdmModel withModel = ODataEdmModelBuilder.Build(
-            [withExpand],
-            Whitelist(typeof(InvoiceWithCustomerNav), nameof(InvoiceWithCustomerNav.Number)));
+        Dictionary<Type, ODataEntityTypeWhitelist> withNav = new()
+        {
+            [typeof(InvoiceWithCustomerNav)] = new([nameof(InvoiceWithCustomerNav.Number)], ["Customer"]),
+            [typeof(CustomerNav)] = new([nameof(CustomerNav.Name)], []),
+        };
+
+        IEdmModel withModel = ODataEdmModelBuilder.Build([withExpand], withNav);
 
         var entityType = (IEdmEntityType)withModel.EntityContainer.FindEntitySet("Invoices")!.EntityType;
         entityType.NavigationProperties().Select(p => p.Name).ShouldContain("Customer");
@@ -136,6 +143,75 @@ public sealed class ODataEdmModelBuilderTests
         var entityType2 = (IEdmEntityType)withoutModel.EntityContainer.FindEntitySet("Invoices2")!.EntityType;
         entityType2.NavigationProperties().Select(p => p.Name).ShouldNotContain("Customer");
     }
+
+    [Fact]
+    public void Build_ClosureTargetType_ExposesOnlyItsExportScalars()
+    {
+        // #3005 anchor test — the ADR-050 leak this story closes: a
+        // navigation-TARGET type pulled into the model used to expose ALL of
+        // its public properties because only registered root types ran
+        // through the whitelist. The target now enters the map with its own
+        // export-derived scalar list; InternalScore must not reach $metadata.
+        ODataEntitySetDescriptor descriptor = new(
+            "Invoices", typeof(InvoiceWithCustomerNav), typeof(string), null,
+            ExpandWhitelist: ["Customer"]);
+
+        Dictionary<Type, ODataEntityTypeWhitelist> whitelist = new()
+        {
+            [typeof(InvoiceWithCustomerNav)] = new([nameof(InvoiceWithCustomerNav.Number)], ["Customer"]),
+            [typeof(CustomerNav)] = new([nameof(CustomerNav.Name)], []),
+        };
+
+        IEdmModel model = ODataEdmModelBuilder.Build([descriptor], whitelist);
+
+        IEdmEntityType customerType = FindEntityType(model, nameof(CustomerNav));
+        IReadOnlyList<string> propertyNames = [.. customerType.Properties().Select(p => p.Name)];
+
+        propertyNames.ShouldContain(nameof(CustomerNav.Id));
+        propertyNames.ShouldContain(nameof(CustomerNav.Name));
+        propertyNames.ShouldNotContain(nameof(CustomerNav.InternalScore));
+        propertyNames.ShouldNotContain(nameof(CustomerNav.Address));
+    }
+
+    [Fact]
+    public void Build_NestedNavigation_PresentOnlyWhenDottedPathWhitelisted()
+    {
+        // With "Customer.Address" resolved into the closure, CustomerNav's
+        // navigation whitelist carries Address and the EDM exposes the
+        // nested navigation; without it, Address is removed from CustomerNav
+        // even though the type itself is in the model.
+        ODataEntitySetDescriptor descriptor = new(
+            "Invoices", typeof(InvoiceWithCustomerNav), typeof(string), null,
+            ExpandWhitelist: ["Customer.Address"]);
+
+        Dictionary<Type, ODataEntityTypeWhitelist> nested = new()
+        {
+            [typeof(InvoiceWithCustomerNav)] = new([nameof(InvoiceWithCustomerNav.Number)], ["Customer"]),
+            [typeof(CustomerNav)] = new([nameof(CustomerNav.Name)], ["Address"]),
+            [typeof(AddressNav)] = new([nameof(AddressNav.City)], []),
+        };
+
+        IEdmModel nestedModel = ODataEdmModelBuilder.Build([descriptor], nested);
+        IEdmEntityType customerType = FindEntityType(nestedModel, nameof(CustomerNav));
+        customerType.NavigationProperties().Select(p => p.Name).ShouldContain("Address");
+        IEdmEntityType addressType = FindEntityType(nestedModel, nameof(AddressNav));
+        addressType.Properties().Select(p => p.Name).ShouldNotContain(nameof(AddressNav.Zip));
+
+        Dictionary<Type, ODataEntityTypeWhitelist> flat = new()
+        {
+            [typeof(InvoiceWithCustomerNav)] = new([nameof(InvoiceWithCustomerNav.Number)], ["Customer"]),
+            [typeof(CustomerNav)] = new([nameof(CustomerNav.Name)], []),
+        };
+
+        IEdmModel flatModel = ODataEdmModelBuilder.Build(
+            [descriptor with { ExpandWhitelist = ["Customer"] }], flat);
+        IEdmEntityType flatCustomerType = FindEntityType(flatModel, nameof(CustomerNav));
+        flatCustomerType.NavigationProperties().Select(p => p.Name).ShouldNotContain("Address");
+    }
+
+    /// <summary>Locates an EDM EntityType by simple name — nested CLR test classes get mangled full names, so lookup by <c>FindDeclaredType(FullName)</c> does not apply.</summary>
+    private static IEdmEntityType FindEntityType(IEdmModel model, string name) =>
+        model.SchemaElements.OfType<IEdmEntityType>().Single(t => t.Name == name);
 
     [Fact]
     public void Build_EmptyDescriptorList_Throws()
@@ -172,6 +248,16 @@ public sealed class ODataEdmModelBuilderTests
 
         model.EntityContainer.Name.ShouldBe("HostContainer");
         model.EntityContainer.Name.ShouldNotBe(ODataEdmModelBuilder.TenantContainerName);
+    }
+
+    [Fact]
+    public void ResolveNavigationTargetType_UnwrapsCollectionShapes()
+    {
+        ODataEdmModelBuilder.ResolveNavigationTargetType(typeof(CustomerNav)).ShouldBe(typeof(CustomerNav));
+        ODataEdmModelBuilder.ResolveNavigationTargetType(typeof(List<CustomerNav>)).ShouldBe(typeof(CustomerNav));
+        ODataEdmModelBuilder.ResolveNavigationTargetType(typeof(IReadOnlyCollection<CustomerNav>)).ShouldBe(typeof(CustomerNav));
+        ODataEdmModelBuilder.ResolveNavigationTargetType(typeof(IEnumerable<CustomerNav>)).ShouldBe(typeof(CustomerNav));
+        ODataEdmModelBuilder.ResolveNavigationTargetType(typeof(CustomerNav[])).ShouldBe(typeof(CustomerNav));
     }
 
     private sealed class Invoice
@@ -221,5 +307,14 @@ public sealed class ODataEdmModelBuilderTests
     {
         public Guid Id { get; init; }
         public string Name { get; init; } = string.Empty;
+        public int InternalScore { get; init; }             // never exported — must NOT appear in EDM
+        public AddressNav? Address { get; init; }
+    }
+
+    private sealed class AddressNav
+    {
+        public Guid Id { get; init; }
+        public string City { get; init; } = string.Empty;
+        public string Zip { get; init; } = string.Empty;    // never exported — must NOT appear in EDM
     }
 }

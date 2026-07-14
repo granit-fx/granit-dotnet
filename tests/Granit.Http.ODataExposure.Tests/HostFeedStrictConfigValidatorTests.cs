@@ -25,6 +25,61 @@ namespace Granit.Http.ODataExposure.Tests;
 /// </summary>
 public sealed class HostFeedStrictConfigValidatorTests
 {
+    private const string MetadataPermissionName = "OData.Host.Test.Metadata.Read";
+
+    [Fact]
+    public void HostFeed_WithoutMetadataPermission_Throws()
+    {
+        // #3005 — the host-feed has no anonymous $metadata variant; omitting
+        // RequireMetadataPermission is a startup error, not a silent default.
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
+            CallMap(
+                hostPermissions: new HostPermissionsProvider(
+                    "OData.Test.Tenants.Read", MultiTenancySides.Host),
+                configure: opts => opts.EntitySet<TenantStub, TenantStubQueryDefinition>("Tenants")
+                    .RequirePermission("OData.Test.Tenants.Read")
+                    .DisableExpand(),
+                metadataPermission: null));
+
+        ex.Message.ShouldContain("RequireMetadataPermission");
+        ex.Message.ShouldContain("$metadata");
+    }
+
+    [Fact]
+    public void HostFeed_MetadataPermissionWithTenantSide_Throws()
+    {
+        // The metadata permission is validated MultiTenancySides.Host exactly
+        // like the per-set entity permissions.
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
+            CallMap(
+                hostPermissions: new HostPermissionsProvider(
+                        "OData.Test.Tenants.Read", MultiTenancySides.Host)
+                    .Add("OData.Test.TenantSideMetadata.Read", MultiTenancySides.Tenant),
+                configure: opts => opts.EntitySet<TenantStub, TenantStubQueryDefinition>("Tenants")
+                    .RequirePermission("OData.Test.Tenants.Read")
+                    .DisableExpand(),
+                metadataPermission: "OData.Test.TenantSideMetadata.Read"));
+
+        ex.Message.ShouldContain("MultiTenancySides.Tenant");
+        ex.Message.ShouldContain("$metadata");
+    }
+
+    [Fact]
+    public void HostFeed_MetadataPermissionUnregistered_Throws()
+    {
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
+            CallMap(
+                hostPermissions: new HostPermissionsProvider(
+                    "OData.Test.Tenants.Read", MultiTenancySides.Host),
+                configure: opts => opts.EntitySet<TenantStub, TenantStubQueryDefinition>("Tenants")
+                    .RequirePermission("OData.Test.Tenants.Read")
+                    .DisableExpand(),
+                metadataPermission: "OData.Test.MetadataTypo.Read"));
+
+        ex.Message.ShouldContain("OData.Test.MetadataTypo.Read");
+        ex.Message.ShouldContain("no PermissionDefinition");
+    }
+
     [Fact]
     public void HostFeed_PermissionWithMultiTenancySidesTenant_Throws()
     {
@@ -151,7 +206,8 @@ public sealed class HostFeedStrictConfigValidatorTests
 
     private static void CallMap(
         IPermissionDefinitionRegistry hostPermissions,
-        Action<ODataHostExposureOptions> configure)
+        Action<ODataHostExposureOptions> configure,
+        string? metadataPermission = MetadataPermissionName)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -189,7 +245,19 @@ public sealed class HostFeedStrictConfigValidatorTests
         });
 
         using WebApplication app = builder.Build();
-        app.MapGranitODataHostEndpoints("/api/granit/odata/host", configure);
+        app.MapGranitODataHostEndpoints("/api/granit/odata/host", opts =>
+        {
+            // #3005 — the host-feed metadata permission is mandatory;
+            // defaulted (and pre-registered as Host on every provider stub)
+            // so the pre-existing gate scenarios stay focused. Stance
+            // failure paths pass metadataPermission: null or a wrong-side name.
+            if (metadataPermission is not null)
+            {
+                opts.RequireMetadataPermission(metadataPermission);
+            }
+
+            configure(opts);
+        });
     }
 
     /// <summary>
@@ -203,10 +271,23 @@ public sealed class HostFeedStrictConfigValidatorTests
 
         private readonly Dictionary<string, PermissionDefinition> _definitions;
 
-        public HostPermissionsProvider() => _definitions = [];
+        // Every stub pre-registers the default metadata permission as Host so
+        // the #3005 stance gate stays green while the pre-existing entity
+        // gates are exercised. Metadata-specific failure tests register their
+        // own names via Add(...).
+        public HostPermissionsProvider() => _definitions = new Dictionary<string, PermissionDefinition>
+        {
+            [MetadataPermissionName] = new(MetadataPermissionName, DisplayName: null, GroupName: "Test", MultiTenancySides.Host),
+        };
 
         public HostPermissionsProvider(string name, MultiTenancySides sides)
             : this() => _definitions[name] = new PermissionDefinition(name, DisplayName: null, GroupName: "Test", sides);
+
+        public HostPermissionsProvider Add(string name, MultiTenancySides sides)
+        {
+            _definitions[name] = new PermissionDefinition(name, DisplayName: null, GroupName: "Test", sides);
+            return this;
+        }
 
         public bool Exists(string name) => _definitions.ContainsKey(name);
         public PermissionDefinition? Find(string name) => _definitions.GetValueOrDefault(name);

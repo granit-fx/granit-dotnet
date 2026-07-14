@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.OData.Query.Validator;
-
 namespace Granit.Http.ODataExposure.Internal;
 
 /// <summary>

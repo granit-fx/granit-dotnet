@@ -34,16 +34,22 @@ public sealed class EndpointNameCollisionTests
         // Mount "Users" on both feeds — pre-fix, this threw
         // InvalidOperationException("Duplicate endpoint name 'ODataUsersList'…").
         app.MapGranitODataEndpoints("/api/v1/odata", opts =>
+        {
+            opts.AllowAnonymousMetadata();
             opts.EntitySet<User, UserQueryDefinition>("Users")
                 .RequirePermission("OData.Test.Users.Read")
-                .DisableExpand());
+                .DisableExpand();
+        });
 
         Should.NotThrow(() =>
             app.MapGranitODataHostEndpoints("/api/v1/odata/host", opts =>
+            {
+                opts.RequireMetadataPermission("OData.Test.Users.Host.Metadata.Read");
                 opts.EntitySet<User, UserQueryDefinition>("Users")
                     .RequirePermission("OData.Test.Users.Host.Read")
                     .AcknowledgeCrossTenantExposure(q => q)
-                    .DisableExpand()));
+                    .DisableExpand();
+            }));
 
         HashSet<string> endpointNames =
         [
@@ -77,6 +83,7 @@ public sealed class EndpointNameCollisionTests
             {
                 ["OData.Test.Users.Read"] = MultiTenancySides.Tenant,
                 ["OData.Test.Users.Host.Read"] = MultiTenancySides.Host,
+                ["OData.Test.Users.Host.Metadata.Read"] = MultiTenancySides.Host,
             });
 
         builder.Services.AddGranitODataExposure();
