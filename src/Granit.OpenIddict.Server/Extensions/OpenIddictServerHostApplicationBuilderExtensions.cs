@@ -35,6 +35,13 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
         GranitOpenIddictOptions granitOptions = new();
         builder.Configuration.GetSection(GranitOpenIddictOptions.SectionName).Bind(granitOptions);
 
+        // Database-backed key rotation is a valid persistent-key source: when enabled,
+        // DatabaseSigningKeyPostConfigure swaps the bootstrap ephemeral keys for DB keys
+        // at options resolution, so the ephemeral-key guard below must not reject it.
+        GranitKeyRotationOptions keyRotationOptions = new();
+        builder.Configuration.GetSection(GranitKeyRotationOptions.SectionName).Bind(keyRotationOptions);
+        bool keyRotationEnabled = keyRotationOptions.Enabled;
+
         // FAPI 2.0 profile: apply all mandatory server-side constraints
         if (granitOptions.EnableFapi2Profile)
         {
@@ -144,17 +151,27 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
             // Ephemeral keys: regenerated at every process start. Only allowed in
             // Development OR when explicitly opted in via AllowEphemeralKeys = true
             // (typically for unit tests). Production deployments MUST replace with
-            // options.AddSigningCertificate() / options.AddEncryptionCertificate()
-            // or load keys from Vault via Granit.Vault.HashiCorp.
+            // options.AddSigningCertificate() / options.AddEncryptionCertificate(),
+            // load keys from Vault via Granit.Vault.HashiCorp, OR enable database-backed
+            // key rotation (OpenIddict:KeyRotation:Enabled = true), in which case
+            // DatabaseSigningKeyPostConfigure replaces the bootstrap ephemeral credentials
+            // below with the active/retired DB keys at options resolution.
+            bool persistentKeysFromRotation = keyRotationEnabled;
             bool ephemeralAllowed = builder.Environment.IsDevelopment()
-                || granitOptions.AllowEphemeralKeys;
+                || granitOptions.AllowEphemeralKeys
+                || persistentKeysFromRotation;
             if (!ephemeralAllowed)
             {
                 throw new InvalidOperationException(
                     "OpenIddict ephemeral signing/encryption keys are forbidden outside Development. " +
-                    "Configure persistent keys (AddSigningCertificate / AddEncryptionCertificate) " +
+                    "Configure persistent keys (AddSigningCertificate / AddEncryptionCertificate), " +
+                    "enable database-backed rotation (OpenIddict:KeyRotation:Enabled = true), " +
                     "or set GranitOpenIddictOptions.AllowEphemeralKeys = true at your own risk.");
             }
+
+            // Bootstrap ephemeral credentials. When key rotation is enabled these are
+            // cleared and replaced by DatabaseSigningKeyPostConfigure (base module) once
+            // DI is built; when disabled they are the development signing keys.
             options
                 .AddEphemeralEncryptionKey()
                 .AddEphemeralSigningKey();
