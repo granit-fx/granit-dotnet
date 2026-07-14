@@ -45,6 +45,39 @@ internal sealed class BlobStorageFileProvider(
     }
 
     /// <inheritdoc/>
+    public async Task<BlobReference> SaveAsync(
+        string fileName,
+        string contentType,
+        Func<Stream, CancellationToken, Task> writeAsync,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(writeAsync);
+
+        string objectKey = keyStrategy.BuildObjectKey(options.Value.ContainerName, guidGenerator.Create());
+        string bucket = keyStrategy.ResolveBucketName(options.Value.ContainerName);
+
+        MultipartWriteStream stream = await storeProvider
+            .OpenWriteMultipartAsync(bucket, objectKey, contentType, cancellationToken)
+            .ConfigureAwait(false);
+        try
+        {
+            await writeAsync(stream, cancellationToken).ConfigureAwait(false);
+            await stream.CompleteAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            await stream.AbortAsync(cancellationToken).ConfigureAwait(false);
+            throw;
+        }
+        finally
+        {
+            await stream.DisposeAsync().ConfigureAwait(false);
+        }
+
+        return BlobReference.Create(objectKey);
+    }
+
+    /// <inheritdoc/>
     public async Task DeleteAsync(BlobReference blobReference, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(blobReference);

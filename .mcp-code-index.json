@@ -17550,6 +17550,12 @@
           "returnType": "Task<BlobReference>"
         },
         {
+          "name": "SaveAsync",
+          "kind": "method",
+          "signature": "SaveAsync(string fileName, string contentType, Func<Stream, CancellationToken, Task> writeAsync, CancellationToken cancellationToken = default)",
+          "returnType": "Task<BlobReference>"
+        },
+        {
           "name": "DeleteAsync",
           "kind": "method",
           "signature": "DeleteAsync(BlobReference blobReference, CancellationToken cancellationToken = default)",

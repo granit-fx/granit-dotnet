@@ -36,4 +36,13 @@ public sealed class NullDataExchangeFileProviderTests
         await Should.ThrowAsync<NotImplementedException>(
             () => _provider.DeleteAsync(BlobReference.Create("ref")));
     }
+
+    [Fact]
+    public async Task StreamingSaveAsync_throws_with_actionable_message()
+    {
+        NotImplementedException ex = await Should.ThrowAsync<NotImplementedException>(
+            () => _provider.SaveAsync("file.csv", "text/csv", (_, _) => Task.CompletedTask));
+
+        ex.Message.ShouldContain("IDataExchangeFileProvider");
+    }
 }
