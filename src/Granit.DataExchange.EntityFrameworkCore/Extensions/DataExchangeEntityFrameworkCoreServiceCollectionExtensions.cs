@@ -13,6 +13,35 @@ namespace Granit.DataExchange.EntityFrameworkCore.Extensions;
 public static class DataExchangeEntityFrameworkCoreServiceCollectionExtensions
 {
     /// <summary>
+    /// Declares a <see cref="DbContext"/> whose entities participate in data exchange:
+    /// auto-export definition discovery and fallback <c>IExportDataSource&lt;T&gt;</c> resolution.
+    /// </summary>
+    /// <remarks>
+    /// Discovery is strictly registration-based — call this once per DbContext whose entities
+    /// should be exportable without an explicit <c>ExportDefinition</c>/<c>IExportDataSource</c>.
+    /// Idempotent: registering the same context twice is a no-op.
+    /// </remarks>
+    /// <typeparam name="TContext">The application DbContext type.</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddDataExchangeDbContext<TContext>(
+        this IServiceCollection services)
+        where TContext : DbContext
+    {
+        bool alreadyRegistered = services.Any(d =>
+            d.ServiceType == typeof(DataExchangeDbContextRegistration)
+            && d.ImplementationInstance is DataExchangeDbContextRegistration registration
+            && registration.ContextType == typeof(TContext));
+
+        if (!alreadyRegistered)
+        {
+            services.AddSingleton(new DataExchangeDbContextRegistration(typeof(TContext)));
+        }
+
+        return services;
+    }
+
+    /// <summary>
     /// Registers an <see cref="IImportExecutor{TEntity}"/> backed by EF Core.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>

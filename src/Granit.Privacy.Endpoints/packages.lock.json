@@ -108,6 +108,13 @@
       "granit": {
         "type": "Project"
       },
+      "granit.auditing.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.authorization": {
         "type": "Project",
         "dependencies": {
@@ -186,7 +193,10 @@
       "granit.http.cookies": {
         "type": "Project",
         "dependencies": {
-          "Granit": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Auditing.Abstractions": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.http.exceptionhandling": {
@@ -376,8 +386,8 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.17.3",
-        "contentHash": "sj0uRB5gLWRsGqszp5vN+OwHklJo+70hqhJPwpSrPgJdRFGeFjSFZ87iz6DiiWTGcpPaIupjrys/toI9VTN/Og==",
+        "resolved": "6.18.0",
+        "contentHash": "PNE9Rml9pgF+7ucenFDQxFmlmgMnYP+9rwfwOJBGjvJY9bNCPqYmFSvYoBkZJbKTHRgR6kFwft0yf5HIr8qDbg==",
         "dependencies": {
           "JasperFx": "2.27.0",
           "JasperFx.Events": "2.27.0",

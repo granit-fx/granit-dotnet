@@ -140,6 +140,7 @@
       "src/Granit.Http.Bulkhead/Granit.Http.Bulkhead.csproj",
       "src/Granit.Http.Cookies.CookieConsent/Granit.Http.Cookies.CookieConsent.csproj",
       "src/Granit.Http.Cookies.Endpoints/Granit.Http.Cookies.Endpoints.csproj",
+      "src/Granit.Http.Cookies.EntityFrameworkCore/Granit.Http.Cookies.EntityFrameworkCore.csproj",
       "src/Granit.Http.Cookies/Granit.Http.Cookies.csproj",
       "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
       "src/Granit.Http.Features/Granit.Http.Features.csproj",

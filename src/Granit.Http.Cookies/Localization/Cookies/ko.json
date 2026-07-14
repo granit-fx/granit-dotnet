@@ -1,6 +1,9 @@
 {
   "culture": "ko",
   "texts": {
-    "Cookies:Unregistered": "쿠키 '{0}'이(가) 등록되지 않았습니다. 모든 쿠키는 시작 시 선언해야 합니다."
+    "Cookies:Unregistered": "쿠키 '{0}'이(가) 등록되지 않았습니다. 모든 쿠키는 시작 시 선언해야 합니다.",
+    "Cookies:Validation:UnknownCategory": "알 수 없는 쿠키 동의 카테고리입니다.",
+    "Cookies:Validation:CategoryOverlap": "같은 카테고리를 동시에 허용하고 거부할 수 없습니다.",
+    "Cookies:Validation:EmptyDecision": "동의 결정은 최소 하나의 카테고리를 허용하거나 거부해야 합니다."
   }
 }

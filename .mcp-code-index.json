@@ -1178,7 +1178,10 @@
     {
       "name": "Granit.Http.Cookies",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.Auditing.Abstractions",
+        "Granit.DataExchange.Abstractions",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1195,7 +1198,18 @@
         "Granit",
         "Granit.Http.ApiDocumentation",
         "Granit.Http.Cookies",
+        "Granit.Http.Idempotency.Abstractions",
+        "Granit.Http.RateLimiting",
+        "Granit.Http.UrlSafety",
         "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Http.Cookies.EntityFrameworkCore",
+      "deps": [
+        "Granit.Http.Cookies",
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -16632,6 +16646,15 @@
       "members": []
     },
     {
+      "name": "DataExchangeDbContextRegistration",
+      "fqn": "Granit.DataExchange.EntityFrameworkCore.DataExchangeDbContextRegistration",
+      "kind": "record",
+      "project": "Granit.DataExchange.EntityFrameworkCore",
+      "file": "src/Granit.DataExchange.EntityFrameworkCore/DataExchangeDbContextRegistration.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.DataExchange.EntityFrameworkCore.Extensions.DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -25149,6 +25172,28 @@
       "members": []
     },
     {
+      "name": "CookieCategoryNames",
+      "fqn": "Granit.Http.Cookies.CookieCategoryNames",
+      "kind": "class",
+      "project": "Granit.Http.Cookies",
+      "file": "src/Granit.Http.Cookies/CookieCategoryNames.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ToSnakeCase",
+          "kind": "method",
+          "signature": "ToSnakeCase(CookieCategory category)",
+          "returnType": "string"
+        },
+        {
+          "name": "IsKnown",
+          "kind": "method",
+          "signature": "IsKnown(string? name)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
       "name": "GranitCookiesBuilderExtensions",
       "fqn": "Granit.Http.Cookies.CookieConsent.Extensions.GranitCookiesBuilderExtensions",
       "kind": "class",
@@ -25267,6 +25312,67 @@
       "members": []
     },
     {
+      "name": "CookieConsentRecord",
+      "fqn": "Granit.Http.Cookies.Domain.CookieConsentRecord",
+      "kind": "class",
+      "project": "Granit.Http.Cookies",
+      "file": "src/Granit.Http.Cookies/Domain/CookieConsentRecord.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "GrantedCategories",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> GrantedCategories",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "DeniedCategories",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> DeniedCategories",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "Mode",
+          "kind": "property",
+          "signature": "CookieConsentMode Mode",
+          "returnType": "CookieConsentMode"
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(IEnumerable<string> grantedCategories, IEnumerable<string> deniedCategories, CookieConsentMode mode, string cmpSource, DateTimeOffset decidedAt, string? anonymizedIp = null, string? userAgent = null, string? correlationId = null)",
+          "returnType": "CookieConsentRecord"
+        }
+      ]
+    },
+    {
+      "name": "CookieConsentRecordResponse",
+      "fqn": "Granit.Http.Cookies.Dtos.CookieConsentRecordResponse",
+      "kind": "record",
+      "project": "Granit.Http.Cookies",
+      "file": "src/Granit.Http.Cookies/Dtos/CookieConsentRecordResponse.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "CookieConsentRateLimitPolicies",
+      "fqn": "Granit.Http.Cookies.Endpoints.CookieConsentRateLimitPolicies",
+      "kind": "class",
+      "project": "Granit.Http.Cookies.Endpoints",
+      "file": "src/Granit.Http.Cookies.Endpoints/CookieConsentRateLimitPolicies.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ConsentDecisionRequest",
+      "fqn": "Granit.Http.Cookies.Endpoints.Dtos.ConsentDecisionRequest",
+      "kind": "record",
+      "project": "Granit.Http.Cookies.Endpoints",
+      "file": "src/Granit.Http.Cookies.Endpoints/Dtos/ConsentDecisionRequest.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "CookieConsentConfigResponse",
       "fqn": "Granit.Http.Cookies.Endpoints.Dtos.CookieConsentConfigResponse",
       "kind": "record",
@@ -25315,7 +25421,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies.Endpoints",
       "file": "src/Granit.Http.Cookies.Endpoints/GranitHttpCookiesEndpointsModule.cs",
-      "line": 20,
+      "line": 24,
       "members": [
         {
           "name": "ConfigureServices",
@@ -25348,6 +25454,69 @@
       ]
     },
     {
+      "name": "CookiesEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Http.Cookies.EntityFrameworkCore.Extensions.CookiesEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Cookies.EntityFrameworkCore",
+      "file": "src/Granit.Http.Cookies.EntityFrameworkCore/Extensions/CookiesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitCookiesEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitCookiesEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "CookiesModelBuilderExtensions",
+      "fqn": "Granit.Http.Cookies.EntityFrameworkCore.Extensions.CookiesModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Cookies.EntityFrameworkCore",
+      "file": "src/Granit.Http.Cookies.EntityFrameworkCore/Extensions/CookiesModelBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ConfigureCookiesModule",
+          "kind": "method",
+          "signature": "ConfigureCookiesModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        },
+        {
+          "name": "ConfigureCookiesModule",
+          "kind": "method",
+          "signature": "ConfigureCookiesModule(this ModelBuilder modelBuilder, bool excludeFromMigrations)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpCookiesDbProperties",
+      "fqn": "Granit.Http.Cookies.EntityFrameworkCore.GranitHttpCookiesDbProperties",
+      "kind": "class",
+      "project": "Granit.Http.Cookies.EntityFrameworkCore",
+      "file": "src/Granit.Http.Cookies.EntityFrameworkCore/GranitHttpCookiesDbProperties.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpCookiesEntityFrameworkCoreModule",
+      "fqn": "Granit.Http.Cookies.EntityFrameworkCore.GranitHttpCookiesEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Http.Cookies.EntityFrameworkCore",
+      "file": "src/Granit.Http.Cookies.EntityFrameworkCore/GranitHttpCookiesEntityFrameworkCoreModule.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "UnregisteredCookieException",
       "fqn": "Granit.Http.Cookies.Exceptions.UnregisteredCookieException",
       "kind": "class",
@@ -25364,12 +25533,34 @@
       ]
     },
     {
+      "name": "CookieConsentRecordExportDefinition",
+      "fqn": "Granit.Http.Cookies.Exports.CookieConsentRecordExportDefinition",
+      "kind": "class",
+      "project": "Granit.Http.Cookies",
+      "file": "src/Granit.Http.Cookies/Exports/CookieConsentRecordExportDefinition.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "QueryDefinitionName",
+          "kind": "property",
+          "signature": "string? QueryDefinitionName",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
       "name": "CookiesServiceCollectionExtensions",
       "fqn": "Granit.Http.Cookies.Extensions.CookiesServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/Extensions/CookiesServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitCookies",
@@ -25401,7 +25592,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/GranitHttpCookiesModule.cs",
-      "line": 21,
+      "line": 28,
       "members": [
         {
           "name": "ConfigureServices",
@@ -25566,6 +25757,47 @@
       ]
     },
     {
+      "name": "ConsentRecordedEto",
+      "fqn": "Granit.Http.Cookies.Ledger.ConsentRecordedEto",
+      "kind": "record",
+      "project": "Granit.Http.Cookies",
+      "file": "src/Granit.Http.Cookies/Ledger/ConsentRecordedEto.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "IConsentLedger",
+      "fqn": "Granit.Http.Cookies.Ledger.IConsentLedger",
+      "kind": "interface",
+      "project": "Granit.Http.Cookies",
+      "file": "src/Granit.Http.Cookies/Ledger/IConsentLedger.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "RecordAsync",
+          "kind": "method",
+          "signature": "RecordAsync(CookieConsentRecord record, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ICookieConsentEraser",
+      "fqn": "Granit.Http.Cookies.Ledger.ICookieConsentEraser",
+      "kind": "interface",
+      "project": "Granit.Http.Cookies",
+      "file": "src/Granit.Http.Cookies/Ledger/ICookieConsentEraser.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "EraseUserDataAsync",
+          "kind": "method",
+          "signature": "EraseUserDataAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
       "name": "GranitCookiesOptions",
       "fqn": "Granit.Http.Cookies.Options.GranitCookiesOptions",
       "kind": "class",
@@ -25606,6 +25838,22 @@
           "kind": "property",
           "signature": "required string Name",
           "returnType": "required string"
+        }
+      ]
+    },
+    {
+      "name": "CookieConsentRecordQueryDefinition",
+      "fqn": "Granit.Http.Cookies.Queries.CookieConsentRecordQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Http.Cookies",
+      "file": "src/Granit.Http.Cookies/Queries/CookieConsentRecordQueryDefinition.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },

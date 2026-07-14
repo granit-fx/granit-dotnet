@@ -1,6 +1,9 @@
 {
   "culture": "hi",
   "texts": {
-    "Cookies:Unregistered": "कुकी '{0}' पंजीकृत नहीं है। सभी कुकीज़ को स्टार्टअप पर घोषित किया जाना चाहिए।"
+    "Cookies:Unregistered": "कुकी '{0}' पंजीकृत नहीं है। सभी कुकीज़ को स्टार्टअप पर घोषित किया जाना चाहिए।",
+    "Cookies:Validation:UnknownCategory": "अज्ञात कुकी सहमति श्रेणी।",
+    "Cookies:Validation:CategoryOverlap": "एक ही श्रेणी को एक साथ स्वीकृत और अस्वीकृत नहीं किया जा सकता।",
+    "Cookies:Validation:EmptyDecision": "सहमति निर्णय में कम से कम एक श्रेणी को स्वीकृत या अस्वीकृत करना आवश्यक है।"
   }
 }

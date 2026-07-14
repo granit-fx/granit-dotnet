@@ -1,6 +1,9 @@
 {
   "culture": "it",
   "texts": {
-    "Cookies:Unregistered": "Il cookie '{0}' non è registrato. Tutti i cookie devono essere dichiarati all'avvio."
+    "Cookies:Unregistered": "Il cookie '{0}' non è registrato. Tutti i cookie devono essere dichiarati all'avvio.",
+    "Cookies:Validation:UnknownCategory": "Categoria di consenso ai cookie sconosciuta.",
+    "Cookies:Validation:CategoryOverlap": "Una categoria non può essere contemporaneamente concessa e negata.",
+    "Cookies:Validation:EmptyDecision": "Una decisione di consenso deve concedere o negare almeno una categoria."
   }
 }

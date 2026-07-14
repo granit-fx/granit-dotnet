@@ -37,9 +37,9 @@ public sealed class ODataExposureMetrics
             description: "OData queries whose user-supplied $top exceeded the EntitySet's MaxTop and was silently clamped. The OData-MaxTop-Applied response header surfaces the same event.");
     }
 
-    /// <summary>Records a rejection at the C3 hardening layer.</summary>
+    /// <summary>Records a rejection at the C3 hardening layer or the #3004 $filter translation layer.</summary>
     /// <param name="entitySet">EntitySet name surfaced on the route (e.g. <c>"Invoices"</c>).</param>
-    /// <param name="reason">Stable snake_case reason tag (<c>"count_disabled"</c>, <c>"expand_not_whitelisted"</c>).</param>
+    /// <param name="reason">Stable snake_case reason tag (<c>"count_disabled"</c>, <c>"expand_not_whitelisted"</c>, <c>"filter_not_translatable"</c>, <c>"filter_field_rejected"</c>, <c>"odata_validation_failed"</c>).</param>
     /// <param name="tenantId">Resolved tenant id, or <see langword="null"/> when no tenant is active. Coalesced to <c>"global"</c> on the metric.</param>
     /// <param name="feedKind">Feed origin (<c>"tenant"</c> or <c>"host"</c>) — distinguishes per-tenant exposure events from cross-tenant host-feed events for audit dashboards.</param>
     public void RecordRejectedQuery(string entitySet, string reason, string? tenantId, string feedKind) =>

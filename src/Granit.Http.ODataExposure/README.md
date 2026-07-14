@@ -102,14 +102,80 @@ Per EntitySet `GET /api/{version}/odata/{Name}?$filter=…&$select=…&$top=…`
 3. **`IQueryableSource<TEntity>`** is resolved from DI — emits an
    `IQueryable<TEntity>` already filtered by the host's
    `ApplyGranitConventions` (tenant + soft-delete).
-4. **`IQueryEngine.BuildFilteredQuery(source, new QueryRequest())`** layers
-   the `QueryDefinition`'s filter pipeline (presets, quick filters, global
-   search). User filters compose ON TOP of these — never instead of them.
-5. **`ODataQueryOptions<TEntity>.ApplyTo(filtered)`** layers the user's
-   `$filter` / `$select` / `$top` / `$skip` / `$orderby` on top.
+4. **`$filter` translation** — the OData filter AST is translated into the
+   QueryEngine's strict `QueryPredicate` tree. Untranslatable constructs
+   return `400 Bad Request` (see [`$filter` support](#filter-support) below).
+5. **`IQueryEngine.BuildFilteredQuery(source, new QueryRequest(), predicate)`**
+   layers the `QueryDefinition`'s filter pipeline (presets, quick filters,
+   global search) AND the translated user predicate through the engine's
+   single enforcement point — filterable-column whitelist, operator
+   inference, structural guards. Violations return `400` listing every
+   offending field.
+6. **Per-route validation** — `ODataQueryOptions.Validate` runs against
+   settings derived from the descriptor and the `QueryDefinition`:
+   `$orderby` is whitelisted from the definition's `Sortable()` columns
+   (no sortable columns → `$orderby` rejected entirely).
+7. **`ODataQueryOptions<TEntity>.ApplyTo(filtered, settings, AllowedQueryOptions.Filter)`**
+   layers `$select` / `$top` / `$skip` / `$orderby` on top. `$filter` is
+   passed as the *ignore* flag — it was already enforced by the engine and
+   is never applied twice.
 
 The order is load-bearing: tenant first, framework filters second, user
-query third.
+query third — and the user's `$filter` goes through the engine, not around
+it.
+
+## `$filter` support
+
+Since #3004 the user's `$filter` is no longer composed as arbitrary LINQ by
+`ApplyTo` — it is translated into the QueryEngine predicate tree so the
+`QueryDefinition`'s `Filterable()` whitelist and operator inference are
+enforced once, engine-side.
+
+Supported constructs:
+
+| OData construct | QueryEngine translation |
+| --------------- | ----------------------- |
+| `and` / `or` / `not` | `And` / `Or` / `Not` predicate composition |
+| `eq` / `ne` | `Eq` / `Ne` leaf |
+| `X eq null` / `X ne null` | `IsNull` / `IsNotNull` null check |
+| `gt` / `ge` / `lt` / `le` | `Gt` / `Gte` / `Lt` / `Lte` (mirrored when the literal is on the left) |
+| `contains` / `startswith` / `endswith` | `Contains` / `StartsWith` / `EndsWith` over an entity-local string column |
+| `X in ('a','b')` | `In` leaf (comma-joined values) |
+| Typed literals | `DateTimeOffset` (ISO-8601 round-trip), `Edm.Date` (`yyyy-MM-dd`), `Guid`, `bool`, numerics (invariant), enum member names |
+
+Explicitly rejected — `400 Bad Request` with an actionable detail and the
+`granit.odata.query.rejected` metric (`reason=filter_not_translatable`):
+
+- `any(...)` / `all(...)` lambdas and collection `$count` segments
+- arithmetic operators (`add`, `sub`, `mul`, `div`, `mod`) and unary minus
+- the `has` flag-enum operator
+- cross-navigation property access (`Customer/Name`) — filter on the
+  EntitySet's own columns
+- every other canonical function (`tolower`, `toupper`, `trim`, `concat`,
+  `indexof`, `length`, `substring`, `year`, `month`, `day`, `date`, `time`,
+  `now`, `round`, `floor`, `ceiling`, `cast`, `isof`, `geo.*`, …)
+- dynamic (open-type) properties
+- `in` list items that would not round-trip the engine's comma-separated
+  list format (items containing a comma, `null`, empty or
+  whitespace-padded strings)
+
+The 400 contract (RFC 7807 Problem, title `Query option not supported`):
+
+- **`filter_not_translatable`** — the construct is not in the table above;
+  the detail names it and suggests the supported alternative.
+- **`filter_field_rejected`** — the filter is translatable but references
+  columns the `QueryDefinition` does not allow; the detail lists every
+  violation (`[FieldNotFilterable] InternalNote: …`).
+- **`odata_validation_failed`** — the clause failed to parse, referenced a
+  property absent from `$metadata`, or another query option failed the
+  per-route validation settings (e.g. `$orderby` on a non-`Sortable()`
+  column).
+
+> **BREAKING (#3004):** filtering on an EDM-visible but non-`Filterable()`
+> column previously passed through `ApplyTo` silently; it now returns
+> `400` with the field name in the Problem detail. Mark every column BI
+> tools filter on as `Filterable()` in the `QueryDefinition`. Similarly,
+> `$orderby` now requires the column to be `Sortable()`.
 
 ## Strict-config validator (C6 #1395)
 

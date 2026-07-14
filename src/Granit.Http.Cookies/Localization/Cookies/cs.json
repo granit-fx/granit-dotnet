@@ -1,6 +1,9 @@
 {
   "culture": "cs",
   "texts": {
-    "Cookies:Unregistered": "Cookie '{0}' není registrováno. Všechny cookies musí být deklarovány při spuštění."
+    "Cookies:Unregistered": "Cookie '{0}' není registrováno. Všechny cookies musí být deklarovány při spuštění.",
+    "Cookies:Validation:UnknownCategory": "Neznámá kategorie souhlasu s cookies.",
+    "Cookies:Validation:CategoryOverlap": "Kategorie nemůže být zároveň udělena i odmítnuta.",
+    "Cookies:Validation:EmptyDecision": "Rozhodnutí o souhlasu musí udělit nebo odmítnout alespoň jednu kategorii."
   }
 }

@@ -1,6 +1,9 @@
 {
   "culture": "sv",
   "texts": {
-    "Cookies:Unregistered": "Cookien '{0}' är inte registrerad. Alla cookies måste deklareras vid start."
+    "Cookies:Unregistered": "Cookien '{0}' är inte registrerad. Alla cookies måste deklareras vid start.",
+    "Cookies:Validation:UnknownCategory": "Okänd kategori för cookiesamtycke.",
+    "Cookies:Validation:CategoryOverlap": "En kategori kan inte både beviljas och nekas.",
+    "Cookies:Validation:EmptyDecision": "Ett samtyckesbeslut måste bevilja eller neka minst en kategori."
   }
 }

@@ -1,11 +1,7 @@
 using Granit.DataExchange.Export;
-using Granit.DataFiltering;
-using Granit.Domain;
 using Granit.Entities;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
-using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Http.ODataExposure.Tests.Integration;
 
@@ -22,6 +18,9 @@ internal sealed class Invoice : IMultiTenant, ISoftDeletable
     public Guid? TenantId { get; set; }
     public string Number { get; init; } = string.Empty;
     public decimal Amount { get; init; }
+    public string Status { get; init; } = "Draft";
+    public DateTimeOffset? PaidAt { get; init; }
+    public string? InternalNote { get; init; }
     public bool IsDeleted { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
     public string? DeletedBy { get; set; }
@@ -46,6 +45,8 @@ internal sealed class TestDbContext(
         {
             e.HasKey(i => i.Id);
             e.Property(i => i.Number).HasMaxLength(64).IsRequired();
+            e.Property(i => i.Status).HasMaxLength(32).IsRequired();
+            e.Property(i => i.InternalNote).HasMaxLength(256);
         });
 }
 
@@ -55,9 +56,14 @@ internal sealed class InvoiceQueryDefinition : QueryDefinition<Invoice>
 
     protected override void Configure(QueryDefinitionBuilder<Invoice> builder) =>
         builder
-            .Column(i => i.Number, c => c.Filterable())
-            .Column(i => i.Amount, c => c.Filterable())
-            .Column(i => i.TenantId, c => c.Filterable())  // intentionally exposed: hostile $filter targets this column
+            // Sortable() drives the #3004 $orderby whitelist (AllowedOrderByProperties) —
+            // TenantIsolationTests order by TenantId, so the isolation columns are sortable.
+            .Column(i => i.Number, c => c.Filterable().Sortable())
+            .Column(i => i.Amount, c => c.Filterable().Sortable())
+            .Column(i => i.TenantId, c => c.Filterable().Sortable())  // intentionally exposed: hostile $filter targets this column
+            .Column(i => i.Status, c => c.Filterable())               // filterable but NOT sortable — $orderby=Status must 400
+            .Column(i => i.PaidAt, c => c.Filterable())
+            .Column(i => i.InternalNote)                              // declared but NOT filterable — #3004 strict rejection target
             .DefaultPageSize(50);
 }
 
@@ -83,7 +89,13 @@ internal sealed class InvoiceExportDefinition : ExportDefinition<Invoice>
         builder
             .Field(i => i.Number)
             .Field(i => i.Amount)
-            .Field(i => i.TenantId);
+            .Field(i => i.TenantId)
+            .Field(i => i.Status)
+            .Field(i => i.PaidAt)
+            // EDM-visible but not Filterable() in the QueryDefinition — pins the #3004
+            // breaking change: $filter=InternalNote ... used to pass through ApplyTo
+            // silently, it now 400s from the engine's strict predicate validation.
+            .Field(i => i.InternalNote);
 }
 
 internal sealed class InvoiceEntityDefinition : EntityDefinition<Invoice>

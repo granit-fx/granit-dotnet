@@ -1,6 +1,9 @@
+using Granit.Auditing;
+using Granit.DataExchange;
 using Granit.Http.Cookies.Extensions;
 using Granit.Http.Cookies.Internal;
 using Granit.Modularity;
+using Granit.QueryEngine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -18,6 +21,10 @@ namespace Granit.Http.Cookies;
 /// package split; only the module class carries the full package name. Kept as-is:
 /// consistency-over-churn (§3e audit note, story #2999).
 /// </remarks>
+[DependsOn(
+    typeof(GranitAuditingAbstractionsModule),
+    typeof(GranitDataExchangeAbstractionsModule),
+    typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitHttpCookiesModule : GranitModule
 {
     /// <inheritdoc/>

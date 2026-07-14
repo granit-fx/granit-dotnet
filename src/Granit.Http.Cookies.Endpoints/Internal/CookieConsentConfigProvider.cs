@@ -17,7 +17,7 @@ internal sealed class CookieConsentConfigProvider(
         var cookies = cookieRegistry.GetAll()
             .Select(c => new CookieDefinitionResponse(
                 c.Name,
-                CategoryToSnakeCase(c.Category),
+                CookieCategoryNames.ToSnakeCase(c.Category),
                 c.RetentionDays,
                 c.Purpose))
             .ToList();
@@ -25,22 +25,10 @@ internal sealed class CookieConsentConfigProvider(
         var services = serviceRegistry.GetAll()
             .Select(s => new ThirdPartyServiceResponse(
                 s.Name,
-                CategoryToSnakeCase(s.Category),
+                CookieCategoryNames.ToSnakeCase(s.Category),
                 s.CookiePatterns))
             .ToList();
 
         return new CookieConsentConfigResponse(cookies, services);
     }
-
-    private static string CategoryToSnakeCase(CookieCategory category) => category switch
-    {
-        CookieCategory.StrictlyNecessary => "strictly_necessary",
-        CookieCategory.Preferences => "preferences",
-        CookieCategory.Analytics => "analytics",
-        CookieCategory.Marketing => "marketing",
-        CookieCategory.SaleOrSharing => "sale_or_sharing",
-        // Lower-casing a multi-word enum name glues its words together — every
-        // category must have an explicit snake_case mapping above.
-        _ => category.ToString().ToLowerInvariant(),
-    };
 }

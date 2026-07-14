@@ -1,6 +1,9 @@
 {
   "culture": "pl",
   "texts": {
-    "Cookies:Unregistered": "Ciasteczko '{0}' nie jest zarejestrowane. Wszystkie ciasteczka muszą być zadeklarowane przy starcie."
+    "Cookies:Unregistered": "Ciasteczko '{0}' nie jest zarejestrowane. Wszystkie ciasteczka muszą być zadeklarowane przy starcie.",
+    "Cookies:Validation:UnknownCategory": "Nieznana kategoria zgody na pliki cookie.",
+    "Cookies:Validation:CategoryOverlap": "Kategoria nie może być jednocześnie zaakceptowana i odrzucona.",
+    "Cookies:Validation:EmptyDecision": "Decyzja o zgodzie musi zaakceptować lub odrzucić co najmniej jedną kategorię."
   }
 }

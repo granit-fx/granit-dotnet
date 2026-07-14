@@ -32,6 +32,7 @@ internal static class LookupExemptions
 
         // ── [PERMANENT] opaque / external / correlation identifiers ──
         "Granit.Auditing.Domain.AuditEntry.CorrelationId",                       // [PERMANENT] opaque correlation id
+        "Granit.Http.Cookies.Domain.CookieConsentRecord.CorrelationId",          // [PERMANENT] opaque correlation id
         "Granit.Scheduling.Domain.ScheduledAction.CorrelationId",               // [PERMANENT] opaque correlation id
         "Granit.Identity.Federated.Domain.FederatedIdentity.ExternalUserId",     // [PERMANENT] external IdP subject (opaque)
         "Granit.Authorization.Domain.RoleMetadata.ClientId",                     // [PERMANENT] external OAuth client id
@@ -53,6 +54,7 @@ internal static class LookupExemptions
         "Granit.BlobStorage.Domain.BlobDescriptor.TenantId",                    // [PERMANENT] tenant scope
         "Granit.DataExchange.Export.Domain.ExportJob.TenantId",                 // [PERMANENT] tenant scope
         "Granit.DataExchange.Import.Domain.ImportJob.TenantId",                 // [PERMANENT] tenant scope
+        "Granit.Http.Cookies.Domain.CookieConsentRecord.TenantId",              // [PERMANENT] tenant scope
         "Granit.Identity.Domain.User.TenantId",                                  // [PERMANENT] tenant scope
         "Granit.Identity.Federated.Domain.FederatedIdentity.TenantId",          // [PERMANENT] tenant scope
         "Granit.Identity.Local.Domain.GranitUserGroup.TenantId",               // [PERMANENT] tenant scope

@@ -1,6 +1,9 @@
 {
   "culture": "zh",
   "texts": {
-    "Cookies:Unregistered": "Cookie '{0}' 未注册。所有 Cookie 必须在启动时声明。"
+    "Cookies:Unregistered": "Cookie '{0}' 未注册。所有 Cookie 必须在启动时声明。",
+    "Cookies:Validation:UnknownCategory": "未知的 Cookie 同意类别。",
+    "Cookies:Validation:CategoryOverlap": "同一类别不能既被授予又被拒绝。",
+    "Cookies:Validation:EmptyDecision": "同意决定必须至少授予或拒绝一个类别。"
   }
 }

@@ -9,6 +9,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Http.Cookies.Tests" />
     <InternalsVisibleTo Include="Granit.Http.Cookies.CookieConsent" />
+    <InternalsVisibleTo Include="Granit.Http.Cookies.EntityFrameworkCore.Tests" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +18,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Auditing.Abstractions\Granit.Auditing.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
