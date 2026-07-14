@@ -16430,7 +16430,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Csv",
       "file": "src/Granit.DataExchange.Csv/Extensions/ServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitDataExchangeCsv",
