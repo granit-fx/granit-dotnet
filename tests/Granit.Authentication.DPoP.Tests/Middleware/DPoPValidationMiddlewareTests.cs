@@ -83,7 +83,7 @@ public sealed class DPoPValidationMiddlewareTests
         context.Request.Path = "/data";
         context.Request.Headers.Append("DPoP", "valid.proof.jwt");
 
-        _validator.ValidateAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _validator.ValidateAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
             .Returns(new DPoPValidationResult(true, "thumb123", null));
 
         DPoPValidationMiddleware middleware = CreateMiddleware(new DPoPValidationOptions(), _ =>
@@ -109,7 +109,7 @@ public sealed class DPoPValidationMiddlewareTests
         context.Request.Path = "/data";
         context.Request.Headers.Append("DPoP", "invalid.proof.jwt");
 
-        _validator.ValidateAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _validator.ValidateAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
             .Returns(new DPoPValidationResult(false, null, "proof_expired"));
 
         DPoPValidationMiddleware middleware = CreateMiddleware(new DPoPValidationOptions(), _ =>
@@ -153,7 +153,7 @@ public sealed class DPoPValidationMiddlewareTests
         context.Request.Path = "/token";
         context.Request.Headers.Authorization = "DPoP eyJhbGciOiJFUzI1NiJ9.proof";
 
-        _validator.ValidateAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _validator.ValidateAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
             .Returns(new DPoPValidationResult(true, "thumb123", null));
 
         DPoPValidationMiddleware middleware = CreateMiddleware(new DPoPValidationOptions(), _ => Task.CompletedTask);
@@ -164,6 +164,7 @@ public sealed class DPoPValidationMiddlewareTests
             "eyJhbGciOiJFUzI1NiJ9.proof",
             Arg.Any<string>(),
             Arg.Any<string>(),
+            Arg.Any<string?>(),
             Arg.Any<CancellationToken>());
     }
 
@@ -204,7 +205,7 @@ public sealed class DPoPValidationMiddlewareTests
         context.Request.Path = "/data";
         context.Request.Headers.Append("DPoP", "proof.jwt");
 
-        _validator.ValidateAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _validator.ValidateAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
             .Returns(new DPoPValidationResult(true, "thumb", null) { ServerNonce = "server-nonce-123" });
 
         DPoPValidationMiddleware middleware = CreateMiddleware(new DPoPValidationOptions(), _ => Task.CompletedTask);

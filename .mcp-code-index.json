@@ -9975,7 +9975,7 @@
       "kind": "record",
       "project": "Granit.Authentication.DPoP",
       "file": "src/Granit.Authentication.DPoP/Validation/IDPoPProofValidator.cs",
-      "line": 39,
+      "line": 61,
       "members": [
         {
           "name": "Success",
@@ -9997,6 +9997,12 @@
           "name": "ValidateAsync",
           "kind": "method",
           "signature": "ValidateAsync(string proofJwt, string httpMethod, string httpUri, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DPoPValidationResult>"
+        },
+        {
+          "name": "ValidateAsync",
+          "kind": "method",
+          "signature": "ValidateAsync(string proofJwt, string httpMethod, string httpUri, string? accessToken, CancellationToken cancellationToken = default)",
           "returnType": "Task<DPoPValidationResult>"
         },
         {

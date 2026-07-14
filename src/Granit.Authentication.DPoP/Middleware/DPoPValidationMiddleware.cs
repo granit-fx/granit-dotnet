@@ -68,9 +68,14 @@ internal sealed partial class DPoPValidationMiddleware(
         string requestUri = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}";
         string httpMethod = context.Request.Method;
 
+        // Access token the proof is presented with — bound via the ath claim (RFC 9449 §4.3).
+        // When a dedicated DPoP proof header is present, the Authorization header carries the
+        // access token (DPoP or Bearer scheme); extract it so ath is enforced at the resource.
+        string? accessToken = ExtractAccessToken(context, hasDPoPHeader);
+
         // Validate the proof
         DPoPValidationResult result = await proofValidator.ValidateAsync(
-            proofJwt, httpMethod, requestUri, context.RequestAborted).ConfigureAwait(false);
+            proofJwt, httpMethod, requestUri, accessToken, context.RequestAborted).ConfigureAwait(false);
 
         // Always return the server nonce for the next request (RFC 9449 §8)
         if (result.ServerNonce is not null)
@@ -92,6 +97,33 @@ internal sealed partial class DPoPValidationMiddleware(
         }
 
         await next(context).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Extracts the access token the DPoP proof is bound to. Only meaningful when a dedicated
+    /// <c>DPoP</c> proof header is present, in which case the <c>Authorization</c> header carries
+    /// the access token (<c>DPoP</c> or <c>Bearer</c> scheme). Returns null otherwise, so ath
+    /// binding is skipped when no access token accompanies the proof.
+    /// </summary>
+    private static string? ExtractAccessToken(HttpContext context, bool hasDPoPHeader)
+    {
+        if (!hasDPoPHeader)
+        {
+            return null;
+        }
+
+        string authHeader = context.Request.Headers.Authorization.ToString();
+        if (authHeader.StartsWith("DPoP ", StringComparison.OrdinalIgnoreCase))
+        {
+            return authHeader["DPoP ".Length..];
+        }
+
+        if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            return authHeader["Bearer ".Length..];
+        }
+
+        return null;
     }
 
     /// <summary>

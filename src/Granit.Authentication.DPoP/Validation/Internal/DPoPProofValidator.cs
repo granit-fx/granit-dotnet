@@ -28,10 +28,18 @@ internal sealed class DPoPProofValidator(
     /// </summary>
     private static readonly string[] PrivateKeyParameters = ["d", "p", "q", "dp", "dq", "qi", "k"];
 
+    public Task<DPoPValidationResult> ValidateAsync(
+        string proofJwt,
+        string httpMethod,
+        string httpUri,
+        CancellationToken cancellationToken = default) =>
+        ValidateAsync(proofJwt, httpMethod, httpUri, accessToken: null, cancellationToken);
+
     public async Task<DPoPValidationResult> ValidateAsync(
         string proofJwt,
         string httpMethod,
         string httpUri,
+        string? accessToken,
         CancellationToken cancellationToken = default)
     {
         using Activity? activity = DPoPValidationActivitySource.Source.StartActivity(DPoPValidationActivitySource.Validate);
@@ -58,6 +66,12 @@ internal sealed class DPoPProofValidator(
         if (payloadResult is not null)
         {
             return payloadResult with { ServerNonce = serverNonce };
+        }
+
+        DPoPValidationResult? athResult = ValidateAccessTokenBinding(payload, accessToken);
+        if (athResult is not null)
+        {
+            return athResult with { ServerNonce = serverNonce };
         }
 
         DPoPValidationResult? nonceResult = await ValidateNonceAsync(payload, opts, serverNonce, cancellationToken).ConfigureAwait(false);
@@ -201,6 +215,41 @@ internal sealed class DPoPProofValidator(
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Enforces the <c>ath</c> access-token binding (RFC 9449 §4.3 rule 12): when a proof is
+    /// presented at a protected resource together with an access token, it MUST carry an
+    /// <c>ath</c> claim equal to <c>base64url(SHA-256(ASCII(accessToken)))</c>. Skipped when
+    /// <paramref name="accessToken"/> is null (token endpoint — no access token bound yet).
+    /// </summary>
+    private static DPoPValidationResult? ValidateAccessTokenBinding(JsonElement payload, string? accessToken)
+    {
+        if (accessToken is null)
+        {
+            return null;
+        }
+
+        if (!payload.TryGetProperty("ath", out JsonElement ath) || ath.ValueKind != JsonValueKind.String)
+        {
+            return DPoPValidationResult.Failure("Missing ath claim (required when bound to an access token).");
+        }
+
+        string expected = ComputeAccessTokenHash(accessToken);
+        byte[] presentedBytes = Encoding.ASCII.GetBytes(ath.GetString()!);
+        byte[] expectedBytes = Encoding.ASCII.GetBytes(expected);
+        if (!CryptographicOperations.FixedTimeEquals(presentedBytes, expectedBytes))
+        {
+            return DPoPValidationResult.Failure("ath claim does not match the presented access token.");
+        }
+
+        return null;
+    }
+
+    private static string ComputeAccessTokenHash(string accessToken)
+    {
+        byte[] hash = SHA256.HashData(Encoding.ASCII.GetBytes(accessToken));
+        return System.Buffers.Text.Base64Url.EncodeToString(hash);
     }
 
     private async Task<DPoPValidationResult?> ValidateReplayProtectionAsync(
