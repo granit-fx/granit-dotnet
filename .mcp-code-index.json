@@ -17342,7 +17342,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Abstractions",
       "file": "src/Granit.DataExchange.Abstractions/Extensions/ImportDefinitionServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": []
     },
     {
@@ -17534,12 +17534,12 @@
       "kind": "interface",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Import/Execution/IImportExecutor.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "ExecuteAsync",
           "kind": "method",
-          "signature": "ExecuteAsync(IAsyncEnumerable<ValidatedRow<TEntity>> entities, ImportExecutionOptions options, IProgress<ImportProgress>? progress = null, CancellationToken cancellationToken = default)",
+          "signature": "ExecuteAsync(IAsyncEnumerable<RowOutcome<TEntity>> rows, ImportExecutionOptions options, IProgress<ImportProgress>? progress = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<ImportReport>"
         }
       ]
@@ -17576,13 +17576,20 @@
       ]
     },
     {
-      "name": "ValidatedRow",
-      "fqn": "Granit.DataExchange.Import.Execution.ValidatedRow",
+      "name": "RowOutcome",
+      "fqn": "Granit.DataExchange.Import.Execution.RowOutcome",
       "kind": "record",
       "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Import/Execution/ValidatedRow.cs",
+      "file": "src/Granit.DataExchange/Import/Execution/RowOutcome.cs",
       "line": 12,
-      "members": []
+      "members": [
+        {
+          "name": "Ok",
+          "kind": "method",
+          "signature": "Ok(int rowNumber, TEntity entity, RecordIdentity<TEntity>? identity = null)",
+          "returnType": "required int RowNumber { get; init; } public TEntity? Entity { get; init; } public RecordIdentity<TEntity>? Identity { get; init; } public ImportRowError? Error { get; init; } public bool IsSkipped { get; init; } public RowOutcome<TEntity>"
+        }
+      ]
     },
     {
       "name": "IImportDefinitionDescriptor",
@@ -17599,6 +17606,31 @@
           "returnType": "string Name { get; } Type EntityType { get; } int MaxFileSizeMb { get; } IReadOnlyList<string> AllowedMimeTypes { get; } IReadOnlyList<ImportFieldMetadata>"
         }
       ]
+    },
+    {
+      "name": "IImportEntityBinding",
+      "fqn": "Granit.DataExchange.Import.IImportEntityBinding",
+      "kind": "interface",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/IImportEntityBinding.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Descriptor",
+          "kind": "property",
+          "signature": "IImportDefinitionDescriptor Descriptor",
+          "returnType": "IImportDefinitionDescriptor"
+        }
+      ]
+    },
+    {
+      "name": "IImportEntityVisitor",
+      "fqn": "Granit.DataExchange.Import.IImportEntityVisitor",
+      "kind": "interface",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Import/IImportEntityVisitor.cs",
+      "line": 9,
+      "members": []
     },
     {
       "name": "IRecordIdentityResolver",
@@ -18031,6 +18063,66 @@
       ]
     },
     {
+      "name": "IImportPipeline",
+      "fqn": "Granit.DataExchange.Import.Pipeline.IImportPipeline",
+      "kind": "interface",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Import/Pipeline/IImportPipeline.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(ImportPipelineContext context, CancellationToken cancellationToken = default)",
+          "returnType": "string DefinitionName { get; } Type EntityType { get; } Task<ImportReport>"
+        }
+      ]
+    },
+    {
+      "name": "IImportPipelineDescriptor",
+      "fqn": "Granit.DataExchange.Import.Pipeline.IImportPipelineDescriptor",
+      "kind": "interface",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Import/Pipeline/IImportPipelineDescriptor.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(IServiceProvider scopedProvider)",
+          "returnType": "string DefinitionName { get; } Type EntityType { get; } IImportDefinitionDescriptor Definition { get; } IImportPipeline"
+        },
+        {
+          "name": "SuggestMappingsAsync",
+          "kind": "method",
+          "signature": "SuggestMappingsAsync(IServiceProvider scopedProvider, IReadOnlyList<string> headers, IReadOnlyList<string[]>? previewRows, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlyList<ImportColumnMapping>>"
+        }
+      ]
+    },
+    {
+      "name": "IImportPipelineRegistry",
+      "fqn": "Granit.DataExchange.Import.Pipeline.IImportPipelineRegistry",
+      "kind": "interface",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Import/Pipeline/IImportPipelineRegistry.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "GetAll",
+          "kind": "method",
+          "signature": "GetAll()",
+          "returnType": "IReadOnlyList<IImportPipelineDescriptor>"
+        },
+        {
+          "name": "Find",
+          "kind": "method",
+          "signature": "Find(string definitionName)",
+          "returnType": "IImportPipelineDescriptor?"
+        }
+      ]
+    },
+    {
       "name": "IImportPreviewService",
       "fqn": "Granit.DataExchange.Import.Pipeline.IImportPreviewService",
       "kind": "interface",
@@ -18061,6 +18153,15 @@
           "returnType": "Task<ImportUploadResult>"
         }
       ]
+    },
+    {
+      "name": "ImportPipelineContext",
+      "fqn": "Granit.DataExchange.Import.Pipeline.ImportPipelineContext",
+      "kind": "record",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Import/Pipeline/ImportPipelineContext.cs",
+      "line": 10,
+      "members": []
     },
     {
       "name": "ImportPreviewResult",
