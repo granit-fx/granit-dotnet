@@ -53,10 +53,20 @@ public static class OpenIddictValidationHostApplicationBuilderExtensions
         // implicitly via TokenValidationParameters.RoleClaimType.
         builder.Services.AddGranitOpenIddictRoleClaimNormalization();
 
-        // Store RequireDPoP flag for middleware registration
+        // RequireDPoP is NOT enforceable by this package: RequireDPoPMiddleware performs a
+        // presence-only header check and no DPoP *proof* validation exists on the resource
+        // side here, so RequireDPoP = true would advertise sender-constraining it cannot
+        // enforce while rejecting legitimate `Authorization: DPoP` clients. Fail fast rather
+        // than ship false protection. Resource-side DPoP validation is provided by
+        // Granit.Authentication.DPoP (AddGranitDPoPValidation / UseGranitDPoPValidation).
         if (validationOptions.RequireDPoP)
         {
-            builder.Services.AddSingleton(validationOptions);
+            throw new InvalidOperationException(
+                "Authentication:OpenIddict:RequireDPoP = true is not supported: this package does " +
+                "not validate DPoP proofs on the resource side, so it cannot enforce " +
+                "proof-of-possession. Reference Granit.Authentication.DPoP and call " +
+                "AddGranitDPoPValidation() / UseGranitDPoPValidation() to enforce DPoP, then remove " +
+                "the Authentication:OpenIddict:RequireDPoP setting.");
         }
 
         return builder;
