@@ -1,4 +1,3 @@
-using Granit.Caching;
 using Granit.Http.Idempotency.Internal;
 using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,14 +26,14 @@ public sealed class GranitHttpIdempotencyModuleTests
     // =========================================================================
 
     [Fact]
-    public void Module_DependsOnGranitCachingModule()
+    public void Module_HasNoDependsOn()
     {
+        // The caching dependency was dissolved with ConditionalCacheIdempotencyStore (#3002):
+        // the module now ships its own in-memory store and has zero module dependencies.
         var attributes = (DependsOnAttribute[])Attribute.GetCustomAttributes(
             typeof(GranitHttpIdempotencyModule), typeof(DependsOnAttribute));
 
-        Type[] dependedTypes = attributes.SelectMany(a => a.DependedTypes).ToArray();
-
-        dependedTypes.ShouldContain(typeof(GranitCachingModule));
+        attributes.ShouldBeEmpty();
     }
 
     [Fact]

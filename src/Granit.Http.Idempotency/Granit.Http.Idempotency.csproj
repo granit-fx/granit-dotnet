@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Http.Idempotency</PackageId>
-    <Description>HTTP idempotency middleware for public APIs (Stripe-style). Atomic storage via Redis SET NX PX, state machine Absent, InProgress, Completed. Opt-in AES-256 encryption via ICacheValueEncryptor. GDPR/ISO 27001 compliant.</Description>
+    <Description>HTTP idempotency middleware for public APIs (Stripe-style). First-class IIdempotencyStore contract with atomic transitions (state machine Absent, InProgress, Completed, Tombstoned) and an in-memory Development default. Pair with Granit.Http.Idempotency.StackExchangeRedis for distributed, AES-256-encrypted storage. GDPR/ISO 27001 compliant.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
+    <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.Http.Idempotency.Abstractions\Granit.Http.Idempotency.Abstractions.csproj" />
   </ItemGroup>
 

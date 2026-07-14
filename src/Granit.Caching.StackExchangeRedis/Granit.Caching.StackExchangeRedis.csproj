@@ -8,6 +8,9 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Caching.StackExchangeRedis.Tests" />
+    <InternalsVisibleTo Include="Granit.Http.Idempotency.StackExchangeRedis" />
+    <InternalsVisibleTo Include="Granit.Http.Idempotency.StackExchangeRedis.Tests" />
+    <InternalsVisibleTo Include="Granit.Http.Idempotency.StackExchangeRedis.Tests.Integration" />
     <InternalsVisibleTo Include="Granit.Http.OutputCaching.StackExchangeRedis" />
     <InternalsVisibleTo Include="Granit.Http.OutputCaching.StackExchangeRedis.Tests" />
   </ItemGroup>

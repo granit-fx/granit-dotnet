@@ -173,6 +173,7 @@
     <ProjectReference Include="..\..\src\Granit.Http.Hosting\Granit.Http.Hosting.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Features\Granit.Http.Features.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.Idempotency.StackExchangeRedis\Granit.Http.Idempotency.StackExchangeRedis.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Idempotency\Granit.Http.Idempotency.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ODataExposure\Granit.Http.ODataExposure.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.OutputCaching\Granit.Http.OutputCaching.csproj" />

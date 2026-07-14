@@ -300,7 +300,12 @@ internal sealed partial class IdempotencyMiddleware(
             };
 
             LogResponseTooLarge(_logger, redisKey, captureStream.Length, _opts.MaxResponseSizeBytes);
-            await _store.SetCompletedAsync(redisKey, tombstoneEntry, _opts.TombstoneTtl, CancellationToken.None).ConfigureAwait(false);
+            bool tombstoned = await _store.TombstoneAsync(redisKey, tombstoneEntry, _opts.TombstoneTtl, CancellationToken.None).ConfigureAwait(false);
+            if (!tombstoned)
+            {
+                LogKeyExpiredBeforeTerminalWrite(_logger, redisKey);
+            }
+
             return;
         }
 
@@ -340,7 +345,11 @@ internal sealed partial class IdempotencyMiddleware(
             CompletedAt = completedAt,
         };
 
-        await _store.SetCompletedAsync(redisKey, completedEntry, completedTtl, CancellationToken.None).ConfigureAwait(false);
+        bool completed = await _store.CompleteAsync(redisKey, completedEntry, completedTtl, CancellationToken.None).ConfigureAwait(false);
+        if (!completed)
+        {
+            LogKeyExpiredBeforeTerminalWrite(_logger, redisKey);
+        }
     }
 
     // =========================================================================
@@ -499,6 +508,10 @@ internal sealed partial class IdempotencyMiddleware(
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Idempotency replay for tombstoned key {Key} (reason: {Reason}). Request was executed once; response is not replayable.")]
     private static partial void LogTombstoneReplay(ILogger logger, string key, IdempotencyTombstoneReason? reason);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Terminal write skipped: key {Key} no longer exists (InProgress TTL may have expired before the response completed).")]
+    private static partial void LogKeyExpiredBeforeTerminalWrite(ILogger logger, string key);
 
     // =========================================================================
     // Problem response helper (Utf8JsonWriter directly to response body — no MVC dependency)

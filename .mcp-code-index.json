@@ -1223,7 +1223,7 @@
     {
       "name": "Granit.Http.Idempotency",
       "deps": [
-        "Granit.Caching",
+        "Granit",
         "Granit.Http.Idempotency.Abstractions"
       ],
       "framework": "net10.0"
@@ -1231,6 +1231,14 @@
     {
       "name": "Granit.Http.Idempotency.Abstractions",
       "deps": [],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Http.Idempotency.StackExchangeRedis",
+      "deps": [
+        "Granit.Caching.StackExchangeRedis",
+        "Granit.Http.Idempotency"
+      ],
       "framework": "net10.0"
     },
     {
@@ -25779,13 +25787,13 @@
       "kind": "interface",
       "project": "Granit.Http.Idempotency",
       "file": "src/Granit.Http.Idempotency/Abstractions/IIdempotencyStore.cs",
-      "line": 12,
+      "line": 33,
       "members": [
         {
           "name": "TryAcquireAsync",
           "kind": "method",
           "signature": "TryAcquireAsync(string key, IdempotencyEntry entry, TimeSpan ttl, CancellationToken cancellationToken)",
-          "returnType": "Task<bool>"
+          "returnType": "bool IsDistributed { get; } string BackendName { get; } Task<bool>"
         },
         {
           "name": "GetAsync",
@@ -25794,10 +25802,16 @@
           "returnType": "Task<IdempotencyEntry?>"
         },
         {
-          "name": "SetCompletedAsync",
+          "name": "CompleteAsync",
           "kind": "method",
-          "signature": "SetCompletedAsync(string key, IdempotencyEntry entry, TimeSpan ttl, CancellationToken cancellationToken)",
-          "returnType": "Task"
+          "signature": "CompleteAsync(string key, IdempotencyEntry entry, TimeSpan ttl, CancellationToken cancellationToken)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "TombstoneAsync",
+          "kind": "method",
+          "signature": "TombstoneAsync(string key, IdempotencyEntry entry, TimeSpan ttl, CancellationToken cancellationToken)",
+          "returnType": "Task<bool>"
         },
         {
           "name": "DeleteAsync",
@@ -25873,7 +25887,7 @@
       "kind": "class",
       "project": "Granit.Http.Idempotency",
       "file": "src/Granit.Http.Idempotency/GranitHttpIdempotencyModule.cs",
-      "line": 14,
+      "line": 13,
       "members": [
         {
           "name": "ConfigureServices",
@@ -25920,7 +25934,7 @@
       "kind": "record",
       "project": "Granit.Http.Idempotency",
       "file": "src/Granit.Http.Idempotency/Models/IdempotencyEntry.cs",
-      "line": 21,
+      "line": 19,
       "members": []
     },
     {
@@ -26016,6 +26030,72 @@
       "file": "src/Granit.Http.Idempotency/Models/IdempotencyTombstoneReason.cs",
       "line": 12,
       "members": []
+    },
+    {
+      "name": "RedisIdempotencyServiceCollectionExtensions",
+      "fqn": "Granit.Http.Idempotency.StackExchangeRedis.Extensions.RedisIdempotencyServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Idempotency.StackExchangeRedis",
+      "file": "src/Granit.Http.Idempotency.StackExchangeRedis/Extensions/RedisIdempotencyServiceCollectionExtensions.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "AddGranitRedisIdempotency",
+          "kind": "method",
+          "signature": "AddGranitRedisIdempotency(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpIdempotencyStackExchangeRedisModule",
+      "fqn": "Granit.Http.Idempotency.StackExchangeRedis.GranitHttpIdempotencyStackExchangeRedisModule",
+      "kind": "class",
+      "project": "Granit.Http.Idempotency.StackExchangeRedis",
+      "file": "src/Granit.Http.Idempotency.StackExchangeRedis/GranitHttpIdempotencyStackExchangeRedisModule.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "IsEnabled",
+          "kind": "method",
+          "signature": "IsEnabled(ServiceConfigurationContext context)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "RedisIdempotencyOptions",
+      "fqn": "Granit.Http.Idempotency.StackExchangeRedis.Options.RedisIdempotencyOptions",
+      "kind": "class",
+      "project": "Granit.Http.Idempotency.StackExchangeRedis",
+      "file": "src/Granit.Http.Idempotency.StackExchangeRedis/Options/RedisIdempotencyOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "IsEnabled",
+          "kind": "property",
+          "signature": "bool IsEnabled",
+          "returnType": "bool"
+        },
+        {
+          "name": "Configuration",
+          "kind": "property",
+          "signature": "string Configuration",
+          "returnType": "string"
+        },
+        {
+          "name": "InstanceName",
+          "kind": "property",
+          "signature": "string InstanceName",
+          "returnType": "string"
+        },
+        {
+          "name": "RequireTls",
+          "kind": "property",
+          "signature": "bool RequireTls",
+          "returnType": "bool"
+        }
+      ]
     },
     {
       "name": "ODataExposureMetrics",

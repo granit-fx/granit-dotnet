@@ -3,6 +3,7 @@ using Granit.Caching.StackExchangeRedis;
 using Granit.Http.ApiDocumentation;
 using Granit.Http.Hosting;
 using Granit.Http.Idempotency;
+using Granit.Http.Idempotency.StackExchangeRedis;
 using Granit.Localization;
 using Granit.Modularity;
 
@@ -15,7 +16,7 @@ public static class GranitBuilderApiExtensions
 {
     /// <summary>
     /// Adds the Api bundle: Essentials + ApiDocumentation (OpenAPI + API versioning),
-    /// Hosting (CORS + compression), Idempotency, Localization, Caching + Redis.
+    /// Hosting (CORS + compression), Idempotency + Redis store, Localization, Caching + Redis.
     /// </summary>
     public static GranitBuilder AddApi(this GranitBuilder builder)
     {
@@ -23,6 +24,7 @@ public static class GranitBuilderApiExtensions
         builder.AddModule<GranitHttpApiDocumentationModule>();
         builder.AddModule<GranitHttpHostingModule>();
         builder.AddModule<GranitHttpIdempotencyModule>();
+        builder.AddModule<GranitHttpIdempotencyStackExchangeRedisModule>();
         builder.AddModule<GranitLocalizationModule>();
         builder.AddModule<GranitCachingStackExchangeRedisModule>();
         return builder;

@@ -77,14 +77,27 @@ public sealed class IdempotencyServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitIdempotency_RegistersIdempotencyStore_Scoped()
+    public void AddGranitIdempotency_RegistersInMemoryStore_Singleton()
     {
         ServiceCollection services = new();
         services.AddGranitIdempotency();
 
         services.ShouldContain(d =>
             d.ServiceType == typeof(IIdempotencyStore) &&
-            d.Lifetime == ServiceLifetime.Scoped);
+            d.ImplementationType == typeof(InMemoryIdempotencyStore) &&
+            d.Lifetime == ServiceLifetime.Singleton);
+    }
+
+    [Fact]
+    public void AddGranitIdempotency_DoesNotOverrideExistingStore()
+    {
+        ServiceCollection services = new();
+        services.AddSingleton<IIdempotencyStore>(_ => null!); // pre-registered custom store
+
+        services.AddGranitIdempotency();
+
+        services.Count(d => d.ServiceType == typeof(IIdempotencyStore))
+                .ShouldBe(1, "TryAddSingleton must keep the pre-registered store authoritative");
     }
 
     [Fact]

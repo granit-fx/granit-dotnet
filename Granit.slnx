@@ -40,6 +40,7 @@
     <Project Path="src/Granit.Http.Hosting/Granit.Http.Hosting.csproj" />
     <Project Path="src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj" />
     <Project Path="src/Granit.Http.Features/Granit.Http.Features.csproj" />
+    <Project Path="src/Granit.Http.Idempotency.StackExchangeRedis/Granit.Http.Idempotency.StackExchangeRedis.csproj" />
     <Project Path="src/Granit.Http.Idempotency/Granit.Http.Idempotency.csproj" />
     <Project Path="src/Granit.Http.ODataExposure/Granit.Http.ODataExposure.csproj" />
     <Project Path="src/Granit.Http.OutputCaching.StackExchangeRedis/Granit.Http.OutputCaching.StackExchangeRedis.csproj" />
@@ -413,6 +414,8 @@
     <Project Path="tests/Granit.Http.Hosting.Tests/Granit.Http.Hosting.Tests.csproj" />
     <Project Path="tests/Granit.Http.ExceptionHandling.Tests/Granit.Http.ExceptionHandling.Tests.csproj" />
     <Project Path="tests/Granit.Http.Features.Tests/Granit.Http.Features.Tests.csproj" />
+    <Project Path="tests/Granit.Http.Idempotency.StackExchangeRedis.Tests.Integration/Granit.Http.Idempotency.StackExchangeRedis.Tests.Integration.csproj" />
+    <Project Path="tests/Granit.Http.Idempotency.StackExchangeRedis.Tests/Granit.Http.Idempotency.StackExchangeRedis.Tests.csproj" />
     <Project Path="tests/Granit.Http.Idempotency.Tests/Granit.Http.Idempotency.Tests.csproj" />
     <Project Path="tests/Granit.Http.ODataExposure.Tests.Integration/Granit.Http.ODataExposure.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Http.ODataExposure.Tests/Granit.Http.ODataExposure.Tests.csproj" />

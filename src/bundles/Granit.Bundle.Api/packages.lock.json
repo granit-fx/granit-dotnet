@@ -336,13 +336,21 @@
       "granit.http.idempotency": {
         "type": "Project",
         "dependencies": {
-          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Http.Idempotency.Abstractions": "[0.1.0-dev, )",
           "Microsoft.IO.RecyclableMemoryStream": "[3.*, )"
         }
       },
       "granit.http.idempotency.abstractions": {
         "type": "Project"
+      },
+      "granit.http.idempotency.stackexchangeredis": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Caching.StackExchangeRedis": "[0.1.0-dev, )",
+          "Granit.Http.Idempotency": "[0.1.0-dev, )",
+          "StackExchange.Redis": "[2.*, )"
+        }
       },
       "granit.http.securityheaders": {
         "type": "Project",

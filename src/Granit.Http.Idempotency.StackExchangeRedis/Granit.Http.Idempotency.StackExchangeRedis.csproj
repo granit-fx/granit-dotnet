@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Http.Idempotency.StackExchangeRedis</PackageId>
+    <Description>Redis store for Granit.Http.Idempotency. Replaces the in-memory IIdempotencyStore with atomic Redis transitions (SET NX PX / SET XX PX), unconditional AES-256-GCM encryption of replay entries, multiplexer reuse from Granit.Caching.StackExchangeRedis when co-registered, TLS enforced by default, readiness/startup health check.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Http.Idempotency.StackExchangeRedis.Tests" />
+    <InternalsVisibleTo Include="Granit.Http.Idempotency.StackExchangeRedis.Tests.Integration" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StackExchange.Redis" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Caching.StackExchangeRedis\Granit.Caching.StackExchangeRedis.csproj" />
+    <ProjectReference Include="..\Granit.Http.Idempotency\Granit.Http.Idempotency.csproj" />
+  </ItemGroup>
+
+</Project>

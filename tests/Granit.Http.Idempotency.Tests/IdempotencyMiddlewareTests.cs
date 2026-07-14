@@ -481,7 +481,7 @@ public sealed class IdempotencyMiddlewareTests
 
             // Business handler MUST NOT have been invoked — the lock race
             // is surfaced before any side effects can occur.
-            await store.DidNotReceive().SetCompletedAsync(
+            await store.DidNotReceive().CompleteAsync(
                 Arg.Any<string>(),
                 Arg.Any<IdempotencyEntry>(),
                 Arg.Any<TimeSpan>(),
@@ -606,7 +606,7 @@ public sealed class IdempotencyMiddlewareTests
 
             response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
             await store.Received(1).DeleteAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
-            await store.DidNotReceive().SetCompletedAsync(
+            await store.DidNotReceive().CompleteAsync(
                 Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
         }
         finally
@@ -631,12 +631,12 @@ public sealed class IdempotencyMiddlewareTests
         store.TryAcquireAsync(Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
              .Returns(Task.FromResult(true));
 
-        store.SetCompletedAsync(
+        store.CompleteAsync(
                 Arg.Any<string>(),
                 Arg.Do<IdempotencyEntry>(e => captured = e),
                 Arg.Any<TimeSpan>(),
                 Arg.Any<CancellationToken>())
-             .Returns(Task.CompletedTask);
+             .Returns(Task.FromResult(true));
 
         RequestDelegate handler = async ctx =>
         {
@@ -686,12 +686,12 @@ public sealed class IdempotencyMiddlewareTests
         store.TryAcquireAsync(Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
              .Returns(Task.FromResult(true));
 
-        store.SetCompletedAsync(
+        store.CompleteAsync(
                 Arg.Any<string>(),
                 Arg.Do<IdempotencyEntry>(e => captured = e),
                 Arg.Any<TimeSpan>(),
                 Arg.Any<CancellationToken>())
-             .Returns(Task.CompletedTask);
+             .Returns(Task.FromResult(true));
 
         RequestDelegate handler = async ctx =>
         {
@@ -740,12 +740,12 @@ public sealed class IdempotencyMiddlewareTests
         store.TryAcquireAsync(Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
              .Returns(Task.FromResult(true));
 
-        store.SetCompletedAsync(
+        store.CompleteAsync(
                 Arg.Any<string>(),
                 Arg.Any<IdempotencyEntry>(),
                 Arg.Do<TimeSpan>(t => capturedTtl = t),
                 Arg.Any<CancellationToken>())
-             .Returns(Task.CompletedTask);
+             .Returns(Task.FromResult(true));
 
         ICurrentUserService currentUser = Substitute.For<ICurrentUserService>();
         currentUser.UserId.Returns("user-42");
@@ -828,12 +828,12 @@ public sealed class IdempotencyMiddlewareTests
         store.TryAcquireAsync(Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
              .Returns(Task.FromResult(true));
 
-        store.SetCompletedAsync(
+        store.CompleteAsync(
                 Arg.Any<string>(),
                 Arg.Do<IdempotencyEntry>(e => capturedCompleted = e),
                 Arg.Any<TimeSpan>(),
                 Arg.Any<CancellationToken>())
-             .Returns(Task.CompletedTask);
+             .Returns(Task.FromResult(true));
 
         RequestDelegate countingHandler = async ctx =>
         {
@@ -891,12 +891,12 @@ public sealed class IdempotencyMiddlewareTests
         store.TryAcquireAsync(Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
              .Returns(Task.FromResult(true));
 
-        store.SetCompletedAsync(
+        store.CompleteAsync(
                 Arg.Any<string>(),
                 Arg.Do<IdempotencyEntry>(e => captured = e),
                 Arg.Any<TimeSpan>(),
                 Arg.Any<CancellationToken>())
-             .Returns(Task.CompletedTask);
+             .Returns(Task.FromResult(true));
 
         RequestDelegate cookieSettingHandler = async ctx =>
         {
@@ -954,12 +954,12 @@ public sealed class IdempotencyMiddlewareTests
         store.TryAcquireAsync(Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
              .Returns(Task.FromResult(true));
 
-        store.SetCompletedAsync(
+        store.TombstoneAsync(
                 Arg.Any<string>(),
                 Arg.Do<IdempotencyEntry>(e => captured = e),
                 Arg.Any<TimeSpan>(),
                 Arg.Any<CancellationToken>())
-             .Returns(Task.CompletedTask);
+             .Returns(Task.FromResult(true));
 
         // Handler returns 2 KiB — greater than the 1 KiB limit we configure.
         string largeBody = new('x', 2 * 1024);
@@ -1017,12 +1017,12 @@ public sealed class IdempotencyMiddlewareTests
         store.TryAcquireAsync(Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
              .Returns(Task.FromResult(true));
 
-        store.SetCompletedAsync(
+        store.TombstoneAsync(
                 Arg.Any<string>(),
                 Arg.Do<IdempotencyEntry>(e => captured = e),
                 Arg.Any<TimeSpan>(),
                 Arg.Any<CancellationToken>())
-             .Returns(Task.CompletedTask);
+             .Returns(Task.FromResult(true));
 
         string largeBody = new('x', 2 * 1024);
         int handlerCalls = 0;
