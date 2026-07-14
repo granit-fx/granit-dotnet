@@ -10,6 +10,7 @@
       "src/Granit.Auditing/Granit.Auditing.csproj",
       "src/Granit.Authentication.DPoP/Granit.Authentication.DPoP.csproj",
       "src/Granit.Authentication.External/Granit.Authentication.External.csproj",
+      "src/Granit.Authentication.OpenIddict/Granit.Authentication.OpenIddict.csproj",
       "src/Granit.Authentication/Granit.Authentication.csproj",
       "src/Granit.Authorization.EntityFrameworkCore/Granit.Authorization.EntityFrameworkCore.csproj",
       "src/Granit.Authorization/Granit.Authorization.csproj",

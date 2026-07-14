@@ -4,7 +4,7 @@ using Microsoft.Net.Http.Headers;
 using OpenIddict.Validation;
 using OpenIddict.Validation.AspNetCore;
 
-namespace Granit.OpenIddict.Server.Handlers;
+namespace Granit.Authentication.OpenIddict.Handlers;
 
 /// <summary>
 /// OpenIddict validation handler that extracts access tokens presented with the

@@ -45,6 +45,12 @@ public static class OpenIddictValidationHostApplicationBuilderExtensions
 
                 options.UseSystemNetHttp();
                 options.UseAspNetCore();
+
+                // OpenIddict's built-in extractor only accepts the Bearer scheme. Register the
+                // DPoP-scheme token extractor (RFC 9449 §7.1) so a remote resource server can
+                // authenticate `Authorization: DPoP <token>` requests. Harmless when no DPoP
+                // client is used — it only acts as a fallback after the Bearer extractor.
+                options.AddEventHandler(Handlers.DPoPValidationTokenExtractionHandler.Descriptor);
             });
 
         // Normalize OIDC short-name "role" claims emitted by OpenIddict.Validation into

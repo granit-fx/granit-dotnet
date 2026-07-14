@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.Authentication.DPoP.Extensions;
 using Granit.Authentication.Extensions;
+using Granit.Authentication.OpenIddict.Handlers;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Server.Handlers;
 using Microsoft.Extensions.Configuration;

@@ -2220,6 +2220,7 @@
       "deps": [
         "Granit.Authentication",
         "Granit.Authentication.DPoP",
+        "Granit.Authentication.OpenIddict",
         "Granit.OpenIddict",
         "Granit.Identity.Abstractions"
       ],
@@ -10872,6 +10873,28 @@
       "file": "src/Granit.Authentication.OpenIddict/GranitAuthenticationOpenIddictModule.cs",
       "line": 11,
       "members": []
+    },
+    {
+      "name": "DPoPValidationTokenExtractionHandler",
+      "fqn": "Granit.Authentication.OpenIddict.Handlers.DPoPValidationTokenExtractionHandler",
+      "kind": "class",
+      "project": "Granit.Authentication.OpenIddict",
+      "file": "src/Granit.Authentication.OpenIddict/Handlers/DPoPValidationTokenExtractionHandler.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "Descriptor",
+          "kind": "property",
+          "signature": "OpenIddictValidationHandlerDescriptor Descriptor",
+          "returnType": "OpenIddictValidationHandlerDescriptor"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(OpenIddictValidationEvents.ProcessAuthenticationContext context)",
+          "returnType": "ValueTask"
+        }
+      ]
     },
     {
       "name": "GranitOpenIddictValidationOptions",
@@ -43127,7 +43150,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/Extensions/OpenIddictServerHostApplicationBuilderExtensions.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitOpenIddictServer",
@@ -43143,7 +43166,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/GranitOpenIddictServerModule.cs",
-      "line": 23,
+      "line": 25,
       "members": [
         {
           "name": "ConfigureServices",
@@ -43193,28 +43216,6 @@
           "name": "HandleAsync",
           "kind": "method",
           "signature": "HandleAsync(ProcessSignInContext context)",
-          "returnType": "ValueTask"
-        }
-      ]
-    },
-    {
-      "name": "DPoPValidationTokenExtractionHandler",
-      "fqn": "Granit.OpenIddict.Server.Handlers.DPoPValidationTokenExtractionHandler",
-      "kind": "class",
-      "project": "Granit.OpenIddict.Server",
-      "file": "src/Granit.OpenIddict.Server/Handlers/DPoPValidationTokenExtractionHandler.cs",
-      "line": 22,
-      "members": [
-        {
-          "name": "Descriptor",
-          "kind": "property",
-          "signature": "OpenIddictValidationHandlerDescriptor Descriptor",
-          "returnType": "OpenIddictValidationHandlerDescriptor"
-        },
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(OpenIddictValidationEvents.ProcessAuthenticationContext context)",
           "returnType": "ValueTask"
         }
       ]

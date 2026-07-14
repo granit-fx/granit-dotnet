@@ -1,6 +1,7 @@
 using Granit.Authentication;
 using Granit.Authentication.DPoP;
 using Granit.Authentication.DPoP.Options;
+using Granit.Authentication.OpenIddict;
 using Granit.Identity;
 using Granit.Modularity;
 using Granit.OpenIddict.Server.Handlers;
@@ -16,10 +17,11 @@ namespace Granit.OpenIddict.Server;
 /// endpoint URIs, flows, signing keys, custom grant types, and ASP.NET Core integration.
 /// </summary>
 [DependsOn(
-    typeof(GranitAuthenticationModule),
     typeof(GranitAuthenticationDPoPModule),
-    typeof(GranitOpenIddictModule),
-    typeof(GranitIdentityAbstractionsModule))]
+    typeof(GranitAuthenticationModule),
+    typeof(GranitAuthenticationOpenIddictModule),
+    typeof(GranitIdentityAbstractionsModule),
+    typeof(GranitOpenIddictModule))]
 public sealed class GranitOpenIddictServerModule : GranitModule
 {
     // Scoped handlers must be registered in DI for OpenIddict to resolve them
