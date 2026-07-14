@@ -329,6 +329,19 @@ public sealed class ImportEndToEndTests : IDisposable
             return BlobReference.Create(key);
         }
 
+        public async Task<BlobReference> SaveAsync(
+            string fileName,
+            string contentType,
+            Func<Stream, CancellationToken, Task> writeAsync,
+            CancellationToken cancellationToken = default)
+        {
+            await using MemoryStream buffer = new();
+            await writeAsync(buffer, cancellationToken);
+            string key = $"blob-{++_next}";
+            _files[key] = buffer.ToArray();
+            return BlobReference.Create(key);
+        }
+
         public Task DeleteAsync(BlobReference blobReference, CancellationToken cancellationToken = default)
         {
             _files.Remove(blobReference.Value);
