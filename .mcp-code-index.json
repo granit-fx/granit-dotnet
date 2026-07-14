@@ -806,6 +806,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.DataExchange.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.DataExchange"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.DataExchange.BlobStorage",
       "deps": [
         "Granit.DataExchange",
@@ -16371,6 +16379,103 @@
       ]
     },
     {
+      "name": "GranitDataExchangeBackgroundJobsModule",
+      "fqn": "Granit.DataExchange.BackgroundJobs.GranitDataExchangeBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.DataExchange.BackgroundJobs",
+      "file": "src/Granit.DataExchange.BackgroundJobs/GranitDataExchangeBackgroundJobsModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DataExchangeRetentionSweepHandler",
+      "fqn": "Granit.DataExchange.BackgroundJobs.Jobs.DataExchangeRetentionSweepHandler",
+      "kind": "class",
+      "project": "Granit.DataExchange.BackgroundJobs",
+      "file": "src/Granit.DataExchange.BackgroundJobs/Jobs/DataExchangeRetentionSweepHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DataExchangeRetentionSweepJob _, RetentionSweepService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "DataExchangeRetentionSweepJob",
+      "fqn": "Granit.DataExchange.BackgroundJobs.Jobs.DataExchangeRetentionSweepJob",
+      "kind": "record",
+      "project": "Granit.DataExchange.BackgroundJobs",
+      "file": "src/Granit.DataExchange.BackgroundJobs/Jobs/DataExchangeRetentionSweepJob.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "DataExchangeRetentionOptions",
+      "fqn": "Granit.DataExchange.BackgroundJobs.Options.DataExchangeRetentionOptions",
+      "kind": "class",
+      "project": "Granit.DataExchange.BackgroundJobs",
+      "file": "src/Granit.DataExchange.BackgroundJobs/Options/DataExchangeRetentionOptions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(30)",
+          "returnType": "TimeSpan ImportFileRetention { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(7)",
+          "returnType": "TimeSpan ExportFileRetention { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(365)",
+          "returnType": "TimeSpan JobRecordRetention { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(6)",
+          "returnType": "TimeSpan StuckJobTimeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "SweepBatchSize",
+          "kind": "property",
+          "signature": "int SweepBatchSize",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "RetentionSweepService",
+      "fqn": "Granit.DataExchange.BackgroundJobs.Services.RetentionSweepService",
+      "kind": "class",
+      "project": "Granit.DataExchange.BackgroundJobs",
+      "file": "src/Granit.DataExchange.BackgroundJobs/Services/RetentionSweepService.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.DataExchange.BlobStorage.Extensions.ServiceCollectionExtensions",
       "kind": "class",
@@ -16660,7 +16765,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.EntityFrameworkCore",
       "file": "src/Granit.DataExchange.EntityFrameworkCore/Extensions/DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 22,
+      "line": 24,
       "members": [
         {
           "name": "AddGranitDataExchangeEntityFrameworkCore",
@@ -17462,7 +17567,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Extensions/ServiceCollectionExtensions.cs",
-      "line": 25,
+      "line": 27,
       "members": [
         {
           "name": "AddGranitDataImport",
@@ -18585,6 +18690,76 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "IDataExchangeRetentionStore",
+      "fqn": "Granit.DataExchange.Retention.IDataExchangeRetentionStore",
+      "kind": "interface",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Retention/IDataExchangeRetentionStore.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "GetImportJobsWithExpiredFilesAsync",
+          "kind": "method",
+          "signature": "GetImportJobsWithExpiredFilesAsync(DateTimeOffset completedBefore, int batchSize, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ImportJob>>"
+        },
+        {
+          "name": "GetExportJobsWithExpiredFilesAsync",
+          "kind": "method",
+          "signature": "GetExportJobsWithExpiredFilesAsync(DateTimeOffset completedBefore, int batchSize, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ExportJob>>"
+        },
+        {
+          "name": "GetExpiredTerminalImportJobsAsync",
+          "kind": "method",
+          "signature": "GetExpiredTerminalImportJobsAsync(DateTimeOffset terminalBefore, int batchSize, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ImportJob>>"
+        },
+        {
+          "name": "GetExpiredTerminalExportJobsAsync",
+          "kind": "method",
+          "signature": "GetExpiredTerminalExportJobsAsync(DateTimeOffset terminalBefore, int batchSize, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ExportJob>>"
+        },
+        {
+          "name": "GetStuckImportJobsAsync",
+          "kind": "method",
+          "signature": "GetStuckImportJobsAsync(DateTimeOffset stuckBefore, int batchSize, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ImportJob>>"
+        },
+        {
+          "name": "GetStuckExportJobsAsync",
+          "kind": "method",
+          "signature": "GetStuckExportJobsAsync(DateTimeOffset stuckBefore, int batchSize, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ExportJob>>"
+        },
+        {
+          "name": "UpdateImportJobAsync",
+          "kind": "method",
+          "signature": "UpdateImportJobAsync(ImportJob job, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateExportJobAsync",
+          "kind": "method",
+          "signature": "UpdateExportJobAsync(ExportJob job, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DeleteImportJobAsync",
+          "kind": "method",
+          "signature": "DeleteImportJobAsync(ImportJob job, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DeleteExportJobAsync",
+          "kind": "method",
+          "signature": "DeleteExportJobAsync(ExportJob job, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },

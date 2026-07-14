@@ -14,6 +14,8 @@
     <InternalsVisibleTo Include="Granit.DataExchange.Excel" />
     <InternalsVisibleTo Include="Granit.DataExchange.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.DataExchange.Endpoints" />
+    <InternalsVisibleTo Include="Granit.DataExchange.BackgroundJobs" />
+    <InternalsVisibleTo Include="Granit.DataExchange.BackgroundJobs.Tests" />
     <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal types in tests -->
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>

@@ -37,6 +37,7 @@ internal sealed class ImportJobConfiguration : IEntityTypeConfiguration<ImportJo
         builder.Property(e => e.Mappings).HasJsonConversion();
         builder.Property(e => e.Report).HasJsonConversion();
         builder.Property(e => e.CompletedAt);
+        builder.Property(e => e.FileDeletedAt);
         builder.Property(e => e.TenantId);
 
         // Audit trail (ISO 27001)

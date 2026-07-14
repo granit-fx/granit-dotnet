@@ -4,6 +4,8 @@ using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.DataExchange.Internal;
+using Granit.DataExchange.Retention;
+using Granit.DataExchange.Retention.Internal;
 using Granit.DataExchange.Tests.Mapping;
 using Granit.Events;
 using Microsoft.Extensions.DependencyInjection;
@@ -117,6 +119,22 @@ public sealed class ServiceCollectionExtensionsTests
         ServiceProvider provider = services.BuildServiceProvider();
         ISemanticMappingService service = provider.GetRequiredService<ISemanticMappingService>();
         service.ShouldBeOfType<FakeSemanticMappingService>();
+    }
+
+    [Fact]
+    public void AddGranitDataImport_registers_fail_fast_retention_store()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitDataImport();
+
+        // Assert
+        services.ShouldContain(d =>
+            d.ServiceType == typeof(IDataExchangeRetentionStore) &&
+            d.ImplementationType == typeof(NullDataExchangeRetentionStore) &&
+            d.Lifetime == ServiceLifetime.Scoped);
     }
 
     [Fact]
