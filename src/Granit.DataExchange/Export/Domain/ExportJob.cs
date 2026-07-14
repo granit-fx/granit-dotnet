@@ -1,3 +1,4 @@
+using Granit.DataExchange.Export.Messages;
 using Granit.Domain;
 using Granit.Domain.ValueObjects;
 
@@ -121,7 +122,9 @@ public sealed class ExportJob : AuditedAggregateRoot, IMultiTenant, IConcurrency
     }
 
     /// <summary>
-    /// Marks the export as completed.
+    /// Marks the export as completed and buffers an <see cref="ExportJobCompletedEto"/> for
+    /// atomic dispatch via the transactional outbox (<c>DomainEventDispatcherInterceptor</c>
+    /// publishes it pre-commit, alongside the state write, on the next <c>SaveChanges</c>).
     /// </summary>
     internal void Complete(BlobReference blobReference, string fileName, int rowCount, DateTimeOffset completedAt)
     {
@@ -135,10 +138,15 @@ public sealed class ExportJob : AuditedAggregateRoot, IMultiTenant, IConcurrency
         FileName = fileName;
         RowCount = rowCount;
         CompletedAt = completedAt;
+
+        AddDistributedEvent(new ExportJobCompletedEto(
+            Id, DefinitionName, ExportJobStatus.Completed, CreatedBy, rowCount, ErrorMessage: null));
     }
 
     /// <summary>
-    /// Marks the export as failed.
+    /// Marks the export as failed and buffers a terminal <see cref="ExportJobCompletedEto"/>
+    /// (<see cref="ExportJobStatus.Failed"/> disambiguates from the completed case — folds in
+    /// the former dedicated failure event) for atomic dispatch via the transactional outbox.
     /// </summary>
     internal void Fail(string errorMessage, DateTimeOffset completedAt)
     {
@@ -150,6 +158,9 @@ public sealed class ExportJob : AuditedAggregateRoot, IMultiTenant, IConcurrency
         Status = ExportJobStatus.Failed;
         ErrorMessage = errorMessage;
         CompletedAt = completedAt;
+
+        AddDistributedEvent(new ExportJobCompletedEto(
+            Id, DefinitionName, ExportJobStatus.Failed, CreatedBy, RowCount: null, errorMessage));
     }
 
     /// <summary>
