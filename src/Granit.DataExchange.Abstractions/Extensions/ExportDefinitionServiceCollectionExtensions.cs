@@ -1,4 +1,5 @@
 using Granit.DataExchange.Export;
+using Granit.DataExchange.Export.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.DataExchange.Extensions;
@@ -40,6 +41,8 @@ public static class ExportDefinitionServiceCollectionExtensions
         services.AddSingleton<ExportDefinition<TEntity>, TDefinition>();
         services.AddSingleton<IExportDefinitionDescriptor>(sp =>
             sp.GetRequiredService<ExportDefinition<TEntity>>());
+        services.AddSingleton<IExportEntityBinding>(sp =>
+            new ExportEntityBinding<TEntity>(sp.GetRequiredService<ExportDefinition<TEntity>>()));
         return services;
     }
 }

@@ -52,9 +52,9 @@ public sealed class XmlExportWriterTests
             new("Email", "String", null, null, 1, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Name"] = "Alice", ["Email"] = "alice@test.com" },
+            ["Alice", "alice@test.com"],
         ];
 
         XDocument doc = await WriteAndParseAsync(fields, rows);
@@ -77,11 +77,22 @@ public sealed class XmlExportWriterTests
     }
 
     [Fact]
+    public async Task WriteAsync_returns_row_count()
+    {
+        List<ExportFieldDescriptor> fields = [new("Name", "String", null, null, 0, false)];
+        List<object?[]> rows = [["Alice"], ["Bob"], ["Carol"]];
+
+        await using MemoryStream stream = new();
+        long rowCount = await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
+
+        rowCount.ShouldBe(3);
+    }
+
+    [Fact]
     public async Task WriteAsync_null_values_produce_empty_element()
     {
         List<ExportFieldDescriptor> fields = [new("Name", "String", null, null, 0, false)];
-        List<IReadOnlyDictionary<string, object?>> rows =
-            [new Dictionary<string, object?> { ["Name"] = null }];
+        List<object?[]> rows = [[null]];
 
         XDocument doc = await WriteAndParseAsync(fields, rows);
 
@@ -93,8 +104,7 @@ public sealed class XmlExportWriterTests
     public async Task WriteAsync_converts_nav_field_dots_to_underscores()
     {
         List<ExportFieldDescriptor> fields = [new("Company.Name", "String", null, null, 0, true)];
-        List<IReadOnlyDictionary<string, object?>> rows =
-            [new Dictionary<string, object?> { ["Company.Name"] = "Acme" }];
+        List<object?[]> rows = [["Acme"]];
 
         XDocument doc = await WriteAndParseAsync(fields, rows);
 
@@ -119,13 +129,9 @@ public sealed class XmlExportWriterTests
                 SelectorType: typeof(ProductCategory)),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?>
-            {
-                ["Name"] = "Laptop",
-                ["Category"] = category,
-            },
+            ["Laptop", category],
         ];
 
         XDocument doc = await WriteAndParseAsync(fields, rows);
@@ -150,8 +156,7 @@ public sealed class XmlExportWriterTests
                 SelectorType: typeof(IList<string>)),    // interface → XmlSerializer cannot handle this
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
-            [new Dictionary<string, object?> { ["Items"] = new List<string> { "a" } }];
+        List<object?[]> rows = [[new List<string> { "a" }]];
 
         await Should.ThrowAsync<InvalidOperationException>(
             () => Sut.WriteAsync(new MemoryStream(), fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken));
@@ -161,7 +166,7 @@ public sealed class XmlExportWriterTests
 
     private static async Task<XDocument> WriteAndParseAsync(
         List<ExportFieldDescriptor> fields,
-        List<IReadOnlyDictionary<string, object?>> rows)
+        List<object?[]> rows)
     {
         await using MemoryStream stream = new();
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -169,10 +174,9 @@ public sealed class XmlExportWriterTests
         return XDocument.Load(stream);
     }
 
-    private static async IAsyncEnumerable<IReadOnlyDictionary<string, object?>> ToAsyncEnumerable(
-        List<IReadOnlyDictionary<string, object?>> items)
+    private static async IAsyncEnumerable<object?[]> ToAsyncEnumerable(List<object?[]> items)
     {
-        foreach (IReadOnlyDictionary<string, object?> item in items)
+        foreach (object?[] item in items)
         {
             yield return item;
         }

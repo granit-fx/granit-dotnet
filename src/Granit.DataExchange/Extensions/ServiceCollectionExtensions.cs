@@ -2,6 +2,7 @@ using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Internal;
+using Granit.DataExchange.Export.Pipeline;
 using Granit.DataExchange.Exports;
 using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Domain;
@@ -109,7 +110,8 @@ public static class ServiceCollectionExtensions
             .ValidateOnStart();
 
         services.TryAddScoped<IExportOrchestrator, ExportOrchestrator>();
-        services.TryAddScoped<IExportDefinitionProvider, ExportDefinitionProvider>();
+        services.TryAddSingleton<IExportPipelineRegistry, ExportPipelineRegistry>();
+        services.TryAddSingleton<IExportDefinitionProvider, ExportDefinitionProvider>();
         services.TryAddScoped<IExportJobReader, NullExportJobStore>();
         services.TryAddScoped<IExportJobWriter, NullExportJobStore>();
         services.TryAddScoped<IExportPresetReader, NullExportPresetStore>();

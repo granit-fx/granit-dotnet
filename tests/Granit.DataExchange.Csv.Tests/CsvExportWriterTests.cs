@@ -48,18 +48,19 @@ public sealed class CsvExportWriterTests
             new("Email", "String", null, null, 1, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Name"] = "Alice", ["Email"] = "alice@test.com" },
-            new Dictionary<string, object?> { ["Name"] = "Bob", ["Email"] = "bob@test.com" },
+            ["Alice", "alice@test.com"],
+            ["Bob", "bob@test.com"],
         ];
 
         await using MemoryStream stream = new();
 
         // Act
-        await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
+        long rowCount = await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
 
         // Assert
+        rowCount.ShouldBe(2);
         string csv = ReadCsv(stream);
         string[] lines = csv.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
@@ -80,11 +81,12 @@ public sealed class CsvExportWriterTests
         await using MemoryStream stream = new();
 
         // Act
-        await Sut.WriteAsync(stream, fields,
+        long rowCount = await Sut.WriteAsync(stream, fields,
             ToAsyncEnumerable([]),
             TestContext.Current.CancellationToken);
 
         // Assert
+        rowCount.ShouldBe(0);
         string csv = ReadCsv(stream);
         string[] lines = csv.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
         lines.Length.ShouldBe(1);
@@ -100,9 +102,9 @@ public sealed class CsvExportWriterTests
             new("Name", "String", null, null, 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Name"] = "Smith; John" },
+            ["Smith; John"],
         ];
 
         await using MemoryStream stream = new();
@@ -124,9 +126,9 @@ public sealed class CsvExportWriterTests
             new("Name", "String", null, null, 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Name"] = "John \"Jack\" Doe" },
+            ["John \"Jack\" Doe"],
         ];
 
         await using MemoryStream stream = new();
@@ -149,9 +151,9 @@ public sealed class CsvExportWriterTests
             new("Email", "String", null, null, 1, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Name"] = "Alice", ["Email"] = null },
+            ["Alice", null],
         ];
 
         await using MemoryStream stream = new();
@@ -174,9 +176,9 @@ public sealed class CsvExportWriterTests
             new("Date", "DateOnly", null, "yyyy-MM-dd", 0, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Date"] = new DateOnly(2026, 3, 3) },
+            [new DateOnly(2026, 3, 3)],
         ];
 
         await using MemoryStream stream = new();
@@ -241,10 +243,9 @@ public sealed class CsvExportWriterTests
         return new UTF8Encoding(false).GetString(stream.ToArray()).TrimStart('\uFEFF');
     }
 
-    private static async IAsyncEnumerable<IReadOnlyDictionary<string, object?>> ToAsyncEnumerable(
-        List<IReadOnlyDictionary<string, object?>> items)
+    private static async IAsyncEnumerable<object?[]> ToAsyncEnumerable(List<object?[]> items)
     {
-        foreach (IReadOnlyDictionary<string, object?> item in items)
+        foreach (object?[] item in items)
         {
             yield return item;
         }

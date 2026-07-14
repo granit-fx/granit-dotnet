@@ -42,30 +42,33 @@ internal sealed class JsonExportWriter : IExportWriter
     public ExportFormatCapabilities Capabilities => ExportFormatCapabilities.Structured;
 
     /// <inheritdoc/>
-    public async Task WriteAsync(
+    public async Task<long> WriteAsync(
         Stream output,
         IReadOnlyList<ExportFieldDescriptor> fields,
-        IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows,
+        IAsyncEnumerable<object?[]> rows,
         CancellationToken cancellationToken = default)
     {
         await using Utf8JsonWriter jsonWriter = new(output, new JsonWriterOptions { SkipValidation = false });
 
         jsonWriter.WriteStartArray();
 
-        await foreach (IReadOnlyDictionary<string, object?> row in rows.WithCancellation(cancellationToken).ConfigureAwait(false))
+        long rowCount = 0;
+        await foreach (object?[] row in rows.WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             jsonWriter.WriteStartObject();
 
-            foreach (ExportFieldDescriptor field in fields)
+            for (int i = 0; i < fields.Count; i++)
             {
+                ExportFieldDescriptor field = fields[i];
                 jsonWriter.WritePropertyName(field.PropertyPath);
 
-                object? value = row.GetValueOrDefault(field.PropertyPath);
+                object? value = row[i];
                 Type valueType = field.SelectorType ?? value?.GetType() ?? typeof(object);
                 JsonSerializer.Serialize(jsonWriter, value, valueType, SerializerOptions);
             }
 
             jsonWriter.WriteEndObject();
+            rowCount++;
 
             // Flush after each row to keep buffer bounded on large exports
             await jsonWriter.FlushAsync(cancellationToken).ConfigureAwait(false);
@@ -73,5 +76,6 @@ internal sealed class JsonExportWriter : IExportWriter
 
         jsonWriter.WriteEndArray();
         await jsonWriter.FlushAsync(cancellationToken).ConfigureAwait(false);
+        return rowCount;
     }
 }

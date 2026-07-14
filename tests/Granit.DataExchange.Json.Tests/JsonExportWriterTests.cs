@@ -53,15 +53,16 @@ public sealed class JsonExportWriterTests
             new("Email", "String", null, null, 1, false),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?> { ["Name"] = "Alice", ["Email"] = "alice@test.com" },
-            new Dictionary<string, object?> { ["Name"] = "Bob", ["Email"] = "bob@test.com" },
+            ["Alice", "alice@test.com"],
+            ["Bob", "bob@test.com"],
         ];
 
         await using var stream = new MemoryStream();
-        await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
+        long rowCount = await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
 
+        rowCount.ShouldBe(2);
         stream.Position = 0;
         using var doc = JsonDocument.Parse(stream);
         doc.RootElement.ValueKind.ShouldBe(JsonValueKind.Array);
@@ -89,8 +90,7 @@ public sealed class JsonExportWriterTests
     public async Task WriteAsync_null_values_produce_json_null()
     {
         List<ExportFieldDescriptor> fields = [new("Name", "String", null, null, 0, false)];
-        List<IReadOnlyDictionary<string, object?>> rows =
-            [new Dictionary<string, object?> { ["Name"] = null }];
+        List<object?[]> rows = [[null]];
 
         await using var stream = new MemoryStream();
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -105,8 +105,7 @@ public sealed class JsonExportWriterTests
     {
         // Header is for display; JSON key is always PropertyPath for round-trip
         List<ExportFieldDescriptor> fields = [new("Email", "String", "E-mail", null, 0, false)];
-        List<IReadOnlyDictionary<string, object?>> rows =
-            [new Dictionary<string, object?> { ["Email"] = "test@test.com" }];
+        List<object?[]> rows = [["test@test.com"]];
 
         await using var stream = new MemoryStream();
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -134,13 +133,9 @@ public sealed class JsonExportWriterTests
                 SelectorType: typeof(List<Tag>)),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
+        List<object?[]> rows =
         [
-            new Dictionary<string, object?>
-            {
-                ["Name"] = "Alice",
-                ["Tags"] = tags,
-            },
+            ["Alice", tags],
         ];
 
         await using var stream = new MemoryStream();
@@ -169,8 +164,7 @@ public sealed class JsonExportWriterTests
                 SelectorType: typeof(Cat)),     // concrete type
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
-            [new Dictionary<string, object?> { ["Pet"] = cat }];
+        List<object?[]> rows = [[cat]];
 
         await using var stream = new MemoryStream();
         await Sut.WriteAsync(stream, fields, ToAsyncEnumerable(rows), TestContext.Current.CancellationToken);
@@ -198,8 +192,7 @@ public sealed class JsonExportWriterTests
                 SelectorType: typeof(CycleNode)),
         ];
 
-        List<IReadOnlyDictionary<string, object?>> rows =
-            [new Dictionary<string, object?> { ["Node"] = node }];
+        List<object?[]> rows = [[node]];
 
         await using var stream = new MemoryStream();
 
@@ -210,10 +203,9 @@ public sealed class JsonExportWriterTests
 
     // ---- Helpers ---------------------------------------------------------
 
-    private static async IAsyncEnumerable<IReadOnlyDictionary<string, object?>> ToAsyncEnumerable(
-        List<IReadOnlyDictionary<string, object?>> items)
+    private static async IAsyncEnumerable<object?[]> ToAsyncEnumerable(List<object?[]> items)
     {
-        foreach (IReadOnlyDictionary<string, object?> item in items)
+        foreach (object?[] item in items)
         {
             yield return item;
         }

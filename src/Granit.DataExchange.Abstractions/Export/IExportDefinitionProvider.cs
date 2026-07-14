@@ -18,7 +18,7 @@ namespace Granit.DataExchange.Export;
 public interface IExportDefinitionProvider
 {
     /// <summary>
-    /// Finds an export definition by name (case-insensitive).
+    /// Finds an export definition by name (ordinal, case-sensitive).
     /// Returns <c>null</c> if no definition exists with the given name.
     /// </summary>
     /// <param name="definitionName">The definition name to look up.</param>

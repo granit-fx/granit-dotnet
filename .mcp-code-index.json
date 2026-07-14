@@ -16981,7 +16981,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/ExportOrchestrator.cs",
-      "line": 27,
+      "line": 26,
       "members": [
         {
           "name": "ExportAsync",
@@ -17108,6 +17108,31 @@
           "returnType": "IReadOnlyList<IExportDefinitionDescriptor>"
         }
       ]
+    },
+    {
+      "name": "IExportEntityBinding",
+      "fqn": "Granit.DataExchange.Export.IExportEntityBinding",
+      "kind": "interface",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/IExportEntityBinding.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "Descriptor",
+          "kind": "property",
+          "signature": "IExportDefinitionDescriptor Descriptor",
+          "returnType": "IExportDefinitionDescriptor"
+        }
+      ]
+    },
+    {
+      "name": "IExportEntityVisitor",
+      "fqn": "Granit.DataExchange.Export.IExportEntityVisitor",
+      "kind": "interface",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/IExportEntityVisitor.cs",
+      "line": 12,
+      "members": []
     },
     {
       "name": "IExportExtraValueResolver",
@@ -17253,7 +17278,7 @@
       "kind": "interface",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/IExportWriter.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "CanWrite",
@@ -17270,8 +17295,8 @@
         {
           "name": "WriteAsync",
           "kind": "method",
-          "signature": "WriteAsync(Stream output, IReadOnlyList<ExportFieldDescriptor> fields, IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
+          "signature": "WriteAsync(Stream output, IReadOnlyList<ExportFieldDescriptor> fields, IAsyncEnumerable<object?[]> rows, CancellationToken cancellationToken = default)",
+          "returnType": "Task<long>"
         }
       ]
     },
@@ -17319,6 +17344,69 @@
       "members": []
     },
     {
+      "name": "ExportPipelineContext",
+      "fqn": "Granit.DataExchange.Export.Pipeline.ExportPipelineContext",
+      "kind": "record",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Export/Pipeline/ExportPipelineContext.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "IExportPipeline",
+      "fqn": "Granit.DataExchange.Export.Pipeline.IExportPipeline",
+      "kind": "interface",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Export/Pipeline/IExportPipeline.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "WriteAsync",
+          "kind": "method",
+          "signature": "WriteAsync(ExportPipelineContext context, Stream output, CancellationToken cancellationToken = default)",
+          "returnType": "string DefinitionName { get; } Type EntityType { get; } IExportDefinitionDescriptor Definition { get; } Task<long>"
+        }
+      ]
+    },
+    {
+      "name": "IExportPipelineDescriptor",
+      "fqn": "Granit.DataExchange.Export.Pipeline.IExportPipelineDescriptor",
+      "kind": "interface",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Export/Pipeline/IExportPipelineDescriptor.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(IServiceProvider scopedProvider)",
+          "returnType": "string DefinitionName { get; } Type EntityType { get; } IExportDefinitionDescriptor Definition { get; } IExportPipeline"
+        }
+      ]
+    },
+    {
+      "name": "IExportPipelineRegistry",
+      "fqn": "Granit.DataExchange.Export.Pipeline.IExportPipelineRegistry",
+      "kind": "interface",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Export/Pipeline/IExportPipelineRegistry.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "GetAll",
+          "kind": "method",
+          "signature": "GetAll()",
+          "returnType": "IReadOnlyList<IExportPipelineDescriptor>"
+        },
+        {
+          "name": "Find",
+          "kind": "method",
+          "signature": "Find(string definitionName)",
+          "returnType": "IExportPipelineDescriptor?"
+        }
+      ]
+    },
+    {
       "name": "ExportJobExportDefinition",
       "fqn": "Granit.DataExchange.Exports.ExportJobExportDefinition",
       "kind": "class",
@@ -17356,7 +17444,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Abstractions",
       "file": "src/Granit.DataExchange.Abstractions/Extensions/ExportDefinitionServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": []
     },
     {
@@ -17374,7 +17462,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Extensions/ServiceCollectionExtensions.cs",
-      "line": 24,
+      "line": 25,
       "members": [
         {
           "name": "AddGranitDataImport",
