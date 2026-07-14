@@ -12,11 +12,13 @@
     <PackageReference Include="Shouldly" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
     <PackageReference Include="coverlet.collector" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Http.Cookies.Endpoints\Granit.Http.Cookies.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Testing\Granit.Testing.csproj" />
   </ItemGroup>
 
 </Project>

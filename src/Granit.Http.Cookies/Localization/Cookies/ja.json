@@ -1,6 +1,9 @@
 {
   "culture": "ja",
   "texts": {
-    "Cookies:Unregistered": "Cookie '{0}' は登録されていません。すべての Cookie は起動時に宣言する必要があります。"
+    "Cookies:Unregistered": "Cookie '{0}' は登録されていません。すべての Cookie は起動時に宣言する必要があります。",
+    "Cookies:Validation:UnknownCategory": "不明なクッキー同意カテゴリです。",
+    "Cookies:Validation:CategoryOverlap": "同じカテゴリを許可と拒否の両方にすることはできません。",
+    "Cookies:Validation:EmptyDecision": "同意の決定では、少なくとも1つのカテゴリを許可または拒否する必要があります。"
   }
 }

@@ -31,6 +31,7 @@
       "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
       "src/Granit.Http.Idempotency.Abstractions/Granit.Http.Idempotency.Abstractions.csproj",
       "src/Granit.Http.RateLimiting/Granit.Http.RateLimiting.csproj",
+      "src/Granit.Http.UrlSafety/Granit.Http.UrlSafety.csproj",
       "src/Granit.IO/Granit.IO.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
       "src/Granit.MultiTenancy/Granit.MultiTenancy.csproj",

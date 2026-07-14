@@ -27,6 +27,16 @@
           "Asp.Versioning.Abstractions": "10.0.0"
         }
       },
+      "Pipelines.Sockets.Unofficial": {
+        "type": "Transitive",
+        "resolved": "2.2.16",
+        "contentHash": "nonu9l0YrZH6krVYbskBjE7uG0VMAnvOQ9PU+RmzUsy+++vHkqzzCkHRoP877OiA3iRTxJyNDLfpcU8hrJ3/YQ=="
+      },
+      "System.IO.Hashing": {
+        "type": "Transitive",
+        "resolved": "10.0.2",
+        "contentHash": "AKJknIFi9O3+rGExxTry188JPvUoZAPcCtS2qdqyFhIzsxQ1Ap94BeGDG0VzVEHakhmRxmJtVih6TsHoghIt/g=="
+      },
       "ZString": {
         "type": "Transitive",
         "resolved": "2.6.0",
@@ -34,6 +44,13 @@
       },
       "granit": {
         "type": "Project"
+      },
+      "granit.auditing.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
       },
       "granit.caching": {
         "type": "Project",
@@ -56,6 +73,13 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.features": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )"
+        }
+      },
       "granit.http.apidocumentation": {
         "type": "Project",
         "dependencies": {
@@ -69,10 +93,29 @@
       "granit.http.cookies": {
         "type": "Project",
         "dependencies": {
-          "Granit": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Auditing.Abstractions": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.http.exceptionhandling": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.idempotency.abstractions": {
+        "type": "Project"
+      },
+      "granit.http.ratelimiting": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
+          "Granit.RateLimiting": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.urlsafety": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
@@ -93,6 +136,14 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.ratelimiting": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Features": "[0.1.0-dev, )",
+          "StackExchange.Redis": "[2.*, )"
         }
       },
       "granit.timing": {
@@ -167,6 +218,16 @@
         "contentHash": "URa4c3DJcP8B+WNK3jd1AyuBAXmyRKEwTifzJOLeZ9Vud5PcQTGzBG5XkyhebD4tYj+VdyHwwjeBtgwJSIig9A==",
         "dependencies": {
           "ZString": "2.6.0"
+        }
+      },
+      "StackExchange.Redis": {
+        "type": "CentralTransitive",
+        "requested": "[2.*, )",
+        "resolved": "2.13.17",
+        "contentHash": "P7o7ZDBAmBrOLQEw8Pt44iIA08ioj48smRxn4Jp6yzCu6P3DOSU6lj7f+IOtN3pPvSgC9YufvM92ycukEEBCYQ==",
+        "dependencies": {
+          "Pipelines.Sockets.Unofficial": "2.2.16",
+          "System.IO.Hashing": "10.0.2"
         }
       },
       "ZiggyCreatures.FusionCache": {

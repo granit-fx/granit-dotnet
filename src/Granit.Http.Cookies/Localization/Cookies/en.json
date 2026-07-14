@@ -1,6 +1,9 @@
 {
   "culture": "en",
   "texts": {
-    "Cookies:Unregistered": "The cookie '{0}' is not registered. All cookies must be declared at startup."
+    "Cookies:Unregistered": "The cookie '{0}' is not registered. All cookies must be declared at startup.",
+    "Cookies:Validation:UnknownCategory": "Unknown cookie consent category.",
+    "Cookies:Validation:CategoryOverlap": "A category cannot be both granted and denied.",
+    "Cookies:Validation:EmptyDecision": "A consent decision must grant or deny at least one category."
   }
 }

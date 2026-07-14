@@ -1,5 +1,11 @@
+using Granit.DataExchange.Extensions;
+using Granit.Http.Cookies.Domain;
+using Granit.Http.Cookies.Exports;
 using Granit.Http.Cookies.Internal;
+using Granit.Http.Cookies.Ledger;
 using Granit.Http.Cookies.Options;
+using Granit.Http.Cookies.Queries;
+using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -75,6 +81,14 @@ public static class CookiesServiceCollectionExtensions
         });
 
         services.TryAddScoped<IConsentResolver, NullConsentResolver>();
+
+        // Consent ledger — no-op by default (logs at Debug); replaced by the durable
+        // EF Core implementation when Granit.Http.Cookies.EntityFrameworkCore is wired.
+        services.TryAddScoped<IConsentLedger, NullConsentLedger>();
+
+        // Query + Export definitions for the consent ledger (ADR-020: owned by the base module).
+        services.AddQueryDefinition<CookieConsentRecord, CookieConsentRecordQueryDefinition>();
+        services.AddExportDefinition<CookieConsentRecord, CookieConsentRecordExportDefinition>();
         services.TryAddSingleton<IGlobalPrivacyControlSignal, GlobalPrivacyControlHeaderSignal>();
         services.TryAddScoped<ICookieConsentModelProvider, NullCookieConsentModelProvider>();
         services.TryAddScoped<IGranitCookieManager, GranitCookieManager>();

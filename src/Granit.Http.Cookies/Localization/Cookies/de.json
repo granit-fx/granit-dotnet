@@ -1,6 +1,9 @@
 {
   "culture": "de",
   "texts": {
-    "Cookies:Unregistered": "Das Cookie '{0}' ist nicht registriert. Alle Cookies müssen beim Start deklariert werden."
+    "Cookies:Unregistered": "Das Cookie '{0}' ist nicht registriert. Alle Cookies müssen beim Start deklariert werden.",
+    "Cookies:Validation:UnknownCategory": "Unbekannte Cookie-Einwilligungskategorie.",
+    "Cookies:Validation:CategoryOverlap": "Eine Kategorie kann nicht gleichzeitig erteilt und abgelehnt werden.",
+    "Cookies:Validation:EmptyDecision": "Eine Einwilligungsentscheidung muss mindestens eine Kategorie erteilen oder ablehnen."
   }
 }

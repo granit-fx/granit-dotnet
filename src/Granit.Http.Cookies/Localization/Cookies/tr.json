@@ -1,6 +1,9 @@
 {
   "culture": "tr",
   "texts": {
-    "Cookies:Unregistered": "Çerez '{0}' kayıtlı değil. Tüm çerezler başlangıçta tanımlanmalıdır."
+    "Cookies:Unregistered": "Çerez '{0}' kayıtlı değil. Tüm çerezler başlangıçta tanımlanmalıdır.",
+    "Cookies:Validation:UnknownCategory": "Bilinmeyen çerez onayı kategorisi.",
+    "Cookies:Validation:CategoryOverlap": "Bir kategori aynı anda hem verilmiş hem de reddedilmiş olamaz.",
+    "Cookies:Validation:EmptyDecision": "Bir onay kararı en az bir kategoriyi vermeli veya reddetmelidir."
   }
 }

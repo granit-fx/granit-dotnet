@@ -170,6 +170,7 @@
     <ProjectReference Include="..\..\src\Granit.Http.Cookies\Granit.Http.Cookies.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Cookies.CookieConsent\Granit.Http.Cookies.CookieConsent.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Cookies.Endpoints\Granit.Http.Cookies.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.Cookies.EntityFrameworkCore\Granit.Http.Cookies.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Hosting\Granit.Http.Hosting.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Features\Granit.Http.Features.csproj" />

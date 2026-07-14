@@ -1,6 +1,9 @@
 {
   "culture": "nl",
   "texts": {
-    "Cookies:Unregistered": "De cookie '{0}' is niet geregistreerd. Alle cookies moeten bij het opstarten worden gedeclareerd."
+    "Cookies:Unregistered": "De cookie '{0}' is niet geregistreerd. Alle cookies moeten bij het opstarten worden gedeclareerd.",
+    "Cookies:Validation:UnknownCategory": "Onbekende cookietoestemmingscategorie.",
+    "Cookies:Validation:CategoryOverlap": "Een categorie kan niet tegelijk worden toegestaan en geweigerd.",
+    "Cookies:Validation:EmptyDecision": "Een toestemmingsbeslissing moet ten minste één categorie toestaan of weigeren."
   }
 }

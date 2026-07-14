@@ -143,6 +143,7 @@
         "tests/Granit.Http.Bulkhead.Tests",
         "tests/Granit.Http.Cookies.CookieConsent.Tests",
         "tests/Granit.Http.Cookies.Endpoints.Tests",
+        "tests/Granit.Http.Cookies.EntityFrameworkCore.Tests",
         "tests/Granit.Http.Cookies.Tests",
         "tests/Granit.Http.Hosting.Tests",
         "tests/Granit.Http.ExceptionHandling.Tests",

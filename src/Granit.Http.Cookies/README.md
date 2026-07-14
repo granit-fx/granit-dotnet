@@ -34,6 +34,22 @@ Cookies registered through the callback are discovered at startup. The
 `ICookieRegistry` enforces strict policy: it fails fast on unregistered cookies
 and applies per-category consent enforcement.
 
+## Consent ledger
+
+The package defines the append-only, server-side record of consent decisions —
+the GDPR Art. 7(1) accountability evidence:
+
+- `CookieConsentRecord` — immutable decision snapshot (granted/denied categories,
+  consent mode, CMP source, pre-anonymized IP, truncated user-agent, correlation id).
+- `IConsentLedger` — write path; the default `NullConsentLedger` is a logged no-op.
+  Add `Granit.Http.Cookies.EntityFrameworkCore` for durable persistence.
+- `ConsentRecordedEto` — integration event dispatched after each durable write.
+- `ICookieConsentEraser` — GDPR Art. 17 hard-delete primitive for authenticated
+  subjects' records.
+- Query/Export definitions for consent statistics (`MapGranitQuery<CookieConsentRecord>`).
+
+The capture endpoint (`POST /cookies/consent`) ships in `Granit.Http.Cookies.Endpoints`.
+
 ## Dependencies
 
 - `Granit.Timing`

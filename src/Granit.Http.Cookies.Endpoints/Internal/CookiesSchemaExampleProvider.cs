@@ -5,7 +5,7 @@ using Granit.Http.Cookies.Endpoints.Dtos;
 namespace Granit.Http.Cookies.Endpoints.Internal;
 
 /// <summary>
-/// Provides OpenAPI schema examples for cookie consent Response DTOs.
+/// Provides OpenAPI schema examples for cookie consent Request/Response DTOs.
 /// </summary>
 internal sealed class CookiesSchemaExampleProvider : ISchemaExampleProvider
 {
@@ -13,6 +13,13 @@ internal sealed class CookiesSchemaExampleProvider : ISchemaExampleProvider
     public IReadOnlyDictionary<Type, JsonNode> GetExamples() =>
         new Dictionary<Type, JsonNode>
         {
+            [typeof(ConsentDecisionRequest)] = new JsonObject
+            {
+                ["grantedCategories"] = new JsonArray { "strictly_necessary", "preferences", "analytics" },
+                ["deniedCategories"] = new JsonArray { "marketing", "sale_or_sharing" },
+                ["mode"] = "OptIn",
+                ["cmpSource"] = "cookieconsent",
+            },
             [typeof(CookieConsentConfigResponse)] = new JsonObject
             {
                 ["cookies"] = new JsonArray
