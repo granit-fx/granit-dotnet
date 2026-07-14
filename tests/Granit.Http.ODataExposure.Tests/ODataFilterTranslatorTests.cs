@@ -1,5 +1,10 @@
 using Granit.Http.ODataExposure.Internal;
 using Granit.QueryEngine.Filtering;
+using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
+using Microsoft.OData.UriParser;
+using Shouldly;
+using Xunit;
 
 namespace Granit.Http.ODataExposure.Tests;
 

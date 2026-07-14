@@ -25459,7 +25459,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies.EntityFrameworkCore",
       "file": "src/Granit.Http.Cookies.EntityFrameworkCore/Extensions/CookiesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 11,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitCookiesEntityFrameworkCore",
@@ -25475,7 +25475,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies.EntityFrameworkCore",
       "file": "src/Granit.Http.Cookies.EntityFrameworkCore/Extensions/CookiesModelBuilderExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "ConfigureCookiesModule",
@@ -25513,7 +25513,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies.EntityFrameworkCore",
       "file": "src/Granit.Http.Cookies.EntityFrameworkCore/GranitHttpCookiesEntityFrameworkCoreModule.cs",
-      "line": 17,
+      "line": 18,
       "members": []
     },
     {
@@ -26428,7 +26428,7 @@
       "kind": "class",
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/Extensions/ODataExposureEndpointRouteBuilderExtensions.cs",
-      "line": 31,
+      "line": 37,
       "members": [
         {
           "name": "MapGranitODataEndpoints",

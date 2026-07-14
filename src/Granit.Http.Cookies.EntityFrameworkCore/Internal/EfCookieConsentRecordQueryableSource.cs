@@ -1,5 +1,7 @@
 using Granit.Http.Cookies.Domain;
 using Granit.Persistence.EntityFrameworkCore;
+using Granit.QueryEngine;
+using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Http.Cookies.EntityFrameworkCore.Internal;
 

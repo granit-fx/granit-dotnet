@@ -1,6 +1,9 @@
+using Granit.DataFiltering;
 using Granit.Http.Cookies.Domain;
 using Granit.Http.Cookies.EntityFrameworkCore.Extensions;
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Http.Cookies.EntityFrameworkCore.Internal;
 

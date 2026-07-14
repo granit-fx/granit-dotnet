@@ -1,3 +1,4 @@
+using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
 
 namespace Granit.Http.Cookies.EntityFrameworkCore;

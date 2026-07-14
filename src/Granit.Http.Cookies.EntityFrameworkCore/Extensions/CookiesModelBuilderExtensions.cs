@@ -1,4 +1,5 @@
 using Granit.Http.Cookies.EntityFrameworkCore.Internal.Configurations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Http.Cookies.EntityFrameworkCore.Extensions;
 

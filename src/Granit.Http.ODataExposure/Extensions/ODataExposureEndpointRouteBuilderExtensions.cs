@@ -17,9 +17,15 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using Microsoft.OData;
+using Microsoft.OData.Edm;
+using Microsoft.OData.UriParser;
 
 namespace Granit.Http.ODataExposure.Extensions;
 

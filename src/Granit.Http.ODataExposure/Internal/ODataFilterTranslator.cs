@@ -1,5 +1,8 @@
 using System.Globalization;
 using Granit.QueryEngine.Filtering;
+using Microsoft.OData;
+using Microsoft.OData.Edm;
+using Microsoft.OData.UriParser;
 
 namespace Granit.Http.ODataExposure.Internal;
 

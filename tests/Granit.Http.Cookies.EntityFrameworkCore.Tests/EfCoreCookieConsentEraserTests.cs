@@ -1,4 +1,12 @@
+using Granit.Http.Cookies.Domain;
 using Granit.Http.Cookies.EntityFrameworkCore.Internal;
+using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using NSubstitute;
+using Shouldly;
+using Xunit;
 
 #pragma warning disable EF1001 // Internal EF Core API usage — required to test the internal DbContext and services
 

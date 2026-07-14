@@ -1,7 +1,11 @@
 using Granit.DataExchange.Export;
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.Entities;
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
+using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Http.ODataExposure.Tests.Integration;
 
