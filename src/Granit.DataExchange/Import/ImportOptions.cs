@@ -26,4 +26,13 @@ public sealed class ImportOptions
     /// Default: <c>0.8</c>.
     /// </summary>
     public double FuzzyMatchThreshold { get; set; } = 0.8;
+
+    /// <summary>
+    /// When <see langword="true"/>, the uploaded source file is deleted as soon as the import
+    /// completes with zero failed rows — nothing is left to correct, so the file no longer needs
+    /// to be retained until the next retention sweep (GDPR Art. 5(1)(e) storage limitation).
+    /// Imports with at least one failed row keep the file so the correction-file endpoint can
+    /// still regenerate it. Opt-in; default <see langword="false"/> to preserve prior behavior.
+    /// </summary>
+    public bool DeleteUploadedFileOnSuccess { get; set; }
 }

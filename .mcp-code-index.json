@@ -16907,7 +16907,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/Domain/ExportJob.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "Create",
@@ -16952,15 +16952,6 @@
           "returnType": "string"
         }
       ]
-    },
-    {
-      "name": "ExportJobFailedEto",
-      "fqn": "Granit.DataExchange.Export.Events.ExportJobFailedEto",
-      "kind": "record",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Export/Events/ExportJobFailedEto.cs",
-      "line": 12,
-      "members": []
     },
     {
       "name": "ExportProviderIncompatibleException",
@@ -17129,7 +17120,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/ExportOrchestrator.cs",
-      "line": 26,
+      "line": 24,
       "members": [
         {
           "name": "ExportAsync",
@@ -17717,7 +17708,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Import/Domain/ImportJob.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "Create",

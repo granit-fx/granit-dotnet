@@ -4,9 +4,10 @@ using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Internal;
 using Granit.DataExchange.Import.Mapping;
+using Granit.DataExchange.Import.Messages;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.DataExchange.Import.Reporting;
-using Granit.Events;
+using Granit.Domain.ValueObjects;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -24,9 +25,8 @@ public sealed class ImportOrchestratorTests
     private readonly IDataExchangeFileProvider _fileProvider = Substitute.For<IDataExchangeFileProvider>();
     private readonly IImportPipelineRegistry _registry = Substitute.For<IImportPipelineRegistry>();
     private readonly IClock _clock = Substitute.For<IClock>();
-    private readonly ILocalEventBus _eventBus = Substitute.For<ILocalEventBus>();
     private readonly DataExchangeMetrics _metrics;
-    private readonly IOptions<ImportOptions> _options = Options.Create(new ImportOptions());
+    private readonly ImportOptions _optionsValue = new();
     private readonly ImportOrchestrator _orchestrator;
 
     public ImportOrchestratorTests()
@@ -39,7 +39,7 @@ public sealed class ImportOrchestratorTests
 
         _orchestrator = new ImportOrchestrator(
             _jobReader, _jobWriter, _fileProvider, _registry, serviceProvider,
-            _clock, _eventBus, _metrics, _options, NullLogger<ImportOrchestrator>.Instance);
+            _clock, _metrics, Options.Create(_optionsValue), NullLogger<ImportOrchestrator>.Instance);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public sealed class ImportOrchestratorTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_WhenPipelineSucceeds_CompletesJobAndPublishesEvent()
+    public async Task ExecuteAsync_WhenPipelineSucceeds_CompletesJobAndBuffersEventOnAggregate()
     {
         // Arrange
         var jobId = Guid.NewGuid();
@@ -123,14 +123,181 @@ public sealed class ImportOrchestratorTests
         // Act
         ImportReport result = await _orchestrator.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
 
-        // Assert
+        // Assert — Complete() buffers the Eto on the aggregate itself (transactional outbox);
+        // no event bus is involved — DomainEventDispatcherInterceptor drains IntegrationEvents
+        // pre-commit on the next SaveChanges.
         result.ShouldBeSameAs(report);
         job.Status.ShouldBe(ImportJobStatus.PartiallyCompleted);
-        await _eventBus.Received(1).PublishAsync(
-            Arg.Is<Granit.DataExchange.Import.Messages.ImportJobCompletedEto>(e =>
-                e.ImportJobId == jobId && e.Status == ImportJobStatus.PartiallyCompleted),
-            Arg.Any<CancellationToken>());
+        ImportJobCompletedEto eto = job.IntegrationEvents.OfType<ImportJobCompletedEto>().ShouldHaveSingleItem();
+        eto.ImportJobId.ShouldBe(jobId);
+        eto.Status.ShouldBe(ImportJobStatus.PartiallyCompleted);
     }
+
+    [Fact]
+    public async Task ExecuteAsync_redelivered_terminal_job_returns_existing_report_without_reexecuting()
+    {
+        // Arrange — simulates Wolverine at-least-once redelivery of a command whose job already
+        // reached a terminal state on a prior delivery.
+        var jobId = Guid.NewGuid();
+        ImportJob job = BuildCompletedJob(jobId, "Test.Import", out ImportReport originalReport);
+        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+
+        IImportPipeline pipeline = Substitute.For<IImportPipeline>();
+        IImportPipelineDescriptor descriptor = Substitute.For<IImportPipelineDescriptor>();
+        descriptor.Create(Arg.Any<IServiceProvider>()).Returns(pipeline);
+        _registry.Find("Test.Import").Returns(descriptor);
+
+        // Act
+        ImportReport result = await _orchestrator.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+
+        // Assert — no re-execution, no throw, existing report returned
+        result.ShouldBeSameAs(originalReport);
+        job.Status.ShouldBe(ImportJobStatus.Completed);
+        await pipeline.DidNotReceive().ExecuteAsync(Arg.Any<ImportPipelineContext>(), Arg.Any<CancellationToken>());
+        await _jobWriter.DidNotReceive().UpdateAsync(Arg.Any<ImportJob>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_job_already_executing_returns_without_reexecuting()
+    {
+        // Arrange — another (or an earlier in-flight) delivery already owns this run.
+        var jobId = Guid.NewGuid();
+        ImportJob job = BuildMappedJob(jobId, "Test.Import");
+        job.MarkAsExecuting();
+        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+
+        IImportPipeline pipeline = Substitute.For<IImportPipeline>();
+        IImportPipelineDescriptor descriptor = Substitute.For<IImportPipelineDescriptor>();
+        descriptor.Create(Arg.Any<IServiceProvider>()).Returns(pipeline);
+        _registry.Find("Test.Import").Returns(descriptor);
+
+        // Act
+        await _orchestrator.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+
+        // Assert — no re-execution, no throw
+        job.Status.ShouldBe(ImportJobStatus.Executing);
+        await pipeline.DidNotReceive().ExecuteAsync(Arg.Any<ImportPipelineContext>(), Arg.Any<CancellationToken>());
+        await _jobWriter.DidNotReceive().UpdateAsync(Arg.Any<ImportJob>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_DeleteUploadedFileOnSuccess_enabled_and_zero_failures_deletes_file()
+    {
+        // Arrange
+        _optionsValue.DeleteUploadedFileOnSuccess = true;
+        var jobId = Guid.NewGuid();
+        ImportJob job = BuildMappedJob(jobId, "Test.Import");
+        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+        _fileProvider.OpenAsync(job.BlobReference, Arg.Any<CancellationToken>())
+            .Returns(_ => Task.FromResult<Stream>(new MemoryStream([1])));
+
+        ImportReport report = SuccessReport(failedRows: 0);
+        IImportPipeline pipeline = Substitute.For<IImportPipeline>();
+        pipeline.ExecuteAsync(Arg.Any<ImportPipelineContext>(), Arg.Any<CancellationToken>()).Returns(report);
+        IImportPipelineDescriptor descriptor = Substitute.For<IImportPipelineDescriptor>();
+        descriptor.Create(Arg.Any<IServiceProvider>()).Returns(pipeline);
+        _registry.Find("Test.Import").Returns(descriptor);
+
+        // Act
+        await _orchestrator.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+
+        // Assert
+        await _fileProvider.Received(1).DeleteAsync(job.BlobReference, Arg.Any<CancellationToken>());
+        job.FileDeletedAt.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_DeleteUploadedFileOnSuccess_enabled_with_failed_rows_keeps_file()
+    {
+        // Arrange
+        _optionsValue.DeleteUploadedFileOnSuccess = true;
+        var jobId = Guid.NewGuid();
+        ImportJob job = BuildMappedJob(jobId, "Test.Import");
+        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+        _fileProvider.OpenAsync(job.BlobReference, Arg.Any<CancellationToken>())
+            .Returns(_ => Task.FromResult<Stream>(new MemoryStream([1])));
+
+        ImportReport report = SuccessReport(failedRows: 1);
+        IImportPipeline pipeline = Substitute.For<IImportPipeline>();
+        pipeline.ExecuteAsync(Arg.Any<ImportPipelineContext>(), Arg.Any<CancellationToken>()).Returns(report);
+        IImportPipelineDescriptor descriptor = Substitute.For<IImportPipelineDescriptor>();
+        descriptor.Create(Arg.Any<IServiceProvider>()).Returns(pipeline);
+        _registry.Find("Test.Import").Returns(descriptor);
+
+        // Act
+        await _orchestrator.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+
+        // Assert — failed rows remain: the correction-file endpoint still needs the source file
+        await _fileProvider.DidNotReceive().DeleteAsync(Arg.Any<BlobReference>(), Arg.Any<CancellationToken>());
+        job.FileDeletedAt.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_DeleteUploadedFileOnSuccess_disabled_keeps_file()
+    {
+        // Arrange — option off (default)
+        var jobId = Guid.NewGuid();
+        ImportJob job = BuildMappedJob(jobId, "Test.Import");
+        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+        _fileProvider.OpenAsync(job.BlobReference, Arg.Any<CancellationToken>())
+            .Returns(_ => Task.FromResult<Stream>(new MemoryStream([1])));
+
+        ImportReport report = SuccessReport(failedRows: 0);
+        IImportPipeline pipeline = Substitute.For<IImportPipeline>();
+        pipeline.ExecuteAsync(Arg.Any<ImportPipelineContext>(), Arg.Any<CancellationToken>()).Returns(report);
+        IImportPipelineDescriptor descriptor = Substitute.For<IImportPipelineDescriptor>();
+        descriptor.Create(Arg.Any<IServiceProvider>()).Returns(pipeline);
+        _registry.Find("Test.Import").Returns(descriptor);
+
+        // Act
+        await _orchestrator.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+
+        // Assert
+        await _fileProvider.DidNotReceive().DeleteAsync(Arg.Any<BlobReference>(), Arg.Any<CancellationToken>());
+        job.FileDeletedAt.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_DeleteUploadedFileOnSuccess_deleteFailure_stillReportsSuccessAndLogsWarning()
+    {
+        // Arrange
+        _optionsValue.DeleteUploadedFileOnSuccess = true;
+        var jobId = Guid.NewGuid();
+        ImportJob job = BuildMappedJob(jobId, "Test.Import");
+        _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
+        _fileProvider.OpenAsync(job.BlobReference, Arg.Any<CancellationToken>())
+            .Returns(_ => Task.FromResult<Stream>(new MemoryStream([1])));
+        _fileProvider.DeleteAsync(Arg.Any<BlobReference>(), Arg.Any<CancellationToken>())
+            .Returns<Task>(_ => throw new InvalidOperationException("Blob storage unavailable"));
+
+        ImportReport report = SuccessReport(failedRows: 0);
+        IImportPipeline pipeline = Substitute.For<IImportPipeline>();
+        pipeline.ExecuteAsync(Arg.Any<ImportPipelineContext>(), Arg.Any<CancellationToken>()).Returns(report);
+        IImportPipelineDescriptor descriptor = Substitute.For<IImportPipelineDescriptor>();
+        descriptor.Create(Arg.Any<IServiceProvider>()).Returns(pipeline);
+        _registry.Find("Test.Import").Returns(descriptor);
+
+        // Act — the deletion failure must not fail the import
+        ImportReport result = await _orchestrator.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.ShouldBeSameAs(report);
+        job.Status.ShouldBe(ImportJobStatus.Completed);
+        job.FileDeletedAt.ShouldBeNull();
+    }
+
+    private static ImportReport SuccessReport(int failedRows) => new()
+    {
+        TotalRows = 10,
+        SucceededRows = 10 - failedRows,
+        FailedRows = failedRows,
+        SkippedRows = 0,
+        InsertedRows = 10 - failedRows,
+        UpdatedRows = 0,
+        Duration = TimeSpan.FromSeconds(1),
+        FinalStatus = failedRows == 0 ? ImportJobStatus.Completed : ImportJobStatus.PartiallyCompleted,
+        RowErrors = [],
+    };
 
     private static ImportJob BuildMappedJob(Guid id, string definitionName)
     {
@@ -138,6 +305,15 @@ public sealed class ImportOrchestratorTests
         job.CreatedAt = DateTimeOffset.UtcNow;
         job.MarkAsPreviewed();
         job.ConfirmMappings([new ImportColumnMapping("Name", "Name", MappingConfidence.Exact)]);
+        return job;
+    }
+
+    private static ImportJob BuildCompletedJob(Guid id, string definitionName, out ImportReport report)
+    {
+        ImportJob job = BuildMappedJob(id, definitionName);
+        job.MarkAsExecuting();
+        report = SuccessReport(failedRows: 0);
+        job.Complete(ImportJobStatus.Completed, report, DateTimeOffset.UtcNow);
         return job;
     }
 }
