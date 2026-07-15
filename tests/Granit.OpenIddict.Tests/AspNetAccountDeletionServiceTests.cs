@@ -1,6 +1,4 @@
-using Granit.Events;
 using Granit.Identity.Local.Domain;
-using Granit.Identity.Local.Events;
 using Granit.OpenIddict.Internal;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +15,6 @@ public sealed class AspNetAccountDeletionServiceTests
 
     private readonly UserManager<LocalIdentity> _userManager;
     private readonly IOpenIddictTokenManager _tokenManager = Substitute.For<IOpenIddictTokenManager>();
-    private readonly IDistributedEventBus _eventBus = Substitute.For<IDistributedEventBus>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly AspNetAccountDeletionService _sut;
 
@@ -32,7 +29,6 @@ public sealed class AspNetAccountDeletionServiceTests
         _sut = new AspNetAccountDeletionService(
             _userManager,
             _tokenManager,
-            _eventBus,
             _clock);
     }
 
@@ -92,11 +88,11 @@ public sealed class AspNetAccountDeletionServiceTests
     }
 
     [Fact]
-    public async Task InitiateAsync_UserExists_PublishesAccountDeletedEto()
+    public async Task InitiateAsync_LeavesErasureEventPending()
     {
+        // The service records the soft-delete durably but does NOT publish inline — the erasure
+        // event stays pending (DeletionEventDispatchedAt null) for the reconciler to publish.
         LocalIdentity user = CreateUser();
-        var tenantId = Guid.NewGuid();
-        user.TenantId = tenantId;
         string userId = user.Id.ToString();
 
         _userManager.FindByIdAsync(userId).Returns(user);
@@ -107,33 +103,8 @@ public sealed class AspNetAccountDeletionServiceTests
 
         await _sut.InitiateAsync(userId, TestContext.Current.CancellationToken);
 
-        await _eventBus.Received(1).PublishAsync(
-            Arg.Is<AccountDeletedEto>(e =>
-                e.UserId == user.Id &&
-                e.TenantId == tenantId),
-            Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task InitiateAsync_UserWithNoTenant_PublishesEventWithNullTenant()
-    {
-        LocalIdentity user = CreateUser();
-        user.TenantId = null;
-        string userId = user.Id.ToString();
-
-        _userManager.FindByIdAsync(userId).Returns(user);
-        _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
-        _userManager.SetLockoutEndDateAsync(user, Arg.Any<DateTimeOffset>()).Returns(IdentityResult.Success);
-        _userManager.UpdateSecurityStampAsync(user).Returns(IdentityResult.Success);
-        SetupEmptyTokenStream(userId);
-
-        await _sut.InitiateAsync(userId, TestContext.Current.CancellationToken);
-
-        await _eventBus.Received(1).PublishAsync(
-            Arg.Is<AccountDeletedEto>(e =>
-                e.UserId == user.Id &&
-                e.TenantId == null),
-            Arg.Any<CancellationToken>());
+        user.IsDeleted.ShouldBeTrue();
+        user.DeletionEventDispatchedAt.ShouldBeNull("the erasure event is dispatched by the reconciler, not inline");
     }
 
     // ────────────────────── InitiateAsync — token revocation ──────────────────────
@@ -223,7 +194,6 @@ public sealed class AspNetAccountDeletionServiceTests
 
         await _userManager.DidNotReceive().SetLockoutEndDateAsync(Arg.Any<LocalIdentity>(), Arg.Any<DateTimeOffset>());
         await _userManager.DidNotReceive().UpdateSecurityStampAsync(Arg.Any<LocalIdentity>());
-        await _eventBus.DidNotReceive().PublishAsync(Arg.Any<AccountDeletedEto>(), Arg.Any<CancellationToken>());
     }
 
     // ────────────────────── Helpers ──────────────────────

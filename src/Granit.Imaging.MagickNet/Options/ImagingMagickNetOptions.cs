@@ -4,12 +4,16 @@ namespace Granit.Imaging.MagickNet.Options;
 /// Configuration options for Magick.NET image processing security and resource limits.
 /// </summary>
 /// <remarks>
-/// Resource limits are applied globally to the ImageMagick native library when
-/// <see cref="Extensions.ImagingMagickNetServiceCollectionExtensions.AddGranitImagingMagickNet"/>
-/// is called. Set a value to <c>0</c> to use the ImageMagick default (unlimited).
+/// Bound to the <c>Imaging:MagickNet</c> configuration section and validated at startup.
+/// Resource limits are applied globally to the ImageMagick native library when the host
+/// starts (see <c>MagickNetResourceLimitsInitializer</c>) — they are process-wide state,
+/// not per-registration. Set a value to <c>0</c> to use the ImageMagick default (unlimited).
 /// </remarks>
 public sealed class ImagingMagickNetOptions
 {
+    /// <summary>Configuration section name.</summary>
+    public const string SectionName = "Imaging:MagickNet";
+
     /// <summary>
     /// Maximum memory in bytes for ImageMagick pixel cache. Default: 256 MB.
     /// </summary>

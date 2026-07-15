@@ -2,6 +2,7 @@ using Granit.Imaging.Diagnostics;
 using Granit.Imaging.Exceptions;
 using Granit.Imaging.MagickNet.Options;
 using ImageMagick;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Imaging.MagickNet.Internal;
 
@@ -9,7 +10,9 @@ namespace Granit.Imaging.MagickNet.Internal;
 /// Magick.NET implementation of <see cref="IImageProcessor"/>.
 /// Stateless singleton that creates <see cref="MagickNetImagePipeline"/> instances.
 /// </summary>
-internal sealed class MagickNetImageProcessor(ImagingMetrics metrics, ImagingMagickNetOptions options) : IImageProcessor
+internal sealed class MagickNetImageProcessor(
+    ImagingMetrics metrics,
+    IOptions<ImagingMagickNetOptions> options) : IImageProcessor
 {
     /// <inheritdoc/>
     public IImagePipeline Load(Stream source)
@@ -74,7 +77,8 @@ internal sealed class MagickNetImageProcessor(ImagingMetrics metrics, ImagingMag
 
     private void ValidateInputSize(long length)
     {
-        if (options.MaxInputBytes > 0 && length > options.MaxInputBytes)
+        long maxInputBytes = options.Value.MaxInputBytes;
+        if (maxInputBytes > 0 && length > maxInputBytes)
         {
             throw new InvalidOperationException(
                 "Input image exceeds the maximum allowed size.");
