@@ -7192,6 +7192,22 @@
       "members": []
     },
     {
+      "name": "VisionOcrEnvelope",
+      "fqn": "Granit.AI.Vision.VisionOcrEnvelope",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Vision/VisionOcrEnvelope.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Extract",
+          "kind": "method",
+          "signature": "Extract(string? raw)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "WellKnownAICapabilities",
       "fqn": "Granit.AI.WellKnownAICapabilities",
       "kind": "class",
@@ -54533,7 +54549,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction.Ocr.AI",
       "file": "src/Granit.TextExtraction.Ocr.AI/AIVisionOcrExtractor.cs",
-      "line": 28,
+      "line": 30,
       "members": [
         {
           "name": "CanHandle",

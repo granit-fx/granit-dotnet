@@ -1,9 +1,11 @@
+using Granit.AI.Vision;
+
 namespace Granit.TextExtraction.Ocr.AI.Internal;
 
 /// <summary>
 /// Default <see cref="IVisionOcrPromptBuilder"/>. Produces a prompt that asks the model to
-/// extract verbatim text inside a sentinel-delimited envelope. The envelope is the
-/// prompt-injection defence: it lets downstream code strip everything outside the markers,
+/// extract verbatim text inside the shared <see cref="VisionOcrEnvelope"/>. The envelope is
+/// the prompt-injection defence: it lets downstream code strip everything outside the markers,
 /// defeating the "ignore previous instructions" style of attack where the image itself
 /// contains text masquerading as orchestration instructions.
 /// </summary>
@@ -23,9 +25,9 @@ internal sealed class DefaultVisionOcrPromptBuilder : IVisionOcrPromptBuilder
 
         Wrap your entire response between these exact markers, on their own lines:
 
-        <granit-vlm-ocr>
+        {VisionOcrEnvelope.Open}
         ...transcribed text here...
-        </granit-vlm-ocr>
+        {VisionOcrEnvelope.Close}
 
         If the image contains no readable text, emit the markers with an empty body.
         Keep the body under {maxCharLength} characters. Do not emit anything outside
