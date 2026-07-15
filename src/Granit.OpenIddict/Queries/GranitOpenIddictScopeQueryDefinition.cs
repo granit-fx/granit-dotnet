@@ -1,4 +1,4 @@
-using Granit.OpenIddict.Entities.OpenIddict;
+using Granit.OpenIddict.Models;
 using Granit.QueryEngine;
 
 namespace Granit.OpenIddict.Queries;
@@ -7,13 +7,13 @@ namespace Granit.OpenIddict.Queries;
 /// Query definition for OpenIddict scopes — declares columns, filters, sorting,
 /// and search for the query engine.
 /// </summary>
-public sealed class GranitOpenIddictScopeQueryDefinition : QueryDefinition<GranitOpenIddictScope>
+public sealed class GranitOpenIddictScopeQueryDefinition : QueryDefinition<OpenIddictScopeModel>
 {
     /// <inheritdoc/>
     public override string Name => "Granit.OpenIddict.ScopeQuery";
 
     /// <inheritdoc/>
-    protected override void Configure(QueryDefinitionBuilder<GranitOpenIddictScope> builder)
+    protected override void Configure(QueryDefinitionBuilder<OpenIddictScopeModel> builder)
     {
         builder
             .Column(s => s.TenantId, c => c.Label("Tenant").LabelKey("OpenIddict.Columns.Tenant").Filterable().Sortable())

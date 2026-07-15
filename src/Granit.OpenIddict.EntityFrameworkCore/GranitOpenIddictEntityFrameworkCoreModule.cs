@@ -1,3 +1,4 @@
+using Granit.DataExchange;
 using Granit.Encryption;
 using Granit.Identity.Local;
 using Granit.Identity.Local.Services;
@@ -23,6 +24,7 @@ namespace Granit.OpenIddict.EntityFrameworkCore;
 /// data seeding, and extra-property infrastructure.
 /// </remarks>
 [DependsOn(
+    typeof(GranitDataExchangeModule),
     typeof(GranitEncryptionModule),
     typeof(GranitIdentityLocalModule),
     typeof(GranitMultiTenancyModule),

@@ -2215,6 +2215,7 @@
     {
       "name": "Granit.OpenIddict.EntityFrameworkCore",
       "deps": [
+        "Granit.DataExchange",
         "Granit.Encryption",
         "Granit.Identity.Local",
         "Granit.MultiTenancy",
@@ -43215,37 +43216,37 @@
     },
     {
       "name": "GranitOpenIddictApplication",
-      "fqn": "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication",
+      "fqn": "Granit.OpenIddict.EntityFrameworkCore.Entities.GranitOpenIddictApplication",
       "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Entities/OpenIddict/GranitOpenIddictApplication.cs",
+      "project": "Granit.OpenIddict.EntityFrameworkCore",
+      "file": "src/Granit.OpenIddict.EntityFrameworkCore/Entities/GranitOpenIddictApplication.cs",
       "line": 13,
       "members": []
     },
     {
       "name": "GranitOpenIddictAuthorization",
-      "fqn": "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictAuthorization",
+      "fqn": "Granit.OpenIddict.EntityFrameworkCore.Entities.GranitOpenIddictAuthorization",
       "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Entities/OpenIddict/GranitOpenIddictAuthorization.cs",
+      "project": "Granit.OpenIddict.EntityFrameworkCore",
+      "file": "src/Granit.OpenIddict.EntityFrameworkCore/Entities/GranitOpenIddictAuthorization.cs",
       "line": 9,
       "members": []
     },
     {
       "name": "GranitOpenIddictScope",
-      "fqn": "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictScope",
+      "fqn": "Granit.OpenIddict.EntityFrameworkCore.Entities.GranitOpenIddictScope",
       "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Entities/OpenIddict/GranitOpenIddictScope.cs",
+      "project": "Granit.OpenIddict.EntityFrameworkCore",
+      "file": "src/Granit.OpenIddict.EntityFrameworkCore/Entities/GranitOpenIddictScope.cs",
       "line": 9,
       "members": []
     },
     {
       "name": "GranitOpenIddictToken",
-      "fqn": "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictToken",
+      "fqn": "Granit.OpenIddict.EntityFrameworkCore.Entities.GranitOpenIddictToken",
       "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Entities/OpenIddict/GranitOpenIddictToken.cs",
+      "project": "Granit.OpenIddict.EntityFrameworkCore",
+      "file": "src/Granit.OpenIddict.EntityFrameworkCore/Entities/GranitOpenIddictToken.cs",
       "line": 9,
       "members": []
     },
@@ -43255,7 +43256,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 26,
+      "line": 28,
       "members": [
         {
           "name": "AddGranitOpenIddict",
@@ -43303,7 +43304,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/GranitOpenIddictEntityFrameworkCoreModule.cs",
-      "line": 31,
+      "line": 33,
       "members": [
         {
           "name": "ConfigureServices",
@@ -43433,6 +43434,24 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "OpenIddictApplicationModel",
+      "fqn": "Granit.OpenIddict.Models.OpenIddictApplicationModel",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Models/OpenIddictApplicationModel.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "OpenIddictScopeModel",
+      "fqn": "Granit.OpenIddict.Models.OpenIddictScopeModel",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Models/OpenIddictScopeModel.cs",
+      "line": 10,
+      "members": []
     },
     {
       "name": "OpenIddictFeatureNames",

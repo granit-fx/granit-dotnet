@@ -1,9 +1,10 @@
 using System.Security.Cryptography;
+using Granit.Domain;
 using Granit.Entities;
 using Granit.Http.Idempotency;
 using Granit.OpenIddict.Endpoints.Dtos;
-using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.Extensions;
+using Granit.OpenIddict.Models;
 using Granit.OpenIddict.Permissions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -24,7 +25,7 @@ internal static class AdminOidcEndpoints
         RouteGroupBuilder apps = group.MapGranitGroup("/oidc/applications");
 
         apps.MapGet("/", ListApplicationsAsync)
-            .WithMetadata(new EntityEndpointMetadata(typeof(GranitOpenIddictApplication), EntityEndpointKind.List))
+            .WithMetadata(new EntityEndpointMetadata(typeof(OpenIddictApplicationModel), EntityEndpointKind.List))
             .WithName("ListOidcApplications")
             .WithSummary("Returns all OIDC applications.")
             .WithDescription("Returns all registered OIDC client applications with their full configuration: client ID, display name, type, tenant, permissions, redirect URIs, consent type, and signing-key presence. Use this list to manage the registered clients in the admin panel.")
@@ -84,7 +85,7 @@ internal static class AdminOidcEndpoints
         RouteGroupBuilder scopes = group.MapGranitGroup("/oidc/scopes");
 
         scopes.MapGet("/", ListScopesAsync)
-            .WithMetadata(new EntityEndpointMetadata(typeof(GranitOpenIddictScope), EntityEndpointKind.List))
+            .WithMetadata(new EntityEndpointMetadata(typeof(OpenIddictScopeModel), EntityEndpointKind.List))
             .WithName("ListOidcScopes")
             .WithSummary("Returns all OIDC scopes.")
             .WithDescription("Returns all registered OIDC scopes with their name, display name, and associated resources. Scopes define the claims and resources that tokens can grant access to. Use this endpoint to audit which scopes are available for client configuration.")
@@ -174,7 +175,7 @@ internal static class AdminOidcEndpoints
 
         var descriptor = new OpenIddictApplicationDescriptor();
         await applicationManager.PopulateAsync(descriptor, app, cancellationToken).ConfigureAwait(false);
-        Guid? tenantId = app is GranitOpenIddictApplication granitApp ? granitApp.TenantId : null;
+        Guid? tenantId = app is IMultiTenant granitApp ? granitApp.TenantId : null;
 
         return TypedResults.Ok(ToResponse(descriptor, tenantId));
     }
@@ -189,7 +190,7 @@ internal static class AdminOidcEndpoints
         {
             var descriptor = new OpenIddictApplicationDescriptor();
             await applicationManager.PopulateAsync(descriptor, app, cancellationToken).ConfigureAwait(false);
-            Guid? tenantId = app is GranitOpenIddictApplication granitApp ? granitApp.TenantId : null;
+            Guid? tenantId = app is IMultiTenant granitApp ? granitApp.TenantId : null;
             results.Add(ToResponse(descriptor, tenantId));
         }
 
@@ -246,7 +247,7 @@ internal static class AdminOidcEndpoints
 
         var responseDescriptor = new OpenIddictApplicationDescriptor();
         await applicationManager.PopulateAsync(responseDescriptor, app, cancellationToken).ConfigureAwait(false);
-        Guid? tenantId = app is GranitOpenIddictApplication granitApp ? granitApp.TenantId : null;
+        Guid? tenantId = app is IMultiTenant granitApp ? granitApp.TenantId : null;
 
         return TypedResults.Created(
             $"/admin/oidc/applications/{request.ClientId}",
@@ -317,7 +318,7 @@ internal static class AdminOidcEndpoints
 
         var responseDescriptor = new OpenIddictApplicationDescriptor();
         await applicationManager.PopulateAsync(responseDescriptor, app, cancellationToken).ConfigureAwait(false);
-        Guid? tenantId = app is GranitOpenIddictApplication granitApp ? granitApp.TenantId : null;
+        Guid? tenantId = app is IMultiTenant granitApp ? granitApp.TenantId : null;
 
         return TypedResults.Ok(ToResponse(responseDescriptor, tenantId));
     }

@@ -1,11 +1,11 @@
 using Granit.Domain;
 using Granit.Identity.Local.Domain;
 using Granit.OpenIddict.Domain;
-using Granit.OpenIddict.Entities.OpenIddict;
+using Granit.OpenIddict.EntityFrameworkCore.Entities;
 using Shouldly;
 using Xunit;
 
-namespace Granit.OpenIddict.Tests.Entities;
+namespace Granit.OpenIddict.EntityFrameworkCore.Tests.Entities;
 
 public sealed class EntityTests
 {

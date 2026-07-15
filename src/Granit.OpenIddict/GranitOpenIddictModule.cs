@@ -14,9 +14,9 @@ using Granit.Identity.Local.Services;
 using Granit.Modularity;
 using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Entities;
-using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.Exports;
 using Granit.OpenIddict.Internal;
+using Granit.OpenIddict.Models;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Queries;
 using Granit.OpenIddict.Services;
@@ -130,14 +130,14 @@ public sealed class GranitOpenIddictModule : GranitModule
             IdentityCookieDefinitionContributor.DevExternalCookieName);
 
         // Query + Export definitions (ADR-020: owned by the base module).
-        context.Services.AddQueryDefinition<GranitOpenIddictApplication, GranitOpenIddictApplicationQueryDefinition>();
-        context.Services.AddQueryDefinition<GranitOpenIddictScope, GranitOpenIddictScopeQueryDefinition>();
-        context.Services.AddExportDefinition<GranitOpenIddictApplication, OpenIddictApplicationExportDefinition>();
-        context.Services.AddExportDefinition<GranitOpenIddictScope, OpenIddictScopeExportDefinition>();
+        context.Services.AddQueryDefinition<OpenIddictApplicationModel, GranitOpenIddictApplicationQueryDefinition>();
+        context.Services.AddQueryDefinition<OpenIddictScopeModel, GranitOpenIddictScopeQueryDefinition>();
+        context.Services.AddExportDefinition<OpenIddictApplicationModel, OpenIddictApplicationExportDefinition>();
+        context.Services.AddExportDefinition<OpenIddictScopeModel, OpenIddictScopeExportDefinition>();
 
         // Phase 2 EntityDefinitions (ADR-050).
-        context.Services.AddEntityDefinition<GranitOpenIddictApplication, GranitOpenIddictApplicationEntityDefinition>();
-        context.Services.AddEntityDefinition<GranitOpenIddictScope, GranitOpenIddictScopeEntityDefinition>();
+        context.Services.AddEntityDefinition<OpenIddictApplicationModel, GranitOpenIddictApplicationEntityDefinition>();
+        context.Services.AddEntityDefinition<OpenIddictScopeModel, GranitOpenIddictScopeEntityDefinition>();
 
         // NOTE: the session/device provider (OpenIddictUserSessionProvider) is registered by
         // AddGranitOpenIddict, not here — co-located with the imperative authority wiring so a host

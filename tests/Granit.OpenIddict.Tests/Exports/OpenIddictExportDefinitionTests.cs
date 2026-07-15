@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Granit.DataExchange.Export;
 using Granit.OpenIddict.Exports;
+using Granit.OpenIddict.Models;
 using Shouldly;
 using Xunit;
 
@@ -59,11 +60,7 @@ public sealed class OpenIddictExportDefinitionTests
         ExportFieldDescriptor field = AppFields.Single(f => f.PropertyPath == "Permissions");
         // Simulate the raw JSON string OpenIddict stores in the DB
         string permissionsJson = JsonSerializer.Serialize(new[] { "ept:token", "gt:authorization_code" });
-        // Build a minimal fake entity using a dynamic object approach via reflection
-        var app = new Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication();
-        typeof(Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication)
-            .GetProperty("Permissions")!
-            .SetValue(app, permissionsJson);
+        var app = new OpenIddictApplicationModel { Permissions = permissionsJson };
 
         field.ValueSelector!(app).ShouldBeOfType<string[]>()
             .ShouldBe(["ept:token", "gt:authorization_code"]);
@@ -73,7 +70,7 @@ public sealed class OpenIddictExportDefinitionTests
     public void Application_Permissions_selector_returns_empty_array_when_null()
     {
         ExportFieldDescriptor field = AppFields.Single(f => f.PropertyPath == "Permissions");
-        var app = new Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication();
+        var app = new OpenIddictApplicationModel();
 
         field.ValueSelector!(app).ShouldBeOfType<string[]>().ShouldBeEmpty();
     }
@@ -112,10 +109,7 @@ public sealed class OpenIddictExportDefinitionTests
     {
         ExportFieldDescriptor field = ScopeFields.Single(f => f.PropertyPath == "Resources");
         string resourcesJson = JsonSerializer.Serialize(new[] { "api://granit", "api://business" });
-        var scope = new Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictScope();
-        typeof(Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictScope)
-            .GetProperty("Resources")!
-            .SetValue(scope, resourcesJson);
+        var scope = new OpenIddictScopeModel { Resources = resourcesJson };
 
         field.ValueSelector!(scope).ShouldBeOfType<string[]>()
             .ShouldBe(["api://granit", "api://business"]);

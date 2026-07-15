@@ -32,8 +32,8 @@ internal static class PairingExemptions
         "Granit.Identity.Local.Domain.GranitUserGroup",                                   // [INFRA] RBAC config
         "Granit.Localization.Domain.LocalizationOverride",                                // [INFRA] localization config
         "Granit.Notifications.Domain.NotificationPreference",                             // [INFRA] user preference config
-        "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication",              // [INFRA] OAuth client config
-        "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictScope",                    // [INFRA] OAuth scope config
+        "Granit.OpenIddict.Models.OpenIddictApplicationModel",              // [INFRA] OAuth client config
+        "Granit.OpenIddict.Models.OpenIddictScopeModel",                    // [INFRA] OAuth scope config
         "Granit.Presence.Domain.UserPresence",                                            // [INFRA] runtime presence state, not admin-grid material
         "Granit.Scheduling.Domain.ScheduledAction",                                       // [INFRA] scheduling state
         "Granit.Settings.Domain.SettingRecord",                                           // [INFRA] settings config

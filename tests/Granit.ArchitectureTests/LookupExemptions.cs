@@ -36,7 +36,7 @@ internal static class LookupExemptions
         "Granit.Scheduling.Domain.ScheduledAction.CorrelationId",               // [PERMANENT] opaque correlation id
         "Granit.Identity.Federated.Domain.FederatedIdentity.ExternalUserId",     // [PERMANENT] external IdP subject (opaque)
         "Granit.Authorization.Domain.RoleMetadata.ClientId",                     // [PERMANENT] external OAuth client id
-        "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication.ClientId", // [PERMANENT] external OAuth client id
+        "Granit.OpenIddict.Models.OpenIddictApplicationModel.ClientId", // [PERMANENT] external OAuth client id
         "Granit.Privacy.LegalAgreements.Domain.LegalDocument.DocumentId",        // [PERMANENT] opaque business slug (e.g. "privacy-policy"); not an FK
 
         // ── [PERMANENT] audit / infra logs — not interactive admin grids ──
@@ -61,8 +61,8 @@ internal static class LookupExemptions
         "Granit.Localization.Domain.LocalizationOverride.TenantId",            // [PERMANENT] tenant scope
         "Granit.Notifications.Domain.NotificationPreference.TenantId",          // [PERMANENT] tenant scope
         "Granit.Notifications.Domain.UserNotification.TenantId",                // [PERMANENT] tenant scope
-        "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication.TenantId", // [PERMANENT] tenant scope
-        "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictScope.TenantId", // [PERMANENT] tenant scope
+        "Granit.OpenIddict.Models.OpenIddictApplicationModel.TenantId", // [PERMANENT] tenant scope
+        "Granit.OpenIddict.Models.OpenIddictScopeModel.TenantId", // [PERMANENT] tenant scope
         "Granit.Scheduling.Domain.ScheduledAction.TenantId",                   // [PERMANENT] tenant scope
         "Granit.Timeline.Domain.TimelineEntry.TenantId",                       // [PERMANENT] tenant scope
         "Granit.Webhooks.Domain.WebhookDeliveryAttempt.TenantId",             // [PERMANENT] tenant scope

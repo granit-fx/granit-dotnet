@@ -3,7 +3,7 @@ using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Identity.Local.Domain;
 using Granit.OpenIddict.Domain;
-using Granit.OpenIddict.Entities.OpenIddict;
+using Granit.OpenIddict.EntityFrameworkCore.Entities;
 using Granit.Persistence.EntityFrameworkCore.Metadata;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

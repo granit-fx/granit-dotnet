@@ -1,22 +1,22 @@
 using Granit.Entities;
-using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.Exports;
+using Granit.OpenIddict.Models;
 using Granit.OpenIddict.Queries;
 
 namespace Granit.OpenIddict.Entities;
 
 /// <summary>
-/// Phase 2 EntityDefinition for <see cref="GranitOpenIddictScope"/> — an OAuth2 / OIDC
+/// Phase 2 EntityDefinition for <c>GranitOpenIddictScope</c> — an OAuth2 / OIDC
 /// scope registration. Composes the existing <see cref="GranitOpenIddictScopeQueryDefinition"/>
 /// + <see cref="OpenIddictScopeExportDefinition"/> into the unified manifest surface.
 /// </summary>
-public sealed class GranitOpenIddictScopeEntityDefinition : EntityDefinition<GranitOpenIddictScope>
+public sealed class GranitOpenIddictScopeEntityDefinition : EntityDefinition<OpenIddictScopeModel>
 {
     /// <inheritdoc />
     public override string Name => "Granit.OpenIddict.Scope";
 
     /// <inheritdoc />
-    protected override void Configure(EntityDefinitionBuilder<GranitOpenIddictScope> builder) =>
+    protected override void Configure(EntityDefinitionBuilder<OpenIddictScopeModel> builder) =>
         builder
             .DisplayKey("OpenIddict:Entity.Scope")
             .Icon("tag")

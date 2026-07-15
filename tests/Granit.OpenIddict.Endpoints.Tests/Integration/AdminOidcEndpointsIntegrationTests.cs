@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Granit.Identity;
 using Granit.OpenIddict.Endpoints.Dtos;
-using Granit.OpenIddict.Entities.OpenIddict;
+using Granit.OpenIddict.EntityFrameworkCore.Entities;
 using Granit.OpenIddict.Extensions;
 using NSubstitute;
 using OpenIddict.Abstractions;

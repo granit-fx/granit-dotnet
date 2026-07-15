@@ -1,10 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
+using Granit.DataExchange.Export;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Options;
 using Granit.Identity.Local.Services;
-using Granit.OpenIddict.Entities.OpenIddict;
+using Granit.OpenIddict.EntityFrameworkCore.Entities;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.Extensions;
+using Granit.OpenIddict.Models;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Server.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -110,10 +112,22 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
         //    analytics runners throw "No service for type IQueryableSource<T>" at first request.
         builder.Services.AddScoped<IQueryableSource<GranitRole>, EfGranitRoleQueryableSource>();
         builder.Services.AddScoped<IQueryableSource<GranitUserGroup>, EfGranitUserGroupQueryableSource>();
-        builder.Services.AddScoped<IQueryableSource<GranitOpenIddictApplication>,
-            EfGranitOpenIddictApplicationQueryableSource>();
-        builder.Services.AddScoped<IQueryableSource<GranitOpenIddictScope>,
-            EfGranitOpenIddictScopeQueryableSource>();
+
+        // The OpenIddict application/scope sources project the EF entity onto the framework-owned
+        // model, so they back BOTH the query engine (IQueryableSource) and exports (IExportDataSource,
+        // whose DbSet-discovering fallback cannot resolve a projection record). Register the concrete
+        // once and forward both interfaces to the same scoped instance.
+        builder.Services.AddScoped<EfGranitOpenIddictApplicationQueryableSource>();
+        builder.Services.AddScoped<IQueryableSource<OpenIddictApplicationModel>>(
+            sp => sp.GetRequiredService<EfGranitOpenIddictApplicationQueryableSource>());
+        builder.Services.AddScoped<IExportDataSource<OpenIddictApplicationModel>>(
+            sp => sp.GetRequiredService<EfGranitOpenIddictApplicationQueryableSource>());
+
+        builder.Services.AddScoped<EfGranitOpenIddictScopeQueryableSource>();
+        builder.Services.AddScoped<IQueryableSource<OpenIddictScopeModel>>(
+            sp => sp.GetRequiredService<EfGranitOpenIddictScopeQueryableSource>());
+        builder.Services.AddScoped<IExportDataSource<OpenIddictScopeModel>>(
+            sp => sp.GetRequiredService<EfGranitOpenIddictScopeQueryableSource>());
 
         return builder;
     }

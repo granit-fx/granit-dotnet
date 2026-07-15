@@ -1,7 +1,7 @@
 using Granit.Domain;
 using OpenIddict.EntityFrameworkCore.Models;
 
-namespace Granit.OpenIddict.Entities.OpenIddict;
+namespace Granit.OpenIddict.EntityFrameworkCore.Entities;
 
 /// <summary>
 /// Multi-tenant OpenIddict application entity.

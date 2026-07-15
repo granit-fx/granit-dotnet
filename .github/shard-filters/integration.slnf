@@ -18,6 +18,7 @@
       "src/Granit.Caching.StackExchangeRedis/Granit.Caching.StackExchangeRedis.csproj",
       "src/Granit.Caching/Granit.Caching.csproj",
       "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
+      "src/Granit.DataExchange/Granit.DataExchange.csproj",
       "src/Granit.DataLookup.Abstractions/Granit.DataLookup.Abstractions.csproj",
       "src/Granit.Diagnostics/Granit.Diagnostics.csproj",
       "src/Granit.Encryption/Granit.Encryption.csproj",

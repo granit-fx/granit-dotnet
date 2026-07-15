@@ -1,14 +1,14 @@
 using System.Text.Json;
 using Granit.DataExchange.Export;
-using Granit.OpenIddict.Entities.OpenIddict;
+using Granit.OpenIddict.Models;
 
 namespace Granit.OpenIddict.Exports;
 
-public sealed class OpenIddictScopeExportDefinition : ExportDefinition<GranitOpenIddictScope>
+public sealed class OpenIddictScopeExportDefinition : ExportDefinition<OpenIddictScopeModel>
 {
     public override string Name => "Granit.OpenIddict.ScopeExport";
 
-    protected override void Configure(ExportDefinitionBuilder<GranitOpenIddictScope> builder)
+    protected override void Configure(ExportDefinitionBuilder<OpenIddictScopeModel> builder)
     {
         builder
             .IncludeId()

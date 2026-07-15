@@ -26,17 +26,6 @@
           "OpenIddict.Validation.SystemNetHttp": "7.5.0"
         }
       },
-      "OpenIddict.EntityFrameworkCore": {
-        "type": "Direct",
-        "requested": "[7.*, )",
-        "resolved": "7.5.0",
-        "contentHash": "3xamhrqh8y+l22wiyy+A9D/UvWPjsS6N8TGybpVlpJIFU5g2QGqk3JPamHuXn3gvwmP4OlwzgAZDzzLv8YWEeQ==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.7",
-          "OpenIddict.Core": "7.5.0",
-          "OpenIddict.EntityFrameworkCore.Models": "7.5.0"
-        }
-      },
       "Roslynator.Analyzers": {
         "type": "Direct",
         "requested": "[4.15.*, )",
@@ -244,11 +233,6 @@
         "dependencies": {
           "OpenIddict.Abstractions": "7.5.0"
         }
-      },
-      "OpenIddict.EntityFrameworkCore.Models": {
-        "type": "Transitive",
-        "resolved": "7.5.0",
-        "contentHash": "n21lCWOkjvu0sA9EwnDrlZ61WdzAd2KuTUSBeJeF5QGe6Sw/nLvu7Yr1yZ1I8t5iQw+QlI7PQAVPLkLLlHE5Yw=="
       },
       "OpenIddict.Server": {
         "type": "Transitive",
