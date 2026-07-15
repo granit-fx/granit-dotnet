@@ -47,6 +47,10 @@ internal sealed partial class SigningKeyRefreshService(
             return;
         }
 
+        // First boot: generate the initial key set when the store is empty, so a deployment that
+        // opted into rotation does not silently fall back to ephemeral keys.
+        await EnsureInitializedAsync(stoppingToken).ConfigureAwait(false);
+
         // Prime from the current key set so the first tick reacts only to a subsequent change,
         // not to the state the post-configure already loaded at startup.
         await PrimeAsync(stoppingToken).ConfigureAwait(false);
@@ -76,13 +80,60 @@ internal sealed partial class SigningKeyRefreshService(
         }
 
         _lastFingerprint = current;
+        InvalidateOptionsCache();
+        Log.KeySetChanged(logger);
+    }
 
-        // Evict the cached OpenIddictServerOptions so DatabaseSigningKeyPostConfigure re-runs and
-        // reloads the active/retired credentials on the next resolve; rebuild eagerly so live
-        // requests observe the new key set without waiting for the next options access.
+    /// <summary>
+    /// Generates the initial signing/encryption keys when rotation is enabled but the store is
+    /// empty (fresh deployment) — without this the server would silently fall back to ephemeral
+    /// keys despite the operator opting into rotation.
+    /// </summary>
+    /// <remarks>
+    /// The pre-check narrows — but does not eliminate — the window in which two replicas booting
+    /// against an empty store each generate a key; the surplus keys are all valid and are pruned by
+    /// a later rotation cycle. A failed attempt (schema absent on first boot, transient DB error) is
+    /// logged and retried at the next boot or by the rotation job — the server stays on ephemeral
+    /// keys until then rather than crash-looping.
+    /// </remarks>
+    internal async Task EnsureInitializedAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            using IServiceScope scope = scopeFactory.CreateScope();
+            ISigningKeyStore store = scope.ServiceProvider.GetRequiredService<ISigningKeyStore>();
+            if (await store.GetActiveKeyAsync("signing", cancellationToken).ConfigureAwait(false) is not null)
+            {
+                return;
+            }
+
+            IKeyRotationService rotation = scope.ServiceProvider.GetRequiredService<IKeyRotationService>();
+            KeyRotationResult result = await rotation.RotateAsync(cancellationToken).ConfigureAwait(false);
+            if (result.KeysGenerated > 0)
+            {
+                Log.FirstBootGenerated(logger, result.KeysGenerated);
+                InvalidateOptionsCache();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+#pragma warning disable CA1031 // First-boot generation must survive a transient/absent store — logged, retried at next boot or by the rotation job.
+        catch (Exception ex)
+        {
+            Log.FirstBootFailed(logger, ex);
+        }
+#pragma warning restore CA1031
+    }
+
+    // Evict the cached OpenIddictServerOptions so DatabaseSigningKeyPostConfigure re-runs and
+    // reloads the credentials on the next resolve; rebuild eagerly so live requests observe the
+    // new key set without waiting for the next options access.
+    private void InvalidateOptionsCache()
+    {
         optionsCache.TryRemove(Microsoft.Extensions.Options.Options.DefaultName);
         _ = optionsMonitor.Get(Microsoft.Extensions.Options.Options.DefaultName);
-        Log.KeySetChanged(logger);
     }
 
     private async Task<string?> SafeComputeFingerprintAsync(CancellationToken cancellationToken)
@@ -117,6 +168,14 @@ internal sealed partial class SigningKeyRefreshService(
         [LoggerMessage(Level = LogLevel.Information,
             Message = "Signing key set changed — reloaded OpenIddict credentials from the database.")]
         public static partial void KeySetChanged(ILogger logger);
+
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "First boot: generated {Count} initial signing/encryption key(s) and loaded them.")]
+        public static partial void FirstBootGenerated(ILogger logger, int count);
+
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message = "First-boot key generation failed; staying on ephemeral keys until the next boot or rotation.")]
+        public static partial void FirstBootFailed(ILogger logger, Exception exception);
 
         [LoggerMessage(Level = LogLevel.Warning,
             Message = "Failed to read the signing key set; will retry on the next refresh tick.")]
