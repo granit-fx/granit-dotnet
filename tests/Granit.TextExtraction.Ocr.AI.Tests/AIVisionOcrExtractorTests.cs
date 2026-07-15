@@ -1,6 +1,7 @@
 using Granit.AI;
 using Granit.TextExtraction.Ocr.AI.Options;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -41,7 +42,7 @@ public sealed class AIVisionOcrExtractorTests
         }
 
         AIVisionOcrExtractor extractor = new(
-            factory,
+            ScopeFactoryFor(factory),
             prompt,
             MEOptions.Create(extractionOptions ?? new ExtractionOptions()),
             MEOptions.Create(ocrOptions ?? new AIVisionOcrOptions()),
@@ -51,6 +52,15 @@ public sealed class AIVisionOcrExtractorTests
     }
 
     private static MemoryStream Bytes(int length) => new(new byte[length]);
+
+    // The extractor resolves IAIChatClientFactory through a per-call scope (it is a
+    // singleton, the factory is scoped) — mirror that wiring here.
+    private static IServiceScopeFactory ScopeFactoryFor(IAIChatClientFactory factory)
+    {
+        ServiceCollection services = new();
+        services.AddScoped(_ => factory);
+        return services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
+    }
 
     [Theory]
     [InlineData("image/png", true)]
@@ -136,7 +146,7 @@ public sealed class AIVisionOcrExtractorTests
 
         IVisionOcrPromptBuilder prompt = Substitute.For<IVisionOcrPromptBuilder>();
         AIVisionOcrExtractor extractor = new(
-            factory, prompt,
+            ScopeFactoryFor(factory), prompt,
             MEOptions.Create(new ExtractionOptions()),
             MEOptions.Create(new AIVisionOcrOptions()),
             NullLogger<AIVisionOcrExtractor>.Instance);
@@ -167,7 +177,7 @@ public sealed class AIVisionOcrExtractorTests
         prompt.BuildPrompt(Arg.Any<string>(), Arg.Any<int>()).Returns("p");
 
         AIVisionOcrExtractor extractor = new(
-            factory, prompt,
+            ScopeFactoryFor(factory), prompt,
             MEOptions.Create(new ExtractionOptions()),
             MEOptions.Create(new AIVisionOcrOptions()),
             NullLogger<AIVisionOcrExtractor>.Instance);
