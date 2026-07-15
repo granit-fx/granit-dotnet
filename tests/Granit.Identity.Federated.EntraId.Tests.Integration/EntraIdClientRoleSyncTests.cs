@@ -3,6 +3,7 @@ using Granit.Guids;
 using Granit.Identity.Federated.EntraId.Exceptions;
 using Granit.Identity.Federated.EntraId.Internal;
 using Granit.Identity.Federated.EntraId.Sync;
+using Granit.Identity.Federated.Sync;
 using Granit.Identity.Models;
 using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -49,7 +50,7 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
 
     public void Dispose() => _sharedHttpClient.Dispose();
 
-    private (EntraIdClientRoleSyncService Sync, EntraIdIdentityProvider Provider, InMemoryRoleMetadataStore Store) BuildSut(
+    private (ClientRoleSyncEngine Engine, IClientRoleSyncPolicy Policy, EntraIdIdentityProvider Provider, InMemoryRoleMetadataStore Store) BuildSut(
         params string[] trackedAppIds)
     {
         EntraOpts adminOpts = new()
@@ -83,12 +84,12 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
             Enabled = true,
             TrackedAppIds = trackedAppIds,
         };
-        EntraIdClientRoleSyncService sync = new(
+        ClientRoleSyncEngine engine = new(
             provider, store, new SimpleGuidGenerator(), clock,
-            Microsoft.Extensions.Options.Options.Create(syncOpts),
-            NullLogger<EntraIdClientRoleSyncService>.Instance);
+            NullLogger<ClientRoleSyncEngine>.Instance);
+        EntraIdClientRoleSyncPolicy policy = new(Microsoft.Extensions.Options.Options.Create(syncOpts));
 
-        return (sync, provider, store);
+        return (engine, policy, provider, store);
     }
 
     // ─── Fixture data used by every scenario ─────────────────────────────────
@@ -119,9 +120,9 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
             EntraIdWireMockFixture.TrackedSpObjectId,
             AppRolesOriginal);
 
-        (EntraIdClientRoleSyncService sync, _, InMemoryRoleMetadataStore store) = BuildSut(EntraIdWireMockFixture.TrackedAppId);
+        (ClientRoleSyncEngine engine, IClientRoleSyncPolicy policy, _, InMemoryRoleMetadataStore store) = BuildSut(EntraIdWireMockFixture.TrackedAppId);
 
-        await sync.SyncAsync(TestContext.Current.CancellationToken);
+        await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
 
         store.All.Count.ShouldBe(3, "the isEnabled=false role must be filtered out");
         store.All.ShouldAllBe(r => r.ClientId == EntraIdWireMockFixture.TrackedAppId);
@@ -137,12 +138,12 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
             EntraIdWireMockFixture.TrackedSpObjectId,
             AppRolesOriginal);
 
-        (EntraIdClientRoleSyncService sync, _, InMemoryRoleMetadataStore store) = BuildSut(EntraIdWireMockFixture.TrackedAppId);
+        (ClientRoleSyncEngine engine, IClientRoleSyncPolicy policy, _, InMemoryRoleMetadataStore store) = BuildSut(EntraIdWireMockFixture.TrackedAppId);
 
-        await sync.SyncAsync(TestContext.Current.CancellationToken);
+        await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
         IReadOnlyList<Guid> firstRun = store.All.Select(r => r.Id).Order().ToList();
 
-        await sync.SyncAsync(TestContext.Current.CancellationToken);
+        await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
 
         store.All.Select(r => r.Id).Order().ShouldBe(firstRun);
         store.All.Count.ShouldBe(3);
@@ -157,8 +158,8 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
             EntraIdWireMockFixture.TrackedSpObjectId,
             AppRolesOriginal);
 
-        (EntraIdClientRoleSyncService sync, _, InMemoryRoleMetadataStore store) = BuildSut(EntraIdWireMockFixture.TrackedAppId);
-        await sync.SyncAsync(TestContext.Current.CancellationToken);
+        (ClientRoleSyncEngine engine, IClientRoleSyncPolicy policy, _, InMemoryRoleMetadataStore store) = BuildSut(EntraIdWireMockFixture.TrackedAppId);
+        await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
         Guid originalEditorId = store.All.Single(r => r.Name == "Editor").Id;
 
         // Swap the servicePrincipal stub so the second GET returns the mutated description.
@@ -169,7 +170,7 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
             EntraIdWireMockFixture.TrackedSpObjectId,
             AppRolesDescriptionChanged);
 
-        await sync.SyncAsync(TestContext.Current.CancellationToken);
+        await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
 
         Granit.Authorization.Domain.RoleMetadata editor = store.All.Single(r => r.Name == "Editor");
         editor.Id.ShouldBe(originalEditorId);
@@ -187,7 +188,7 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
             EntraIdWireMockFixture.TrackedSpObjectId,
             AppRolesOriginal);
 
-        (EntraIdClientRoleSyncService sync, EntraIdIdentityProvider provider, InMemoryRoleMetadataStore store) = BuildSut(
+        (ClientRoleSyncEngine engine, IClientRoleSyncPolicy policy, EntraIdIdentityProvider provider, InMemoryRoleMetadataStore store) = BuildSut(
             EntraIdWireMockFixture.UnknownAppId,
             EntraIdWireMockFixture.TrackedAppId);
 
@@ -198,7 +199,7 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
         ex.AppId.ShouldBe(EntraIdWireMockFixture.UnknownAppId);
 
         // Full sync: the unknown app is skipped, the tracked app still writes metadata.
-        await sync.SyncAsync(TestContext.Current.CancellationToken);
+        await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
 
         store.All.Count(r => r.ClientId == EntraIdWireMockFixture.TrackedAppId).ShouldBe(3);
         store.All.ShouldNotContain(r => r.ClientId == EntraIdWireMockFixture.UnknownAppId);
@@ -222,7 +223,7 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
             ]
             """);
 
-        (_, EntraIdIdentityProvider provider, _) = BuildSut();
+        (_, _, EntraIdIdentityProvider provider, _) = BuildSut();
 
         IReadOnlyList<IdentityRole> roles = await provider.GetUserClientRolesAsync(
             EntraIdWireMockFixture.TestUserId,

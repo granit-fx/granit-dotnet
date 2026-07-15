@@ -4,6 +4,7 @@ using Granit.Events;
 using Granit.Guids;
 using Granit.Identity.Federated.Cognito.Internal;
 using Granit.Identity.Federated.Cognito.Sync;
+using Granit.Identity.Federated.Sync;
 using Granit.Identity.Models;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -38,12 +39,15 @@ public sealed class CognitoClientRoleSyncTests : IClassFixture<CognitoWireMockFi
     /// ownership explicit here avoids leaking SDK HTTP handlers between tests.
     /// </summary>
     private sealed class SutContext(
-        CognitoClientRoleSyncService sync,
+        ClientRoleSyncEngine engine,
+        IClientRoleSyncPolicy policy,
         CognitoIdentityProvider provider,
         InMemoryRoleMetadataStore store,
         IAmazonCognitoIdentityProvider cognitoClient) : IDisposable
     {
-        public CognitoClientRoleSyncService Sync { get; } = sync;
+        public ClientRoleSyncEngine Engine { get; } = engine;
+
+        public IClientRoleSyncPolicy Policy { get; } = policy;
 
         public CognitoIdentityProvider Provider { get; } = provider;
 
@@ -93,12 +97,12 @@ public sealed class CognitoClientRoleSyncTests : IClassFixture<CognitoWireMockFi
         Granit.Timing.IClock clock = Substitute.For<Granit.Timing.IClock>();
         clock.Now.Returns(DateTimeOffset.UtcNow);
 
-        CognitoClientRoleSyncService sync = new(
+        ClientRoleSyncEngine engine = new(
             provider, store, new SimpleGuidGenerator(), clock,
-            Microsoft.Extensions.Options.Options.Create(syncOpts),
-            NullLogger<CognitoClientRoleSyncService>.Instance);
+            NullLogger<ClientRoleSyncEngine>.Instance);
+        CognitoClientRoleSyncPolicy policy = new(Microsoft.Extensions.Options.Options.Create(syncOpts));
 
-        return new SutContext(sync, provider, store, cognitoClient);
+        return new SutContext(engine, policy, provider, store, cognitoClient);
     }
 
     [Fact]
@@ -113,7 +117,7 @@ public sealed class CognitoClientRoleSyncTests : IClassFixture<CognitoWireMockFi
 
         using SutContext sut = BuildSut(trackedAppClientIds: CognitoWireMockFixture.AppClientIdA);
 
-        await sut.Sync.SyncAsync(TestContext.Current.CancellationToken);
+        await sut.Engine.SyncAsync(sut.Policy, TestContext.Current.CancellationToken);
 
         sut.Store.All.Count.ShouldBe(3, "only the 3 clientA-prefixed groups should be synced");
         sut.Store.All.ShouldAllBe(r => r.ClientId == CognitoWireMockFixture.AppClientIdA);
@@ -130,10 +134,10 @@ public sealed class CognitoClientRoleSyncTests : IClassFixture<CognitoWireMockFi
 
         using SutContext sut = BuildSut(trackedAppClientIds: CognitoWireMockFixture.AppClientIdA);
 
-        await sut.Sync.SyncAsync(TestContext.Current.CancellationToken);
+        await sut.Engine.SyncAsync(sut.Policy, TestContext.Current.CancellationToken);
         IReadOnlyList<Guid> firstRun = sut.Store.All.Select(r => r.Id).Order().ToList();
 
-        await sut.Sync.SyncAsync(TestContext.Current.CancellationToken);
+        await sut.Engine.SyncAsync(sut.Policy, TestContext.Current.CancellationToken);
 
         sut.Store.All.Select(r => r.Id).Order().ShouldBe(firstRun);
         sut.Store.All.Count.ShouldBe(2);
@@ -147,7 +151,7 @@ public sealed class CognitoClientRoleSyncTests : IClassFixture<CognitoWireMockFi
 
         using SutContext sut = BuildSut(trackedAppClientIds: CognitoWireMockFixture.AppClientIdA);
 
-        await sut.Sync.SyncAsync(TestContext.Current.CancellationToken);
+        await sut.Engine.SyncAsync(sut.Policy, TestContext.Current.CancellationToken);
         Guid originalId = sut.Store.All.Single(r => r.Name == "editor").Id;
 
         // Swap the stub to return a mutated description.
@@ -155,7 +159,7 @@ public sealed class CognitoClientRoleSyncTests : IClassFixture<CognitoWireMockFi
         _wireMock.StubListGroups(
             ("clientA:editor", "Edit showcase documents — updated"));
 
-        await sut.Sync.SyncAsync(TestContext.Current.CancellationToken);
+        await sut.Engine.SyncAsync(sut.Policy, TestContext.Current.CancellationToken);
 
         Granit.Authorization.Domain.RoleMetadata editor = sut.Store.All.Single(r => r.Name == "editor");
         editor.Id.ShouldBe(originalId);
@@ -171,7 +175,7 @@ public sealed class CognitoClientRoleSyncTests : IClassFixture<CognitoWireMockFi
         using SutContext sut = BuildSut(trackedAppClientIds: CognitoWireMockFixture.AppClientIdA);
 
         // Sync must not throw — the service logs the 403-equivalent and carries on.
-        await sut.Sync.SyncAsync(TestContext.Current.CancellationToken);
+        await sut.Engine.SyncAsync(sut.Policy, TestContext.Current.CancellationToken);
 
         sut.Store.All.ShouldBeEmpty();
     }

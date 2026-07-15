@@ -5,7 +5,7 @@ using Granit.Events;
 using Granit.Guids;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.Keycloak.Extensions;
-using Granit.Identity.Federated.Keycloak.Sync;
+using Granit.Identity.Federated.Sync;
 using Granit.Identity.Models;
 using Granit.Timing;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +18,7 @@ using Xunit;
 namespace Granit.Identity.Federated.Keycloak.Tests.Integration;
 
 /// <summary>
-/// Seven end-to-end scenarios exercising <see cref="KeycloakClientRoleSyncService"/>
+/// Seven end-to-end scenarios exercising the shared <c>ClientRoleSyncEngine</c> via the Keycloak policy
 /// and <see cref="IIdentityClientRoleManager"/> against the real Keycloak 26.0 admin REST
 /// API. The fixture (<see cref="KeycloakFixture"/>) seeds a deterministic realm with three
 /// client roles on <c>showcase-admin</c> and a user (<c>alice</c>) holding two of them.
@@ -54,6 +54,7 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
 
         services.AddGranitIdentity();
         services.AddGranitIdentityKeycloak();
+        services.TryAddScoped<IClientRoleSyncEngine, ClientRoleSyncEngine>();
 
         // Replace the EF-backed RoleMetadata store with an in-memory one — the Keycloak
         // HTTP path is what we want to validate, not EF mapping (already covered in
@@ -69,9 +70,10 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
     {
         InMemoryRoleMetadataStore store = new();
         await using ServiceProvider sp = BuildServices(store, KeycloakFixture.TrackedClientId);
-        KeycloakClientRoleSyncService sut = sp.GetRequiredService<KeycloakClientRoleSyncService>();
+        IClientRoleSyncEngine engine = sp.GetRequiredService<IClientRoleSyncEngine>();
+        IClientRoleSyncPolicy policy = sp.GetRequiredService<IClientRoleSyncPolicy>();
 
-        await sut.SyncAsync(TestContext.Current.CancellationToken);
+        await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
 
         store.All.Count.ShouldBe(3);
         store.All.ShouldAllBe(r => r.ClientId == KeycloakFixture.TrackedClientId);
@@ -84,13 +86,14 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
     {
         InMemoryRoleMetadataStore store = new();
         await using ServiceProvider sp = BuildServices(store, KeycloakFixture.TrackedClientId);
-        KeycloakClientRoleSyncService sut = sp.GetRequiredService<KeycloakClientRoleSyncService>();
+        IClientRoleSyncEngine engine = sp.GetRequiredService<IClientRoleSyncEngine>();
+        IClientRoleSyncPolicy policy = sp.GetRequiredService<IClientRoleSyncPolicy>();
 
-        await sut.SyncAsync(TestContext.Current.CancellationToken);
+        await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
         int firstRunCount = store.All.Count;
         IReadOnlyList<Guid> firstRunIds = store.All.Select(r => r.Id).Order().ToList();
 
-        await sut.SyncAsync(TestContext.Current.CancellationToken);
+        await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
 
         store.All.Count.ShouldBe(firstRunCount);
         store.All.Select(r => r.Id).Order().ShouldBe(firstRunIds);
@@ -101,10 +104,11 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
     {
         InMemoryRoleMetadataStore store = new();
         await using ServiceProvider sp = BuildServices(store, KeycloakFixture.TrackedClientId);
-        KeycloakClientRoleSyncService sut = sp.GetRequiredService<KeycloakClientRoleSyncService>();
+        IClientRoleSyncEngine engine = sp.GetRequiredService<IClientRoleSyncEngine>();
+        IClientRoleSyncPolicy policy = sp.GetRequiredService<IClientRoleSyncPolicy>();
 
         // First sync — capture the current state.
-        await sut.SyncAsync(TestContext.Current.CancellationToken);
+        await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
         RoleMetadata editor = store.All.Single(r => r.Name == "editor");
         Guid originalId = editor.Id;
 
@@ -116,7 +120,7 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
         try
         {
             // Second sync — must update the existing row in-place, not insert a new one.
-            await sut.SyncAsync(TestContext.Current.CancellationToken);
+            await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
 
             RoleMetadata reloaded = store.All.Single(r => r.Name == "editor");
             reloaded.Id.ShouldBe(originalId);
@@ -137,9 +141,10 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
     {
         InMemoryRoleMetadataStore store = new();
         await using ServiceProvider sp = BuildServices(store, KeycloakFixture.TrackedClientId);
-        KeycloakClientRoleSyncService sut = sp.GetRequiredService<KeycloakClientRoleSyncService>();
+        IClientRoleSyncEngine engine = sp.GetRequiredService<IClientRoleSyncEngine>();
+        IClientRoleSyncPolicy policy = sp.GetRequiredService<IClientRoleSyncPolicy>();
 
-        await sut.SyncAsync(TestContext.Current.CancellationToken);
+        await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
 
         store.All.ShouldNotContain(r => r.ClientId == KeycloakFixture.UntrackedClientId);
     }
@@ -152,9 +157,10 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
             store,
             KeycloakFixture.MissingClientId,
             KeycloakFixture.TrackedClientId);
-        KeycloakClientRoleSyncService sut = sp.GetRequiredService<KeycloakClientRoleSyncService>();
+        IClientRoleSyncEngine engine = sp.GetRequiredService<IClientRoleSyncEngine>();
+        IClientRoleSyncPolicy policy = sp.GetRequiredService<IClientRoleSyncPolicy>();
 
-        await sut.SyncAsync(TestContext.Current.CancellationToken);
+        await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
 
         // Missing client is skipped; the next tracked client still sync'd successfully.
         store.All.Count(r => r.ClientId == KeycloakFixture.TrackedClientId).ShouldBe(3);
@@ -188,9 +194,10 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
     {
         InMemoryRoleMetadataStore store = new();
         await using ServiceProvider sp = BuildServices(store, KeycloakFixture.TrackedClientId);
-        KeycloakClientRoleSyncService sut = sp.GetRequiredService<KeycloakClientRoleSyncService>();
+        IClientRoleSyncEngine engine = sp.GetRequiredService<IClientRoleSyncEngine>();
+        IClientRoleSyncPolicy policy = sp.GetRequiredService<IClientRoleSyncPolicy>();
 
-        await sut.SyncAsync(TestContext.Current.CancellationToken);
+        await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
         store.All.Count.ShouldBe(3);
 
         // Delete a role directly in Keycloak, then restore it so the shared fixture stays
@@ -199,7 +206,7 @@ public sealed class KeycloakClientRoleSyncTests(KeycloakFixture keycloak)
         await DeleteClientRoleAsync(KeycloakFixture.TrackedClientId, roleName: "viewer");
         try
         {
-            await sut.SyncAsync(TestContext.Current.CancellationToken);
+            await engine.SyncAsync(policy, TestContext.Current.CancellationToken);
 
             // No-delete policy: the orphaned row survives. Only 'admin' + 'editor' come back
             // from Keycloak, but 'viewer' stays in the store until an explicit cleanup job

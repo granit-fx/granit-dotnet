@@ -1,3 +1,4 @@
+using Granit.Authorization;
 using Granit.DataExchange.Extensions;
 using Granit.Entities.Extensions;
 using Granit.Identity.Federated.Domain;
@@ -6,8 +7,11 @@ using Granit.Identity.Federated.Exports;
 using Granit.Identity.Federated.Options;
 using Granit.Identity.Federated.Queries;
 using Granit.Identity.Federated.RateLimiting;
+using Granit.Identity.Federated.Sync;
 using Granit.Identity.Options;
 using Granit.Modularity;
+using Granit.Persistence;
+using Granit.Persistence.DataSeeding;
 using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +24,10 @@ namespace Granit.Identity.Federated;
 /// Groups the shared dependency for all federated identity providers
 /// (Keycloak, Entra ID, Cognito, Google Cloud).
 /// </summary>
-[DependsOn(typeof(GranitIdentityModule))]
+[DependsOn(
+    typeof(GranitAuthorizationModule),
+    typeof(GranitIdentityModule),
+    typeof(GranitPersistenceModule))]
 public sealed class GranitIdentityFederatedModule : GranitModule
 {
     /// <inheritdoc/>
@@ -29,6 +36,12 @@ public sealed class GranitIdentityFederatedModule : GranitModule
         // Query + Export definitions (ADR-020: owned by the base module).
         context.Services.AddQueryDefinition<FederatedIdentity, FederatedIdentityQueryDefinition>();
         context.Services.AddExportDefinition<FederatedIdentity, FederatedIdentityExportDefinition>();
+
+        // Shared client-role sync engine + the single boot-time contributor that drives every
+        // registered provider's IClientRoleSyncPolicy through it (ADR-029/030). Providers register
+        // their own policy; with none wired, the contributor is a no-op.
+        context.Services.TryAddScoped<IClientRoleSyncEngine, ClientRoleSyncEngine>();
+        context.Services.AddTransient<IHostDataSeedContributor, ClientRoleSyncContributor>();
 
         // Phase 2 EntityDefinition (ADR-050).
         context.Services.AddEntityDefinition<FederatedIdentity, FederatedIdentityEntityDefinition>();

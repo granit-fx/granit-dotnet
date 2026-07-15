@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Identity.Federated.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.Identity.Federated — a single recurring re-sync of client roles that drives every registered provider (Keycloak, Entra ID, Cognito) through the shared ClientRoleSyncEngine, on top of the boot-time contributor (ADR-030).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Identity.Federated.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.Identity.Federated\Granit.Identity.Federated.csproj" />
+  </ItemGroup>
+
+</Project>

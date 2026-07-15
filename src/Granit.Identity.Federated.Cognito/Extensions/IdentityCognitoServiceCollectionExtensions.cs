@@ -6,7 +6,7 @@ using Granit.Identity.Extensions;
 using Granit.Identity.Federated.Cognito.Internal;
 using Granit.Identity.Federated.Cognito.Options;
 using Granit.Identity.Federated.Cognito.Sync;
-using Granit.Persistence.DataSeeding;
+using Granit.Identity.Federated.Sync;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -79,8 +79,7 @@ public static class IdentityCognitoServiceCollectionExtensions
         services.AddOptions<CognitoClientRoleSyncOptions>()
             .BindConfiguration(CognitoClientRoleSyncOptions.SectionName);
 
-        services.TryAddScoped<CognitoClientRoleSyncService>();
-        services.AddTransient<IHostDataSeedContributor, CognitoClientRoleSyncContributor>();
+        services.AddTransient<IClientRoleSyncPolicy, CognitoClientRoleSyncPolicy>();
 
         return services;
     }

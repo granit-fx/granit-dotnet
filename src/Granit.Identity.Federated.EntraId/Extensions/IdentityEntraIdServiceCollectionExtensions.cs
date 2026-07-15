@@ -5,7 +5,7 @@ using Granit.Identity.Federated.EntraId.HealthChecks;
 using Granit.Identity.Federated.EntraId.Internal;
 using Granit.Identity.Federated.EntraId.Options;
 using Granit.Identity.Federated.EntraId.Sync;
-using Granit.Persistence.DataSeeding;
+using Granit.Identity.Federated.Sync;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -85,8 +85,7 @@ public static class IdentityEntraIdServiceCollectionExtensions
         services.AddOptions<EntraIdClientRoleSyncOptions>()
             .BindConfiguration(EntraIdClientRoleSyncOptions.SectionName);
 
-        services.TryAddScoped<EntraIdClientRoleSyncService>();
-        services.AddTransient<IHostDataSeedContributor, EntraIdClientRoleSyncContributor>();
+        services.AddTransient<IClientRoleSyncPolicy, EntraIdClientRoleSyncPolicy>();
 
         return services;
     }

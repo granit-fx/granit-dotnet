@@ -6,7 +6,7 @@ using Granit.Identity.Federated.Keycloak.Internal;
 using Granit.Identity.Federated.Keycloak.Options;
 using Granit.Identity.Federated.Keycloak.Sync;
 using Granit.Identity.Federated.RateLimiting;
-using Granit.Persistence.DataSeeding;
+using Granit.Identity.Federated.Sync;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -98,8 +98,7 @@ public static class IdentityKeycloakServiceCollectionExtensions
         services.AddOptions<KeycloakClientRoleSyncOptions>()
             .BindConfiguration(KeycloakClientRoleSyncOptions.SectionName);
 
-        services.TryAddScoped<KeycloakClientRoleSyncService>();
-        services.AddTransient<IHostDataSeedContributor, KeycloakClientRoleSyncContributor>();
+        services.AddTransient<IClientRoleSyncPolicy, KeycloakClientRoleSyncPolicy>();
 
         return services;
     }

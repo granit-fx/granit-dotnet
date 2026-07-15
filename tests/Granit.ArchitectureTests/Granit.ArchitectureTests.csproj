@@ -192,14 +192,12 @@
     <ProjectReference Include="..\..\src\Granit.Identity.EntityFrameworkCore\Granit.Identity.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated\Granit.Identity.Federated.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Cognito\Granit.Identity.Federated.Cognito.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Identity.Federated.Cognito.BackgroundJobs\Granit.Identity.Federated.Cognito.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Federated.BackgroundJobs\Granit.Identity.Federated.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Endpoints\Granit.Identity.Federated.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntityFrameworkCore\Granit.Identity.Federated.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntraId\Granit.Identity.Federated.EntraId.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntraId.BackgroundJobs\Granit.Identity.Federated.EntraId.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.GoogleCloud\Granit.Identity.Federated.GoogleCloud.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Keycloak\Granit.Identity.Federated.Keycloak.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Identity.Federated.Keycloak.BackgroundJobs\Granit.Identity.Federated.Keycloak.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Notifications\Granit.Identity.Federated.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Privacy\Granit.Identity.Federated.Privacy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Local\Granit.Identity.Local.csproj" />
