@@ -164,6 +164,9 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         IAccountDeletionService deletionService = Substitute.For<IAccountDeletionService>();
         IDistributedEventBus eventBus = Substitute.For<IDistributedEventBus>();
         IFusionCache fusionCache = Substitute.For<IFusionCache>();
+        IUserSessionProvider sessionProvider = Substitute.For<IUserSessionProvider>();
+        sessionProvider.TouchAsync(Arg.Any<ClaimsPrincipal>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
 
         // Multi-tenancy stand-ins — default to "no tenant, no filter" so all existing
         // tests keep the pre-existing behaviour (filter untouched, no tenant switch).
@@ -239,6 +242,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(deviceTrustCookieService);
         builder.Services.AddSingleton(securityState);
         builder.Services.AddSingleton(impersonationService);
+        builder.Services.AddSingleton(sessionProvider);
         builder.Services.AddSingleton(deletionService);
         builder.Services.AddSingleton(eventBus);
         builder.Services.AddSingleton(fusionCache);

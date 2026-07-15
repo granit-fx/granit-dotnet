@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Identity.Local.Endpoints.Endpoints;
 
@@ -47,33 +46,18 @@ internal static class AccountSessionEndpoints
 
     private static async Task<NoContent> HeartbeatAsync(
         HttpContext httpContext,
-        [FromServices] IFusionCache cache,
-        [FromServices] TimeProvider timeProvider,
+        [FromServices] IUserSessionProvider sessionProvider,
         CancellationToken cancellationToken)
     {
-        string? userId = httpContext.User.FindFirst("sub")?.Value;
-        string? jti = httpContext.User.FindFirst("jti")?.Value;
-
-        // Skip if remember_me or missing claims
-        if (userId is null || jti is null
-            || httpContext.User.FindFirst("remember_me")?.Value is "true")
+        // remember_me sessions are exempt from idle enforcement, so recording their activity is
+        // pointless. Every other backend touches last-access itself (BFF middleware, federated IdP)
+        // and TouchAsync is a no-op there; only the OpenIddict authority persists activity here.
+        if (httpContext.User.FindFirst("remember_me")?.Value is "true")
         {
             return TypedResults.NoContent();
         }
 
-        string cacheKey = $"session:{userId}:{jti}";
-        UserSessionActivity activity = new(userId, jti, timeProvider.GetUtcNow());
-
-        await cache.SetAsync(
-            cacheKey,
-            activity,
-            new FusionCacheEntryOptions
-            {
-                // Default: 35 min (30 min timeout + 5 min buffer).
-                // Actual TTL adjusted by enforcement job based on per-tenant IdleSessionTimeout setting.
-                Duration = TimeSpan.FromMinutes(35),
-            },
-            token: cancellationToken).ConfigureAwait(false);
+        await sessionProvider.TouchAsync(httpContext.User, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();
     }

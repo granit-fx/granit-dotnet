@@ -1,13 +1,12 @@
 using System.Collections.Immutable;
+using System.Security.Claims;
 using System.Text.Json;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Identity;
-using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Extensions;
 using Granit.Timing;
 using OpenIddict.Abstractions;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.OpenIddict.Services;
 
@@ -20,10 +19,12 @@ namespace Granit.OpenIddict.Services;
 internal sealed class OpenIddictUserSessionProvider(
     IOpenIddictTokenManager tokenManager,
     IOpenIddictApplicationManager applicationManager,
-    IFusionCache cache,
+    IUserSessionActivityStore activityStore,
     IClock clock,
     IDataFilter? dataFilter = null) : IUserSessionProvider, IUserDeviceProvider
 {
+    private static readonly TimeSpan HeartbeatDebounce = TimeSpan.FromMinutes(1);
+
     public async Task<IReadOnlyList<UserSessionDescriptor>> ListAsync(
         string userId, string? currentSessionId, CancellationToken cancellationToken = default)
     {
@@ -36,6 +37,11 @@ internal sealed class OpenIddictUserSessionProvider(
         // filter for the whole listing to resolve those applications regardless of scope.
         using IDisposable? _ = dataFilter?.Disable<IMultiTenant>();
 
+        // One batched read of last-activity per session (refresh token id), instead of one lookup per
+        // token — mirrors the BFF reading BffTokenSet.LastAccessedAt.
+        IReadOnlyDictionary<string, DateTimeOffset> activities =
+            await activityStore.GetActivitiesAsync(userId, cancellationToken).ConfigureAwait(false);
+
         // One device-kind resolution per distinct client across the whole listing — many of a user's tokens
         // typically belong to the same application, so cache the resolved kind by application id.
         var kindByApplicationId = new Dictionary<string, DeviceKind>(StringComparer.Ordinal);
@@ -43,7 +49,7 @@ internal sealed class OpenIddictUserSessionProvider(
         await foreach (object token in tokenManager.FindBySubjectAsync(userId, cancellationToken))
         {
             UserSessionDescriptor? session = await MapTokenToSessionAsync(
-                userId, token, currentSessionId, kindByApplicationId, cancellationToken).ConfigureAwait(false);
+                userId, token, currentSessionId, kindByApplicationId, activities, cancellationToken).ConfigureAwait(false);
             if (session is not null)
             {
                 sessions.Add(session);
@@ -65,11 +71,30 @@ internal sealed class OpenIddictUserSessionProvider(
         return UserDeviceGrouping.ByIpAddress(sessions);
     }
 
+    /// <inheritdoc/>
+    public async Task TouchAsync(ClaimsPrincipal principal, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(principal);
+
+        // The access token's authorization is shared with the session's refresh token — record the
+        // activity on the refresh token through it. No authorization (e.g. a client-credentials
+        // token) means there is no interactive session to touch.
+        if (!Guid.TryParse(principal.GetAuthorizationId(), out Guid authorizationId))
+        {
+            return;
+        }
+
+        await activityStore.TouchAsync(authorizationId, clock.Now, HeartbeatDebounce, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
     // Maps a single OpenIddict token to a UserSessionDescriptor, or null when the token is not a
     // valid refresh token (the only kind that represents a live session) or carries no id.
     private async Task<UserSessionDescriptor?> MapTokenToSessionAsync(
         string userId, object token, string? currentSessionId,
-        Dictionary<string, DeviceKind> kindByApplicationId, CancellationToken cancellationToken)
+        Dictionary<string, DeviceKind> kindByApplicationId,
+        IReadOnlyDictionary<string, DateTimeOffset> activities,
+        CancellationToken cancellationToken)
     {
         string? sessionId = await GetValidRefreshTokenIdAsync(token, cancellationToken)
             .ConfigureAwait(false);
@@ -81,11 +106,9 @@ internal sealed class OpenIddictUserSessionProvider(
         DateTimeOffset startedAt = (await tokenManager.GetCreationDateAsync(token, cancellationToken)
             .ConfigureAwait(false)) ?? clock.Now;
 
-        MaybeValue<UserSessionActivity> activity =
-            await cache.TryGetAsync<UserSessionActivity>(
-                $"session:{userId}:{sessionId}", token: cancellationToken)
-                .ConfigureAwait(false);
-        DateTimeOffset lastAccess = activity.HasValue ? activity.Value.LastActivityAt : startedAt;
+        DateTimeOffset lastAccess = activities.TryGetValue(sessionId, out DateTimeOffset la)
+            ? la
+            : startedAt;
 
         ImmutableDictionary<string, JsonElement> properties =
             await tokenManager.GetPropertiesAsync(token, cancellationToken).ConfigureAwait(false);
