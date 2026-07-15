@@ -512,6 +512,45 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         result.DisplayName.ShouldBe("Custom Scope");
         result.Description.ShouldBe("A custom OIDC scope");
         result.Resources.ShouldBe(["api://my-resource"]);
+        result.TenantId.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task CreateScope_ExplicitTenantId_StampsTenantOnEntity()
+    {
+        var targetTenant = Guid.Parse("66666666-6666-6666-6666-666666666666");
+        GranitOpenIddictScope createdScope = new() { TenantId = null };
+
+        _server.ScopeManager.CreateAsync(
+            Arg.Any<OpenIddictScopeDescriptor>(),
+            Arg.Any<CancellationToken>())
+            .Returns(createdScope);
+#pragma warning disable CA2012
+        _server.ScopeManager
+            .PopulateAsync(Arg.Any<OpenIddictScopeDescriptor>(), createdScope, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictScopeDescriptor d = ci.ArgAt<OpenIddictScopeDescriptor>(0);
+                d.Name = "tenant_scope";
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+
+        AdminOidcCreateScopeRequest request = new(
+            "tenant_scope", "Tenant Scope", Resources: [], TenantId: targetTenant);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PostAsJsonAsync("/admin/oidc/scopes", request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        createdScope.TenantId.ShouldBe(targetTenant);
+        await _server.ScopeManager.Received(1).UpdateAsync(createdScope, Arg.Any<CancellationToken>());
+
+        AdminOidcScopeResponse? result = await response.Content
+            .ReadFromJsonAsync<AdminOidcScopeResponse>(TestContext.Current.CancellationToken);
+        result.ShouldNotBeNull();
+        result.TenantId.ShouldBe(targetTenant);
     }
 
     [Fact]

@@ -101,6 +101,7 @@ internal static class AdminOidcEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcScopeResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .RequireAuthorization(OpenIddictPermissions.Scopes.Manage);
 
         scopes.MapPut("/{scopeName}", UpdateScopeAsync)
@@ -441,17 +442,26 @@ internal static class AdminOidcEndpoints
         {
             var descriptor = new OpenIddictScopeDescriptor();
             await scopeManager.PopulateAsync(descriptor, scope, cancellationToken).ConfigureAwait(false);
-            results.Add(ToScopeResponse(descriptor));
+            Guid? tenantId = scope is IMultiTenant granitScope ? granitScope.TenantId : null;
+            results.Add(ToScopeResponse(descriptor, tenantId));
         }
 
         return TypedResults.Ok<IReadOnlyList<AdminOidcScopeResponse>>(results);
     }
 
-    private static async Task<Created<AdminOidcScopeResponse>> CreateScopeAsync(
+    private static async Task<Results<Created<AdminOidcScopeResponse>, ProblemHttpResult>> CreateScopeAsync(
         AdminOidcCreateScopeRequest request,
         [FromServices] IOpenIddictScopeManager scopeManager,
+        [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
+        if (!TryResolveWriteTenant(request.TenantId, currentTenant, out Guid? tenantId))
+        {
+            return TypedResults.Problem(
+                detail: "A tenant-scoped administrator cannot assign a scope to a different tenant.",
+                statusCode: StatusCodes.Status403Forbidden);
+        }
+
         var descriptor = new OpenIddictScopeDescriptor
         {
             Name = request.Name,
@@ -466,12 +476,21 @@ internal static class AdminOidcEndpoints
 
         object scope = await scopeManager.CreateAsync(descriptor, cancellationToken).ConfigureAwait(false);
 
+        // OpenIddict entities implement IMultiTenant but are not audited, so the persistence
+        // interceptor never stamps their TenantId — assign the resolved tenant explicitly.
+        if (tenantId is not null && scope is IMultiTenant granitScope && granitScope.TenantId != tenantId)
+        {
+            granitScope.TenantId = tenantId;
+            await scopeManager.UpdateAsync(scope, cancellationToken).ConfigureAwait(false);
+        }
+
         var responseDescriptor = new OpenIddictScopeDescriptor();
         await scopeManager.PopulateAsync(responseDescriptor, scope, cancellationToken).ConfigureAwait(false);
+        Guid? persistedTenantId = scope is IMultiTenant persisted ? persisted.TenantId : null;
 
         return TypedResults.Created(
             $"/admin/oidc/scopes/{responseDescriptor.Name}",
-            ToScopeResponse(responseDescriptor));
+            ToScopeResponse(responseDescriptor, persistedTenantId));
     }
 
     private static async Task<Results<Ok<AdminOidcScopeResponse>, ProblemHttpResult>> UpdateScopeAsync(
@@ -512,8 +531,9 @@ internal static class AdminOidcEndpoints
 
         var responseDescriptor = new OpenIddictScopeDescriptor();
         await scopeManager.PopulateAsync(responseDescriptor, scope, cancellationToken).ConfigureAwait(false);
+        Guid? tenantId = scope is IMultiTenant granitScope ? granitScope.TenantId : null;
 
-        return TypedResults.Ok(ToScopeResponse(responseDescriptor));
+        return TypedResults.Ok(ToScopeResponse(responseDescriptor, tenantId));
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> DeleteScopeAsync(
@@ -661,12 +681,14 @@ internal static class AdminOidcEndpoints
 
     // ──── Helpers ────
 
-    private static AdminOidcScopeResponse ToScopeResponse(OpenIddictScopeDescriptor descriptor) =>
+    private static AdminOidcScopeResponse ToScopeResponse(
+        OpenIddictScopeDescriptor descriptor, Guid? tenantId) =>
         new(
             descriptor.Name,
             descriptor.DisplayName,
             descriptor.Description,
-            [.. descriptor.Resources]);
+            [.. descriptor.Resources],
+            tenantId);
 
     private static AdminOidcApplicationResponse ToResponse(
         OpenIddictApplicationDescriptor descriptor, Guid? tenantId) =>
