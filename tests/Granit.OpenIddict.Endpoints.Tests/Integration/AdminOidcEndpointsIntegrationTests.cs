@@ -105,6 +105,38 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task CreateApplication_DuplicateClientId_Returns409()
+    {
+        _server.ApplicationManager.FindByClientIdAsync("dup-client", Arg.Any<CancellationToken>())
+            .Returns(new GranitOpenIddictApplication());
+
+        AdminOidcCreateApplicationRequest request = new("dup-client", "Dup", null, "web");
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PostAsJsonAsync("/admin/oidc/applications", request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        await _server.ApplicationManager.DidNotReceive().CreateAsync(
+            Arg.Any<OpenIddictApplicationDescriptor>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CreateScope_DuplicateName_Returns409()
+    {
+        _server.ScopeManager.FindByNameAsync("dup_scope", Arg.Any<CancellationToken>())
+            .Returns(new GranitOpenIddictScope());
+
+        AdminOidcCreateScopeRequest request = new("dup_scope", "Dup", Resources: []);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PostAsJsonAsync("/admin/oidc/scopes", request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        await _server.ScopeManager.DidNotReceive().CreateAsync(
+            Arg.Any<OpenIddictScopeDescriptor>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task CreateApplication_ReturnsCreated()
     {
         GranitOpenIddictApplication createdApp = new() { TenantId = null };
