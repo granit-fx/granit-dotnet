@@ -65,7 +65,9 @@ internal sealed partial class DPoPValidationMiddleware(
         }
 
         // Build the request URI for htu validation
-        string requestUri = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}";
+        // Include PathBase so htu matches behind a path-prefixed ingress (RFC 9449 §4.3): the
+        // client builds htu from the externally-visible URL, which carries the prefix.
+        string requestUri = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{context.Request.Path}";
         string httpMethod = context.Request.Method;
 
         // Access token the proof is presented with — bound via the ath claim (RFC 9449 §4.3).

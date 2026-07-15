@@ -102,11 +102,10 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
                 options.RequirePushedAuthorizationRequests();
             }
 
-            // JAR enforcement (RFC 9101): reject unsigned authorization requests.
-            // Mandatory for FAPI 2.0 (set automatically via WithFapi2Profile).
-            // OpenIddict 7.x does not expose a dedicated builder method; enforced via a
-            // custom ValidateAuthorizationRequest event handler that rejects requests
-            // missing a signed 'request' JWT parameter.
+            // JAR enforcement (RFC 9101): reject unsigned authorization requests. This is a
+            // FAPI 1 Advanced requirement and an OPT-IN here (RequireJar) — NOT part of FAPI 2.0,
+            // which mandates PAR (RequirePar) instead. OpenIddict 7.x exposes no dedicated builder
+            // method, so it is enforced via a custom ValidateAuthorizationRequest event handler.
             if (granitOptions.RequireJar)
             {
                 options.AddEventHandler(
@@ -114,8 +113,11 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
                         .CreateBuilder<ValidateAuthorizationRequestContext>()
                         .UseInlineHandler((ValidateAuthorizationRequestContext ctx) =>
                         {
-                            // The 'request' parameter carries the JAR object (RFC 9101 §4).
-                            if (string.IsNullOrEmpty((string?)ctx.Request["request"]))
+                            // The request object arrives inline via 'request' (RFC 9101 §4) or by
+                            // reference via 'request_uri' — including a PAR-pushed request. Accept
+                            // either so RequireJar does not break a PAR flow.
+                            if (string.IsNullOrEmpty((string?)ctx.Request["request"])
+                                && string.IsNullOrEmpty((string?)ctx.Request["request_uri"]))
                             {
                                 ctx.Reject(
                                     error: OpenIddictConstants.Errors.InvalidRequest,

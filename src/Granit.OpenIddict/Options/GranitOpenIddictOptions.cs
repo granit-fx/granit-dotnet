@@ -98,7 +98,8 @@ public sealed class GranitOpenIddictOptions
     /// requests using a registered key pair.
     /// </para>
     /// <para>
-    /// Required for FAPI 2.0 Security Profile compliance.
+    /// A FAPI 1 Advanced requirement — NOT part of FAPI 2.0, which mandates PAR
+    /// (<see cref="RequirePar"/>) instead. Opt in explicitly; <c>WithFapi2Profile</c> does not set it.
     /// Default: <see langword="false"/> (JAR available but not enforced).
     /// </para>
     /// </remarks>
@@ -175,7 +176,6 @@ public static class GranitOpenIddictOptionsExtensions
     {
         options.EnableFapi2Profile = true;
         options.RequirePar = true;
-        options.RequireJar = true;
         options.UseReferenceTokens = true;
         if (options.SenderConstraining == SenderConstrainingMode.None)
         {

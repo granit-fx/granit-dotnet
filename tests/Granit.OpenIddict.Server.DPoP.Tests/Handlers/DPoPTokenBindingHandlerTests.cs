@@ -34,7 +34,7 @@ public sealed class DPoPTokenBindingHandlerTests
     }
 
     [Fact]
-    public async Task NoDPoPHeader_WithFapi2_RejectsAsInvalidRequest()
+    public async Task NoDPoPHeader_WithFapi2_RejectsAsInvalidDPoPProof()
     {
         IDPoPProofValidator validator = Substitute.For<IDPoPProofValidator>();
         DPoPTokenBindingHandler handler = Build(validator, fapi2: true);
@@ -43,7 +43,7 @@ public sealed class DPoPTokenBindingHandlerTests
         await handler.HandleAsync(context);
 
         context.IsRejected.ShouldBeTrue();
-        context.Error.ShouldBe(OpenIddictConstants.Errors.InvalidRequest);
+        context.Error.ShouldBe("invalid_dpop_proof");
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public sealed class DPoPTokenBindingHandlerTests
     }
 
     [Fact]
-    public async Task InvalidProof_RejectsAsInvalidRequest()
+    public async Task InvalidProof_RejectsAsInvalidDPoPProof()
     {
         IDPoPProofValidator validator = Substitute.For<IDPoPProofValidator>();
         validator.ValidateAsync(
@@ -80,8 +80,48 @@ public sealed class DPoPTokenBindingHandlerTests
         await handler.HandleAsync(context);
 
         context.IsRejected.ShouldBeTrue();
-        context.Error.ShouldBe(OpenIddictConstants.Errors.InvalidRequest);
+        context.Error.ShouldBe("invalid_dpop_proof");
         context.Principal!.FindFirst(OpenIddictConstants.Claims.Confirmation).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ValidProof_WithExistingCnf_ReplacesNotAppends()
+    {
+        IDPoPProofValidator validator = Substitute.For<IDPoPProofValidator>();
+        validator.ValidateAsync(
+                Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(DPoPValidationResult_Success(Thumbprint));
+
+        DPoPTokenBindingHandler handler = Build(validator, fapi2: true);
+        ProcessSignInContext context = BuildContext(dpopHeader: "fake.proof.jwt");
+        // Simulate a refresh_token grant: the rebuilt principal already carries a stale cnf.
+        context.Principal!.Identities.First().AddClaim(
+            new Claim(OpenIddictConstants.Claims.Confirmation, """{"jkt":"stale-thumbprint"}""", "JSON"));
+
+        await handler.HandleAsync(context);
+
+        var cnfClaims = context.Principal!.FindAll(OpenIddictConstants.Claims.Confirmation).ToList();
+        cnfClaims.Count.ShouldBe(1);
+        using var doc = JsonDocument.Parse(cnfClaims[0].Value);
+        doc.RootElement.GetProperty("jkt").GetString().ShouldBe(Thumbprint);
+    }
+
+    [Fact]
+    public async Task ValidProof_BuildsHtu_IncludingPathBase()
+    {
+        IDPoPProofValidator validator = Substitute.For<IDPoPProofValidator>();
+        validator.ValidateAsync(
+                Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(DPoPValidationResult_Success(Thumbprint));
+
+        DPoPTokenBindingHandler handler = Build(validator, fapi2: true);
+        ProcessSignInContext context = BuildContext(dpopHeader: "fake.proof.jwt", pathBase: "/auth");
+
+        await handler.HandleAsync(context);
+
+        await validator.Received(1).ValidateAsync(
+            "fake.proof.jwt", "POST", "https://auth.example.com/auth/connect/token",
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -112,12 +152,14 @@ public sealed class DPoPTokenBindingHandlerTests
 
     private static ProcessSignInContext BuildContext(
         string? dpopHeader,
-        OpenIddictServerEndpointType endpointType = OpenIddictServerEndpointType.Token)
+        OpenIddictServerEndpointType endpointType = OpenIddictServerEndpointType.Token,
+        string pathBase = "")
     {
         DefaultHttpContext httpContext = new();
         httpContext.Request.Method = "POST";
         httpContext.Request.Scheme = "https";
         httpContext.Request.Host = new HostString("auth.example.com");
+        httpContext.Request.PathBase = pathBase;
         httpContext.Request.Path = "/connect/token";
         if (dpopHeader is not null)
         {
