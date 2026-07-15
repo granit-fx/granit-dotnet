@@ -45,7 +45,7 @@ public sealed class SensitiveDataEncryptionConventionTests
     /// <para>
     /// <c>[BACKLOG]</c> — used as an equality lookup key (login, dedup, push routing).
     /// AES-CBC with random IV makes equality lookups impossible. Migrating these requires
-    /// the <see cref="Granit.Identity.Federated.Internal.IUserLookupHasher"/> pattern: a
+    /// the <see cref="Granit.Identity.IUserLookupHasher"/> pattern: a
     /// parallel deterministic-hash column for the index, with the original value
     /// <c>[Encrypted]</c>. Tracked per module — entries are removed as each module ships
     /// the lookup-hash refactor.

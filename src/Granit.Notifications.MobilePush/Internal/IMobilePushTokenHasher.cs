@@ -12,7 +12,7 @@ namespace Granit.Notifications.MobilePush.Internal;
 /// the encrypted column are impossible — a parallel deterministic-hash column
 /// (<c>DeviceTokenHash = HMAC-SHA256(pepper, deviceToken)</c>) is indexed for
 /// the upsert / remove paths instead. Same pattern as
-/// <c>Granit.Identity.Federated.Internal.IUserLookupHasher</c>.
+/// <c>Granit.Identity.IUserLookupHasher</c>.
 /// </para>
 /// <para>
 /// The pepper MUST be distinct from the encryption key so the two can be

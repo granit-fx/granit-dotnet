@@ -3,12 +3,13 @@ using Granit.Entities.Extensions;
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Entities;
 using Granit.Identity.Federated.Exports;
-using Granit.Identity.Federated.Internal;
 using Granit.Identity.Federated.Options;
 using Granit.Identity.Federated.Queries;
 using Granit.Identity.Federated.RateLimiting;
+using Granit.Identity.Options;
 using Granit.Modularity;
 using Granit.QueryEngine.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -47,16 +48,45 @@ public sealed class GranitIdentityFederatedModule : GranitModule
             .ValidateOnStart();
         context.Services.TryAddSingleton<IUserSyncFailureRateLimiter, InMemoryUserSyncFailureRateLimiter>();
 
-        // Lookup hasher for email-based admin search over encrypted PII.
-        // Startup-validated via UserCacheHasherOptions.EmailLookupPepper.
-        context.Services.AddOptions<UserCacheHasherOptions>()
-            .BindConfiguration(UserCacheHasherOptions.SectionName)
-            .Validate(o => !string.IsNullOrWhiteSpace(o.EmailLookupPepper),
-                $"{UserCacheHasherOptions.SectionName}:EmailLookupPepper is required when " +
-                "Granit.Identity.Federated is loaded. Generate 32 bytes of entropy " +
-                "(openssl rand -hex 32) and store it in Vault or an equivalent secret store — " +
-                "NEVER bake it into source-controlled appsettings.json.")
+        // The lookup hasher and its Identity:LookupHasher pepper are now owned by
+        // GranitIdentityAbstractionsModule — one hasher shared by the local User store and
+        // the federated cache so a given email produces the same EmailHash on both sides.
+        // Reconcile the legacy Federated-specific pepper here (Vague 2b):
+        //   (a) adopt a legacy pepper when the unified key is unset, so existing federated
+        //       deployments keep resolving their persisted EmailHash digests;
+        //   (b) fail fast if BOTH keys are set to DIFFERENT values — that would silently
+        //       break federated lookups, and a re-hash migration is required first.
+        const string legacyPepperKey = "Identity:Federated:UserCacheHasher:EmailLookupPepper";
+        const string unifiedPepperKey = UserLookupHasherOptions.SectionName + ":Pepper";
+
+        context.Services.AddOptions<UserLookupHasherOptions>()
+            .PostConfigure<IConfiguration>((opts, config) =>
+            {
+                string? legacy = config[legacyPepperKey];
+                if (string.IsNullOrWhiteSpace(opts.Pepper) && !string.IsNullOrWhiteSpace(legacy))
+                {
+                    opts.Pepper = legacy;
+                }
+            })
+            .Validate<IConfiguration>(
+                (_, config) =>
+                {
+                    string? legacy = config[legacyPepperKey];
+                    string? unified = config[unifiedPepperKey];
+                    return string.IsNullOrWhiteSpace(legacy)
+                        || string.IsNullOrWhiteSpace(unified)
+                        || string.Equals(legacy, unified, StringComparison.Ordinal);
+                },
+                $"'{legacyPepperKey}' and '{unifiedPepperKey}' are set to different values. The " +
+                "federated user cache and the local user directory now share one lookup pepper. Keep " +
+                "only Identity:LookupHasher:Pepper, and its value MUST reproduce the persisted EmailHash " +
+                "digests. If the peppers genuinely differ, re-hash the federated EmailHash column under " +
+                "the unified pepper before removing the legacy key.")
+            .Validate(
+                opts => !string.IsNullOrWhiteSpace(opts.Pepper),
+                $"{unifiedPepperKey} is required when Granit.Identity.Federated is loaded. Generate 32 " +
+                "bytes of entropy (openssl rand -hex 32) and store it in Vault or an equivalent secret " +
+                "store — NEVER bake it into source-controlled appsettings.json.")
             .ValidateOnStart();
-        context.Services.TryAddSingleton<IUserLookupHasher, HmacUserLookupHasher>();
     }
 }

@@ -28823,7 +28823,7 @@
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
       "file": "src/Granit.Identity.EntityFrameworkCore/Extensions/IdentityEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 19,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitIdentityEntityFrameworkCore",
@@ -29620,7 +29620,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/GranitIdentityFederatedModule.cs",
-      "line": 23,
+      "line": 24,
       "members": [
         {
           "name": "ConfigureServices",
@@ -30028,22 +30028,6 @@
       ]
     },
     {
-      "name": "UserCacheHasherOptions",
-      "fqn": "Granit.Identity.Federated.Options.UserCacheHasherOptions",
-      "kind": "class",
-      "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/Options/UserCacheHasherOptions.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "EmailLookupPepper",
-          "kind": "property",
-          "signature": "string EmailLookupPepper",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "UserCacheOptions",
       "fqn": "Granit.Identity.Federated.Options.UserCacheOptions",
       "kind": "class",
@@ -30270,7 +30254,7 @@
       "kind": "class",
       "project": "Granit.Identity.Abstractions",
       "file": "src/Granit.Identity.Abstractions/GranitIdentityAbstractionsModule.cs",
-      "line": 18,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -30710,6 +30694,28 @@
           "kind": "method",
           "signature": "DeleteAsync(Guid userId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IUserLookupHasher",
+      "fqn": "Granit.Identity.IUserLookupHasher",
+      "kind": "interface",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IUserLookupHasher.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "ComputeEmailHash",
+          "kind": "method",
+          "signature": "ComputeEmailHash(string? email)",
+          "returnType": "string?"
+        },
+        {
+          "name": "ComputePhoneHash",
+          "kind": "method",
+          "signature": "ComputePhoneHash(string? phoneNumber)",
+          "returnType": "string?"
         }
       ]
     },
@@ -33407,8 +33413,8 @@
       "name": "UserLookupHasherOptions",
       "fqn": "Granit.Identity.Options.UserLookupHasherOptions",
       "kind": "class",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Options/UserLookupHasherOptions.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/Options/UserLookupHasherOptions.cs",
       "line": 9,
       "members": []
     },

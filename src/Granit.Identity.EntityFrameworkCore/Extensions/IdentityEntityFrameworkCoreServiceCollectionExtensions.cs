@@ -2,8 +2,6 @@ using Granit.DataLookup.EntityFrameworkCore.Sources;
 using Granit.DataLookup.Sources;
 using Granit.Identity.Domain;
 using Granit.Identity.EntityFrameworkCore.Internal;
-using Granit.Identity.Internal;
-using Granit.Identity.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Granit.QueryEngine;
@@ -48,13 +46,8 @@ public static class IdentityEntityFrameworkCoreServiceCollectionExtensions
         // IUserDirectoryQueryableSource directory contract above.
         services.AddScoped<IQueryableSource<User>, EfUserQueryableSource>();
 
-        // Lookup hasher backing User.EmailHash / User.PhoneNumberHash. Pepper
-        // validated at first resolution (HmacUserLookupHasher ctor) — fail-fast
-        // on missing configuration so production deployments cannot run with a
-        // known-zero key.
-        services.AddOptions<UserLookupHasherOptions>()
-            .BindConfiguration(UserLookupHasherOptions.SectionName);
-        services.TryAddSingleton<IUserLookupHasher, HmacUserLookupHasher>();
+        // The shared IUserLookupHasher (backing User.EmailHash / User.PhoneNumberHash)
+        // and its Identity:LookupHasher pepper are registered by GranitIdentityAbstractionsModule.
 
         // Save-time interceptor that recomputes the digests in lockstep with
         // the encrypted plaintext columns. Registered via IGranitAutoInterceptor

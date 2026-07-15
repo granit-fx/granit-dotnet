@@ -1,5 +1,4 @@
 using Granit.Identity.Domain;
-using Granit.Identity.Internal;
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
