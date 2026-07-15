@@ -347,7 +347,5 @@ public sealed class ImportEndToEndTests : IDisposable
             _files.Remove(blobReference.Value);
             return Task.CompletedTask;
         }
-
-        public Task<BlobReference> SaveAsync(string fileName, string contentType, Func<Stream, CancellationToken, Task> writeAsync, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     }
 }
