@@ -4,12 +4,15 @@ namespace Granit.Imaging;
 /// Entry point for image processing. Injected via dependency injection.
 /// </summary>
 /// <remarks>
-/// Use <see cref="Load(Stream)"/> or <see cref="Load(ReadOnlyMemory{byte})"/> to create
-/// an <see cref="IImagePipeline"/> that provides a fluent API for image transformations.
+/// Use <see cref="LoadAsync(Stream, CancellationToken)"/> or
+/// <see cref="Load(ReadOnlyMemory{byte})"/> to create an <see cref="IImagePipeline"/> that
+/// provides a fluent API for image transformations. Stream loading is asynchronous because
+/// reading the source is I/O; the in-memory overloads stay synchronous — decoding is pure
+/// CPU work and a <c>Task</c> wrapper would be dishonest.
 /// <para>
 /// The returned pipeline must be disposed after use to release native resources:
 /// <code>
-/// await using IImagePipeline pipeline = imageProcessor.Load(stream);
+/// await using IImagePipeline pipeline = await imageProcessor.LoadAsync(stream);
 /// ImageResult result = await pipeline
 ///     .Resize(800, 600, ResizeMode.Crop)
 ///     .Compress(quality: 75)
@@ -21,10 +24,12 @@ public interface IImageProcessor
 {
     /// <summary>
     /// Loads an image from a <see cref="Stream"/> and returns a processing pipeline.
+    /// Non-seekable streams are buffered asynchronously before decoding.
     /// </summary>
     /// <param name="source">The stream containing the image data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A fluent pipeline for chaining image operations.</returns>
-    IImagePipeline Load(Stream source);
+    Task<IImagePipeline> LoadAsync(Stream source, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Loads an image from a byte buffer and returns a processing pipeline.

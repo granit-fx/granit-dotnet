@@ -4,7 +4,8 @@ namespace Granit.Imaging;
 /// Fluent pipeline for chaining image transformation operations.
 /// </summary>
 /// <remarks>
-/// Created by <see cref="IImageProcessor.Load(Stream)"/>. Each transformation method
+/// Created by <see cref="IImageProcessor.LoadAsync(Stream, CancellationToken)"/> or
+/// <see cref="IImageProcessor.Load(ReadOnlyMemory{byte})"/>. Each transformation method
 /// mutates the underlying image and returns <see langword="this"/> for chaining.
 /// Call a terminal method (<see cref="ToResultAsync"/> or <see cref="SaveToStreamAsync"/>)
 /// to produce the output.
@@ -70,6 +71,7 @@ public interface IImagePipeline : IAsyncDisposable
     /// <param name="position">Placement on the target image (default: <see cref="WatermarkPosition.BottomRight"/>).</param>
     /// <param name="opacity">Opacity from 0.0 (invisible) to 1.0 (opaque). Default: 0.5.</param>
     /// <returns>This pipeline for chaining.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="opacity"/> is outside the [0, 1] range.</exception>
     IImagePipeline Watermark(
         ReadOnlyMemory<byte> watermark,
         WatermarkPosition position = WatermarkPosition.BottomRight,
@@ -82,6 +84,7 @@ public interface IImagePipeline : IAsyncDisposable
     /// <param name="position">Placement on the target image (default: <see cref="WatermarkPosition.BottomRight"/>).</param>
     /// <param name="opacity">Opacity from 0.0 (invisible) to 1.0 (opaque). Default: 0.5.</param>
     /// <returns>This pipeline for chaining.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="opacity"/> is outside the [0, 1] range.</exception>
     IImagePipeline Watermark(
         Stream watermark,
         WatermarkPosition position = WatermarkPosition.BottomRight,

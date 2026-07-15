@@ -17,19 +17,19 @@ public sealed class MagickNetImagePipelineTests
         return new ImagingMetrics(factory);
     }
 
-    private static MagickNetImagePipeline CreatePipeline()
+    private static async Task<MagickNetImagePipeline> CreatePipelineAsync()
     {
         Stream stream = typeof(MagickNetImagePipelineTests).Assembly
             .GetManifestResourceStream("Granit.Imaging.MagickNet.Tests.TestAssets.test-image.png")!;
         MagickNetImageProcessor processor = new(CreateTestMetrics(), Microsoft.Extensions.Options.Options.Create(new ImagingMagickNetOptions()));
-        return (MagickNetImagePipeline)processor.Load(stream);
+        return (MagickNetImagePipeline)await processor.LoadAsync(stream);
     }
 
     [Fact]
     public async Task Resize_Max_PreservesAspectRatioWithinBounds()
     {
         // Arrange
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         // Act — 100x100 image resized to Max(50, 80)
         ImageResult result = await pipeline
@@ -45,7 +45,7 @@ public sealed class MagickNetImagePipelineTests
     public async Task Resize_Crop_FillsExactDimensions()
     {
         // Arrange
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         // Act — 100x100 image crop-resized to 60x40
         ImageResult result = await pipeline
@@ -61,7 +61,7 @@ public sealed class MagickNetImagePipelineTests
     public async Task Resize_Pad_PadsToExactDimensions()
     {
         // Arrange
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         // Act — 100x100 image padded to 150x200
         ImageResult result = await pipeline
@@ -77,7 +77,7 @@ public sealed class MagickNetImagePipelineTests
     public async Task Resize_Stretch_DistortsToExactDimensions()
     {
         // Arrange
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         // Act — 100x100 image stretched to 60x30
         ImageResult result = await pipeline
@@ -93,7 +93,7 @@ public sealed class MagickNetImagePipelineTests
     public async Task Resize_Min_CoversTargetArea()
     {
         // Arrange
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         // Act — 100x100 square, min 50x80 → 80x80 (fills 80 height, width follows)
         ImageResult result = await pipeline
@@ -109,7 +109,7 @@ public sealed class MagickNetImagePipelineTests
     public async Task Crop_ReturnsCorrectDimensions()
     {
         // Arrange
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         // Act
         ImageResult result = await pipeline
@@ -125,7 +125,7 @@ public sealed class MagickNetImagePipelineTests
     public async Task ConvertTo_ChangesOutputFormat()
     {
         // Arrange
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         // Act
         ImageResult result = await pipeline
@@ -141,7 +141,7 @@ public sealed class MagickNetImagePipelineTests
     public async Task ConvertTo_WebP_ProducesValidOutput()
     {
         // Arrange
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         // Act
         ImageResult result = await pipeline
@@ -157,8 +157,8 @@ public sealed class MagickNetImagePipelineTests
     public async Task Compress_AffectsOutputSize()
     {
         // Arrange
-        await using MagickNetImagePipeline highQuality = CreatePipeline();
-        await using MagickNetImagePipeline lowQuality = CreatePipeline();
+        await using MagickNetImagePipeline highQuality = await CreatePipelineAsync();
+        await using MagickNetImagePipeline lowQuality = await CreatePipelineAsync();
 
         // Act
         ImageResult highResult = await highQuality
@@ -179,7 +179,7 @@ public sealed class MagickNetImagePipelineTests
     public async Task StripMetadata_RemovesExifData()
     {
         // Arrange
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         // Act
         ImageResult result = await pipeline
@@ -195,7 +195,7 @@ public sealed class MagickNetImagePipelineTests
     public async Task SaveToStreamAsync_WritesToStream()
     {
         // Arrange
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
         await using MemoryStream output = new();
 
         // Act
@@ -209,7 +209,7 @@ public sealed class MagickNetImagePipelineTests
     public async Task FullPipeline_ResizeCompressConvertStripMetadata()
     {
         // Arrange
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         // Act
         ImageResult result = await pipeline
@@ -230,7 +230,7 @@ public sealed class MagickNetImagePipelineTests
     public async Task ToResultAsync_PreservesSourceFormatWhenNoConversion()
     {
         // Arrange
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         // Act
         ImageResult result = await pipeline.ToResultAsync(TestContext.Current.CancellationToken);
@@ -243,7 +243,7 @@ public sealed class MagickNetImagePipelineTests
     public async Task DisposeAsync_ReleasesResources()
     {
         // Arrange
-        MagickNetImagePipeline pipeline = CreatePipeline();
+        MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         // Act
         await pipeline.DisposeAsync();
@@ -259,7 +259,7 @@ public sealed class MagickNetImagePipelineTests
         // Arrange
         using CancellationTokenSource cts = new();
         cts.Cancel();
-        MagickNetImagePipeline pipeline = CreatePipeline();
+        MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         // Act & Assert
         Func<Task> act = () => pipeline.ToResultAsync(cts.Token);

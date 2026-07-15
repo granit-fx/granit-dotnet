@@ -33635,7 +33635,7 @@
       "kind": "class",
       "project": "Granit.Imaging.AI",
       "file": "src/Granit.Imaging.AI/Extensions/ImagingAIHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitImagingAI",
@@ -33824,7 +33824,7 @@
       "kind": "interface",
       "project": "Granit.Imaging",
       "file": "src/Granit.Imaging/IImagePipeline.cs",
-      "line": 23,
+      "line": 24,
       "members": [
         {
           "name": "Resize",
@@ -33888,13 +33888,13 @@
       "kind": "interface",
       "project": "Granit.Imaging",
       "file": "src/Granit.Imaging/IImageProcessor.cs",
-      "line": 20,
+      "line": 23,
       "members": [
         {
-          "name": "Load",
+          "name": "LoadAsync",
           "kind": "method",
-          "signature": "Load(Stream source)",
-          "returnType": "IImagePipeline"
+          "signature": "LoadAsync(Stream source, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IImagePipeline>"
         },
         {
           "name": "Load",

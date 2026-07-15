@@ -114,6 +114,8 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
         WatermarkPosition position = WatermarkPosition.BottomRight,
         float opacity = 0.5f)
     {
+        ValidateOpacity(opacity);
+
         using MagickImage overlay = new(watermark.Span);
         ApplyWatermark(overlay, position, opacity);
         return this;
@@ -125,9 +127,17 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
         WatermarkPosition position = WatermarkPosition.BottomRight,
         float opacity = 0.5f)
     {
+        ValidateOpacity(opacity);
+
         using MagickImage overlay = new(watermark);
         ApplyWatermark(overlay, position, opacity);
         return this;
+    }
+
+    private static void ValidateOpacity(float opacity)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(opacity);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(opacity, 1f);
     }
 
     /// <inheritdoc/>
@@ -138,25 +148,25 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
     }
 
     /// <inheritdoc/>
-    public async Task<ImageResult> ToResultAsync(CancellationToken cancellationToken = default)
+    public Task<ImageResult> ToResultAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         ApplyOutputSettings();
 
         ImageFormat outputFormat = _targetFormat ?? SourceFormat;
-        await using MemoryStream ms = new();
-        await _image.WriteAsync(ms, MagickFormatMapper.ToMagickFormat(outputFormat), cancellationToken).ConfigureAwait(false);
+
+        // ToByteArray encodes straight from the native blob into a single managed array —
+        // no intermediate MemoryStream + ToArray() double copy. Encoding is CPU-bound.
+        byte[] content = _image.ToByteArray(MagickFormatMapper.ToMagickFormat(outputFormat));
 
         RecordMetrics(outputFormat);
 
-        ImageResult result = new(
-            ms.ToArray(),
+        return Task.FromResult(new ImageResult(
+            content,
             outputFormat,
             (int)_image.Width,
-            (int)_image.Height);
-
-        return result;
+            (int)_image.Height));
     }
 
     /// <inheritdoc/>

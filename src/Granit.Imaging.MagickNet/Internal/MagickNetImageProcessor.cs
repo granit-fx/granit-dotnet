@@ -15,25 +15,31 @@ internal sealed class MagickNetImageProcessor(
     IOptions<ImagingMagickNetOptions> options) : IImageProcessor
 {
     /// <inheritdoc/>
-    public IImagePipeline Load(Stream source)
+    public async Task<IImagePipeline> LoadAsync(Stream source, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(source);
+
         if (!source.CanSeek)
         {
-            using MemoryStream buffer = new();
-            source.CopyTo(buffer);
-            buffer.Position = 0;
+            MemoryStream buffer = new();
+            await using (buffer.ConfigureAwait(false))
+            {
+                await source.CopyToAsync(buffer, cancellationToken).ConfigureAwait(false);
+                buffer.Position = 0;
 
-            ValidateInputSize(buffer.Length);
-            ValidateFormat(buffer);
+                ValidateInputSize(buffer.Length);
+                ValidateFormat(buffer);
 
-            MagickImage bufferedImage = new(buffer);
-            return new MagickNetImagePipeline(bufferedImage, metrics);
+                MagickImage bufferedImage = new(buffer);
+                return new MagickNetImagePipeline(bufferedImage, metrics);
+            }
         }
 
         ValidateInputSize(source.Length);
-        ValidateFormat(source);
+        await ValidateFormatAsync(source, cancellationToken).ConfigureAwait(false);
 
-        MagickImage image = new(source);
+        MagickImage image = new();
+        await image.ReadAsync(source, cancellationToken).ConfigureAwait(false);
         return new MagickNetImagePipeline(image, metrics);
     }
 
@@ -87,12 +93,29 @@ internal sealed class MagickNetImageProcessor(
 
     private static void ValidateFormat(Stream source)
     {
+        // ReadAtLeast: a single Read may legally return fewer bytes than requested even
+        // mid-stream, which would reject a valid image on a short first chunk.
         Span<byte> header = stackalloc byte[ImageFormatDetector.RequiredHeaderLength];
         long position = source.Position;
-        int bytesRead = source.Read(header);
+        int bytesRead = source.ReadAtLeast(header, ImageFormatDetector.RequiredHeaderLength, throwOnEndOfStream: false);
         source.Position = position;
 
         if (!ImageFormatDetector.IsSafeRasterFormat(header[..bytesRead]))
+        {
+            throw new UnsupportedImageFormatException("unknown");
+        }
+    }
+
+    private static async Task ValidateFormatAsync(Stream source, CancellationToken cancellationToken)
+    {
+        byte[] header = new byte[ImageFormatDetector.RequiredHeaderLength];
+        long position = source.Position;
+        int bytesRead = await source
+            .ReadAtLeastAsync(header, ImageFormatDetector.RequiredHeaderLength, throwOnEndOfStream: false, cancellationToken)
+            .ConfigureAwait(false);
+        source.Position = position;
+
+        if (!ImageFormatDetector.IsSafeRasterFormat(header.AsSpan(0, bytesRead)))
         {
             throw new UnsupportedImageFormatException("unknown");
         }

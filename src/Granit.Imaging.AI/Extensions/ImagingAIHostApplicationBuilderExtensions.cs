@@ -6,6 +6,7 @@ using Granit.Imaging.AI.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Imaging.AI.Extensions;
 
@@ -31,7 +32,11 @@ public static class ImagingAIHostApplicationBuilderExtensions
 
         builder.Services
             .AddOptions<ImagingAIOptions>()
-            .BindConfiguration(ImagingAIOptions.SectionName);
+            .BindConfiguration(ImagingAIOptions.SectionName)
+            .ValidateOnStart();
+
+        builder.Services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IValidateOptions<ImagingAIOptions>, ImagingAIOptionsValidator>());
 
         builder.Services.TryAddSingleton<ImagingAIMetrics>();
         // Scoped because LlmImageAnalyzer depends on IAIChatClientFactory (scoped).

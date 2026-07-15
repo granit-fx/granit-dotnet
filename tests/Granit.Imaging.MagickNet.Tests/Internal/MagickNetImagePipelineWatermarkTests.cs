@@ -18,12 +18,12 @@ public sealed class MagickNetImagePipelineWatermarkTests
         return new ImagingMetrics(factory);
     }
 
-    private static MagickNetImagePipeline CreatePipeline()
+    private static async Task<MagickNetImagePipeline> CreatePipelineAsync()
     {
         Stream stream = typeof(MagickNetImagePipelineWatermarkTests).Assembly
             .GetManifestResourceStream("Granit.Imaging.MagickNet.Tests.TestAssets.test-image.png")!;
         MagickNetImageProcessor processor = new(CreateTestMetrics(), Microsoft.Extensions.Options.Options.Create(new ImagingMagickNetOptions()));
-        return (MagickNetImagePipeline)processor.Load(stream);
+        return (MagickNetImagePipeline)await processor.LoadAsync(stream);
     }
 
     private static ReadOnlyMemory<byte> CreateWatermarkBytes()
@@ -51,7 +51,7 @@ public sealed class MagickNetImagePipelineWatermarkTests
     [InlineData(WatermarkPosition.BottomRight)]
     public async Task Watermark_AllPositions_ProduceValidOutput(WatermarkPosition position)
     {
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
         ReadOnlyMemory<byte> watermark = CreateWatermarkBytes();
 
         ImageResult result = await pipeline
@@ -72,7 +72,7 @@ public sealed class MagickNetImagePipelineWatermarkTests
     [InlineData(1.0f)]
     public async Task Watermark_DifferentOpacities_ProduceValidOutput(float opacity)
     {
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
         ReadOnlyMemory<byte> watermark = CreateWatermarkBytes();
 
         ImageResult result = await pipeline
@@ -82,12 +82,27 @@ public sealed class MagickNetImagePipelineWatermarkTests
         result.Content.Length.ShouldBeGreaterThan(0);
     }
 
+    [Theory]
+    [InlineData(-0.1f)]
+    [InlineData(1.1f)]
+    public async Task Watermark_OpacityOutsideUnitRange_Throws(float opacity)
+    {
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
+        ReadOnlyMemory<byte> watermark = CreateWatermarkBytes();
+
+        Should.Throw<ArgumentOutOfRangeException>(() =>
+            pipeline.Watermark(watermark, WatermarkPosition.Center, opacity));
+        await using MemoryStream watermarkStream = CreateWatermarkStream();
+        Should.Throw<ArgumentOutOfRangeException>(() =>
+            pipeline.Watermark(watermarkStream, WatermarkPosition.Center, opacity));
+    }
+
     // ── Stream overload ─────────────────────────────────────────────────────
 
     [Fact]
     public async Task Watermark_FromStream_ProducesValidOutput()
     {
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
         await using MemoryStream watermarkStream = CreateWatermarkStream();
 
         ImageResult result = await pipeline
@@ -102,7 +117,7 @@ public sealed class MagickNetImagePipelineWatermarkTests
     [Fact]
     public async Task Watermark_DoesNotChangeDimensions()
     {
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
         ReadOnlyMemory<byte> watermark = CreateWatermarkBytes();
 
         ImageResult result = await pipeline
@@ -118,7 +133,7 @@ public sealed class MagickNetImagePipelineWatermarkTests
     [Fact]
     public async Task Watermark_AfterResize_WorksCorrectly()
     {
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
         ReadOnlyMemory<byte> watermark = CreateWatermarkBytes();
 
         ImageResult result = await pipeline

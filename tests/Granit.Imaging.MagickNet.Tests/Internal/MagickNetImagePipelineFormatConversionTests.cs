@@ -17,12 +17,12 @@ public sealed class MagickNetImagePipelineFormatConversionTests
         return new ImagingMetrics(factory);
     }
 
-    private static MagickNetImagePipeline CreatePipeline()
+    private static async Task<MagickNetImagePipeline> CreatePipelineAsync()
     {
         Stream stream = typeof(MagickNetImagePipelineFormatConversionTests).Assembly
             .GetManifestResourceStream("Granit.Imaging.MagickNet.Tests.TestAssets.test-image.png")!;
         MagickNetImageProcessor processor = new(CreateTestMetrics(), Microsoft.Extensions.Options.Options.Create(new ImagingMagickNetOptions()));
-        return (MagickNetImagePipeline)processor.Load(stream);
+        return (MagickNetImagePipeline)await processor.LoadAsync(stream);
     }
 
     [Theory]
@@ -34,7 +34,7 @@ public sealed class MagickNetImagePipelineFormatConversionTests
     [InlineData(ImageFormat.Tiff)]
     public async Task ConvertTo_AllFormats_ProducesValidOutput(ImageFormat format)
     {
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         ImageResult result = await pipeline
             .ConvertTo(format)
@@ -49,7 +49,7 @@ public sealed class MagickNetImagePipelineFormatConversionTests
     [Fact]
     public async Task ConvertTo_Jpeg_StripsPngTransparency()
     {
-        await using MagickNetImagePipeline pipeline = CreatePipeline();
+        await using MagickNetImagePipeline pipeline = await CreatePipelineAsync();
 
         ImageResult result = await pipeline
             .ConvertTo(ImageFormat.Jpeg)
@@ -64,8 +64,8 @@ public sealed class MagickNetImagePipelineFormatConversionTests
     public async Task ConvertTo_Jpeg_WithCompression_ProducesSmallerFile()
     {
         // JPEG compression is more predictable than WebP on tiny images
-        await using MagickNetImagePipeline highQuality = CreatePipeline();
-        await using MagickNetImagePipeline lowQuality = CreatePipeline();
+        await using MagickNetImagePipeline highQuality = await CreatePipelineAsync();
+        await using MagickNetImagePipeline lowQuality = await CreatePipelineAsync();
 
         ImageResult highResult = await highQuality
             .ConvertTo(ImageFormat.Jpeg)
@@ -85,7 +85,7 @@ public sealed class MagickNetImagePipelineFormatConversionTests
     {
         using CancellationTokenSource cts = new();
         cts.Cancel();
-        MagickNetImagePipeline pipeline = CreatePipeline();
+        MagickNetImagePipeline pipeline = await CreatePipelineAsync();
         await using MemoryStream output = new();
 
         Func<Task> act = () => pipeline.SaveToStreamAsync(output, cts.Token);
@@ -95,8 +95,8 @@ public sealed class MagickNetImagePipelineFormatConversionTests
     [Fact]
     public async Task SaveToStreamAsync_ProducesSameFormatAsToResult()
     {
-        await using MagickNetImagePipeline pipeline1 = CreatePipeline();
-        await using MagickNetImagePipeline pipeline2 = CreatePipeline();
+        await using MagickNetImagePipeline pipeline1 = await CreatePipelineAsync();
+        await using MagickNetImagePipeline pipeline2 = await CreatePipelineAsync();
 
         ImageResult resultA = await pipeline1
             .ConvertTo(ImageFormat.Jpeg)
