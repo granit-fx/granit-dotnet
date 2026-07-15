@@ -145,6 +145,51 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task CreateApplication_ExplicitTenantId_StampsTenantOnEntity()
+    {
+        // CreateAsync leaves TenantId null (OpenIddict entities are not audited, so the
+        // persistence interceptor never stamps them). In host context (NullTenantContext)
+        // the handler must apply the explicitly requested tenant via a follow-up UpdateAsync.
+        var targetTenant = Guid.Parse("33333333-3333-3333-3333-333333333333");
+        GranitOpenIddictApplication createdApp = new() { TenantId = null };
+
+        _server.ApplicationManager.CreateAsync(
+            Arg.Any<OpenIddictApplicationDescriptor>(),
+            Arg.Any<CancellationToken>())
+            .Returns(createdApp);
+#pragma warning disable CA2012 // NSubstitute mock setup intentionally doesn't await ValueTask
+        _server.ApplicationManager
+            .PopulateAsync(Arg.Any<OpenIddictApplicationDescriptor>(), createdApp, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictApplicationDescriptor d = ci.ArgAt<OpenIddictApplicationDescriptor>(0);
+                d.ClientId = "tenant-client";
+                d.DisplayName = "Tenant App";
+                d.ApplicationType = "web";
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+
+        AdminOidcCreateApplicationRequest request =
+            new("tenant-client", "Tenant App", null, "web", TenantId: targetTenant);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PostAsJsonAsync("/admin/oidc/applications", request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        // The handler stamped the resolved tenant on the created entity and persisted it.
+        createdApp.TenantId.ShouldBe(targetTenant);
+        await _server.ApplicationManager.Received(1)
+            .UpdateAsync(createdApp, Arg.Any<CancellationToken>());
+
+        AdminOidcApplicationResponse? result = await response.Content
+            .ReadFromJsonAsync<AdminOidcApplicationResponse>(TestContext.Current.CancellationToken);
+        result.ShouldNotBeNull();
+        result.TenantId.ShouldBe(targetTenant);
+    }
+
+    [Fact]
     public async Task CreateApplication_DeclaredDeviceKind_PersistsAndReturnsIt()
     {
         GranitOpenIddictApplication createdApp = new() { TenantId = null };

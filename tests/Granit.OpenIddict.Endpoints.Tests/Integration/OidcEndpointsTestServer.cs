@@ -1,4 +1,5 @@
 using FluentValidation;
+using Granit.MultiTenancy;
 using Granit.OpenIddict.Endpoints.Extensions;
 using Granit.OpenIddict.Endpoints.Options;
 using Granit.OpenIddict.Permissions;
@@ -110,6 +111,11 @@ internal sealed class OidcEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(scopeManager);
         builder.Services.AddSingleton(authorizationManager);
         builder.Services.AddSingleton(tokenManager);
+
+        // Multi-tenancy default: AddGranit<T>() registers NullTenantContext as ICurrentTenant in a
+        // real host. The minimal harness supplies it so tenant-aware admin handlers resolve (host
+        // context = no active tenant → applications created global).
+        builder.Services.AddSingleton<ICurrentTenant>(NullTenantContext.Instance);
 
         // Options
         builder.Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new OpenIddictEndpointsOptions()));

@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using Granit.Domain;
 using Granit.Entities;
 using Granit.Http.Idempotency;
+using Granit.MultiTenancy;
 using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Models;
@@ -47,6 +48,7 @@ internal static class AdminOidcEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcApplicationResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .RequireAuthorization(OpenIddictPermissions.Applications.Manage);
 
         apps.MapPut("/{clientId}", UpdateApplicationAsync)
@@ -197,11 +199,19 @@ internal static class AdminOidcEndpoints
         return TypedResults.Ok<IReadOnlyList<AdminOidcApplicationResponse>>(results);
     }
 
-    private static async Task<Created<AdminOidcApplicationResponse>> CreateApplicationAsync(
+    private static async Task<Results<Created<AdminOidcApplicationResponse>, ProblemHttpResult>> CreateApplicationAsync(
         AdminOidcCreateApplicationRequest request,
         [FromServices] IOpenIddictApplicationManager applicationManager,
+        [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
+        if (!TryResolveWriteTenant(request.TenantId, currentTenant, out Guid? tenantId))
+        {
+            return TypedResults.Problem(
+                detail: "A tenant-scoped administrator cannot assign an application to a different tenant.",
+                statusCode: StatusCodes.Status403Forbidden);
+        }
+
         var descriptor = new OpenIddictApplicationDescriptor
         {
             ClientId = request.ClientId,
@@ -245,13 +255,48 @@ internal static class AdminOidcEndpoints
 
         object app = await applicationManager.CreateAsync(descriptor, cancellationToken).ConfigureAwait(false);
 
+        // OpenIddict entities implement IMultiTenant but are not audited, so the persistence
+        // interceptor (which stamps only ICreationAuditedObject entities) never assigns their
+        // TenantId — stamp the resolved tenant explicitly. Tokens and authorizations stay global.
+        if (tenantId is not null && app is IMultiTenant granitApp && granitApp.TenantId != tenantId)
+        {
+            granitApp.TenantId = tenantId;
+            await applicationManager.UpdateAsync(app, cancellationToken).ConfigureAwait(false);
+        }
+
         var responseDescriptor = new OpenIddictApplicationDescriptor();
         await applicationManager.PopulateAsync(responseDescriptor, app, cancellationToken).ConfigureAwait(false);
-        Guid? tenantId = app is IMultiTenant granitApp ? granitApp.TenantId : null;
+        Guid? persistedTenantId = app is IMultiTenant persisted ? persisted.TenantId : null;
 
         return TypedResults.Created(
             $"/admin/oidc/applications/{request.ClientId}",
-            ToResponse(responseDescriptor, tenantId));
+            ToResponse(responseDescriptor, persistedTenantId));
+    }
+
+    /// <summary>
+    /// Resolves the owning tenant for a write. An explicit tenant wins in host context
+    /// (no active tenant); otherwise the caller's active tenant is used. A tenant-scoped
+    /// caller that names a <em>different</em> tenant is rejected (cross-tenant provisioning).
+    /// </summary>
+    /// <param name="explicitTenantId">The tenant named on the request, or <see langword="null"/>.</param>
+    /// <param name="currentTenant">The ambient tenant context.</param>
+    /// <param name="resolved">The tenant to stamp (<see langword="null"/> = global) when the call is allowed.</param>
+    /// <returns><see langword="false"/> when the resolution is a forbidden cross-tenant write.</returns>
+    internal static bool TryResolveWriteTenant(
+        Guid? explicitTenantId, ICurrentTenant currentTenant, out Guid? resolved)
+    {
+        Guid? activeTenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
+
+        if (explicitTenantId is not null
+            && activeTenantId is not null
+            && explicitTenantId != activeTenantId)
+        {
+            resolved = null;
+            return false;
+        }
+
+        resolved = explicitTenantId ?? activeTenantId;
+        return true;
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> DeleteApplicationAsync(

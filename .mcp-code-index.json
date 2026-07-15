@@ -42995,7 +42995,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcCreateApplicationRequest.cs",
-      "line": 21,
+      "line": 22,
       "members": []
     },
     {

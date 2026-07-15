@@ -17,6 +17,7 @@ namespace Granit.OpenIddict.Endpoints.Dtos;
 /// <param name="SigningKeyJwk">Public signing key as JWK JSON for <c>private_key_jwt</c> authentication (RFC 7523). Null for shared-secret clients.</param>
 /// <param name="ClientSide">Host/tenant policy enforced at sign-in. Null means no restriction.</param>
 /// <param name="DeviceKind">Device classification for the devices that authenticate through this client (e.g. <c>MobileApp</c>, <c>Tv</c>). Null or omitted means not declared (the session adapters fall back to a redirect-URI/grant heuristic).</param>
+/// <param name="TenantId">Owning tenant. Omit (or <see langword="null"/>) to create a global application, or to inherit the caller's active tenant when the admin API is invoked under a tenant scope. A host administrator (no active tenant) may set this explicitly to provision an application for a specific tenant; a tenant-scoped administrator may only target their own tenant (a mismatch is rejected with 403).</param>
 #pragma warning disable GRSEC003 // ClientSecret is a DTO parameter, not a stored secret
 public sealed record AdminOidcCreateApplicationRequest(
     string ClientId,
@@ -29,5 +30,6 @@ public sealed record AdminOidcCreateApplicationRequest(
     string? ConsentType = null,
     string? SigningKeyJwk = null,
     MultiTenancySides? ClientSide = null,
-    DeviceKind? DeviceKind = null);
+    DeviceKind? DeviceKind = null,
+    Guid? TenantId = null);
 #pragma warning restore GRSEC003
