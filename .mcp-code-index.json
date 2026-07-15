@@ -33762,6 +33762,12 @@
           "kind": "property",
           "signature": "string? WorkspaceName",
           "returnType": "string?"
+        },
+        {
+          "name": "MaxImageBytes",
+          "kind": "property",
+          "signature": "long MaxImageBytes",
+          "returnType": "long"
         }
       ]
     },

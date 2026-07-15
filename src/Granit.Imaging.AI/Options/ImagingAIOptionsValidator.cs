@@ -18,6 +18,12 @@ internal sealed class ImagingAIOptionsValidator : IValidateOptions<ImagingAIOpti
                 $"{nameof(options.TimeoutSeconds)} must be between 1 and {MaxTimeoutSeconds} seconds.");
         }
 
+        if (options.MaxImageBytes < 0)
+        {
+            return ValidateOptionsResult.Fail(
+                $"{nameof(options.MaxImageBytes)} must be >= 0 (0 = disabled).");
+        }
+
         return ValidateOptionsResult.Success;
     }
 }

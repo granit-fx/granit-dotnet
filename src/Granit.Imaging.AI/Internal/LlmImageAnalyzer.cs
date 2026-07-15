@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using Granit.AI;
 using Granit.Imaging.AI.Diagnostics;
@@ -11,30 +10,23 @@ using Microsoft.Extensions.Options;
 namespace Granit.Imaging.AI.Internal;
 
 /// <summary>
-/// Multimodal LLM-based implementation of <see cref="IAIImageAnalyzer"/>.
-/// Sends image bytes as a <see cref="DataContent"/> message to a vision-capable model.
+/// Multimodal implementation of <see cref="IAIImageAnalyzer"/> riding the ADR-064
+/// structured-output primitive: schema pinning, fence-strip fallback, PII-safe failure
+/// mapping, quota, and usage stamping all come from <see cref="IStructuredCompletion"/>.
+/// The model output is still treated as untrusted and sanitized before it reaches callers.
 /// </summary>
 internal sealed partial class LlmImageAnalyzer(
-    IAIChatClientFactory chatClientFactory,
+    IStructuredCompletion structuredCompletion,
     IOptions<ImagingAIOptions> options,
     ImagingAIMetrics metrics,
     ILogger<LlmImageAnalyzer> logger) : IAIImageAnalyzer
 {
-    private const string AnalysisPrompt = """
-        Analyze this image and return a JSON object with the following structure:
-        {
-          "description": "A detailed natural-language description of the image content",
-          "detectedObjects": ["list", "of", "objects", "in", "the", "image"],
-          "tags": ["semantic", "tags", "for", "classification"],
-          "suggestedAltText": "Concise alt text for accessibility (WCAG 2.1)"
-        }
-        Return ONLY the JSON object, no markdown fences, no explanation.
-        """;
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-    };
+    // Task instruction only — the output shape is pinned by the primitive's JSON schema
+    // (provider-enforced when the model supports structured output, in-prompt otherwise).
+    private const string AnalysisInstruction =
+        "Analyze the attached image. Produce a detailed natural-language description of its "
+        + "content, the list of objects it contains, semantic tags for classification and "
+        + "search, and a concise suggested alt text for accessibility (WCAG 2.1).";
 
     private static readonly HashSet<string> AllowedContentTypes =
         ["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif", "image/bmp", "image/tiff"];
@@ -48,6 +40,18 @@ internal sealed partial class LlmImageAnalyzer(
         ArgumentNullException.ThrowIfNull(contentType);
 
         ImagingAIOptions opts = options.Value;
+
+        // First statement, before any DataContent is built: the image arrives already
+        // materialized (the byte source owns the original allocation guard), but failing
+        // here avoids the ~1.33x base64 expansion, the provider serialization, and a
+        // wasted round-trip.
+        if (opts.MaxImageBytes > 0 && imageData.Length > opts.MaxImageBytes)
+        {
+            throw new ArgumentException(
+                $"Image size ({imageData.Length} bytes) exceeds the configured MaxImageBytes ({opts.MaxImageBytes}).",
+                nameof(imageData));
+        }
+
         string normalizedContentType = NormalizeContentType(contentType);
         long startTimestamp = Stopwatch.GetTimestamp();
 
@@ -59,28 +63,23 @@ internal sealed partial class LlmImageAnalyzer(
 
         try
         {
-            // CreateAsync builds a fresh client per call (no cache) — dispose
-            // deterministically so the HttpMessageHandler doesn't linger until GC.
-            using IChatClient client = await chatClientFactory
-                .CreateAsync(opts.WorkspaceName, cancellationToken)
-                .ConfigureAwait(false);
-
-            var message = new ChatMessage(ChatRole.User,
-            [
-                new TextContent(AnalysisPrompt),
-                new DataContent(imageData, contentType),
-            ]);
-
+            // Two timeouts stack here: this one (Imaging:AI TimeoutSeconds) and the
+            // primitive's StructuredCompletionOptions.TimeoutSeconds — the lower wins.
             using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             timeoutCts.CancelAfter(TimeSpan.FromSeconds(opts.TimeoutSeconds));
 
-            ChatResponse response = await client
-                .GetResponseAsync([message], cancellationToken: timeoutCts.Token)
+            StructuredCompletionResult<LlmAnalysisResponse> completion = await structuredCompletion
+                .CompleteAsync<LlmAnalysisResponse>(
+                    new StructuredCompletionRequest
+                    {
+                        Instruction = AnalysisInstruction,
+                        Attachments = [new DataContent(imageData, contentType)],
+                        WorkspaceName = opts.WorkspaceName,
+                    },
+                    timeoutCts.Token)
                 .ConfigureAwait(false);
 
-            string json = response.Text ?? throw new InvalidOperationException("The AI model returned an empty response.");
-
-            ImageAnalysis result = Deserialize(json);
+            ImageAnalysis result = MapResult(completion);
 
             metrics.RecordAnalysisCompleted(tenantId: null, normalizedContentType);
             metrics.RecordAnalysisDuration(tenantId: null, normalizedContentType, Stopwatch.GetElapsedTime(startTimestamp));
@@ -99,33 +98,26 @@ internal sealed partial class LlmImageAnalyzer(
     private static string NormalizeContentType(string contentType) =>
         AllowedContentTypes.Contains(contentType) ? contentType : "other";
 
-    private static ImageAnalysis Deserialize(string json)
-    {
-        // Strip markdown fences if the model wraps the JSON despite instructions
-        ReadOnlySpan<char> trimmed = json.AsSpan().Trim();
-        if (trimmed.StartsWith("```"))
+    // Preserves the analyzer's exception-based contract over the primitive's status codes;
+    // ErrorMessage is PII-safe by the primitive's contract (never echoes model output).
+    private static ImageAnalysis MapResult(StructuredCompletionResult<LlmAnalysisResponse> completion) =>
+        completion.Status switch
         {
-            int firstNewline = trimmed.IndexOf('\n');
-            if (firstNewline >= 0)
-            {
-                trimmed = trimmed[(firstNewline + 1)..];
-            }
+            StructuredCompletionStatus.Succeeded => Sanitize(completion.Value!),
+            StructuredCompletionStatus.ModelRefused =>
+                throw new InvalidOperationException("The AI model returned an empty response."),
+            StructuredCompletionStatus.SchemaViolation =>
+                throw new InvalidOperationException("Failed to parse the AI model response as JSON."),
+            _ => throw new InvalidOperationException(
+                completion.ErrorMessage ?? "The AI request failed due to a transport or provider error."),
+        };
 
-            if (trimmed.EndsWith("```"))
-            {
-                trimmed = trimmed[..^3].TrimEnd();
-            }
-        }
-
-        LlmAnalysisResponse? parsed = JsonSerializer.Deserialize<LlmAnalysisResponse>(trimmed, JsonOptions)
-            ?? throw new InvalidOperationException("Failed to parse the AI model response as JSON.");
-
-        return new ImageAnalysis(
+    private static ImageAnalysis Sanitize(LlmAnalysisResponse parsed) =>
+        new(
             SanitizeText(parsed.Description),
             SanitizeList(parsed.DetectedObjects),
             SanitizeList(parsed.Tags),
             parsed.SuggestedAltText is not null ? SanitizeText(parsed.SuggestedAltText, 500) : null);
-    }
 
     private static string SanitizeText(string? value, int maxLength = 2000)
     {
@@ -163,13 +155,4 @@ internal sealed partial class LlmImageAnalyzer(
 
     [LoggerMessage(Level = LogLevel.Information, Message = "AI image analysis completed (objects={ObjectCount}, tags={TagCount})")]
     private partial void LogAnalysisCompleted(int objectCount, int tagCount);
-
-    /// <summary>
-    /// Internal DTO for deserializing the LLM JSON response.
-    /// </summary>
-    private sealed record LlmAnalysisResponse(
-        string? Description,
-        IReadOnlyList<string>? DetectedObjects,
-        IReadOnlyList<string>? Tags,
-        string? SuggestedAltText);
 }
