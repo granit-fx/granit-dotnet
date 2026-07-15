@@ -2,6 +2,7 @@ using System.Diagnostics.Metrics;
 using Granit.Imaging.Diagnostics;
 using Granit.Imaging.MagickNet.Internal;
 using Granit.Imaging.MagickNet.Options;
+using Granit.MultiTenancy;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -21,7 +22,7 @@ public sealed class MagickNetImagePipelineFormatConversionTests
     {
         Stream stream = typeof(MagickNetImagePipelineFormatConversionTests).Assembly
             .GetManifestResourceStream("Granit.Imaging.MagickNet.Tests.TestAssets.test-image.png")!;
-        MagickNetImageProcessor processor = new(CreateTestMetrics(), Microsoft.Extensions.Options.Options.Create(new ImagingMagickNetOptions()));
+        MagickNetImageProcessor processor = new(CreateTestMetrics(), NullTenantContext.Instance, Microsoft.Extensions.Options.Options.Create(new ImagingMagickNetOptions()));
         return (MagickNetImagePipeline)await processor.LoadAsync(stream);
     }
 

@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Granit.AI;
 using Granit.Imaging.AI.Diagnostics;
 using Granit.Imaging.AI.Options;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,6 +20,7 @@ internal sealed partial class LlmImageAnalyzer(
     IStructuredCompletion structuredCompletion,
     IOptions<ImagingAIOptions> options,
     ImagingAIMetrics metrics,
+    ICurrentTenant currentTenant,
     ILogger<LlmImageAnalyzer> logger) : IAIImageAnalyzer
 {
     // Task instruction only — the output shape is pinned by the primitive's JSON schema
@@ -53,11 +55,13 @@ internal sealed partial class LlmImageAnalyzer(
         }
 
         string normalizedContentType = NormalizeContentType(contentType);
+        string? tenantId = currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
         long startTimestamp = Stopwatch.GetTimestamp();
 
-        using Activity? activity = ImagingAIActivitySource.Source.StartActivity("ImageAnalysis.Analyze");
-        activity?.SetTag("imaging.ai.content_type", normalizedContentType);
-        activity?.SetTag("imaging.ai.image_size_bytes", imageData.Length);
+        using Activity? activity = ImagingAIActivitySource.Source
+            .StartActivity(ImagingAIActivitySource.AnalyzeOperation);
+        activity?.SetTag(ImagingAIActivitySource.TagContentType, normalizedContentType);
+        activity?.SetTag(ImagingAIActivitySource.TagImageSizeBytes, imageData.Length);
 
         LogAnalysisStarted(normalizedContentType, imageData.Length);
 
@@ -81,8 +85,8 @@ internal sealed partial class LlmImageAnalyzer(
 
             ImageAnalysis result = MapResult(completion);
 
-            metrics.RecordAnalysisCompleted(tenantId: null, normalizedContentType);
-            metrics.RecordAnalysisDuration(tenantId: null, normalizedContentType, Stopwatch.GetElapsedTime(startTimestamp));
+            metrics.RecordAnalysisCompleted(tenantId, normalizedContentType);
+            metrics.RecordAnalysisDuration(tenantId, normalizedContentType, Stopwatch.GetElapsedTime(startTimestamp));
 
             LogAnalysisCompleted(result.DetectedObjects.Count, result.Tags.Count);
 
@@ -90,7 +94,7 @@ internal sealed partial class LlmImageAnalyzer(
         }
         catch
         {
-            metrics.RecordAnalysisFailure(tenantId: null, normalizedContentType);
+            metrics.RecordAnalysisFailure(tenantId, normalizedContentType);
             throw;
         }
     }

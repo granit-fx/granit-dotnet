@@ -35,10 +35,27 @@ public sealed class LlmImageTextExtractorTests
         _chatClientFactory.CreateAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(_chatClient);
     }
 
-    private LlmImageTextExtractor CreateExtractor(string? workspaceName) =>
+    private LlmImageTextExtractor CreateExtractor(string? workspaceName, long maxImageBytes = 10 * 1024 * 1024) =>
         new(_chatClientFactory, _workspaceProvider, _capabilityResolver,
-            MsOptions.Create(new ImagingAIOptions { WorkspaceName = workspaceName, TimeoutSeconds = 30 }),
+            MsOptions.Create(new ImagingAIOptions
+            {
+                WorkspaceName = workspaceName,
+                TimeoutSeconds = 30,
+                MaxImageBytes = maxImageBytes,
+            }),
             NullLogger<LlmImageTextExtractor>.Instance);
+
+    [Fact]
+    public async Task Returns_null_for_an_oversized_image_without_calling_the_provider()
+    {
+        // Graceful-degradation contract: too large -> null, provider never contacted.
+        LlmImageTextExtractor extractor = CreateExtractor("vision", maxImageBytes: 2);
+
+        ImageTextExtractionResult? result = await extractor.ExtractTextAsync(Image, "image/png", TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+        await _chatClientFactory.DidNotReceive().CreateAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
 
     [Fact]
     public async Task Uses_the_explicitly_configured_workspace()

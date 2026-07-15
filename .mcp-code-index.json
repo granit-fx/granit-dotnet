@@ -33673,7 +33673,7 @@
       "kind": "class",
       "project": "Granit.Imaging.AI",
       "file": "src/Granit.Imaging.AI/Extensions/ImagingAIHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitImagingAI",

@@ -1,6 +1,8 @@
+using System.Diagnostics;
 using Granit.AI;
 using Granit.AI.Vision;
 using Granit.AI.Workspaces;
+using Granit.Imaging.AI.Diagnostics;
 using Granit.Imaging.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -43,6 +45,17 @@ internal sealed partial class LlmImageTextExtractor(
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(contentType);
 
+        ImagingAIOptions opts = options.Value;
+
+        // First check, before any workspace resolution or DataContent: the caller degrades
+        // gracefully on null, and failing here avoids the ~1.33x base64 expansion and a
+        // wasted provider round-trip (the byte source owns the original allocation guard).
+        if (opts.MaxImageBytes > 0 && imageData.Length > opts.MaxImageBytes)
+        {
+            LogImageTooLarge(imageData.Length, opts.MaxImageBytes);
+            return null;
+        }
+
         AIWorkspace? workspace = await ResolveVisionWorkspaceAsync(cancellationToken).ConfigureAwait(false);
         if (workspace is null)
         {
@@ -50,7 +63,11 @@ internal sealed partial class LlmImageTextExtractor(
             return null;
         }
 
-        ImagingAIOptions opts = options.Value;
+        using Activity? activity = ImagingAIActivitySource.Source
+            .StartActivity(ImagingAIActivitySource.ExtractTextOperation);
+        activity?.SetTag(ImagingAIActivitySource.TagContentType, contentType);
+        activity?.SetTag(ImagingAIActivitySource.TagImageSizeBytes, imageData.Length);
+        activity?.SetTag(ImagingAIActivitySource.TagWorkspace, workspace.Key);
 
         using IChatClient client = await chatClientFactory
             .CreateAsync(workspace.Key, cancellationToken)
@@ -103,4 +120,8 @@ internal sealed partial class LlmImageTextExtractor(
     [LoggerMessage(Level = LogLevel.Debug,
         Message = "No vision-capable AI workspace is configured; extract_text_from_image is unavailable.")]
     private partial void LogNoVisionWorkspace();
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Image of {SizeBytes} bytes exceeds MaxImageBytes ({MaxImageBytes}); extraction skipped.")]
+    private partial void LogImageTooLarge(int sizeBytes, long maxImageBytes);
 }

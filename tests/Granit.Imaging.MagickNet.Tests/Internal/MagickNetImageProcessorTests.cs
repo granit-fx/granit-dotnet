@@ -3,6 +3,7 @@ using Granit.Imaging.Diagnostics;
 using Granit.Imaging.Exceptions;
 using Granit.Imaging.MagickNet.Internal;
 using Granit.Imaging.MagickNet.Options;
+using Granit.MultiTenancy;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -11,7 +12,7 @@ namespace Granit.Imaging.MagickNet.Tests.Internal;
 
 public sealed class MagickNetImageProcessorTests
 {
-    private readonly MagickNetImageProcessor _processor = new(CreateTestMetrics(), Microsoft.Extensions.Options.Options.Create(new ImagingMagickNetOptions()));
+    private readonly MagickNetImageProcessor _processor = new(CreateTestMetrics(), NullTenantContext.Instance, Microsoft.Extensions.Options.Options.Create(new ImagingMagickNetOptions()));
 
     private static ImagingMetrics CreateTestMetrics()
     {
@@ -141,6 +142,7 @@ public sealed class MagickNetImageProcessorTests
     {
         MagickNetImageProcessor processor = new(
             CreateTestMetrics(),
+            NullTenantContext.Instance,
             Microsoft.Extensions.Options.Options.Create(new ImagingMagickNetOptions { MaxInputBytes = 16 }));
         await using Stream stream = GetTestImageStream();
 

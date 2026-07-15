@@ -3,6 +3,7 @@ using Granit.AI;
 using Granit.Imaging.AI.Diagnostics;
 using Granit.Imaging.AI.Internal;
 using Granit.Imaging.AI.Options;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -34,6 +35,7 @@ public sealed class LlmImageAnalyzerTests
         new(_structuredCompletion,
             options is null ? _options : Microsoft.Extensions.Options.Options.Create(options),
             _metrics,
+            NullTenantContext.Instance,
             NullLogger<LlmImageAnalyzer>.Instance);
 
     private void SetupCompletion(StructuredCompletionResult<LlmAnalysisResponse> result) =>
