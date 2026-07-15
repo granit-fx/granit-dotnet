@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Identity.Abstractions</PackageId>
-    <Description>Identity session and device contracts for Granit. Provides UserSessionDescriptor (the canonical session shape produced by both the BFF and the identity authority), DeviceKind, the session/device providers, the session lifecycle events, and the durable IUserSessionRiskStore. Reference this package to consume or enrich user sessions without taking a dependency on a specific session store or the anomaly-detection engine.</Description>
+    <Description>Identity contracts for Granit: the identity-provider seam (IIdentityProvider and its reader/writer/role/group/password/credential facets), the IIdentityUser directory shape, IUserLookupService, the identity domain models and integration events, plus the session/device contracts (UserSessionDescriptor, DeviceKind, the session/device providers, session lifecycle events, and the durable IUserSessionRiskStore). Reference this package to consume identity without taking a dependency on a concrete provider, store, or the anomaly-detection engine.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.IpGeolocation.Abstractions\Granit.IpGeolocation.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

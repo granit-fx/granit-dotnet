@@ -40,7 +40,6 @@
       "src/Granit.Http.UrlSafety/Granit.Http.UrlSafety.csproj",
       "src/Granit.IO/Granit.IO.csproj",
       "src/Granit.Identity.Abstractions/Granit.Identity.Abstractions.csproj",
-      "src/Granit.Identity/Granit.Identity.csproj",
       "src/Granit.IpGeolocation.Abstractions/Granit.IpGeolocation.Abstractions.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
       "src/Granit.Mentions/Granit.Mentions.csproj",

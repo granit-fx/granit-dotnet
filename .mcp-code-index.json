@@ -1349,7 +1349,8 @@
       "name": "Granit.Identity.Abstractions",
       "deps": [
         "Granit",
-        "Granit.IpGeolocation.Abstractions"
+        "Granit.IpGeolocation.Abstractions",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -3062,7 +3063,7 @@
       "name": "Granit.Workflow.Notifications",
       "deps": [
         "Granit.Authorization",
-        "Granit.Identity",
+        "Granit.Identity.Abstractions",
         "Granit.Workflow",
         "Granit.Notifications.Abstractions",
         "Granit.Templating"
@@ -28884,8 +28885,8 @@
       "name": "IdentityGroupMembershipChangedEto",
       "fqn": "Granit.Identity.Events.IdentityGroupMembershipChangedEto",
       "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityGroupMembershipChangedEto.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/Events/IdentityGroupMembershipChangedEto.cs",
       "line": 11,
       "members": []
     },
@@ -28893,8 +28894,8 @@
       "name": "IdentityPasswordResetEto",
       "fqn": "Granit.Identity.Events.IdentityPasswordResetEto",
       "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityPasswordResetEto.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/Events/IdentityPasswordResetEto.cs",
       "line": 9,
       "members": []
     },
@@ -28902,8 +28903,8 @@
       "name": "IdentityRoleAssignedEto",
       "fqn": "Granit.Identity.Events.IdentityRoleAssignedEto",
       "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityRoleAssignedEto.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/Events/IdentityRoleAssignedEto.cs",
       "line": 10,
       "members": []
     },
@@ -28911,8 +28912,8 @@
       "name": "IdentityRoleRemovedEto",
       "fqn": "Granit.Identity.Events.IdentityRoleRemovedEto",
       "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityRoleRemovedEto.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/Events/IdentityRoleRemovedEto.cs",
       "line": 10,
       "members": []
     },
@@ -28929,8 +28930,8 @@
       "name": "IdentityUserEnabledChangedEto",
       "fqn": "Granit.Identity.Events.IdentityUserEnabledChangedEto",
       "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityUserEnabledChangedEto.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/Events/IdentityUserEnabledChangedEto.cs",
       "line": 10,
       "members": []
     },
@@ -28938,8 +28939,8 @@
       "name": "IdentityUserProfileUpdatedEto",
       "fqn": "Granit.Identity.Events.IdentityUserProfileUpdatedEto",
       "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityUserProfileUpdatedEto.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/Events/IdentityUserProfileUpdatedEto.cs",
       "line": 11,
       "members": []
     },
@@ -28947,8 +28948,8 @@
       "name": "UserCacheSyncedEto",
       "fqn": "Granit.Identity.Events.UserCacheSyncedEto",
       "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/UserCacheSyncedEto.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/Events/UserCacheSyncedEto.cs",
       "line": 12,
       "members": []
     },
@@ -28974,8 +28975,8 @@
       "name": "UserSessionsRevokedEto",
       "fqn": "Granit.Identity.Events.UserSessionsRevokedEto",
       "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/UserSessionsRevokedEto.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/Events/UserSessionsRevokedEto.cs",
       "line": 9,
       "members": []
     },
@@ -30342,8 +30343,8 @@
       "name": "IIdentityClientRoleManager",
       "fqn": "Granit.Identity.IIdentityClientRoleManager",
       "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IIdentityClientRoleManager.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IIdentityClientRoleManager.cs",
       "line": 29,
       "members": [
         {
@@ -30388,8 +30389,8 @@
       "name": "IIdentityCredentialVerifier",
       "fqn": "Granit.Identity.IIdentityCredentialVerifier",
       "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IIdentityCredentialVerifier.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IIdentityCredentialVerifier.cs",
       "line": 7,
       "members": [
         {
@@ -30404,8 +30405,8 @@
       "name": "IIdentityGroupManager",
       "fqn": "Granit.Identity.IIdentityGroupManager",
       "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IIdentityGroupManager.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IIdentityGroupManager.cs",
       "line": 8,
       "members": [
         {
@@ -30438,8 +30439,8 @@
       "name": "IIdentityPasswordManager",
       "fqn": "Granit.Identity.IIdentityPasswordManager",
       "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IIdentityPasswordManager.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IIdentityPasswordManager.cs",
       "line": 6,
       "members": [
         {
@@ -30466,8 +30467,8 @@
       "name": "IIdentityProvider",
       "fqn": "Granit.Identity.IIdentityProvider",
       "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IIdentityProvider.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IIdentityProvider.cs",
       "line": 27,
       "members": []
     },
@@ -30475,8 +30476,8 @@
       "name": "IIdentityProviderCapabilities",
       "fqn": "Granit.Identity.IIdentityProviderCapabilities",
       "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IIdentityProviderCapabilities.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IIdentityProviderCapabilities.cs",
       "line": 11,
       "members": [
         {
@@ -30497,8 +30498,8 @@
       "name": "IIdentityRoleManager",
       "fqn": "Granit.Identity.IIdentityRoleManager",
       "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IIdentityRoleManager.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IIdentityRoleManager.cs",
       "line": 8,
       "members": [
         {
@@ -30537,8 +30538,8 @@
       "name": "IIdentityUser",
       "fqn": "Granit.Identity.IIdentityUser",
       "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IIdentityUser.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IIdentityUser.cs",
       "line": 20,
       "members": []
     },
@@ -30546,8 +30547,8 @@
       "name": "IIdentityUserReader",
       "fqn": "Granit.Identity.IIdentityUserReader",
       "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IIdentityUserReader.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IIdentityUserReader.cs",
       "line": 6,
       "members": [
         {
@@ -30568,8 +30569,8 @@
       "name": "IIdentityUserWriter",
       "fqn": "Granit.Identity.IIdentityUserWriter",
       "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IIdentityUserWriter.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IIdentityUserWriter.cs",
       "line": 8,
       "members": [
         {
@@ -30640,8 +30641,8 @@
       "name": "IUserCacheStats",
       "fqn": "Granit.Identity.IUserCacheStats",
       "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IUserCacheStats.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IUserCacheStats.cs",
       "line": 10,
       "members": [
         {
@@ -30716,8 +30717,8 @@
       "name": "IUserLookupService",
       "fqn": "Granit.Identity.IUserLookupService",
       "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IUserLookupService.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IUserLookupService.cs",
       "line": 19,
       "members": [
         {
@@ -33195,8 +33196,8 @@
       "name": "IdentityGroup",
       "fqn": "Granit.Identity.Models.IdentityGroup",
       "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Models/IdentityGroup.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/Models/IdentityGroup.cs",
       "line": 10,
       "members": []
     },
@@ -33204,8 +33205,8 @@
       "name": "IdentityRole",
       "fqn": "Granit.Identity.Models.IdentityRole",
       "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Models/IdentityRole.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/Models/IdentityRole.cs",
       "line": 9,
       "members": []
     },
@@ -33213,8 +33214,8 @@
       "name": "IdentityUserCreate",
       "fqn": "Granit.Identity.Models.IdentityUserCreate",
       "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Models/IdentityUserCreate.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/Models/IdentityUserCreate.cs",
       "line": 14,
       "members": []
     },
@@ -33222,8 +33223,8 @@
       "name": "IdentityUserUpdate",
       "fqn": "Granit.Identity.Models.IdentityUserUpdate",
       "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Models/IdentityUserUpdate.cs",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/Models/IdentityUserUpdate.cs",
       "line": 22,
       "members": []
     },

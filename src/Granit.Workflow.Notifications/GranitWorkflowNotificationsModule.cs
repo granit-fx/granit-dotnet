@@ -31,7 +31,7 @@ namespace Granit.Workflow.Notifications;
 /// </remarks>
 [DependsOn(
     typeof(GranitAuthorizationModule),
-    typeof(GranitIdentityModule),
+    typeof(GranitIdentityAbstractionsModule),
     typeof(GranitNotificationsAbstractionsModule),
     typeof(GranitTemplatingModule),
     typeof(GranitWorkflowModule))]
