@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using Granit.Imaging.Diagnostics;
+using Granit.Imaging.MagickNet.Diagnostics;
+using Granit.MultiTenancy;
 using ImageMagick;
 
 namespace Granit.Imaging.MagickNet.Internal;
@@ -12,14 +14,16 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
 {
     private readonly MagickImage _image;
     private readonly ImagingMetrics _metrics;
+    private readonly ICurrentTenant _currentTenant;
     private readonly long _startTimestamp;
     private int? _quality;
     private ImageFormat? _targetFormat;
 
-    internal MagickNetImagePipeline(MagickImage image, ImagingMetrics metrics)
+    internal MagickNetImagePipeline(MagickImage image, ImagingMetrics metrics, ICurrentTenant currentTenant)
     {
         _image = image;
         _metrics = metrics;
+        _currentTenant = currentTenant;
         _startTimestamp = Stopwatch.GetTimestamp();
         SourceSize = new ImageSize((int)_image.Width, (int)_image.Height);
         SourceFormat = MagickFormatMapper.FromMagickFormat(_image.Format);
@@ -155,6 +159,7 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
         ApplyOutputSettings();
 
         ImageFormat outputFormat = _targetFormat ?? SourceFormat;
+        using Activity? activity = StartEncodeActivity(outputFormat);
 
         // ToByteArray encodes straight from the native blob into a single managed array —
         // no intermediate MemoryStream + ToArray() double copy. Encoding is CPU-bound.
@@ -177,9 +182,21 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
         ApplyOutputSettings();
 
         ImageFormat outputFormat = _targetFormat ?? SourceFormat;
+        using Activity? activity = StartEncodeActivity(outputFormat);
+
         await _image.WriteAsync(destination, MagickFormatMapper.ToMagickFormat(outputFormat), cancellationToken).ConfigureAwait(false);
 
         RecordMetrics(outputFormat);
+    }
+
+    private Activity? StartEncodeActivity(ImageFormat outputFormat)
+    {
+        Activity? activity = ImagingMagickNetActivitySource.Source
+            .StartActivity(ImagingMagickNetActivitySource.EncodeOperation);
+        activity?.SetTag(ImagingMagickNetActivitySource.TagOutputFormat, outputFormat.ToString());
+        activity?.SetTag(ImagingMagickNetActivitySource.TagWidth, (int)_image.Width);
+        activity?.SetTag(ImagingMagickNetActivitySource.TagHeight, (int)_image.Height);
+        return activity;
     }
 
     /// <inheritdoc/>
@@ -191,9 +208,13 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
 
     private void RecordMetrics(ImageFormat outputFormat)
     {
+        // Read the ambient tenant at terminal-op time (ICurrentTenant is AsyncLocal-backed),
+        // so the metric carries the tenant of the request that ran the pipeline.
+        string? tenantId = _currentTenant.IsAvailable ? _currentTenant.Id?.ToString() : null;
+
         string formatName = outputFormat.ToString().ToLowerInvariant();
-        _metrics.RecordImageProcessed(tenantId: null, formatName);
-        _metrics.RecordProcessingDuration(tenantId: null, formatName, Stopwatch.GetElapsedTime(_startTimestamp));
+        _metrics.RecordImageProcessed(tenantId, formatName);
+        _metrics.RecordProcessingDuration(tenantId, formatName, Stopwatch.GetElapsedTime(_startTimestamp));
     }
 
     private void ApplyOutputSettings()

@@ -7178,6 +7178,22 @@
       "members": []
     },
     {
+      "name": "VisionOcrEnvelope",
+      "fqn": "Granit.AI.Vision.VisionOcrEnvelope",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Vision/VisionOcrEnvelope.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Extract",
+          "kind": "method",
+          "signature": "Extract(string? raw)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "WellKnownAICapabilities",
       "fqn": "Granit.AI.WellKnownAICapabilities",
       "kind": "class",
@@ -33584,7 +33600,7 @@
       "kind": "class",
       "project": "Granit.Imaging.AI",
       "file": "src/Granit.Imaging.AI/Extensions/ImagingAIHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitImagingAI",
@@ -33689,6 +33705,12 @@
           "kind": "property",
           "signature": "string? WorkspaceName",
           "returnType": "string?"
+        },
+        {
+          "name": "MaxImageBytes",
+          "kind": "property",
+          "signature": "long MaxImageBytes",
+          "returnType": "long"
         }
       ]
     },
@@ -42740,7 +42762,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.BackgroundJobs",
       "file": "src/Granit.OpenIddict.BackgroundJobs/Services/IdleSessionEnforcementService.cs",
-      "line": 26,
+      "line": 22,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -43901,6 +43923,12 @@
           "kind": "method",
           "signature": "GetActivitiesAsync(string userId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyDictionary<string, DateTimeOffset>>"
+        },
+        {
+          "name": "GetIdleRefreshTokenIdsAsync",
+          "kind": "method",
+          "signature": "GetIdleRefreshTokenIdsAsync(DateTimeOffset idleSince, int max, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
         }
       ]
     },
@@ -54454,7 +54482,7 @@
       "kind": "class",
       "project": "Granit.TextExtraction.Ocr.AI",
       "file": "src/Granit.TextExtraction.Ocr.AI/AIVisionOcrExtractor.cs",
-      "line": 28,
+      "line": 30,
       "members": [
         {
           "name": "CanHandle",

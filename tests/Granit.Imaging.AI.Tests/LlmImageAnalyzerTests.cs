@@ -3,6 +3,7 @@ using Granit.AI;
 using Granit.Imaging.AI.Diagnostics;
 using Granit.Imaging.AI.Internal;
 using Granit.Imaging.AI.Options;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -13,8 +14,7 @@ namespace Granit.Imaging.AI.Tests;
 
 public sealed class LlmImageAnalyzerTests
 {
-    private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
-    private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
+    private readonly IStructuredCompletion _structuredCompletion = Substitute.For<IStructuredCompletion>();
     private readonly ImagingAIMetrics _metrics = CreateTestMetrics();
     private readonly IOptions<ImagingAIOptions> _options = Microsoft.Extensions.Options.Options.Create(new ImagingAIOptions
     {
@@ -31,28 +31,32 @@ public sealed class LlmImageAnalyzerTests
 
     private static readonly ReadOnlyMemory<byte> TestImage = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
 
-    public LlmImageAnalyzerTests()
-    {
-        _chatClientFactory.CreateAsync("vision", Arg.Any<CancellationToken>()).Returns(_chatClient);
-    }
+    private LlmImageAnalyzer CreateAnalyzer(ImagingAIOptions? options = null) =>
+        new(_structuredCompletion,
+            options is null ? _options : Microsoft.Extensions.Options.Options.Create(options),
+            _metrics,
+            NullTenantContext.Instance,
+            NullLogger<LlmImageAnalyzer>.Instance);
+
+    private void SetupCompletion(StructuredCompletionResult<LlmAnalysisResponse> result) =>
+        _structuredCompletion
+            .CompleteAsync<LlmAnalysisResponse>(Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>())
+            .Returns(result);
+
+    private static StructuredCompletionResult<LlmAnalysisResponse> Succeeded(LlmAnalysisResponse value) =>
+        new() { Status = StructuredCompletionStatus.Succeeded, Value = value };
 
     [Fact]
-    public async Task AnalyzeAsync_ValidResponse_ReturnsImageAnalysis()
+    public async Task AnalyzeAsync_Succeeded_ReturnsSanitizedImageAnalysis()
     {
-        const string json = """
-            {
-                "description": "A red car parked on a street",
-                "detectedObjects": ["car", "street", "building"],
-                "tags": ["outdoor", "urban", "daytime"],
-                "suggestedAltText": "Red car parked on urban street"
-            }
-            """;
+        SetupCompletion(Succeeded(new LlmAnalysisResponse(
+            "A red car parked on a street",
+            ["car", "street", "building"],
+            ["outdoor", "urban", "daytime"],
+            "Red car parked on urban street")));
 
-        SetupChatResponse(json);
-
-        LlmImageAnalyzer analyzer = CreateAnalyzer();
-
-        ImageAnalysis result = await analyzer.AnalyzeAsync(TestImage, "image/png", TestContext.Current.CancellationToken);
+        ImageAnalysis result = await CreateAnalyzer()
+            .AnalyzeAsync(TestImage, "image/png", TestContext.Current.CancellationToken);
 
         result.Description.ShouldBe("A red car parked on a street");
         result.DetectedObjects.ShouldBe(["car", "street", "building"]);
@@ -61,129 +65,124 @@ public sealed class LlmImageAnalyzerTests
     }
 
     [Fact]
-    public async Task AnalyzeAsync_ResponseWithMarkdownFences_ParsesCorrectly()
+    public async Task AnalyzeAsync_SendsImageAsAttachmentWithConfiguredWorkspace()
     {
-        const string json = """
-            ```json
-            {
-                "description": "A cat sitting on a windowsill",
-                "detectedObjects": ["cat", "window"],
-                "tags": ["indoor", "pet"],
-                "suggestedAltText": "Cat on windowsill"
-            }
-            ```
-            """;
+        StructuredCompletionRequest? captured = null;
+        _structuredCompletion
+            .CompleteAsync<LlmAnalysisResponse>(
+                Arg.Do<StructuredCompletionRequest>(r => captured = r),
+                Arg.Any<CancellationToken>())
+            .Returns(Succeeded(new LlmAnalysisResponse("d", [], [], null)));
 
-        SetupChatResponse(json);
+        await CreateAnalyzer().AnalyzeAsync(TestImage, "image/webp", TestContext.Current.CancellationToken);
 
-        LlmImageAnalyzer analyzer = CreateAnalyzer();
-
-        ImageAnalysis result = await analyzer.AnalyzeAsync(TestImage, "image/jpeg", TestContext.Current.CancellationToken);
-
-        result.Description.ShouldBe("A cat sitting on a windowsill");
-        result.DetectedObjects.Count.ShouldBe(2);
+        captured.ShouldNotBeNull();
+        captured.WorkspaceName.ShouldBe("vision");
+        captured.Instruction.ShouldNotBeNullOrWhiteSpace();
+        // Schema pinning is the primitive's job — the instruction must not hand-roll a JSON shape.
+        captured.Instruction.ShouldNotContain("JSON");
+        DataContent attachment = captured.Attachments.ShouldHaveSingleItem();
+        attachment.MediaType.ShouldBe("image/webp");
+        attachment.Data.Span.SequenceEqual(TestImage.Span).ShouldBeTrue();
     }
 
     [Fact]
-    public async Task AnalyzeAsync_NullAltText_ReturnsNullSuggestedAltText()
+    public async Task AnalyzeAsync_SanitizesModelOutput()
     {
-        const string json = """
-            {
-                "description": "Abstract art",
-                "detectedObjects": [],
-                "tags": ["abstract"],
-                "suggestedAltText": null
-            }
-            """;
+        SetupCompletion(Succeeded(new LlmAnalysisResponse(
+            "desc\u0001with\u0002control chars",
+            ["ok", "\u0003", new string('x', 500)],
+            null,
+            new string('y', 900))));
 
-        SetupChatResponse(json);
+        ImageAnalysis result = await CreateAnalyzer()
+            .AnalyzeAsync(TestImage, "image/png", TestContext.Current.CancellationToken);
 
-        LlmImageAnalyzer analyzer = CreateAnalyzer();
+        result.Description.ShouldBe("descwithcontrol chars");
+        result.DetectedObjects.Count.ShouldBe(2); // control-char-only entry dropped
+        result.DetectedObjects[1].Length.ShouldBe(200); // item length cap
+        result.Tags.ShouldBeEmpty();
+        result.SuggestedAltText!.Length.ShouldBe(500); // alt text cap
+    }
+
+    [Fact]
+    public async Task AnalyzeAsync_ModelRefused_ThrowsInvalidOperation()
+    {
+        SetupCompletion(new StructuredCompletionResult<LlmAnalysisResponse>
+        {
+            Status = StructuredCompletionStatus.ModelRefused,
+        });
+
+        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
+            () => CreateAnalyzer().AnalyzeAsync(TestImage, "image/png", TestContext.Current.CancellationToken));
+
+        ex.Message.ShouldBe("The AI model returned an empty response.");
+    }
+
+    [Fact]
+    public async Task AnalyzeAsync_SchemaViolation_ThrowsInvalidOperation()
+    {
+        SetupCompletion(new StructuredCompletionResult<LlmAnalysisResponse>
+        {
+            Status = StructuredCompletionStatus.SchemaViolation,
+        });
+
+        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
+            () => CreateAnalyzer().AnalyzeAsync(TestImage, "image/png", TestContext.Current.CancellationToken));
+
+        ex.Message.ShouldBe("Failed to parse the AI model response as JSON.");
+    }
+
+    [Fact]
+    public async Task AnalyzeAsync_TransportFailure_ThrowsWithPiiSafeMessage()
+    {
+        SetupCompletion(new StructuredCompletionResult<LlmAnalysisResponse>
+        {
+            Status = StructuredCompletionStatus.TransportFailure,
+            ErrorMessage = "The AI request timed out after 30 seconds.",
+        });
+
+        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
+            () => CreateAnalyzer().AnalyzeAsync(TestImage, "image/png", TestContext.Current.CancellationToken));
+
+        ex.Message.ShouldBe("The AI request timed out after 30 seconds.");
+    }
+
+    [Fact]
+    public async Task AnalyzeAsync_OversizedImage_FailsFastWithoutCallingThePrimitive()
+    {
+        LlmImageAnalyzer analyzer = CreateAnalyzer(new ImagingAIOptions
+        {
+            WorkspaceName = "vision",
+            TimeoutSeconds = 30,
+            MaxImageBytes = 2,
+        });
+
+        await Should.ThrowAsync<ArgumentException>(
+            () => analyzer.AnalyzeAsync(TestImage, "image/png", TestContext.Current.CancellationToken));
+
+        await _structuredCompletion.DidNotReceive().CompleteAsync<LlmAnalysisResponse>(
+            Arg.Any<StructuredCompletionRequest>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task AnalyzeAsync_ZeroMaxImageBytes_DisablesTheGuard()
+    {
+        SetupCompletion(Succeeded(new LlmAnalysisResponse("d", [], [], null)));
+        LlmImageAnalyzer analyzer = CreateAnalyzer(new ImagingAIOptions
+        {
+            WorkspaceName = "vision",
+            TimeoutSeconds = 30,
+            MaxImageBytes = 0,
+        });
 
         ImageAnalysis result = await analyzer.AnalyzeAsync(TestImage, "image/png", TestContext.Current.CancellationToken);
 
-        result.SuggestedAltText.ShouldBeNull();
-        result.DetectedObjects.ShouldBeEmpty();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
-    public async Task AnalyzeAsync_InvalidJsonResponse_ThrowsJsonException()
-    {
-        SetupChatResponse("not valid json");
-
-        LlmImageAnalyzer analyzer = CreateAnalyzer();
-
-        await Should.ThrowAsync<System.Text.Json.JsonException>(
-            () => analyzer.AnalyzeAsync(TestImage, "image/png", TestContext.Current.CancellationToken));
-    }
-
-    [Fact]
-    public async Task AnalyzeAsync_NullContentType_ThrowsArgumentNullException()
-    {
-        LlmImageAnalyzer analyzer = CreateAnalyzer();
-
+    public async Task AnalyzeAsync_NullContentType_ThrowsArgumentNullException() =>
         await Should.ThrowAsync<ArgumentNullException>(
-            () => analyzer.AnalyzeAsync(TestImage, null!, TestContext.Current.CancellationToken));
-    }
-
-    [Fact]
-    public async Task AnalyzeAsync_UsesConfiguredWorkspaceName()
-    {
-        const string json = """
-            {
-                "description": "Test",
-                "detectedObjects": [],
-                "tags": [],
-                "suggestedAltText": null
-            }
-            """;
-
-        SetupChatResponse(json);
-
-        LlmImageAnalyzer analyzer = CreateAnalyzer();
-
-        await analyzer.AnalyzeAsync(TestImage, "image/png", TestContext.Current.CancellationToken);
-
-        await _chatClientFactory.Received(1).CreateAsync("vision", Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task AnalyzeAsync_SendsImageDataAsChatMessage()
-    {
-        const string json = """
-            {
-                "description": "Test image",
-                "detectedObjects": [],
-                "tags": [],
-                "suggestedAltText": null
-            }
-            """;
-
-        SetupChatResponse(json);
-
-        LlmImageAnalyzer analyzer = CreateAnalyzer();
-
-        await analyzer.AnalyzeAsync(TestImage, "image/webp", TestContext.Current.CancellationToken);
-
-        await _chatClient.Received(1).GetResponseAsync(
-            Arg.Is<IEnumerable<ChatMessage>>(msgs =>
-                msgs.Any(m => m.Role == ChatRole.User &&
-                    m.Contents.OfType<DataContent>().Any(dc => dc.MediaType == "image/webp") &&
-                    m.Contents.OfType<TextContent>().Any())),
-            Arg.Any<ChatOptions>(),
-            Arg.Any<CancellationToken>());
-    }
-
-    private LlmImageAnalyzer CreateAnalyzer() =>
-        new(_chatClientFactory, _options, _metrics, NullLogger<LlmImageAnalyzer>.Instance);
-
-    private void SetupChatResponse(string? text)
-    {
-        ChatResponse response = new([new ChatMessage(ChatRole.Assistant, text)]);
-
-        _chatClient.GetResponseAsync(
-            Arg.Any<IEnumerable<ChatMessage>>(),
-            Arg.Any<ChatOptions>(),
-            Arg.Any<CancellationToken>()).Returns(response);
-    }
+            () => CreateAnalyzer().AnalyzeAsync(TestImage, null!, TestContext.Current.CancellationToken));
 }

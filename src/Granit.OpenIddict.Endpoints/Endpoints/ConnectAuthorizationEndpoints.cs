@@ -152,6 +152,17 @@ internal static partial class ConnectAuthorizationEndpoints
                 context.RequestAborted)
             .ConfigureAwait(false);
 
+        // Propagate the persistent-login choice (the Identity cookie's IsPersistent, set at
+        // interactive login from "remember me") onto the token as a remember_me claim, so the
+        // idle-session job can exempt these sessions from inactivity revocation. The token endpoint
+        // preserves it across refreshes; the heartbeat reads it from the access token.
+        if (authenticateResult.Properties?.IsPersistent == true)
+        {
+            Claim rememberMe = new("remember_me", "true");
+            rememberMe.SetDestinations(OpenIddictConstants.Destinations.AccessToken);
+            principal.Identities.First().AddClaim(rememberMe);
+        }
+
         // Reuse or create an authorization for this subject + client + scopes.
         IOpenIddictAuthorizationManager authorizationManager = context.RequestServices
             .GetRequiredService<IOpenIddictAuthorizationManager>();

@@ -29,6 +29,7 @@ public sealed class ImagingAIServiceRegistrationTests
         // Minimal stand-in for Granit.AI: the scoped contracts the analyzer and the
         // vision text-extractor capture.
         builder.Services.TryAddScoped(_ => Substitute.For<IAIChatClientFactory>());
+        builder.Services.TryAddScoped(_ => Substitute.For<IStructuredCompletion>());
         builder.Services.TryAddScoped(_ => Substitute.For<IAIWorkspaceProvider>());
         builder.Services.TryAddScoped(_ => Substitute.For<IAIWorkspaceCapabilityResolver>());
 

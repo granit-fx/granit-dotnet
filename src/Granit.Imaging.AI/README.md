@@ -49,6 +49,21 @@ degrades gracefully — the agent is told it cannot read the image rather than f
 The `WorkspaceName` must reference an AI workspace configured with a multimodal model.
 When omitted, the default workspace is used.
 
+## Which image-to-text path to use
+
+Granit deliberately ships THREE image-to-text implementations; they serve different layers
+and their differences (workspace resolution, prompt, failure semantics) are intentional —
+see ADR-067.
+
+| Path | Package | Use when |
+| --- | --- | --- |
+| `TesseractOcrExtractor` (`ITextExtractor`) | `Granit.TextExtraction.Ocr.Tesseract` | Deterministic, on-prem OCR in the indexing pipeline; no data leaves the host |
+| `AIVisionOcrExtractor` (`ITextExtractor`) | `Granit.TextExtraction.Ocr.AI` | LLM-vision OCR in the indexing pipeline; workspace named in options; soft-skips on failure |
+| `extract_text_from_image` tool (`IImageTextExtractor`) | `Granit.Imaging.AI` | Vision-as-tool for agentic chat (opt-in, default-off); resolves a Vision workspace via the capability resolver; degrades to null |
+
+All LLM paths share the `<granit-vlm-ocr>` envelope (`Granit.AI.Vision.VisionOcrEnvelope`)
+and an OCR-only system message as prompt-injection defence (OWASP LLM01).
+
 ## Documentation
 
 See the [full documentation](https://granit-fx.dev).

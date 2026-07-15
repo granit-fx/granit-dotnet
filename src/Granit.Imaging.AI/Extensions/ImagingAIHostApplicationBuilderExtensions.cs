@@ -3,6 +3,7 @@ using Granit.Diagnostics;
 using Granit.Imaging.AI.Diagnostics;
 using Granit.Imaging.AI.Internal;
 using Granit.Imaging.AI.Options;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -38,6 +39,8 @@ public static class ImagingAIHostApplicationBuilderExtensions
         builder.Services.TryAddEnumerable(
             ServiceDescriptor.Singleton<IValidateOptions<ImagingAIOptions>, ImagingAIOptionsValidator>());
 
+        // Soft multi-tenancy dependency: real implementation comes from Granit.MultiTenancy when present.
+        builder.Services.TryAddSingleton<ICurrentTenant>(NullTenantContext.Instance);
         builder.Services.TryAddSingleton<ImagingAIMetrics>();
         // Scoped because LlmImageAnalyzer depends on IAIChatClientFactory (scoped).
         // The analyzer carries no singleton-justifying state.

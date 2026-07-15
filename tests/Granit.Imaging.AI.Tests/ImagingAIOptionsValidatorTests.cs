@@ -25,4 +25,14 @@ public sealed class ImagingAIOptionsValidatorTests
     public void Boundary_timeouts_pass(int timeoutSeconds) =>
         _validator.Validate(null, new ImagingAIOptions { TimeoutSeconds = timeoutSeconds })
             .Succeeded.ShouldBeTrue();
+
+    [Fact]
+    public void Negative_MaxImageBytes_fails() =>
+        _validator.Validate(null, new ImagingAIOptions { MaxImageBytes = -1 })
+            .Failed.ShouldBeTrue();
+
+    [Fact]
+    public void Zero_MaxImageBytes_means_disabled_and_passes() =>
+        _validator.Validate(null, new ImagingAIOptions { MaxImageBytes = 0 })
+            .Succeeded.ShouldBeTrue();
 }

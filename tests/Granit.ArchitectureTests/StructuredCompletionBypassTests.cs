@@ -32,11 +32,6 @@ public sealed partial class StructuredCompletionBypassTests
         // The IStructuredCompletion implementation itself — it owns GetResponseAsync + Deserialize<T>
         // precisely so every other .AI module does not have to (ADR-064).
         "Granit.AI/Internal/DefaultStructuredCompletion.cs",
-
-        // Multimodal vision: the image travels as MEAI DataContent (raw bytes), which the text-only
-        // structured-completion primitive cannot carry. This analyzer legitimately calls
-        // GetResponseAsync + Deserialize<T>. Revisit if a multimodal primitive lands (ADR-064 follow-up).
-        "Granit.Imaging.AI/Internal/LlmImageAnalyzer.cs",
     };
 
     [Fact]
