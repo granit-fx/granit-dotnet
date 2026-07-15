@@ -29,8 +29,11 @@ internal sealed class OpenIddictUserSessionProvider(
     {
         var sessions = new List<UserSessionDescriptor>();
 
-        // GranitOpenIddictToken.TenantId is always null — OpenIddict never sets it.
-        // Disable the IMultiTenant filter so tenant users can see their own tokens.
+        // Kept deliberately: tokens themselves are global (TenantId stays null) and the
+        // null-is-global filter would surface them anyway, but this listing also resolves each
+        // token's application for its device kind, and applications may be tenant-owned. The
+        // /sessions call can run outside the owning tenant's scope, so disable the IMultiTenant
+        // filter for the whole listing to resolve those applications regardless of scope.
         using IDisposable? _ = dataFilter?.Disable<IMultiTenant>();
 
         // One device-kind resolution per distinct client across the whole listing — many of a user's tokens
@@ -192,8 +195,10 @@ internal sealed class OpenIddictUserSessionProvider(
     public async Task<bool> RevokeAsync(
         string userId, string sessionId, CancellationToken cancellationToken = default)
     {
-        using IDisposable? _ = dataFilter?.Disable<IMultiTenant>();
-
+        // No IMultiTenant bypass needed: this path only reads the token (tokens are always
+        // global — TenantId stays null, never stamped), and the null-is-global query filter
+        // makes a global row visible under every tenant scope. Ownership is enforced by the
+        // subject check below.
         object? token = await tokenManager.FindByIdAsync(sessionId, cancellationToken)
             .ConfigureAwait(false);
         if (token is null)
