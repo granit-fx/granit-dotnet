@@ -7,6 +7,7 @@
 //   - N'enregistre PAS de IDataSeedContributor (responsabilité des modules)
 // =============================================================================
 
+using Granit.Persistence.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.Extensions.DependencyInjection;

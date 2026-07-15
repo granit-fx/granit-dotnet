@@ -2,7 +2,7 @@ using Granit.Domain;
 using Granit.Identity;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Options;
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.DataSeeding;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

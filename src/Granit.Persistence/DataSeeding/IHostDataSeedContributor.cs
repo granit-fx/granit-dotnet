@@ -1,4 +1,4 @@
-namespace Granit.Persistence.EntityFrameworkCore.DataSeeding;
+namespace Granit.Persistence.DataSeeding;
 
 /// <summary>
 /// Contributes seed data that belongs to the host (shared) database context.

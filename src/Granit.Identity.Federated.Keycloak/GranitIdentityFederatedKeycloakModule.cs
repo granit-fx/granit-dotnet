@@ -1,6 +1,7 @@
 using Granit.Http.Resilience;
 using Granit.Identity.Federated.Keycloak.Extensions;
 using Granit.Modularity;
+using Granit.Persistence;
 using Granit.Timing;
 
 namespace Granit.Identity.Federated.Keycloak;
@@ -12,6 +13,7 @@ namespace Granit.Identity.Federated.Keycloak;
 [DependsOn(
     typeof(GranitHttpResilienceModule),
     typeof(GranitIdentityFederatedModule),
+    typeof(GranitPersistenceModule),
     typeof(GranitTimingModule))]
 public sealed class GranitIdentityFederatedKeycloakModule : GranitModule
 {

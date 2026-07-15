@@ -3,7 +3,7 @@ using Granit.OpenIddict.EntityFrameworkCore.Entities;
 using Granit.OpenIddict.EntityFrameworkCore.Seeding;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Options;
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.DataSeeding;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using OpenIddict.Abstractions;

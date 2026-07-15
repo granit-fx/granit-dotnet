@@ -1,6 +1,7 @@
 using Granit.Http.Resilience;
 using Granit.Identity.Federated.EntraId.Extensions;
 using Granit.Modularity;
+using Granit.Persistence;
 using Granit.Timing;
 
 namespace Granit.Identity.Federated.EntraId;
@@ -12,6 +13,7 @@ namespace Granit.Identity.Federated.EntraId;
 [DependsOn(
     typeof(GranitHttpResilienceModule),
     typeof(GranitIdentityFederatedModule),
+    typeof(GranitPersistenceModule),
     typeof(GranitTimingModule))]
 public sealed class GranitIdentityFederatedEntraIdModule : GranitModule
 {

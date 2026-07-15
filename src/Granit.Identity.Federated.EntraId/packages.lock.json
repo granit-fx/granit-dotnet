@@ -53,16 +53,6 @@
         "resolved": "4.15.0",
         "contentHash": "E8fu71Y+vzhniJKy1K13Rzwm8Vjcj7CDFBpflqncKUZfc3SzuF0kMBiyMmgXNPkjWTdE3Z+30HlGgYjHONZY/Q=="
       },
-      "Microsoft.EntityFrameworkCore.Abstractions": {
-        "type": "Transitive",
-        "resolved": "10.0.10",
-        "contentHash": "bOzrFCl6uZCjaSh2bG1ToRQRdx+iXvxosCg9hFyG9OWeAzOFI4xev9OqKeWfKf/kAHyox2JnbcvLVf2ceA7sqA=="
-      },
-      "Microsoft.EntityFrameworkCore.Analyzers": {
-        "type": "Transitive",
-        "resolved": "10.0.10",
-        "contentHash": "2gLDordUCGf3aNOOuqtTbP5mxhiP9nk6TnvGiE3RnqT891O+Zf/qKu1PIREubs1M16A0SImr4vULBfU5BTDs1Q=="
-      },
       "Microsoft.Extensions.AmbientMetadata.Application": {
         "type": "Transitive",
         "resolved": "10.8.0",
@@ -351,12 +341,6 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
-      "granit.http.exceptionhandling": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
       "granit.http.resilience": {
         "type": "Project",
         "dependencies": {
@@ -417,21 +401,6 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.persistence.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
-          "Granit.Persistence": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore": "[10.*, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
-          "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[10.*, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
-        }
-      },
       "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {
@@ -451,30 +420,6 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "Microsoft.EntityFrameworkCore": {
-        "type": "CentralTransitive",
-        "requested": "[10.*, )",
-        "resolved": "10.0.10",
-        "contentHash": "a0V7zj/VbYP6dTdWpUgE/r2PuLKtUGe2aJ0lVKkn/wP9ZhaxUz2kQydVfvOjCv2SKxlrqdBfHhPD4Cvlf+4ffA==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.10",
-          "Microsoft.EntityFrameworkCore.Analyzers": "10.0.10",
-          "Microsoft.Extensions.Caching.Memory": "10.0.10",
-          "Microsoft.Extensions.Logging": "10.0.10"
-        }
-      },
-      "Microsoft.EntityFrameworkCore.Relational": {
-        "type": "CentralTransitive",
-        "requested": "[10.*, )",
-        "resolved": "10.0.10",
-        "contentHash": "wNonj40aZxia+GtuBiiD6ZqVh4h6y5Nje1bGdmzZ8/ui0QRsAN+S0SIrLHFCEGbG9cDbeaE40sh+Lr7o9rRs6g==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.10",
-          "Microsoft.Extensions.Caching.Memory": "10.0.10",
-          "Microsoft.Extensions.Configuration.Abstractions": "10.0.10",
-          "Microsoft.Extensions.Logging": "10.0.10"
         }
       },
       "Microsoft.Extensions.Caching.Abstractions": {
@@ -514,17 +459,6 @@
         "requested": "[10.*, )",
         "resolved": "10.0.10",
         "contentHash": "z/2xXlFw2aLGjHyEm6E0tQ+In6VfzQzTrtArbQ2c0TQE16ZbyDCMGPvaUT9I0s8rgy9sRWlU2P9waW37qV04qA=="
-      },
-      "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": {
-        "type": "CentralTransitive",
-        "requested": "[10.*, )",
-        "resolved": "10.0.10",
-        "contentHash": "jgYLn+CG1/EgZ3lsAuRUvb0RFhr1q23/z4U85arQ8XgABVZAuJIVecLaShMxsB/AS0ufY+Z4OCv1facaiEyc5g==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.10",
-          "Microsoft.Extensions.Diagnostics.HealthChecks": "10.0.10",
-          "Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions": "10.0.10"
-        }
       },
       "Microsoft.Extensions.Hosting.Abstractions": {
         "type": "CentralTransitive",

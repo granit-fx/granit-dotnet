@@ -1,6 +1,6 @@
 using Granit.Modularity;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;

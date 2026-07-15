@@ -1,5 +1,6 @@
 using Granit.Identity.Federated.Cognito.Extensions;
 using Granit.Modularity;
+using Granit.Persistence;
 
 namespace Granit.Identity.Federated.Cognito;
 
@@ -7,7 +8,9 @@ namespace Granit.Identity.Federated.Cognito;
 /// Granit module that registers the AWS Cognito User Pools as the
 /// <see cref="IIdentityProvider"/> implementation.
 /// </summary>
-[DependsOn(typeof(GranitIdentityFederatedModule))]
+[DependsOn(
+    typeof(GranitIdentityFederatedModule),
+    typeof(GranitPersistenceModule))]
 public sealed class GranitIdentityFederatedCognitoModule : GranitModule
 {
     /// <inheritdoc/>

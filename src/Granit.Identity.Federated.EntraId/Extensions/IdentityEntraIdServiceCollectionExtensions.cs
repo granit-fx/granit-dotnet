@@ -5,7 +5,7 @@ using Granit.Identity.Federated.EntraId.HealthChecks;
 using Granit.Identity.Federated.EntraId.Internal;
 using Granit.Identity.Federated.EntraId.Options;
 using Granit.Identity.Federated.EntraId.Sync;
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.DataSeeding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;

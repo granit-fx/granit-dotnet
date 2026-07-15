@@ -855,7 +855,7 @@
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Identity.Federated": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.Persistence": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Diagnostics.HealthChecks": "[10.*, )",
           "Microsoft.Extensions.Http": "[10.*, )",

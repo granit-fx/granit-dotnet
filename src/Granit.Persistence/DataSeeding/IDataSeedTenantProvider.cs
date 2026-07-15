@@ -1,4 +1,4 @@
-namespace Granit.Persistence.EntityFrameworkCore.DataSeeding;
+namespace Granit.Persistence.DataSeeding;
 
 /// <summary>
 /// Provides the list of active tenant identifiers for tenant-scoped data seeding.

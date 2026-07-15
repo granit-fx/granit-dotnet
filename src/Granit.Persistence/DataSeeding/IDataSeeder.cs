@@ -1,4 +1,4 @@
-namespace Granit.Persistence.EntityFrameworkCore.DataSeeding;
+namespace Granit.Persistence.DataSeeding;
 
 /// <summary>
 /// Orchestrates the execution of all registered data seed contributors.
@@ -6,7 +6,7 @@ namespace Granit.Persistence.EntityFrameworkCore.DataSeeding;
 /// <remarks>
 /// <para>
 /// Resolved from DI as a singleton. Contributors are resolved from scoped service providers
-/// to support scoped dependencies (e.g., <see cref="Microsoft.EntityFrameworkCore.DbContext"/>).
+/// to support scoped dependencies (e.g., a <c>DbContext</c>).
 /// </para>
 /// <para>
 /// Errors thrown by individual contributors are logged but do not prevent remaining contributors

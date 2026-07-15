@@ -6,7 +6,7 @@ using Granit.Identity.Extensions;
 using Granit.Identity.Federated.Cognito.Internal;
 using Granit.Identity.Federated.Cognito.Options;
 using Granit.Identity.Federated.Cognito.Sync;
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.DataSeeding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;

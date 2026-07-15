@@ -2,6 +2,7 @@ using Granit.DataFiltering;
 using Granit.Diagnostics;
 using Granit.Events;
 using Granit.Http.ExceptionHandling;
+using Granit.Persistence.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.Diagnostics;
 using Granit.Persistence.EntityFrameworkCore.Events;

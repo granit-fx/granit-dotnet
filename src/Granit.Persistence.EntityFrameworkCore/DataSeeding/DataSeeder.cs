@@ -1,4 +1,5 @@
 using Granit.MultiTenancy;
+using Granit.Persistence.DataSeeding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

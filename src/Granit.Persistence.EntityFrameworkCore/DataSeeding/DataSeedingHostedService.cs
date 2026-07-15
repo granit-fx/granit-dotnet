@@ -1,3 +1,4 @@
+using Granit.Persistence.DataSeeding;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 

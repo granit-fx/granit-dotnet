@@ -3,7 +3,7 @@ namespace Granit.Persistence.EntityFrameworkCore.Hosting;
 /// <summary>
 /// Provisions a newly created tenant: creates the database schema (if SchemaPerTenant),
 /// runs EF Core migrations for all tenant-isolated DbContexts discovered from DI,
-/// and seeds tenant-specific data via <see cref="DataSeeding.IDataSeeder.SeedTenantAsync"/>.
+/// and seeds tenant-specific data via <see cref="Granit.Persistence.DataSeeding.IDataSeeder.SeedTenantAsync"/>.
 /// </summary>
 /// <remarks>
 /// <para>

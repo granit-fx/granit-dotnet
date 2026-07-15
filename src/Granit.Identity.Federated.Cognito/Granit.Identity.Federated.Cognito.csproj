@@ -22,7 +22,7 @@
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Identity.Federated\Granit.Identity.Federated.csproj" />
-    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

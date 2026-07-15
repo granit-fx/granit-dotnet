@@ -1,7 +1,7 @@
 using Granit.AI.Prompts.EntityFrameworkCore.Seeding;
 using Granit.Modularity;
+using Granit.Persistence.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore;
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.AI.Prompts.EntityFrameworkCore;

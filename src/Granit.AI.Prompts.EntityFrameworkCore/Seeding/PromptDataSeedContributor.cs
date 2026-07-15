@@ -3,7 +3,7 @@ using Granit.AI.Prompts.EntityFrameworkCore.Internal;
 using Granit.AI.Prompts.Seeding;
 using Granit.Domain.ValueObjects;
 using Granit.Guids;
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.DataSeeding;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.AI.Prompts.EntityFrameworkCore.Seeding;

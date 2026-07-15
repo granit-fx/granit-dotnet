@@ -1,4 +1,4 @@
-namespace Granit.Persistence.EntityFrameworkCore.DataSeeding;
+namespace Granit.Persistence.DataSeeding;
 
 /// <summary>
 /// Context passed to each <see cref="IDataSeedContributor"/> during seeding.

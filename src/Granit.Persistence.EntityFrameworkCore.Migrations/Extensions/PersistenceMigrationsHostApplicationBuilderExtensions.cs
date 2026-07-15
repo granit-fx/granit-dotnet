@@ -1,4 +1,4 @@
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Options;
 using Microsoft.EntityFrameworkCore;

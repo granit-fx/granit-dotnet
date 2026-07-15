@@ -1408,7 +1408,7 @@
         "Granit.Authorization",
         "Granit.Guids",
         "Granit.Identity.Federated",
-        "Granit.Persistence.EntityFrameworkCore"
+        "Granit.Persistence"
       ],
       "framework": "net10.0"
     },
@@ -1436,7 +1436,7 @@
         "Granit.Guids",
         "Granit.Http.Resilience",
         "Granit.Identity.Federated",
-        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Persistence",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1464,7 +1464,7 @@
         "Granit.Guids",
         "Granit.Http.Resilience",
         "Granit.Identity.Federated",
-        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Persistence",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -29082,7 +29082,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Cognito",
       "file": "src/Granit.Identity.Federated.Cognito/GranitIdentityFederatedCognitoModule.cs",
-      "line": 11,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
@@ -29352,7 +29352,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntraId",
       "file": "src/Granit.Identity.Federated.EntraId/GranitIdentityFederatedEntraIdModule.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -29735,7 +29735,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Keycloak",
       "file": "src/Granit.Identity.Federated.Keycloak/GranitIdentityFederatedKeycloakModule.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -43925,10 +43925,10 @@
     },
     {
       "name": "DataSeedContext",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.DataSeedContext",
+      "fqn": "Granit.Persistence.DataSeeding.DataSeedContext",
       "kind": "class",
-      "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/DataSeedContext.cs",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/DataSeeding/DataSeedContext.cs",
       "line": 18,
       "members": [
         {
@@ -43947,10 +43947,10 @@
     },
     {
       "name": "IDataSeedContributor",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.IDataSeedContributor",
+      "fqn": "Granit.Persistence.DataSeeding.IDataSeedContributor",
       "kind": "interface",
-      "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/IDataSeedContributor.cs",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/DataSeeding/IDataSeedContributor.cs",
       "line": 24,
       "members": [
         {
@@ -43963,10 +43963,10 @@
     },
     {
       "name": "IDataSeedTenantProvider",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.IDataSeedTenantProvider",
+      "fqn": "Granit.Persistence.DataSeeding.IDataSeedTenantProvider",
       "kind": "interface",
-      "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/IDataSeedTenantProvider.cs",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/DataSeeding/IDataSeedTenantProvider.cs",
       "line": 18,
       "members": [
         {
@@ -43979,10 +43979,10 @@
     },
     {
       "name": "IDataSeeder",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.IDataSeeder",
+      "fqn": "Granit.Persistence.DataSeeding.IDataSeeder",
       "kind": "interface",
-      "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/IDataSeeder.cs",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/DataSeeding/IDataSeeder.cs",
       "line": 24,
       "members": [
         {
@@ -44013,10 +44013,10 @@
     },
     {
       "name": "IHostDataSeedContributor",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.IHostDataSeedContributor",
+      "fqn": "Granit.Persistence.DataSeeding.IHostDataSeedContributor",
       "kind": "interface",
-      "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/IHostDataSeedContributor.cs",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/DataSeeding/IHostDataSeedContributor.cs",
       "line": 21,
       "members": [
         {
@@ -44029,10 +44029,10 @@
     },
     {
       "name": "ITenantDataSeedContributor",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.ITenantDataSeedContributor",
+      "fqn": "Granit.Persistence.DataSeeding.ITenantDataSeedContributor",
       "kind": "interface",
-      "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/ITenantDataSeedContributor.cs",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/DataSeeding/ITenantDataSeedContributor.cs",
       "line": 28,
       "members": [
         {
@@ -44192,7 +44192,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/PersistenceServiceCollectionExtensions.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitPersistence",

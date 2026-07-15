@@ -6,7 +6,7 @@ using Granit.Identity.Federated.Keycloak.Internal;
 using Granit.Identity.Federated.Keycloak.Options;
 using Granit.Identity.Federated.Keycloak.Sync;
 using Granit.Identity.Federated.RateLimiting;
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.DataSeeding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;

@@ -7,7 +7,7 @@
 //   - Retourne null pour une clé inexistante
 // =============================================================================
 
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.DataSeeding;
 using Shouldly;
 using Xunit;
 

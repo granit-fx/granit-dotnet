@@ -2830,7 +2830,7 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Identity.Federated": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )"
+          "Granit.Persistence": "[0.1.0-dev, )"
         }
       },
       "granit.identity.federated.cognito.backgroundjobs": {
@@ -2856,7 +2856,7 @@
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Identity.Federated": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.Persistence": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -2882,7 +2882,7 @@
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Identity.Federated": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.Persistence": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -5121,10 +5121,11 @@
       "OllamaSharp": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.4.26",
-        "contentHash": "5f3/g1ZWLmDqOHmQ9E8MyGlmzjemnJjmBQaor6aqd5b69VwLvVhi1t6HTjar0Vc7Wpitu61jwqhpmO1qMf315w==",
+        "resolved": "5.4.27",
+        "contentHash": "jjKkl+yy49rW/ukBUjJKtFLT6kA610YKWP7HOV4kDff9Eg4RCxHF+LWxyY778y0Iowl7y35wgEofMr1G5JmH4Q==",
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.4.1"
+          "Microsoft.Extensions.AI": "10.8.0",
+          "Microsoft.Extensions.AI.Abstractions": "10.8.0"
         }
       },
       "OpenIddict": {

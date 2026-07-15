@@ -3,7 +3,7 @@ using Granit.Authorization.Domain;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.DataSeeding;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 

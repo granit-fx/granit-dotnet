@@ -1,6 +1,6 @@
 using System.Reflection;
 using Granit.Modularity;
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Internal;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,4 @@
-namespace Granit.Persistence.EntityFrameworkCore.DataSeeding;
+namespace Granit.Persistence.DataSeeding;
 
 /// <summary>
 /// Contributes seed data that belongs to a specific tenant context.
@@ -13,7 +13,7 @@ namespace Granit.Persistence.EntityFrameworkCore.DataSeeding;
 /// <para>
 /// Because the tenant context is already active, implementations should <b>not</b> call
 /// <c>ICurrentTenant.Change()</c> or create their own <c>IServiceScope</c>.
-/// Use <see cref="Microsoft.EntityFrameworkCore.IDbContextFactory{TContext}"/> to create
+/// Use <c>IDbContextFactory&lt;TContext&gt;</c> to create
 /// a fresh <c>DbContext</c> connected to the correct tenant schema.
 /// </para>
 /// <para>

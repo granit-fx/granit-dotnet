@@ -8,6 +8,7 @@
 //   - StartAsync/StopAsync complètent sans effet de bord
 // =============================================================================
 
+using Granit.Persistence.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;

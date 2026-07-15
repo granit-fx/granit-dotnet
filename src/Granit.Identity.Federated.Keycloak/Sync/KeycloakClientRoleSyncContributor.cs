@@ -1,4 +1,4 @@
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.DataSeeding;
 
 namespace Granit.Identity.Federated.Keycloak.Sync;
 

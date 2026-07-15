@@ -1,10 +1,10 @@
-using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.DataSeeding;
 
 namespace Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 
 /// <summary>
 /// Bridges <see cref="ITenantEnumerator"/> to <see cref="IDataSeedTenantProvider"/>
-/// so the <see cref="DataSeeder"/> can iterate tenants without depending on the
+/// so the <c>DataSeeder</c> can iterate tenants without depending on the
 /// Migrations assembly directly.
 /// </summary>
 internal sealed class TenantEnumeratorDataSeedTenantProvider(
