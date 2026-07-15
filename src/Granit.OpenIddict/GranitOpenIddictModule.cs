@@ -78,6 +78,7 @@ public sealed class GranitOpenIddictModule : GranitModule
         context.Services.TryAddScoped<IOidcPrincipalFactory, OidcPrincipalFactory>();
         context.Services.TryAddScoped<ITotpService, DefaultTotpService>();
         context.Services.TryAddScoped<IAccountDeletionService, Internal.AspNetAccountDeletionService>();
+        context.Services.TryAddScoped<IAccountDeletionEtoReconciler, Internal.AccountDeletionEtoReconciler>();
         context.Services.TryAddScoped<IImpersonationService, Internal.AspNetImpersonationService>();
         context.Services.TryAddScoped<IKeyRotationService, Internal.KeyRotationService>();
 

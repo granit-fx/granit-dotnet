@@ -42707,6 +42707,31 @@
       ]
     },
     {
+      "name": "OpenIddictAccountDeletionEtoDispatchHandler",
+      "fqn": "Granit.OpenIddict.BackgroundJobs.Jobs.OpenIddictAccountDeletionEtoDispatchHandler",
+      "kind": "class",
+      "project": "Granit.OpenIddict.BackgroundJobs",
+      "file": "src/Granit.OpenIddict.BackgroundJobs/Jobs/OpenIddictAccountDeletionEtoDispatchHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(OpenIddictAccountDeletionEtoDispatchJob _, IAccountDeletionEtoReconciler reconciler, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "OpenIddictAccountDeletionEtoDispatchJob",
+      "fqn": "Granit.OpenIddict.BackgroundJobs.Jobs.OpenIddictAccountDeletionEtoDispatchJob",
+      "kind": "record",
+      "project": "Granit.OpenIddict.BackgroundJobs",
+      "file": "src/Granit.OpenIddict.BackgroundJobs/Jobs/OpenIddictAccountDeletionEtoDispatchJob.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "OpenIddictIdleSessionEnforcementHandler",
       "fqn": "Granit.OpenIddict.BackgroundJobs.Jobs.OpenIddictIdleSessionEnforcementHandler",
       "kind": "class",
@@ -43792,6 +43817,22 @@
       ]
     },
     {
+      "name": "IAccountDeletionEtoReconciler",
+      "fqn": "Granit.OpenIddict.Services.IAccountDeletionEtoReconciler",
+      "kind": "interface",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Services/IAccountDeletionEtoReconciler.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ReconcileAsync",
+          "kind": "method",
+          "signature": "ReconcileAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IClaimsDestinationProvider",
       "fqn": "Granit.OpenIddict.Services.IClaimsDestinationProvider",
       "kind": "interface",
@@ -43842,6 +43883,28 @@
           "kind": "method",
           "signature": "CreateClientPrincipal(string clientId, ImmutableArray<string> scopes, string authenticationScheme)",
           "returnType": "ClaimsPrincipal"
+        }
+      ]
+    },
+    {
+      "name": "IPendingAccountDeletionStore",
+      "fqn": "Granit.OpenIddict.Services.IPendingAccountDeletionStore",
+      "kind": "interface",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Services/IPendingAccountDeletionStore.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "GetPendingAsync",
+          "kind": "method",
+          "signature": "GetPendingAsync(int max, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PendingAccountDeletion>>"
+        },
+        {
+          "name": "MarkDispatchedAsync",
+          "kind": "method",
+          "signature": "MarkDispatchedAsync(Guid userId, DateTimeOffset dispatchedAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -43898,6 +43961,15 @@
       "project": "Granit.OpenIddict.Abstractions",
       "file": "src/Granit.OpenIddict.Abstractions/Services/IKeyRotationService.cs",
       "line": 29,
+      "members": []
+    },
+    {
+      "name": "PendingAccountDeletion",
+      "fqn": "Granit.OpenIddict.Services.PendingAccountDeletion",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Services/IPendingAccountDeletionStore.cs",
+      "line": 33,
       "members": []
     },
     {
