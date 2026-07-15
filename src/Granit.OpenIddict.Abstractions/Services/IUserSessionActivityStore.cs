@@ -36,4 +36,16 @@ public interface IUserSessionActivityStore
     /// <param name="cancellationToken">Cancellation token.</param>
     Task<IReadOnlyDictionary<string, DateTimeOffset>> GetActivitiesAsync(
         string userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the ids of valid refresh tokens whose session has been idle since before
+    /// <paramref name="idleSince"/> — using the last-activity timestamp, or the token's creation date
+    /// when the session was never touched (a session that never sent a heartbeat is idle from birth).
+    /// The idle-session job loads each and revokes it unless it is a remember-me session.
+    /// </summary>
+    /// <param name="idleSince">The cutoff; sessions with no activity at or after this are idle.</param>
+    /// <param name="max">Maximum number of ids to return in one sweep.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<IReadOnlyList<string>> GetIdleRefreshTokenIdsAsync(
+        DateTimeOffset idleSince, int max, CancellationToken cancellationToken = default);
 }

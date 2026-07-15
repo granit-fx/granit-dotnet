@@ -42835,7 +42835,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.BackgroundJobs",
       "file": "src/Granit.OpenIddict.BackgroundJobs/Services/IdleSessionEnforcementService.cs",
-      "line": 26,
+      "line": 22,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -43996,6 +43996,12 @@
           "kind": "method",
           "signature": "GetActivitiesAsync(string userId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyDictionary<string, DateTimeOffset>>"
+        },
+        {
+          "name": "GetIdleRefreshTokenIdsAsync",
+          "kind": "method",
+          "signature": "GetIdleRefreshTokenIdsAsync(DateTimeOffset idleSince, int max, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
         }
       ]
     },

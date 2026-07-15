@@ -172,6 +172,10 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
         await _postgres.DisposeAsync();
     }
 
+    /// <summary>Gets the application's root service provider (for resolving managers/factories in tests).</summary>
+    internal IServiceProvider Services =>
+        _app?.Services ?? throw new InvalidOperationException("App not initialized.");
+
     /// <summary>Creates a raw <see cref="HttpClient"/> for the test server.</summary>
     public HttpClient CreateHttpClient() =>
         _app?.GetTestClient() ?? throw new InvalidOperationException("App not initialized.");

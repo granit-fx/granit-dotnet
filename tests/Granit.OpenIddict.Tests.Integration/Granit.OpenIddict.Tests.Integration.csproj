@@ -28,6 +28,7 @@
     <ProjectReference Include="..\..\src\Granit.OpenIddict.Server\Granit.OpenIddict.Server.csproj" />
     <ProjectReference Include="..\..\src\Granit.OpenIddict.EntityFrameworkCore\Granit.OpenIddict.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.OpenIddict.Endpoints\Granit.OpenIddict.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.OpenIddict.BackgroundJobs\Granit.OpenIddict.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Local.AspNetIdentity\Granit.Identity.Local.AspNetIdentity.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Local.Endpoints\Granit.Identity.Local.Endpoints.csproj" />
   </ItemGroup>
