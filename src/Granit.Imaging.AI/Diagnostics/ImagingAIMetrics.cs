@@ -11,7 +11,7 @@ namespace Granit.Imaging.AI.Diagnostics;
 /// All metrics follow the <c>granit.imaging.analysis.{action}</c> naming convention
 /// and include <c>tenant_id</c> (coalesced to <c>"global"</c>) via <see cref="TagList"/>.
 /// </remarks>
-public sealed class ImagingAIMetrics(IMeterFactory meterFactory)
+public sealed class ImagingAIMetrics
 {
     /// <summary>The meter name for this module.</summary>
     public const string MeterName = "Granit.Imaging.AI";
@@ -19,18 +19,28 @@ public sealed class ImagingAIMetrics(IMeterFactory meterFactory)
     private const string TagTenantId = "tenant_id";
     private const string DefaultTenant = "global";
 
-    private readonly Counter<long> _analysesCompleted = meterFactory.Create(MeterName).CreateCounter<long>(
-        "granit.imaging.analysis.completed",
-        description: "Number of AI image analyses completed successfully.");
+    private readonly Counter<long> _analysesCompleted;
+    private readonly Counter<long> _analysesFailures;
+    private readonly Histogram<double> _analysisDuration;
 
-    private readonly Counter<long> _analysesFailures = meterFactory.Create(MeterName).CreateCounter<long>(
-        "granit.imaging.analysis.failures",
-        description: "Number of AI image analyses that failed.");
+    /// <summary>Initializes the analysis instruments on a single shared meter.</summary>
+    public ImagingAIMetrics(IMeterFactory meterFactory)
+    {
+        Meter meter = meterFactory.Create(MeterName);
 
-    private readonly Histogram<double> _analysisDuration = meterFactory.Create(MeterName).CreateHistogram<double>(
-        "granit.imaging.analysis.duration",
-        unit: "s",
-        description: "Duration of AI image analysis in seconds.");
+        _analysesCompleted = meter.CreateCounter<long>(
+            "granit.imaging.analysis.completed",
+            description: "Number of AI image analyses completed successfully.");
+
+        _analysesFailures = meter.CreateCounter<long>(
+            "granit.imaging.analysis.failures",
+            description: "Number of AI image analyses that failed.");
+
+        _analysisDuration = meter.CreateHistogram<double>(
+            "granit.imaging.analysis.duration",
+            unit: "s",
+            description: "Duration of AI image analysis in seconds.");
+    }
 
     /// <summary>Records a completed AI image analysis.</summary>
     public void RecordAnalysisCompleted(string? tenantId, string contentType) =>

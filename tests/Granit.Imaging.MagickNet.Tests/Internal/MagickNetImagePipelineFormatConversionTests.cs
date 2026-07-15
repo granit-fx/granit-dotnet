@@ -21,7 +21,7 @@ public sealed class MagickNetImagePipelineFormatConversionTests
     {
         Stream stream = typeof(MagickNetImagePipelineFormatConversionTests).Assembly
             .GetManifestResourceStream("Granit.Imaging.MagickNet.Tests.TestAssets.test-image.png")!;
-        MagickNetImageProcessor processor = new(CreateTestMetrics(), new ImagingMagickNetOptions());
+        MagickNetImageProcessor processor = new(CreateTestMetrics(), Microsoft.Extensions.Options.Options.Create(new ImagingMagickNetOptions()));
         return (MagickNetImagePipeline)processor.Load(stream);
     }
 

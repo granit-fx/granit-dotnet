@@ -33593,12 +33593,6 @@
       "line": 14,
       "members": [
         {
-          "name": "RecordAnalysisCompleted",
-          "kind": "method",
-          "signature": "RecordAnalysisCompleted(string? tenantId, string contentType)",
-          "returnType": "void"
-        },
-        {
           "name": "RecordAnalysisFailure",
           "kind": "method",
           "signature": "RecordAnalysisFailure(string? tenantId, string contentType)",
@@ -33751,12 +33745,6 @@
       "line": 14,
       "members": [
         {
-          "name": "RecordImageProcessed",
-          "kind": "method",
-          "signature": "RecordImageProcessed(string? tenantId, string outputFormat)",
-          "returnType": "void"
-        },
-        {
           "name": "RecordProcessingDuration",
           "kind": "method",
           "signature": "RecordProcessingDuration(string? tenantId, string outputFormat, TimeSpan duration)",
@@ -33811,22 +33799,6 @@
           "kind": "method",
           "signature": "SaveAsAvifAsync(this IImagePipeline pipeline, CancellationToken cancellationToken = default)",
           "returnType": "Task<ImageResult>"
-        }
-      ]
-    },
-    {
-      "name": "ImagingServiceCollectionExtensions",
-      "fqn": "Granit.Imaging.Extensions.ImagingServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Imaging",
-      "file": "src/Granit.Imaging/Extensions/ImagingServiceCollectionExtensions.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "AddGranitImaging",
-          "kind": "method",
-          "signature": "AddGranitImaging(this IServiceCollection services)",
-          "returnType": "IServiceCollection"
         }
       ]
     },
@@ -33950,18 +33922,18 @@
       "members": []
     },
     {
-      "name": "ImagingMagickNetServiceCollectionExtensions",
-      "fqn": "Granit.Imaging.MagickNet.Extensions.ImagingMagickNetServiceCollectionExtensions",
+      "name": "ImagingMagickNetHostApplicationBuilderExtensions",
+      "fqn": "Granit.Imaging.MagickNet.Extensions.ImagingMagickNetHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Imaging.MagickNet",
-      "file": "src/Granit.Imaging.MagickNet/Extensions/ImagingMagickNetServiceCollectionExtensions.cs",
-      "line": 15,
+      "file": "src/Granit.Imaging.MagickNet/Extensions/ImagingMagickNetHostApplicationBuilderExtensions.cs",
+      "line": 20,
       "members": [
         {
           "name": "AddGranitImagingMagickNet",
           "kind": "method",
-          "signature": "AddGranitImagingMagickNet(this IServiceCollection services, Action<ImagingMagickNetOptions>? configure = null)",
-          "returnType": "IServiceCollection"
+          "signature": "AddGranitImagingMagickNet(this IHostApplicationBuilder builder, Action<ImagingMagickNetOptions>? configure = null)",
+          "returnType": "IHostApplicationBuilder"
         }
       ]
     },
@@ -33987,7 +33959,7 @@
       "kind": "class",
       "project": "Granit.Imaging.MagickNet",
       "file": "src/Granit.Imaging.MagickNet/Options/ImagingMagickNetOptions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "MaxMemoryBytes",
