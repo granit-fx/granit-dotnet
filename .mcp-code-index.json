@@ -42732,6 +42732,31 @@
       "members": []
     },
     {
+      "name": "OpenIddictRegistrationEtoDispatchHandler",
+      "fqn": "Granit.OpenIddict.BackgroundJobs.Jobs.OpenIddictRegistrationEtoDispatchHandler",
+      "kind": "class",
+      "project": "Granit.OpenIddict.BackgroundJobs",
+      "file": "src/Granit.OpenIddict.BackgroundJobs/Jobs/OpenIddictRegistrationEtoDispatchHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(OpenIddictRegistrationEtoDispatchJob _, IRegistrationEtoReconciler reconciler, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "OpenIddictRegistrationEtoDispatchJob",
+      "fqn": "Granit.OpenIddict.BackgroundJobs.Jobs.OpenIddictRegistrationEtoDispatchJob",
+      "kind": "record",
+      "project": "Granit.OpenIddict.BackgroundJobs",
+      "file": "src/Granit.OpenIddict.BackgroundJobs/Jobs/OpenIddictRegistrationEtoDispatchJob.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "OpenIddictTokenCleanupHandler",
       "fqn": "Granit.OpenIddict.BackgroundJobs.Jobs.OpenIddictTokenCleanupHandler",
       "kind": "class",
@@ -43859,6 +43884,44 @@
       ]
     },
     {
+      "name": "IPendingRegistrationStore",
+      "fqn": "Granit.OpenIddict.Services.IPendingRegistrationStore",
+      "kind": "interface",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Services/IPendingRegistrationStore.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "GetPendingAsync",
+          "kind": "method",
+          "signature": "GetPendingAsync(int max, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PendingRegistration>>"
+        },
+        {
+          "name": "MarkDispatchedAsync",
+          "kind": "method",
+          "signature": "MarkDispatchedAsync(Guid userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IRegistrationEtoReconciler",
+      "fqn": "Granit.OpenIddict.Services.IRegistrationEtoReconciler",
+      "kind": "interface",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Services/IRegistrationEtoReconciler.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ReconcileAsync",
+          "kind": "method",
+          "signature": "ReconcileAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "ISigningKeyStore",
       "fqn": "Granit.OpenIddict.Services.ISigningKeyStore",
       "kind": "interface",
@@ -43948,6 +44011,15 @@
       "project": "Granit.OpenIddict.Abstractions",
       "file": "src/Granit.OpenIddict.Abstractions/Services/IPendingAccountDeletionStore.cs",
       "line": 33,
+      "members": []
+    },
+    {
+      "name": "PendingRegistration",
+      "fqn": "Granit.OpenIddict.Services.PendingRegistration",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Services/IPendingRegistrationStore.cs",
+      "line": 32,
       "members": []
     },
     {

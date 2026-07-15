@@ -13,6 +13,7 @@ using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
 using Granit.Settings.Services;
+using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -455,6 +456,7 @@ internal static partial class AccountExternalLoginEndpoints
         [FromServices] SignInManager<LocalIdentity> signInManager,
         [FromServices] IEmailConfirmationService emailConfirmation,
         [FromServices] IDistributedEventBus eventBus,
+        [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
         // Master account-creation gate (per-tenant).
@@ -520,6 +522,9 @@ internal static partial class AccountExternalLoginEndpoints
             FirstName = request.FirstName ?? payload.FirstName,
             LastName = request.LastName ?? payload.LastName,
             EmailConfirmed = emailVerified,
+            // Durable registration-event intent, cleared after the inline publish below (see the
+            // reconciler for the crash-recovery path).
+            RegistrationEventPendingSince = clock.Now,
         };
 
         IdentityResult createResult = await userManager.CreateAsync(newUser).ConfigureAwait(false);
@@ -563,6 +568,9 @@ internal static partial class AccountExternalLoginEndpoints
 
         await eventBus.PublishAsync(
             new UserRegisteredEto(newUser.Id, newUser.TenantId), cancellationToken).ConfigureAwait(false);
+
+        newUser.RegistrationEventPendingSince = null;
+        await userManager.UpdateAsync(newUser).ConfigureAwait(false);
 
         return TypedResults.Ok(new AccountLoginResponse(Succeeded: true));
     }

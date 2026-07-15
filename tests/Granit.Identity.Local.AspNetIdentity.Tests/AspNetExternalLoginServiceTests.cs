@@ -5,6 +5,7 @@ using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
+using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 using Shouldly;
@@ -30,10 +31,14 @@ public sealed class AspNetExternalLoginServiceTests
         // keep the happy path creating directly.
         _userManager.Options = new IdentityOptions();
 
+        IClock clock = Substitute.For<IClock>();
+        clock.Now.Returns(DateTimeOffset.UnixEpoch);
+
         _sut = new AspNetExternalLoginService(
             _userManager,
             _claimsMapper,
             _eventBus,
+            clock,
             Microsoft.Extensions.Options.Options.Create(_externalAuthOptions));
     }
 

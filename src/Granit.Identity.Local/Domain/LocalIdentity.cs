@@ -85,6 +85,17 @@ public class LocalIdentity
     /// </summary>
     public DateTimeOffset? DeletionEventDispatchedAt { get; set; }
 
+    /// <summary>
+    /// Gets or sets the UTC timestamp at which this account's registration was recorded as owing a
+    /// <c>UserRegisteredEto</c>. Set atomically with the creation of a self-registered account (today,
+    /// the external-provider registration flow) and cleared once the event is published. <see
+    /// langword="null"/> for accounts created by other means (admin/seed) or whose event was already
+    /// dispatched — the reconciliation job sweeps the non-null stragglers and publishes idempotently,
+    /// so the registration side effects (default role, welcome) survive a crash between the account
+    /// creation and the inline publish.
+    /// </summary>
+    public DateTimeOffset? RegistrationEventPendingSince { get; set; }
+
     /// <summary>Gets or sets a JSON column for custom extensible attributes.</summary>
     public string? CustomAttributesJson { get; set; }
 

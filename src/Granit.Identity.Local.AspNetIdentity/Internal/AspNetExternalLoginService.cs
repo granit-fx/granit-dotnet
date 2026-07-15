@@ -4,6 +4,7 @@ using Granit.Events;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
+using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using GranitExternalLoginInfo = Granit.Identity.Local.Services.ExternalLoginInfo;
@@ -18,6 +19,7 @@ internal sealed class AspNetExternalLoginService(
     UserManager<LocalIdentity> userManager,
     ExternalClaimsMapper claimsMapper,
     IDistributedEventBus eventBus,
+    IClock clock,
     IOptions<ExternalAuthOptions> externalAuthOptions) : IExternalLoginService
 {
     /// <inheritdoc/>
@@ -142,7 +144,9 @@ internal sealed class AspNetExternalLoginService(
                 provider, providerKey, props.Email, props.FirstName, props.LastName, props.UserName));
         }
 
-        // 3b. Sufficient data → create and link.
+        // 3b. Sufficient data → create and link. Stamp the registration-event intent in the creation
+        //     commit so the reconciler can recover the UserRegisteredEto if the inline publish below
+        //     is lost to a crash (the OpenIddict DbContext is not in the Wolverine outbox).
         LocalIdentity newUser = new()
         {
             UserName = props.Email ?? props.UserName ?? providerKey,
@@ -150,6 +154,7 @@ internal sealed class AspNetExternalLoginService(
             FirstName = props.FirstName,
             LastName = props.LastName,
             EmailConfirmed = true, // External provider already verified
+            RegistrationEventPendingSince = clock.Now,
         };
 
         IdentityResult createResult = await userManager.CreateAsync(newUser).ConfigureAwait(false);
@@ -164,9 +169,14 @@ internal sealed class AspNetExternalLoginService(
             new UserLoginInfo(provider, providerKey, provider))
             .ConfigureAwait(false);
 
+        // Fast path: publish inline, then clear the pending marker so the reconciler skips it. A crash
+        // before the clear leaves the marker set and the sweep re-publishes (at-least-once).
         await eventBus.PublishAsync(
             new UserRegisteredEto(newUser.Id, newUser.TenantId),
             cancellationToken).ConfigureAwait(false);
+
+        newUser.RegistrationEventPendingSince = null;
+        await userManager.UpdateAsync(newUser).ConfigureAwait(false);
 
         return ProcessCallbackResult.Created(newUser.Id);
     }

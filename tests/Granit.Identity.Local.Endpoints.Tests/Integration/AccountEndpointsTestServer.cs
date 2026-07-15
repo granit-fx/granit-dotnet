@@ -14,6 +14,7 @@ using Granit.Identity.Local.Endpoints.Permissions;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
 using Granit.Settings.Services;
+using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -184,6 +185,9 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         TimeProvider timeProvider = Substitute.For<TimeProvider>();
         timeProvider.GetUtcNow().Returns(FixedNow);
 
+        IClock clock = Substitute.For<IClock>();
+        clock.Now.Returns(FixedNow);
+
         // ASP.NET Identity mocks — SignInManager requires UserManager which requires IUserStore
         IUserStore<LocalIdentity> userStore = Substitute.For<IUserStore<LocalIdentity>>();
         UserManager<LocalIdentity> userManager = Substitute.For<UserManager<LocalIdentity>>(
@@ -249,6 +253,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(settingProvider);
         builder.Services.AddScoped<IdentityLocalConfigProvider>();
         builder.Services.AddSingleton(timeProvider);
+        builder.Services.AddSingleton(clock);
         builder.Services.AddSingleton(signInManager);
         builder.Services.AddSingleton(userManager);
         builder.Services.AddSingleton(currentTenant);
