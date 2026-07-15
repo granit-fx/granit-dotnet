@@ -7,6 +7,7 @@ using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Endpoints.Options;
 using Granit.Identity.Local.Endpoints.Permissions;
+using Granit.Identity.Local.Exceptions;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Builder;
@@ -172,13 +173,21 @@ internal static class GranitRoleEndpoints
                     IsSystem: false),
                 cancellationToken).ConfigureAwait(false);
         }
-        catch (ArgumentException ex)
+        catch (ArgumentException)
         {
-            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status400BadRequest);
+            return ProblemFactory.Localized(
+                httpContext,
+                "Granit:Identity:Role:CreateFailed",
+                "The role could not be created with the supplied values.",
+                StatusCodes.Status400BadRequest);
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException)
         {
-            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status409Conflict);
+            return ProblemFactory.Localized(
+                httpContext,
+                "Granit:Identity:Role:NameAlreadyExists",
+                "A role with this name already exists in the target scope.",
+                StatusCodes.Status409Conflict);
         }
 
         string basePath = httpContext.Request.Path.Value!.TrimEnd('/');
@@ -219,13 +228,21 @@ internal static class GranitRoleEndpoints
                 .ConfigureAwait(false);
             return TypedResults.Ok(Map(updated));
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("system role", StringComparison.OrdinalIgnoreCase))
+        catch (SystemRoleModificationException)
         {
-            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status403Forbidden);
+            return ProblemFactory.Localized(
+                httpContext,
+                "Granit:Identity:Role:CannotRenameSystem",
+                "System roles cannot be renamed.",
+                StatusCodes.Status403Forbidden);
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException)
         {
-            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status409Conflict);
+            return ProblemFactory.Localized(
+                httpContext,
+                "Granit:Identity:Role:NameAlreadyExists",
+                "A role with this name already exists in the target scope.",
+                StatusCodes.Status409Conflict);
         }
     }
 
@@ -260,13 +277,21 @@ internal static class GranitRoleEndpoints
             await orchestrator.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
             return TypedResults.NoContent();
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("system role", StringComparison.OrdinalIgnoreCase))
+        catch (SystemRoleModificationException)
         {
-            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status403Forbidden);
+            return ProblemFactory.Localized(
+                httpContext,
+                "Granit:Identity:Role:CannotDeleteSystem",
+                "System roles cannot be deleted.",
+                StatusCodes.Status403Forbidden);
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException)
         {
-            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status409Conflict);
+            return ProblemFactory.Localized(
+                httpContext,
+                "Granit:Identity:Role:DeleteConflict",
+                "The role could not be deleted.",
+                StatusCodes.Status409Conflict);
         }
     }
 

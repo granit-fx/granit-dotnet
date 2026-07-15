@@ -4,6 +4,7 @@ using Granit.Events;
 using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
+using Granit.Identity.Local.Exceptions;
 using Granit.Identity.Local.Services;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
@@ -241,10 +242,8 @@ public sealed class AspNetExternalLoginServiceTests
             .Returns(new ExternalUserProperties { Email = "noone@example.com" });
         _userManager.FindByEmailAsync("noone@example.com").Returns((LocalIdentity?)null);
 
-        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
+        await Should.ThrowAsync<ExternalLoginNoLinkedAccountException>(
             () => _sut.ProcessCallbackAsync(principal, "Google", allowRegistration: true, TestContext.Current.CancellationToken));
-
-        ex.Message.ShouldContain("Account not found");
     }
 
     [Fact]
@@ -278,10 +277,9 @@ public sealed class AspNetExternalLoginServiceTests
             .Returns(new ExternalUserProperties { Email = "nobody@example.com" });
         _userManager.FindByEmailAsync("nobody@example.com").Returns((LocalIdentity?)null);
 
-        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
+        await Should.ThrowAsync<ExternalLoginNoLinkedAccountException>(
             () => _sut.ProcessCallbackAsync(principal, "Google", allowRegistration: false, TestContext.Current.CancellationToken));
 
-        ex.Message.ShouldContain("Account not found");
         await _userManager.DidNotReceive().CreateAsync(Arg.Any<LocalIdentity>());
     }
 

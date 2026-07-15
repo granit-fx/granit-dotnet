@@ -1,6 +1,7 @@
 using Granit.Events;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
+using Granit.Identity.Local.Exceptions;
 using Granit.Identity.Local.Services;
 using Granit.Identity.Models;
 using Microsoft.AspNetCore.Identity;
@@ -90,9 +91,8 @@ internal sealed partial class AspNetIdentityProvider(
 
         if (!result.Succeeded)
         {
-            string errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            Log.IdentityOperationFailed(_logger, "User creation", errors);
-            throw new InvalidOperationException($"User creation failed: {errors}");
+            Log.IdentityOperationFailed(_logger, "User creation", string.Join(", ", result.Errors.Select(e => e.Description)));
+            throw result.ToOperationException("User creation");
         }
 
         if (!user.Enabled)
@@ -108,7 +108,7 @@ internal sealed partial class AspNetIdentityProvider(
         string userId, bool enabled, CancellationToken cancellationToken = default)
     {
         LocalIdentity user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"User {userId} not found.");
+            ?? throw new IdentityUserNotFoundException(userId);
 
         if (enabled)
         {
@@ -127,7 +127,7 @@ internal sealed partial class AspNetIdentityProvider(
         string userId, IdentityUserUpdate update, CancellationToken cancellationToken = default)
     {
         LocalIdentity user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"User {userId} not found.");
+            ?? throw new IdentityUserNotFoundException(userId);
 
         if (update.FirstName is not null)
         {
@@ -147,9 +147,8 @@ internal sealed partial class AspNetIdentityProvider(
         IdentityResult result = await _userManager.UpdateAsync(user).ConfigureAwait(false);
         if (!result.Succeeded)
         {
-            string errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            Log.IdentityOperationFailed(_logger, "User update", errors);
-            throw new InvalidOperationException($"User update failed: {errors}");
+            Log.IdentityOperationFailed(_logger, "User update", string.Join(", ", result.Errors.Select(e => e.Description)));
+            throw result.ToOperationException("User update");
         }
     }
 
@@ -191,14 +190,13 @@ internal sealed partial class AspNetIdentityProvider(
         string userId, string roleName, CancellationToken cancellationToken = default)
     {
         LocalIdentity user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"User {userId} not found.");
+            ?? throw new IdentityUserNotFoundException(userId);
 
         IdentityResult result = await _userManager.AddToRoleAsync(user, roleName).ConfigureAwait(false);
         if (!result.Succeeded)
         {
-            string errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            Log.IdentityOperationFailed(_logger, "Role assignment", errors);
-            throw new InvalidOperationException($"Role assignment failed: {errors}");
+            Log.IdentityOperationFailed(_logger, "Role assignment", string.Join(", ", result.Errors.Select(e => e.Description)));
+            throw result.ToOperationException("Role assignment");
         }
     }
 
@@ -207,14 +205,13 @@ internal sealed partial class AspNetIdentityProvider(
         string userId, string roleName, CancellationToken cancellationToken = default)
     {
         LocalIdentity user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"User {userId} not found.");
+            ?? throw new IdentityUserNotFoundException(userId);
 
         IdentityResult result = await _userManager.RemoveFromRoleAsync(user, roleName).ConfigureAwait(false);
         if (!result.Succeeded)
         {
-            string errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            Log.IdentityOperationFailed(_logger, "Role removal", errors);
-            throw new InvalidOperationException($"Role removal failed: {errors}");
+            Log.IdentityOperationFailed(_logger, "Role removal", string.Join(", ", result.Errors.Select(e => e.Description)));
+            throw result.ToOperationException("Role removal");
         }
     }
 
@@ -256,7 +253,7 @@ internal sealed partial class AspNetIdentityProvider(
         string userId, CancellationToken cancellationToken = default)
     {
         LocalIdentity user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"User {userId} not found.");
+            ?? throw new IdentityUserNotFoundException(userId);
 
         if (string.IsNullOrEmpty(user.Email))
         {
@@ -278,16 +275,15 @@ internal sealed partial class AspNetIdentityProvider(
         string userId, string temporaryPassword, CancellationToken cancellationToken = default)
     {
         LocalIdentity user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"User {userId} not found.");
+            ?? throw new IdentityUserNotFoundException(userId);
 
         string token = await _userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(false);
         IdentityResult result = await _userManager.ResetPasswordAsync(user, token, temporaryPassword).ConfigureAwait(false);
 
         if (!result.Succeeded)
         {
-            string errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            Log.IdentityOperationFailed(_logger, "Password reset", errors);
-            throw new InvalidOperationException($"Password reset failed: {errors}");
+            Log.IdentityOperationFailed(_logger, "Password reset", string.Join(", ", result.Errors.Select(e => e.Description)));
+            throw result.ToOperationException("Password reset");
         }
     }
 #pragma warning restore GRSEC003

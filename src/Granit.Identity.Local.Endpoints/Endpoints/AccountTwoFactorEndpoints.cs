@@ -1,6 +1,7 @@
 using Granit.Events;
 using Granit.Http.Idempotency;
 using Granit.Http.SecurityHeaders.Extensions;
+using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Events;
@@ -155,6 +156,8 @@ internal static class AccountTwoFactorEndpoints
             await PublishTwoFactorChangedAsync(httpContext, Guid.Parse(userId), true, cancellationToken)
                 .ConfigureAwait(false);
 
+            string? tenantId = httpContext.User.FindFirst("tenant_id")?.Value;
+            httpContext.RequestServices.GetService<IdentityLocalMetrics>()?.RecordTwoFactorEvent(tenantId, "enable");
             return TypedResults.Ok(new AccountTwoFactorEnableResponse(recoveryCodes));
         }
         catch (InvalidOperationException)
@@ -208,6 +211,8 @@ internal static class AccountTwoFactorEndpoints
         await PublishTwoFactorChangedAsync(httpContext, Guid.Parse(userId), false, cancellationToken)
             .ConfigureAwait(false);
 
+        string? tenantId = httpContext.User.FindFirst("tenant_id")?.Value;
+        httpContext.RequestServices.GetService<IdentityLocalMetrics>()?.RecordTwoFactorEvent(tenantId, "disable");
         return TypedResults.NoContent();
     }
 

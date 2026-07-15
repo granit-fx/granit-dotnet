@@ -3,6 +3,7 @@ using Granit.Authentication.External.Options;
 using Granit.Events;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
+using Granit.Identity.Local.Exceptions;
 using Granit.Identity.Local.Services;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
@@ -43,7 +44,7 @@ internal sealed class AspNetExternalLoginService(
         string userId, GranitExternalLoginInfo info, CancellationToken cancellationToken = default)
     {
         LocalIdentity user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"User {userId} not found.");
+            ?? throw new IdentityUserNotFoundException(userId);
 
         IdentityResult result = await userManager.AddLoginAsync(
             user,
@@ -52,8 +53,7 @@ internal sealed class AspNetExternalLoginService(
 
         if (!result.Succeeded)
         {
-            throw new InvalidOperationException(
-                $"Failed to add external login: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            throw result.ToOperationException("Add external login");
         }
     }
 
@@ -62,7 +62,7 @@ internal sealed class AspNetExternalLoginService(
         string userId, string provider, string providerKey, CancellationToken cancellationToken = default)
     {
         LocalIdentity user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"User {userId} not found.");
+            ?? throw new IdentityUserNotFoundException(userId);
 
         // Guard: cannot remove last login method if no password is set
         bool hasPassword = await userManager.HasPasswordAsync(user).ConfigureAwait(false);
@@ -79,8 +79,7 @@ internal sealed class AspNetExternalLoginService(
 
         if (!result.Succeeded)
         {
-            throw new InvalidOperationException(
-                $"Failed to remove external login: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            throw result.ToOperationException("Remove external login");
         }
     }
 
@@ -129,8 +128,7 @@ internal sealed class AspNetExternalLoginService(
         //    creation; an existing account would have authenticated above, so this is a 403 path.
         if (!allowRegistration || !externalAuthOptions.Value.AutoRegisterExternalUsers)
         {
-            throw new InvalidOperationException(
-                "Account not found. No account is linked to this external login.");
+            throw new ExternalLoginNoLinkedAccountException();
         }
 
         // 3a. Insufficient provider data → do NOT 1-click create. Surface a prefill so the caller
@@ -160,8 +158,7 @@ internal sealed class AspNetExternalLoginService(
         IdentityResult createResult = await userManager.CreateAsync(newUser).ConfigureAwait(false);
         if (!createResult.Succeeded)
         {
-            throw new InvalidOperationException(
-                $"User creation failed: {string.Join(", ", createResult.Errors.Select(e => e.Description))}");
+            throw createResult.ToOperationException("User creation");
         }
 
         await userManager.AddLoginAsync(

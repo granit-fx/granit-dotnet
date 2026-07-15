@@ -5,11 +5,13 @@ using Granit.Auditing.Domain;
 using Granit.Authentication.External;
 using Granit.Events;
 using Granit.Http.Idempotency;
+using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Endpoints.Options;
 using Granit.Identity.Local.Events;
+using Granit.Identity.Local.Exceptions;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
 using Granit.Settings.Services;
@@ -271,32 +273,37 @@ internal static partial class AccountExternalLoginEndpoints
                 userId: externalUserId, userName: externalUserName, failureReason: null,
                 cancellationToken).ConfigureAwait(false);
 
+            httpContext.RequestServices.GetService<IdentityLocalMetrics>()?
+                .RecordExternalLogin(user?.TenantId?.ToString(), provider, result.IsNewUser);
+
             return BuildCallbackResult(
                 options.Value, mode, IdentityLocalResponseMapper.ToResponse(result, continuationToken: null), returnUrl);
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
+        catch (ExternalLoginNoLinkedAccountException)
         {
             await TryWriteExternalLoginAuditAsync(httpContext, logger, provider,
                 userId: externalUserId, userName: externalUserName,
                 failureReason: "account_not_found", cancellationToken).ConfigureAwait(false);
-            return TypedResults.Problem(
-                detail: AccountEndpointMessages.Localize(
-                    httpContext,
-                    "Granit:Identity:ExternalLogin:NoLinkedAccount",
-                    "No account is linked to this external login."),
-                statusCode: StatusCodes.Status403Forbidden);
+            return ProblemFactory.Localized(
+                httpContext,
+                "Granit:Identity:ExternalLogin:NoLinkedAccount",
+                "No account is linked to this external login.",
+                StatusCodes.Status403Forbidden);
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("DuplicateEmail", StringComparison.OrdinalIgnoreCase))
+        catch (IdentityOperationException ex) when (ex.IsConflict)
         {
+            // Auto-provisioning collided with an existing local account (DuplicateEmail /
+            // DuplicateUserName). Classified on the stable error code — the previous
+            // ex.Message.Contains("DuplicateEmail") match never fired (the message carries the
+            // localized description, not the code), so this path used to surface as a 500.
             await TryWriteExternalLoginAuditAsync(httpContext, logger, provider,
                 userId: externalUserId, userName: externalUserName,
                 failureReason: "duplicate_email", cancellationToken).ConfigureAwait(false);
-            return TypedResults.Problem(
-                detail: AccountEndpointMessages.Localize(
-                    httpContext,
-                    "Granit:Identity:ExternalLogin:EmailAlreadyExists",
-                    "An account with this email already exists."),
-                statusCode: StatusCodes.Status409Conflict);
+            return ProblemFactory.Localized(
+                httpContext,
+                "Granit:Identity:ExternalLogin:EmailAlreadyExists",
+                "An account with this email already exists.",
+                StatusCodes.Status409Conflict);
         }
     }
 
@@ -377,9 +384,11 @@ internal static partial class AccountExternalLoginEndpoints
 
         if (login is null)
         {
-            return TypedResults.Problem(
-                detail: $"No linked login found for provider '{provider}'.",
-                statusCode: StatusCodes.Status400BadRequest);
+            return ProblemFactory.Localized(
+                httpContext,
+                "Granit:Identity:ExternalLogin:NoLinkedLogin",
+                "No linked login was found for the specified provider.",
+                StatusCodes.Status400BadRequest);
         }
 
         try
@@ -538,9 +547,11 @@ internal static partial class AccountExternalLoginEndpoints
                         httpContext, "Granit:Identity:ExternalLogin:EmailAlreadyExists",
                         "An account with this email already exists."),
                     statusCode: StatusCodes.Status409Conflict)
-                : TypedResults.Problem(
-                    detail: string.Join(", ", createResult.Errors.Select(e => e.Description)),
-                    statusCode: StatusCodes.Status422UnprocessableEntity);
+                : ProblemFactory.Localized(
+                    httpContext,
+                    "Granit:Identity:Account:RegistrationRejected",
+                    "The account could not be created. Please review your details and try again.",
+                    StatusCodes.Status422UnprocessableEntity);
         }
 
         IdentityResult linkResult = await userManager.AddLoginAsync(
@@ -550,9 +561,11 @@ internal static partial class AccountExternalLoginEndpoints
         {
             // Roll back the just-created account so a failed link never leaves an orphan.
             await userManager.DeleteAsync(newUser).ConfigureAwait(false);
-            return TypedResults.Problem(
-                detail: string.Join(", ", linkResult.Errors.Select(e => e.Description)),
-                statusCode: StatusCodes.Status422UnprocessableEntity);
+            return ProblemFactory.Localized(
+                httpContext,
+                "Granit:Identity:Account:RegistrationRejected",
+                "The account could not be created. Please review your details and try again.",
+                StatusCodes.Status422UnprocessableEntity);
         }
 
         if (!emailVerified)

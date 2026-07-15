@@ -4,6 +4,7 @@ using Granit.Domain;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Events;
+using Granit.Identity.Local.Exceptions;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
@@ -55,7 +56,8 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     {
         _server.IdentityProvider
             .CreateUserAsync(Arg.Any<Granit.Identity.Models.IdentityUserCreate>(), Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("Email is already taken"));
+            .ThrowsAsync(new IdentityOperationException("User creation",
+                [new IdentityOperationError("DuplicateEmail", IdentityOperationErrorKind.DuplicateEmail, "Email already in use.")]));
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
             "/account/register",
@@ -990,7 +992,8 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     {
         _server.ExternalLoginService
             .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<bool>(), Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("DuplicateEmail: email already in use."));
+            .ThrowsAsync(new IdentityOperationException("User creation",
+                [new IdentityOperationError("DuplicateEmail", IdentityOperationErrorKind.DuplicateEmail, "Email already in use.")]));
 
         using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback");
         request.Headers.Add(TestExternalAuthHandler.ProviderHeader, "Google");
@@ -1006,7 +1009,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     {
         _server.ExternalLoginService
             .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "GitHub", Arg.Any<bool>(), Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("User not found for external login."));
+            .ThrowsAsync(new ExternalLoginNoLinkedAccountException());
 
         using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback");
         request.Headers.Add(TestExternalAuthHandler.ProviderHeader, "GitHub");

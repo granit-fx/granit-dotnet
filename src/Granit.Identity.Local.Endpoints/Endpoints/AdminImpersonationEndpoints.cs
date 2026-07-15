@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Identity.Local.Endpoints.Endpoints;
 
@@ -60,6 +61,8 @@ internal static class AdminImpersonationEndpoints
             .ImpersonateAsync(userId.ToString(), adminId, adminName, cancellationToken)
             .ConfigureAwait(false);
 
+        string? tenantId = httpContext.User.FindFirst("tenant_id")?.Value;
+        httpContext.RequestServices.GetService<IdentityLocalMetrics>()?.RecordImpersonation(tenantId);
         return TypedResults.Ok(IdentityLocalResponseMapper.ToResponse(result));
     }
 }

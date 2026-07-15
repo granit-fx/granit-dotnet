@@ -5,6 +5,7 @@ using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Events;
+using Granit.Identity.Local.Exceptions;
 using Granit.Identity.Local.Services;
 using Granit.Identity.Models;
 using Granit.Settings.Services;
@@ -105,17 +106,21 @@ internal static class AccountRegistrationEndpoints
 
             metrics.RecordRegistration(null);
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("already taken", StringComparison.OrdinalIgnoreCase))
+        catch (IdentityOperationException ex) when (ex.IsConflict)
         {
-            // Silently succeed — return 202 to prevent email enumeration.
+            // Silently succeed — return 202 to prevent email enumeration. Classified on the
+            // stable DuplicateUserName/DuplicateEmail error codes, not the localized message,
+            // so a host wiring a translated IdentityErrorDescriber cannot regress this path.
             // The existing user could be notified via a "someone tried to register
             // with your email" notification if desired (app-level concern).
         }
-        catch (InvalidOperationException ex)
+        catch (IdentityOperationException)
         {
-            return TypedResults.Problem(
-                detail: ex.Message,
-                statusCode: StatusCodes.Status422UnprocessableEntity);
+            return ProblemFactory.Localized(
+                httpContext,
+                "Granit:Identity:Account:RegistrationRejected",
+                "The account could not be created. Please review your details and try again.",
+                StatusCodes.Status422UnprocessableEntity);
         }
 
         // Always return 202 regardless of outcome (anti-enumeration)

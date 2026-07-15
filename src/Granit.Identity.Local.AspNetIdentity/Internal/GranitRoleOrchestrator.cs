@@ -3,6 +3,7 @@ using Granit.Authorization;
 using Granit.Authorization.Domain;
 using Granit.Guids;
 using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Exceptions;
 using Granit.Identity.Local.Services;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.SharedConnection;
@@ -296,8 +297,7 @@ internal sealed partial class GranitRoleOrchestrator(
 
                     if (metadata.IsSystem)
                     {
-                        throw new InvalidOperationException(
-                            $"Role '{metadata.Name}' is a system role and cannot be renamed.");
+                        throw new SystemRoleModificationException(metadata.Name, SystemRoleOperation.Rename);
                     }
 
                     GranitRole granitRole = await roleManager.FindByIdAsync(roleId.ToString("D"))
@@ -368,8 +368,7 @@ internal sealed partial class GranitRoleOrchestrator(
 
                     if (metadata.IsSystem)
                     {
-                        throw new InvalidOperationException(
-                            $"Role '{metadata.Name}' is a system role and cannot be deleted.");
+                        throw new SystemRoleModificationException(metadata.Name, SystemRoleOperation.Delete);
                     }
 
                     GranitRole? granitRole = await roleManager.FindByIdAsync(roleId.ToString("D"))
@@ -466,8 +465,7 @@ internal sealed partial class GranitRoleOrchestrator(
 
         if (existingMetadata.IsSystem)
         {
-            throw new InvalidOperationException(
-                $"Role '{existingMetadata.Name}' is a system role and cannot be renamed.");
+            throw new SystemRoleModificationException(existingMetadata.Name, SystemRoleOperation.Rename);
         }
 
         GranitRole granitRole = await roleManager.FindByIdAsync(roleId.ToString("D"))
@@ -519,8 +517,7 @@ internal sealed partial class GranitRoleOrchestrator(
 
         if (metadata.IsSystem)
         {
-            throw new InvalidOperationException(
-                $"Role '{metadata.Name}' is a system role and cannot be deleted.");
+            throw new SystemRoleModificationException(metadata.Name, SystemRoleOperation.Delete);
         }
 
         GranitRole? granitRole = await roleManager.FindByIdAsync(roleId.ToString("D")).ConfigureAwait(false);

@@ -171,6 +171,8 @@ internal static class AccountPasswordEndpoints
                     .ConfigureAwait(false);
             }
 
+            string? tenantId = httpContext.User.FindFirst("tenant_id")?.Value;
+            httpContext.RequestServices.GetService<IdentityLocalMetrics>()?.RecordPasswordReset(tenantId);
             return TypedResults.NoContent();
         }
         catch (InvalidOperationException)

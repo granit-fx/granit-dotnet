@@ -31678,6 +31678,69 @@
       "members": []
     },
     {
+      "name": "ExternalLoginNoLinkedAccountException",
+      "fqn": "Granit.Identity.Local.Exceptions.ExternalLoginNoLinkedAccountException",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Exceptions/ExternalLoginNoLinkedAccountException.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "IdentityOperationError",
+      "fqn": "Granit.Identity.Local.Exceptions.IdentityOperationError",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Exceptions/IdentityOperationException.cs",
+      "line": 33,
+      "members": []
+    },
+    {
+      "name": "IdentityOperationErrorKind",
+      "fqn": "Granit.Identity.Local.Exceptions.IdentityOperationErrorKind",
+      "kind": "enum",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Exceptions/IdentityOperationException.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "IdentityOperationException",
+      "fqn": "Granit.Identity.Local.Exceptions.IdentityOperationException",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Exceptions/IdentityOperationException.cs",
+      "line": 46,
+      "members": []
+    },
+    {
+      "name": "IdentityUserNotFoundException",
+      "fqn": "Granit.Identity.Local.Exceptions.IdentityUserNotFoundException",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Exceptions/IdentityUserNotFoundException.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "SystemRoleModificationException",
+      "fqn": "Granit.Identity.Local.Exceptions.SystemRoleModificationException",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Exceptions/SystemRoleModificationException.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "SystemRoleOperation",
+      "fqn": "Granit.Identity.Local.Exceptions.SystemRoleOperation",
+      "kind": "enum",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Exceptions/SystemRoleModificationException.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "GranitRoleExportDefinition",
       "fqn": "Granit.Identity.Local.Exports.GranitRoleExportDefinition",
       "kind": "class",
