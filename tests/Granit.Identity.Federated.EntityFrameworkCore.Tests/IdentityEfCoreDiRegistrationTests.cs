@@ -39,7 +39,7 @@ public sealed class IdentityEfCoreDiRegistrationTests
         lookupService.ShouldBeOfType<CachedUserLookupService>();
 
         IUserCacheStats stats = provider.GetRequiredService<IUserCacheStats>();
-        stats.ShouldBeOfType<EfCoreUserCacheStats>();
+        stats.ShouldBeOfType<UserCacheStats>();
 
         IUserCacheStore store = provider.GetRequiredService<IUserCacheStore>();
         store.ShouldBeOfType<EfCoreUserCacheStore>();

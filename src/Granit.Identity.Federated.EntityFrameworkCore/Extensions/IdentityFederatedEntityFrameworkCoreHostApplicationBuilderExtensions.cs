@@ -25,7 +25,7 @@ public static class IdentityFederatedEntityFrameworkCoreHostApplicationBuilderEx
     /// <list type="bullet">
     ///   <item><see cref="CachedUserLookupService"/> — replaces the default <c>NullUserLookupService</c>.</item>
     ///   <item><see cref="EfCoreUserCacheStore"/> — implements <c>IUserCacheStore</c>.</item>
-    ///   <item><see cref="EfCoreUserCacheStats"/> — implements <c>IUserCacheStats</c>.</item>
+    ///   <item><c>UserCacheStats</c> — the default <c>IUserCacheStats</c> implementation.</item>
     ///   <item><see cref="FederatedUserCacheEraserAdapter"/> — implements <c>IFederatedUserCacheEraser</c>.</item>
     ///   <item><see cref="IdentityFederatedDbContext"/> — registered as <c>IDbContextFactory&lt;T&gt;</c> for thread-safe usage in Wolverine handlers.</item>
     /// </list>
@@ -50,7 +50,7 @@ public static class IdentityFederatedEntityFrameworkCoreHostApplicationBuilderEx
         builder.Services.AddGranitDbContext<IdentityFederatedDbContext>(configure);
 
         builder.Services.Replace(ServiceDescriptor.Scoped<IUserLookupService, CachedUserLookupService>());
-        builder.Services.Replace(ServiceDescriptor.Scoped<IUserCacheStats, EfCoreUserCacheStats>());
+        builder.Services.Replace(ServiceDescriptor.Scoped<IUserCacheStats, UserCacheStats>());
         builder.Services.TryAddScoped<IUserCacheStore, EfCoreUserCacheStore>();
         // The single joint-hydration write path (ADR-051), shared by the cache-aside service,
         // the provider webhook handler, and the login-time sync middleware.

@@ -44,8 +44,13 @@ internal interface IUserCacheStore
 
     // -- Write --
 
-    /// <summary>Inserts or updates a single cache entry (matched by TenantId + ExternalUserId).</summary>
-    Task UpsertAsync(FederatedIdentity entry, CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Inserts or updates a single cache entry (matched by TenantId + ExternalUserId) and returns
+    /// the persisted row's <c>Id</c>. When a concurrent insert wins the race for the same key, the
+    /// returned Id is the winner's — different from <paramref name="entry"/>.<c>Id</c> — so the
+    /// caller can compensate for any resources it pre-created against its own (losing) Id.
+    /// </summary>
+    Task<Guid> UpsertAsync(FederatedIdentity entry, CancellationToken cancellationToken = default);
 
     /// <summary>Inserts or updates multiple cache entries in batch.</summary>
     Task UpsertManyAsync(IReadOnlyList<FederatedIdentity> entries, CancellationToken cancellationToken = default);

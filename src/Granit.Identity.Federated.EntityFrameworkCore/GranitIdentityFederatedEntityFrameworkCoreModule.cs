@@ -6,7 +6,7 @@ namespace Granit.Identity.Federated.EntityFrameworkCore;
 /// <summary>
 /// Granit module for EF Core identity user cache persistence. Owns the dedicated
 /// <c>IdentityFederatedDbContext</c> and replaces the default null stores with
-/// <c>EfCoreUserCacheStore</c> / <c>EfCoreUserCacheStats</c>.
+/// <c>EfCoreUserCacheStore</c> / <c>UserCacheStats</c>.
 /// </summary>
 /// <remarks>
 /// <para>
