@@ -215,6 +215,61 @@ public sealed class DefaultStructuredCompletionTests
     }
 
     [Fact]
+    public async Task CompleteAsync_WithAttachments_AppendsThemAfterThePromptText()
+    {
+        List<ChatMessage>? messages = null;
+        _chatClient
+            .GetResponseAsync(
+                Arg.Do<IEnumerable<ChatMessage>>(m => messages = m.ToList()),
+                Arg.Any<ChatOptions?>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, """{"title":"H"}"""))
+            {
+                FinishReason = ChatFinishReason.Stop,
+            });
+
+        DataContent image = new(new byte[] { 0x89, 0x50, 0x4E, 0x47 }, "image/png");
+        await _sut.CompleteAsync<SeoExtraction>(
+            new StructuredCompletionRequest { Content = "Body.", Attachments = [image] },
+            TestContext.Current.CancellationToken);
+
+        messages.ShouldNotBeNull();
+        ChatMessage message = messages.Single();
+        message.Contents.Count.ShouldBe(2);
+        message.Contents[0].ShouldBeOfType<TextContent>();
+        message.Contents[1].ShouldBeSameAs(image);
+        // The sanitization envelope still wraps the text part.
+        ((TextContent)message.Contents[0]).Text.ShouldContain("<data>");
+    }
+
+    [Fact]
+    public async Task CompleteAsync_AttachmentOnly_SucceedsWithoutContent()
+    {
+        RespondWith(new ChatResponse(new ChatMessage(ChatRole.Assistant, """{"title":"H"}"""))
+        {
+            FinishReason = ChatFinishReason.Stop,
+        });
+
+        StructuredCompletionResult<SeoExtraction> result = await _sut.CompleteAsync<SeoExtraction>(
+            new StructuredCompletionRequest
+            {
+                Instruction = "Describe the image.",
+                Attachments = [new DataContent(new byte[] { 0x89, 0x50, 0x4E, 0x47 }, "image/png")],
+            },
+            TestContext.Current.CancellationToken);
+
+        result.Status.ShouldBe(StructuredCompletionStatus.Succeeded);
+        result.Value!.Title.ShouldBe("H");
+    }
+
+    [Fact]
+    public async Task CompleteAsync_NoContentAndNoAttachments_ThrowsArgumentException() =>
+        await Should.ThrowAsync<ArgumentException>(
+            () => _sut.CompleteAsync<SeoExtraction>(
+                new StructuredCompletionRequest { Instruction = "Do something." },
+                TestContext.Current.CancellationToken));
+
+    [Fact]
     public async Task CompleteAsync_WithUsage_SurfacesUsage()
     {
         // The usage record itself is stamped by the factory-applied middleware, not here.

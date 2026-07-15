@@ -42,6 +42,12 @@ internal sealed partial class DefaultStructuredCompletion(
     {
         ArgumentNullException.ThrowIfNull(request);
 
+        if (string.IsNullOrWhiteSpace(request.Content) && request.Attachments is not { Count: > 0 })
+        {
+            throw new ArgumentException(
+                "The request must carry Content, at least one attachment, or both.", nameof(request));
+        }
+
         string workspaceName = request.WorkspaceName ?? aiOptions.Value.DefaultWorkspace;
 
         AIWorkspace? workspace = await workspaceProvider
@@ -98,9 +104,17 @@ internal sealed partial class DefaultStructuredCompletion(
                 .CreateAsync(workspaceName, linkedCts.Token)
                 .ConfigureAwait(false);
 
+            // Text prompt first (instruction + sanitized envelope), then the binary parts —
+            // the pattern vision-capable providers expect for multimodal user messages.
+            List<AIContent> parts = [new TextContent(BuildPrompt<T>(request, schemaSupported))];
+            if (request.Attachments is { Count: > 0 })
+            {
+                parts.AddRange(request.Attachments);
+            }
+
             var messages = new List<ChatMessage>
             {
-                new(ChatRole.User, BuildPrompt<T>(request, schemaSupported)),
+                new(ChatRole.User, parts),
             };
 
             ChatOptions? chatOptions = schemaSupported
@@ -214,7 +228,10 @@ internal sealed partial class DefaultStructuredCompletion(
             builder.AppendUserDataMap("Context", request.Context);
         }
 
-        builder.AppendUserTextBlock(request.ContentLabel ?? "Document", request.Content);
+        if (!string.IsNullOrWhiteSpace(request.Content))
+        {
+            builder.AppendUserTextBlock(request.ContentLabel ?? "Document", request.Content);
+        }
 
         return builder.Build();
     }
