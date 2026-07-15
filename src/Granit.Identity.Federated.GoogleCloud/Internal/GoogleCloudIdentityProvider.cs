@@ -259,23 +259,14 @@ internal sealed partial class GoogleCloudIdentityProvider(
     public Task<DateTimeOffset?> GetPasswordChangedAtAsync(string userId, CancellationToken cancellationToken = default) =>
         Task.FromResult<DateTimeOffset?>(null);
 
-    public async Task SendPasswordResetEmailAsync(string userId, CancellationToken cancellationToken = default)
-    {
-        using Activity? activity = IdentityGoogleCloudActivitySource.Source.StartActivity(
-            IdentityGoogleCloudActivitySource.Operations.GeneratePasswordResetLink);
-        activity?.SetTag(IdentityGoogleCloudActivitySource.Tags.UserId, userId);
-
-        UserRecord user = await transport.GetUserAsync(userId, cancellationToken).ConfigureAwait(false);
-
-        if (string.IsNullOrEmpty(user.Email))
-        {
-            throw new InvalidOperationException($"User {userId} has no email address.");
-        }
-
-        await transport.GeneratePasswordResetLinkAsync(user.Email, cancellationToken).ConfigureAwait(false);
-
-        await distributedEventBus.PublishAsync(new IdentityPasswordResetEto(userId), cancellationToken).ConfigureAwait(false);
-    }
+    public Task SendPasswordResetEmailAsync(string userId, CancellationToken cancellationToken = default) =>
+        // The Admin SDK can only generate a reset link, never send it — the previous
+        // implementation generated and discarded the link, then published a
+        // IdentityPasswordResetEto for an email that never left. Hosts gate on
+        // SupportsNativePasswordResetEmail (false); a direct call must fail loud.
+        throw new NotSupportedException(
+            "Firebase Auth cannot send password reset emails from the Admin SDK. "
+            + "Generate a link and deliver it through your own notifier instead.");
 
     public async Task SetTemporaryPasswordAsync(string userId, string temporaryPassword, CancellationToken cancellationToken = default)
     {
@@ -289,13 +280,13 @@ internal sealed partial class GoogleCloudIdentityProvider(
 
     // ── Credentials ───────────────────────────────────────────────────
 
-    public async Task<bool> VerifyUserCredentialsAsync(string username, string password, CancellationToken cancellationToken = default)
-    {
-        using Activity? activity = IdentityGoogleCloudActivitySource.Source.StartActivity(
-            IdentityGoogleCloudActivitySource.Operations.VerifyCredentials);
-
-        return await transport.VerifyPasswordAsync(username, password, cancellationToken).ConfigureAwait(false);
-    }
+    public Task<bool> VerifyUserCredentialsAsync(string username, string password, CancellationToken cancellationToken = default) =>
+        // The Admin SDK exposes no password-verify API; the previous implementation
+        // returned false for every credential, indistinguishable from "wrong password".
+        // Hosts gate on SupportsCredentialVerification (false); a direct call must fail loud.
+        throw new NotSupportedException(
+            "Firebase Auth does not support credential verification from the Admin SDK "
+            + "(requires the Firebase Auth REST API with the Web API key).");
 
     // ── Helpers ───────────────────────────────────────────────────────
 

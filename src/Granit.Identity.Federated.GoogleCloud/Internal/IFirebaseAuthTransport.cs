@@ -41,8 +41,4 @@ internal interface IFirebaseAuthTransport
     Task SetCustomUserClaimsAsync(string uid, IReadOnlyDictionary<string, object> claims, CancellationToken cancellationToken = default);
 
     Task RevokeRefreshTokensAsync(string uid, CancellationToken cancellationToken = default);
-
-    Task<string> GeneratePasswordResetLinkAsync(string email, CancellationToken cancellationToken = default);
-
-    Task<bool> VerifyPasswordAsync(string email, string password, CancellationToken cancellationToken = default);
 }

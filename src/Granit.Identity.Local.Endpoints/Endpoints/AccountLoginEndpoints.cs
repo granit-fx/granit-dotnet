@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using Granit.Auditing;
 using Granit.Auditing.Domain;
 using Granit.DataFiltering;
+using Granit.Diagnostics;
 using Granit.Domain;
 using Granit.Events;
 using Granit.Identity.Endpoints;
@@ -153,7 +154,7 @@ internal static partial class AccountLoginEndpoints
             // when the user does not exist (covers the bulk of the timing gap).
             PerformDummyPasswordHash(httpContext);
 
-            LogLoginFailed(logger, request.Login, "user_not_found");
+            LogLoginFailed(logger, LogRedaction.Username(request.Login), "user_not_found");
             metrics?.RecordAuthenticationFailure(null, InvalidLoginReason);
             await TryWriteAuthAuditAsync(httpContext, logger,
                 method: LocalLoginMethod, userId: null, userName: null,
@@ -252,7 +253,7 @@ internal static partial class AccountLoginEndpoints
         }
 
         // Generic failure (wrong password)
-        LogLoginFailed(logger, request.Login, "invalid_password");
+        LogLoginFailed(logger, LogRedaction.Username(request.Login), "invalid_password");
         metrics?.RecordAuthenticationFailure(null, InvalidLoginReason);
         await TryWriteAuthAuditAsync(httpContext, logger,
             method: LocalLoginMethod, userId: user.Id.ToString(), userName: user.UserName,

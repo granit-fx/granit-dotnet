@@ -1,5 +1,6 @@
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Internal;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Identity.Federated.EntityFrameworkCore.Internal;
@@ -36,7 +37,11 @@ internal sealed class EfCoreUserCacheStore(
         await using IdentityFederatedDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
+        // Host-context lookup, documented "regardless of tenant": the multi-tenant filter
+        // must be bypassed explicitly — with no ambient tenant it would otherwise hide every
+        // tenant-scoped mirror, and the cache-aside caller would re-insert a duplicate row.
         return await db.FederatedIdentities
+            .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
             .AsNoTracking()
             .FirstOrDefaultAsync(e => e.ExternalUserId == externalUserId, cancellationToken)
             .ConfigureAwait(false);
@@ -233,18 +238,30 @@ internal sealed class EfCoreUserCacheStore(
 
     // -- GDPR --
 
-    public async Task DeleteByExternalIdAsync(
+    public async Task<int> DeleteByExternalIdAsync(
         string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default)
     {
         await using IdentityFederatedDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        List<FederatedIdentity> entries = await db.FederatedIdentities
-            .Where(e => e.TenantId == tenantId && e.ExternalUserId == externalUserId)
+        // Null tenant scope = GDPR Art. 17 sweep across ALL partitions (contract of
+        // IdentityUserDeletedEto): the multi-tenant filter would otherwise translate the
+        // intent into "host rows only" and leave tenant mirrors behind. A scoped delete
+        // keeps the filter active as a guard — the caller must have established a matching
+        // ambient tenant for the row to be visible.
+        IQueryable<FederatedIdentity> query = tenantId is null
+            ? db.FederatedIdentities
+                .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+                .Where(e => e.ExternalUserId == externalUserId)
+            : db.FederatedIdentities
+                .Where(e => e.TenantId == tenantId && e.ExternalUserId == externalUserId);
+
+        List<FederatedIdentity> entries = await query
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
         db.FederatedIdentities.RemoveRange(entries);
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return entries.Count;
     }
 
     public async Task DeleteAllByTenantAsync(Guid? tenantId, CancellationToken cancellationToken = default)

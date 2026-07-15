@@ -39,14 +39,22 @@ public class IdentityFederatedPersonalDataDeletionHandler
         ArgumentNullException.ThrowIfNull(cacheEraser);
         ArgumentNullException.ThrowIfNull(currentTenant);
 
-        Guid? tenantId = @event.TenantId ?? currentTenant.Id;
-        await cacheEraser.EraseAsync(@event.UserId.ToString(), tenantId, cancellationToken).ConfigureAwait(false);
+        // Distributed dispatch carries no ambient tenant — establish it from the event so the
+        // multi-tenant query filter exposes the rows the eraser's explicit predicate targets;
+        // without it the erasure silently no-ops on tenant-scoped mirrors while the saga acks.
+        // A null resolved scope (no tenant on the event, none ambient) erases across ALL
+        // partitions: Art. 17 must not leave a mirror behind in any scope.
+        Guid? tenantId = @event.TenantId ?? (currentTenant.IsAvailable ? currentTenant.Id : null);
+        using IDisposable _ = currentTenant.Change(tenantId);
+
+        int affectedRecords = await cacheEraser
+            .EraseAsync(@event.UserId.ToString(), tenantId, cancellationToken).ConfigureAwait(false);
 
         return new PersonalDataDeletedEto(
             @event.RequestId,
             IdentityFederatedPrivacyDataProvider.ProviderName,
             DeletionAction.PhysicalDelete,
-            AffectedRecords: 0,
+            affectedRecords,
             Details: null,
             @event.TenantId);
     }

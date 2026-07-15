@@ -52,8 +52,14 @@ internal interface IUserCacheStore
 
     // -- GDPR --
 
-    /// <summary>Permanently deletes the cache entry for a user (GDPR Art. 17).</summary>
-    Task DeleteByExternalIdAsync(string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Permanently deletes the cache entry for a user (GDPR Art. 17) and returns the number of
+    /// rows removed. A <c>null</c> <paramref name="tenantId"/> erases the user's mirror across
+    /// ALL tenant partitions (the multi-tenant query filter is explicitly bypassed); a non-null
+    /// scope deletes within that tenant only and requires the caller to have established a
+    /// matching ambient tenant (<c>ICurrentTenant.Change</c>) so the tenant filter exposes the row.
+    /// </summary>
+    Task<int> DeleteByExternalIdAsync(string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default);
 
     /// <summary>Purges all cache entries for a tenant.</summary>
     Task DeleteAllByTenantAsync(Guid? tenantId, CancellationToken cancellationToken = default);

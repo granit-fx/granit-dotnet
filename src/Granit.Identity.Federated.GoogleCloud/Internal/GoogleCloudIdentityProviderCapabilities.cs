@@ -12,7 +12,13 @@ internal sealed class GoogleCloudIdentityProviderCapabilities : IIdentityProvide
     public bool SupportsIndividualSessionTermination => false;
 
     /// <inheritdoc />
-    public bool SupportsNativePasswordResetEmail => true;
+    /// <remarks>
+    /// The Firebase Admin SDK can only <em>generate</em> a password-reset link
+    /// (<c>GeneratePasswordResetLinkAsync</c>) — it never sends the email. Advertising
+    /// <c>true</c> here made the reset flow a silent no-op for the user. Sending requires
+    /// a notifier hook (see the Entra ID provider's <c>IPasswordResetNotifier</c> pattern).
+    /// </remarks>
+    public bool SupportsNativePasswordResetEmail => false;
 
     /// <inheritdoc />
     public bool SupportsGroupHierarchy => false;
@@ -24,7 +30,12 @@ internal sealed class GoogleCloudIdentityProviderCapabilities : IIdentityProvide
     public int MaxCustomAttributes => 100;
 
     /// <inheritdoc />
-    public bool SupportsCredentialVerification => true;
+    /// <remarks>
+    /// The Firebase Admin SDK exposes no password-verify API — verification would require
+    /// the Firebase Auth REST API with the Web API key. Advertising <c>true</c> here made
+    /// hosts offer credential verification that rejected every valid password.
+    /// </remarks>
+    public bool SupportsCredentialVerification => false;
 
     /// <inheritdoc />
     public bool SupportsUserCreation => true;

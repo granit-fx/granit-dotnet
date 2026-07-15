@@ -96,7 +96,8 @@ public sealed class EntraIdAdminOptions
 
         if (!string.IsNullOrEmpty(search))
         {
-            queryParams.Add($"$filter=startswith(displayName,'{Uri.EscapeDataString(search)}') or startswith(mail,'{Uri.EscapeDataString(search)}')");
+            string escaped = EscapeODataStringLiteral(search);
+            queryParams.Add($"$filter=startswith(displayName,'{Uri.EscapeDataString(escaped)}') or startswith(mail,'{Uri.EscapeDataString(escaped)}')");
         }
 
         if (skip.HasValue)
@@ -130,7 +131,16 @@ public sealed class EntraIdAdminOptions
     /// Builds the Graph API URL for listing sign-in audit logs of a user.
     /// </summary>
     internal static string GetAuditSignInsEndpoint(string userId, int top = 25) =>
-        $"/v1.0/auditLogs/signIns?$filter=userId eq '{Uri.EscapeDataString(userId)}'&$top={top}&$orderby=createdDateTime desc";
+        $"/v1.0/auditLogs/signIns?$filter=userId eq '{Uri.EscapeDataString(EscapeODataStringLiteral(userId))}'&$top={top}&$orderby=createdDateTime desc";
+
+    /// <summary>
+    /// Escapes a value embedded in a single-quoted OData string literal by doubling the
+    /// quotes (OData ABNF). <c>Uri.EscapeDataString</c> alone is NOT enough: Graph
+    /// URL-decodes <c>%27</c> back to <c>'</c> before parsing <c>$filter</c>, so an
+    /// unescaped quote breaks out of the literal and rewrites the predicate.
+    /// </summary>
+    private static string EscapeODataStringLiteral(string value) =>
+        value.Replace("'", "''", StringComparison.Ordinal);
 
     // ──── App Roles ────
 

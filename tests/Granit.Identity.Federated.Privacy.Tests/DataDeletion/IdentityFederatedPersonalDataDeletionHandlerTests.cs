@@ -30,16 +30,65 @@ public sealed class IdentityFederatedPersonalDataDeletionHandlerTests
     }
 
     [Fact]
+    public async Task Handle_establishes_the_event_tenant_scope_before_erasing()
+    {
+        // GDPR regression: distributed dispatch carries no ambient tenant, so without an
+        // explicit scope the multi-tenant query filter hides the mirror row and the
+        // erasure silently no-ops while the saga acks the deletion.
+        IFederatedUserCacheEraser cacheEraser = Substitute.For<IFederatedUserCacheEraser>();
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+
+        await IdentityFederatedPersonalDataDeletionHandler.Handle(
+            Eto(Tenant), cacheEraser, currentTenant, TestContext.Current.CancellationToken);
+
+        Received.InOrder(() =>
+        {
+            currentTenant.Change(Tenant);
+            cacheEraser.EraseAsync(User.ToString(), Tenant, Arg.Any<CancellationToken>());
+        });
+    }
+
+    [Fact]
     public async Task Handle_falls_back_to_the_ambient_tenant_when_the_event_has_none()
     {
         IFederatedUserCacheEraser cacheEraser = Substitute.For<IFederatedUserCacheEraser>();
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        currentTenant.IsAvailable.Returns(true);
         currentTenant.Id.Returns(Tenant);
 
         await IdentityFederatedPersonalDataDeletionHandler.Handle(
             Eto(tenantId: null), cacheEraser, currentTenant, TestContext.Current.CancellationToken);
 
         await cacheEraser.Received(1).EraseAsync(User.ToString(), Tenant, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_sweeps_all_tenants_when_no_scope_is_resolvable()
+    {
+        // No tenant on the event and none ambient: Art. 17 must not leave a mirror behind
+        // in any partition — the eraser is invoked with a null scope (all-tenants sweep).
+        IFederatedUserCacheEraser cacheEraser = Substitute.For<IFederatedUserCacheEraser>();
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        currentTenant.IsAvailable.Returns(false);
+
+        await IdentityFederatedPersonalDataDeletionHandler.Handle(
+            Eto(tenantId: null), cacheEraser, currentTenant, TestContext.Current.CancellationToken);
+
+        await cacheEraser.Received(1).EraseAsync(User.ToString(), null, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_reports_the_erased_row_count_in_the_acknowledgement()
+    {
+        IFederatedUserCacheEraser cacheEraser = Substitute.For<IFederatedUserCacheEraser>();
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        cacheEraser.EraseAsync(Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
+            .Returns(3);
+
+        PersonalDataDeletedEto ack = await IdentityFederatedPersonalDataDeletionHandler.Handle(
+            Eto(Tenant), cacheEraser, currentTenant, TestContext.Current.CancellationToken);
+
+        ack.AffectedRecords.ShouldBe(3);
     }
 
     [Fact]
@@ -64,7 +113,7 @@ public sealed class IdentityFederatedPersonalDataDeletionHandlerTests
         IFederatedUserCacheEraser cacheEraser = Substitute.For<IFederatedUserCacheEraser>();
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         cacheEraser.EraseAsync(Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
-            .Returns<Task>(_ => throw new InvalidOperationException("cache erase failed"));
+            .Returns<Task<int>>(_ => throw new InvalidOperationException("cache erase failed"));
 
         await Should.ThrowAsync<InvalidOperationException>(() => IdentityFederatedPersonalDataDeletionHandler.Handle(
             Eto(Tenant), cacheEraser, currentTenant, TestContext.Current.CancellationToken));

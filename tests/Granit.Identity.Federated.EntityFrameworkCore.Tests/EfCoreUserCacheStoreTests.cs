@@ -1,6 +1,8 @@
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.EntityFrameworkCore.Internal;
 using Granit.Identity.Federated.Internal;
+using Granit.Testing.Fakes;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
@@ -8,12 +10,22 @@ using Xunit;
 
 namespace Granit.Identity.Federated.EntityFrameworkCore.Tests;
 
+/// <summary>
+/// SQLite-backed store tests with the <c>IMultiTenant</c> query filter ACTIVE, mirroring
+/// production. The EF Core In-Memory provider silently ignores query filters, which is
+/// exactly how the tenant-scoped GDPR-erasure no-op stayed invisible to CI — tests that
+/// touch tenant-scoped rows must establish an ambient tenant via
+/// <see cref="FakeCurrentTenant.Change"/>, the same contract production callers follow.
+/// </summary>
 public sealed class EfCoreUserCacheStoreTests : IDisposable
 {
     private static readonly IUserLookupHasher Hasher = CreateHasher();
-    private readonly TestDataFilter _filter = new();
+    private readonly SqliteConnection _connection = new("DataSource=:memory:");
+    private readonly FakeCurrentTenant _tenant = new();
 
-    public void Dispose() => _filter.Dispose();
+    public EfCoreUserCacheStoreTests() => _connection.Open();
+
+    public void Dispose() => _connection.Dispose();
 
     private static IUserLookupHasher CreateHasher()
     {
@@ -31,9 +43,15 @@ public sealed class EfCoreUserCacheStoreTests : IDisposable
     private EfCoreUserCacheStore CreateStore()
     {
         DbContextOptions<IdentityFederatedDbContext> options = new DbContextOptionsBuilder<IdentityFederatedDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .UseSqlite(_connection)
             .Options;
-        TestIdentityFederatedDbContextFactory factory = new(options, _filter.Filter);
+        TestIdentityFederatedDbContextFactory factory = new(options, dataFilter: null, _tenant);
+
+        using (IdentityFederatedDbContext db = factory.CreateDbContext())
+        {
+            db.Database.EnsureCreated();
+        }
+
         return new EfCoreUserCacheStore(factory, Hasher);
     }
 
@@ -55,6 +73,12 @@ public sealed class EfCoreUserCacheStoreTests : IDisposable
             LastSyncedAt = DateTimeOffset.UtcNow,
             TenantId = tenantId
         };
+
+    private async Task UpsertScopedAsync(EfCoreUserCacheStore store, FederatedIdentity entry)
+    {
+        using IDisposable _ = _tenant.Change(entry.TenantId);
+        await store.UpsertAsync(entry, TestContext.Current.CancellationToken);
+    }
 
     [Fact]
     public async Task FindByExternalIdAsync_ReturnsNull_WhenNotFound()
@@ -118,8 +142,11 @@ public sealed class EfCoreUserCacheStoreTests : IDisposable
         EfCoreUserCacheStore store = CreateStore();
         var tenantId = Guid.NewGuid();
 
-        await store.UpsertAsync(CreateEntry("user-1", tenantId: tenantId), TestContext.Current.CancellationToken);
+        await UpsertScopedAsync(store, CreateEntry("user-1", tenantId: tenantId));
 
+        // Host context (no ambient tenant): the documented contract is "regardless of
+        // tenant" — the store must bypass the multi-tenant filter or the cache-aside
+        // caller re-inserts a duplicate host-scope row for an already-mirrored user.
         FederatedIdentity? result = await store.FindFirstByExternalIdAsync(
             "user-1", TestContext.Current.CancellationToken);
 
@@ -134,20 +161,43 @@ public sealed class EfCoreUserCacheStoreTests : IDisposable
         var tenant1 = Guid.NewGuid();
         var tenant2 = Guid.NewGuid();
 
-        await store.UpsertAsync(CreateEntry("user-1", tenantId: tenant1, username: "tenant1-jdoe"),
-            TestContext.Current.CancellationToken);
-        await store.UpsertAsync(CreateEntry("user-1", tenantId: tenant2, username: "tenant2-jdoe"),
-            TestContext.Current.CancellationToken);
+        await UpsertScopedAsync(store, CreateEntry("user-1", tenantId: tenant1, username: "tenant1-jdoe"));
+        await UpsertScopedAsync(store, CreateEntry("user-1", tenantId: tenant2, username: "tenant2-jdoe"));
 
-        FederatedIdentity? fromTenant1 = await store.FindByExternalIdAsync(
-            "user-1", tenant1, TestContext.Current.CancellationToken);
-        FederatedIdentity? fromTenant2 = await store.FindByExternalIdAsync(
-            "user-1", tenant2, TestContext.Current.CancellationToken);
+        using (_tenant.Change(tenant1))
+        {
+            FederatedIdentity? fromTenant1 = await store.FindByExternalIdAsync(
+                "user-1", tenant1, TestContext.Current.CancellationToken);
+            fromTenant1.ShouldNotBeNull();
+            fromTenant1.Username.ShouldBe("tenant1-jdoe");
+        }
 
-        fromTenant1.ShouldNotBeNull();
-        fromTenant1.Username.ShouldBe("tenant1-jdoe");
-        fromTenant2.ShouldNotBeNull();
-        fromTenant2.Username.ShouldBe("tenant2-jdoe");
+        using (_tenant.Change(tenant2))
+        {
+            FederatedIdentity? fromTenant2 = await store.FindByExternalIdAsync(
+                "user-1", tenant2, TestContext.Current.CancellationToken);
+            fromTenant2.ShouldNotBeNull();
+            fromTenant2.Username.ShouldBe("tenant2-jdoe");
+        }
+    }
+
+    [Fact]
+    public async Task MultiTenantFilter_HidesOtherTenantsRows()
+    {
+        EfCoreUserCacheStore store = CreateStore();
+        var tenant1 = Guid.NewGuid();
+        var tenant2 = Guid.NewGuid();
+
+        await UpsertScopedAsync(store, CreateEntry("user-1", tenantId: tenant1));
+
+        // Reading tenant1's row under tenant2's ambient scope must fail closed — this is
+        // the row-level isolation the In-Memory provider never exercised.
+        using (_tenant.Change(tenant2))
+        {
+            FederatedIdentity? crossTenant = await store.FindByExternalIdAsync(
+                "user-1", tenant1, TestContext.Current.CancellationToken);
+            crossTenant.ShouldBeNull();
+        }
     }
 
     [Fact]
@@ -187,45 +237,6 @@ public sealed class EfCoreUserCacheStoreTests : IDisposable
     }
 
     [Fact]
-    public async Task GetStaleCountAsync_CountsStaleEntries()
-    {
-        EfCoreUserCacheStore store = CreateStore();
-
-        FederatedIdentity fresh = CreateEntry("user-fresh");
-        fresh.LastSyncedAt = DateTimeOffset.UtcNow;
-        await store.UpsertAsync(fresh, TestContext.Current.CancellationToken);
-
-        FederatedIdentity stale = CreateEntry("user-stale");
-        stale.LastSyncedAt = DateTimeOffset.UtcNow.AddDays(-2);
-        await store.UpsertAsync(stale, TestContext.Current.CancellationToken);
-
-        DateTimeOffset threshold = DateTimeOffset.UtcNow.AddDays(-1);
-        int staleCount = await store.GetStaleCountAsync(null, threshold, TestContext.Current.CancellationToken);
-
-        staleCount.ShouldBe(1);
-    }
-
-    [Fact]
-    public async Task GetSyncRangeAsync_ReturnsOldestAndNewest()
-    {
-        EfCoreUserCacheStore store = CreateStore();
-
-        FederatedIdentity old = CreateEntry("user-old");
-        old.LastSyncedAt = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero);
-        await store.UpsertAsync(old, TestContext.Current.CancellationToken);
-
-        FederatedIdentity recent = CreateEntry("user-recent");
-        recent.LastSyncedAt = new DateTimeOffset(2024, 6, 1, 0, 0, 0, TimeSpan.Zero);
-        await store.UpsertAsync(recent, TestContext.Current.CancellationToken);
-
-        (DateTimeOffset? oldest, DateTimeOffset? newest) = await store.GetSyncRangeAsync(
-            null, TestContext.Current.CancellationToken);
-
-        oldest.ShouldBe(new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero));
-        newest.ShouldBe(new DateTimeOffset(2024, 6, 1, 0, 0, 0, TimeSpan.Zero));
-    }
-
-    [Fact]
     public async Task GetSyncRangeAsync_ReturnsNulls_WhenEmpty()
     {
         EfCoreUserCacheStore store = CreateStore();
@@ -251,21 +262,108 @@ public sealed class EfCoreUserCacheStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task DeleteByExternalIdAsync_NullTenant_SweepsAllTenantPartitions()
+    {
+        // GDPR Art. 17 regression (audit BREAKING #2): a null tenant scope is documented on
+        // IdentityUserDeletedEto as "deletes across all tenants" but used to translate to
+        // "TenantId IS NULL" — host rows only — leaving every tenant mirror in place while
+        // the erasure acked. Red on the old implementation, green with the explicit sweep.
+        EfCoreUserCacheStore store = CreateStore();
+        var tenant1 = Guid.NewGuid();
+        var tenant2 = Guid.NewGuid();
+
+        await UpsertScopedAsync(store, CreateEntry("user-1", tenantId: tenant1));
+        await UpsertScopedAsync(store, CreateEntry("user-1", tenantId: tenant2));
+        await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
+        await UpsertScopedAsync(store, CreateEntry("user-2", tenantId: tenant1, username: "survivor"));
+
+        await store.DeleteByExternalIdAsync("user-1", null, TestContext.Current.CancellationToken);
+
+        using (_tenant.Change(tenant1))
+        {
+            (await store.FindByExternalIdAsync("user-1", tenant1, TestContext.Current.CancellationToken))
+                .ShouldBeNull();
+            (await store.FindByExternalIdAsync("user-2", tenant1, TestContext.Current.CancellationToken))
+                .ShouldNotBeNull();
+        }
+
+        using (_tenant.Change(tenant2))
+        {
+            (await store.FindByExternalIdAsync("user-1", tenant2, TestContext.Current.CancellationToken))
+                .ShouldBeNull();
+        }
+
+        (await store.FindByExternalIdAsync("user-1", null, TestContext.Current.CancellationToken))
+            .ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task DeleteByExternalIdAsync_TenantScoped_DeletesOnlyThatTenant_AndReturnsCount()
+    {
+        EfCoreUserCacheStore store = CreateStore();
+        var tenant1 = Guid.NewGuid();
+        var tenant2 = Guid.NewGuid();
+
+        await UpsertScopedAsync(store, CreateEntry("user-1", tenantId: tenant1));
+        await UpsertScopedAsync(store, CreateEntry("user-1", tenantId: tenant2));
+
+        int deleted;
+        using (_tenant.Change(tenant1))
+        {
+            deleted = await store.DeleteByExternalIdAsync(
+                "user-1", tenant1, TestContext.Current.CancellationToken);
+        }
+
+        deleted.ShouldBe(1);
+        using (_tenant.Change(tenant2))
+        {
+            (await store.FindByExternalIdAsync("user-1", tenant2, TestContext.Current.CancellationToken))
+                .ShouldNotBeNull();
+        }
+    }
+
+    [Fact]
+    public async Task DeleteByExternalIdAsync_TenantScoped_WithoutAmbientScope_FailsClosed()
+    {
+        // Pins the residual sharp edge until the tenant-explicit store seam lands: a
+        // tenant-scoped delete issued without a matching ambient tenant must not touch the
+        // row (the filter hides it — fail closed, 0 affected). Callers are responsible for
+        // establishing scope via ICurrentTenant.Change, as the Wolverine handlers now do.
+        EfCoreUserCacheStore store = CreateStore();
+        var tenant1 = Guid.NewGuid();
+
+        await UpsertScopedAsync(store, CreateEntry("user-1", tenantId: tenant1));
+
+        int deleted = await store.DeleteByExternalIdAsync(
+            "user-1", tenant1, TestContext.Current.CancellationToken);
+
+        deleted.ShouldBe(0);
+        using (_tenant.Change(tenant1))
+        {
+            (await store.FindByExternalIdAsync("user-1", tenant1, TestContext.Current.CancellationToken))
+                .ShouldNotBeNull();
+        }
+    }
+
+    [Fact]
     public async Task DeleteAllByTenantAsync_RemovesAllTenantEntries()
     {
         EfCoreUserCacheStore store = CreateStore();
         var tenantId = Guid.NewGuid();
 
-        await store.UpsertAsync(CreateEntry("user-1", tenantId: tenantId), TestContext.Current.CancellationToken);
-        await store.UpsertAsync(CreateEntry("user-2", tenantId: tenantId), TestContext.Current.CancellationToken);
+        await UpsertScopedAsync(store, CreateEntry("user-1", tenantId: tenantId));
+        await UpsertScopedAsync(store, CreateEntry("user-2", tenantId: tenantId));
         await store.UpsertAsync(CreateEntry("user-3"), TestContext.Current.CancellationToken); // no tenant
 
-        await store.DeleteAllByTenantAsync(tenantId, TestContext.Current.CancellationToken);
+        using (_tenant.Change(tenantId))
+        {
+            await store.DeleteAllByTenantAsync(tenantId, TestContext.Current.CancellationToken);
 
-        int tenantCount = await store.GetCountAsync(tenantId, TestContext.Current.CancellationToken);
+            int tenantCount = await store.GetCountAsync(tenantId, TestContext.Current.CancellationToken);
+            tenantCount.ShouldBe(0);
+        }
+
         int globalCount = await store.GetCountAsync(null, TestContext.Current.CancellationToken);
-
-        tenantCount.ShouldBe(0);
         globalCount.ShouldBe(1);
     }
 

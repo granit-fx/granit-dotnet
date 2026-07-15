@@ -1,4 +1,4 @@
-<title>Audit d'échange de jeton : un service a usurpé l'utilisateur {{ model.target_user_id }}</title>
+<title>Audit d'échange de jeton : un service a usurpé l'utilisateur {{ model.target_user_id | html.escape }}</title>
 <p>Bonjour,</p>
 <p>Un échange de jeton fédéré (RFC 8693 — usurpation directe) vient d'être effectué sur la plateforme. Un service a obtenu un jeton d'accès utilisateur <strong>sans le consentement interactif de l'utilisateur</strong>. Examinez l'opération dès maintenant et accusez réception ou escaladez.</p>
 <ul>

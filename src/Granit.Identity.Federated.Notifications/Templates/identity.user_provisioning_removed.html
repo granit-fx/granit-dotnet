@@ -1,4 +1,4 @@
-<title>GDPR Art. 17 receipt: user {{ model.user_id }} removed from the platform</title>
+<title>GDPR Art. 17 receipt: user {{ model.user_id | html.escape }} removed from the platform</title>
 <p>Hello,</p>
 <p>This is a <strong>GDPR Art. 17 erasure receipt</strong>. The federated identity provider has confirmed the deletion of a user, and the corresponding cache entry has been hard-deleted from this application's local store accordingly.</p>
 <ul>

@@ -1,4 +1,4 @@
-<title>Token exchange audit: service impersonated user {{ model.target_user_id }}</title>
+<title>Token exchange audit: service impersonated user {{ model.target_user_id | html.escape }}</title>
 <p>Hello,</p>
 <p>A federated token exchange (RFC 8693 — direct naked impersonation) has just been performed against the platform. A service has obtained a user-scoped access token <strong>without the user's interactive consent</strong>. Review the operation now and acknowledge or escalate.</p>
 <ul>

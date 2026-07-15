@@ -9,7 +9,7 @@ namespace Granit.Identity.Federated.Internal;
 internal sealed class FederatedUserCacheEraserAdapter(IUserCacheStore store)
     : IFederatedUserCacheEraser
 {
-    public Task EraseAsync(
+    public Task<int> EraseAsync(
         string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default) =>
         store.DeleteByExternalIdAsync(externalUserId, tenantId, cancellationToken);
 }

@@ -107,6 +107,34 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
         result.ShouldBeEmpty();
     }
 
+    [Theory]
+    [InlineData("x') or accountEnabled eq true or startswith(mail,'")]
+    [InlineData("a\" or 1 eq 1")]
+    [InlineData("test\r\nHost: evil")]
+    public async Task GetUsersAsync_WithInjectionAttemptInSearch_RejectsWithoutCallingGraph(string search)
+    {
+        // OData $filter injection defense: input outside the display-name/email character
+        // whitelist is rejected before any Graph call (same pattern as the Cognito provider).
+        IReadOnlyList<IIdentityUser> result = await _provider.GetUsersAsync(
+            search, cancellationToken: TestContext.Current.CancellationToken);
+
+        result.ShouldBeEmpty();
+        _handler.Requests.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task GetUsersAsync_WithApostropheInSearch_IsAllowedAndODataEscaped()
+    {
+        // Legitimate names contain apostrophes (O'Brien) — allowed through the whitelist,
+        // neutralised by OData quote doubling in the URL builder.
+        _handler.ResponseBody = """{"value":[]}""";
+
+        await _provider.GetUsersAsync("O'Brien", cancellationToken: TestContext.Current.CancellationToken);
+
+        _handler.Requests.Count.ShouldBe(1);
+        _handler.Requests[0].Url.ShouldContain("O%27%27Brien");
+    }
+
     // --- GetUserAsync tests ---
 
     [Fact]

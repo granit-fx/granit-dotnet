@@ -9,10 +9,13 @@ namespace Granit.Identity.Federated;
 public interface IFederatedUserCacheEraser
 {
     /// <summary>
-    /// Permanently deletes the cached mirror for the given external user within a tenant
-    /// scope (GDPR Art. 17). A no-op if no entry is cached for that user.
+    /// Permanently deletes the cached mirror for the given external user (GDPR Art. 17) and
+    /// returns the number of rows removed. A <c>null</c> <paramref name="tenantId"/> erases the
+    /// mirror across ALL tenant partitions — the right to erasure must not leave a copy behind
+    /// in any scope; a non-null value deletes within that tenant only. A no-op (returns 0) if
+    /// no entry is cached for that user.
     /// </summary>
-    Task EraseAsync(
+    Task<int> EraseAsync(
         string externalUserId,
         Guid? tenantId,
         CancellationToken cancellationToken = default);

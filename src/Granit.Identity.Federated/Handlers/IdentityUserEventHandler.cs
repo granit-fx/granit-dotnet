@@ -4,6 +4,7 @@ using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Events;
 using Granit.Identity.Federated.Internal;
 using Granit.Identity.Federated.RateLimiting;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Identity.Federated.Handlers;
@@ -15,6 +16,7 @@ internal sealed partial class IdentityUserEventHandler(
     IIdentityProvider identityProvider,
     IIdentityProviderCapabilities providerCapabilities,
     IUserCacheStore store,
+    ICurrentTenant currentTenant,
     ILocalEventBus localEventBus,
     IDistributedEventBus distributedEventBus,
     IUserSyncFailureRateLimiter syncFailureRateLimiter,
@@ -33,17 +35,23 @@ internal sealed partial class IdentityUserEventHandler(
 
     /// <summary>
     /// Handles a user deleted event by hard-deleting the cache entry (GDPR Art. 17).
+    /// A null <see cref="IdentityUserDeletedEto.TenantId"/> erases across all tenants.
     /// </summary>
     public async Task HandleAsync(IdentityUserDeletedEto @event, CancellationToken cancellationToken)
     {
-        await store.DeleteByExternalIdAsync(@event.UserId, @event.TenantId, cancellationToken)
+        // Distributed dispatch carries no ambient tenant — establish the event's scope so the
+        // multi-tenant query filter exposes the row the delete predicate targets. The null
+        // (all-tenants) case bypasses the filter inside the store, per the Eto contract.
+        using IDisposable _ = currentTenant.Change(@event.TenantId);
+
+        int deleted = await store.DeleteByExternalIdAsync(@event.UserId, @event.TenantId, cancellationToken)
             .ConfigureAwait(false);
 
         await localEventBus.PublishAsync(
             new FederatedIdentityErasedEvent(@event.UserId, @event.TenantId), cancellationToken)
             .ConfigureAwait(false);
 
-        LogUserCacheDeleted(@event.UserId);
+        LogUserCacheDeleted(@event.UserId, deleted);
     }
 
     // ──── Domain event handlers (provider-triggered) ────
@@ -140,6 +148,6 @@ internal sealed partial class IdentityUserEventHandler(
     [LoggerMessage(Level = LogLevel.Information, Message = "[AUDIT] User cache entry updated via {Source} for user {UserId}")]
     private partial void LogUserCacheUpdated(string userId, string source);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "[AUDIT] GDPR: user cache entry deleted via webhook for user {UserId}")]
-    private partial void LogUserCacheDeleted(string userId);
+    [LoggerMessage(Level = LogLevel.Information, Message = "[AUDIT] GDPR: {DeletedCount} user cache entries deleted via webhook for user {UserId}")]
+    private partial void LogUserCacheDeleted(string userId, int deletedCount);
 }

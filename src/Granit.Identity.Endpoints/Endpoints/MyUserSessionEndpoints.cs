@@ -28,20 +28,24 @@ internal static class MyUserSessionEndpoints
                 "Returns the authenticated user's active sessions across the configured backend "
                 + "(BFF, OpenIddict or Keycloak), each enriched with its approximate location and persisted "
                 + "risk level. The current session is flagged. Raw IP addresses are never returned.")
-            .Produces<IReadOnlyList<UserSessionResponse>>();
+            .Produces<IReadOnlyList<UserSessionResponse>>()
+            .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapDelete("/{sessionId}", RevokeAsync)
             .WithName("RevokeMyUserSession")
             .WithSummary("Revokes one of the caller's sessions by ID.")
             .WithDescription("Revokes the specified session of the authenticated user. Returns 404 when no such session exists.")
             .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapDelete("/", RevokeOthersAsync)
             .WithName("RevokeMyOtherUserSessions")
             .WithSummary("Revokes all of the caller's sessions except the current one.")
             .WithDescription("Revokes every session of the authenticated user except the one making the request, and returns how many were revoked.")
-            .Produces<UserSessionsRevokedResponse>();
+            .Produces<UserSessionsRevokedResponse>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         return group;
     }

@@ -17,8 +17,9 @@ public sealed class GoogleCloudIdentityProviderCapabilitiesTests
         _sut.SupportsIndividualSessionTermination.ShouldBeFalse();
 
     [Fact]
-    public void SupportsNativePasswordResetEmail_IsTrue() =>
-        _sut.SupportsNativePasswordResetEmail.ShouldBeTrue();
+    public void SupportsNativePasswordResetEmail_IsFalse() =>
+        // Admin SDK generates reset links but never sends the email.
+        _sut.SupportsNativePasswordResetEmail.ShouldBeFalse();
 
     [Fact]
     public void SupportsGroupHierarchy_IsFalse() =>
@@ -33,8 +34,9 @@ public sealed class GoogleCloudIdentityProviderCapabilitiesTests
         _sut.MaxCustomAttributes.ShouldBe(100);
 
     [Fact]
-    public void SupportsCredentialVerification_IsTrue() =>
-        _sut.SupportsCredentialVerification.ShouldBeTrue();
+    public void SupportsCredentialVerification_IsFalse() =>
+        // Admin SDK exposes no password-verify API (needs the REST API + Web API key).
+        _sut.SupportsCredentialVerification.ShouldBeFalse();
 
     [Fact]
     public void SupportsUserCreation_IsTrue() =>

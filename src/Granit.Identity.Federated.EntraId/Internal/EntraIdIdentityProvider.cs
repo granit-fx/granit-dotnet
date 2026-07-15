@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using Granit.Diagnostics;
 using Granit.Events;
 using Granit.Identity.Events;
@@ -57,6 +58,15 @@ internal sealed partial class EntraIdIdentityProvider(
         CancellationToken cancellationToken = default)
     {
         using Activity? activity = IdentityEntraIdActivitySource.Source.StartActivity(IdentityEntraIdActivitySource.GetUsers);
+
+        // Same defense as the Cognito provider: reject search input outside the character
+        // set legitimately used in display names and emails before it reaches the OData
+        // $filter (the URL builder additionally escapes quotes per OData ABNF).
+        if (!string.IsNullOrEmpty(search) && !ValidSearchPattern().IsMatch(search))
+        {
+            LogInvalidSearchInput(search.Length);
+            return [];
+        }
 
         try
         {
@@ -1221,6 +1231,19 @@ internal sealed partial class EntraIdIdentityProvider(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get users from Entra ID. Returning empty list")]
     private partial void LogGetUsersFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Rejected Entra ID user search input ({Length} chars) — failed character whitelist")]
+    private partial void LogInvalidSearchInput(int length);
+
+    /// <summary>
+    /// Whitelist for the Graph user-search input. Allows the characters legitimately found
+    /// in display names and emails (Unicode letters/marks/digits, space, apostrophe,
+    /// <c>._@+-</c>); everything else is rejected before it reaches the OData
+    /// <c>$filter</c>. Apostrophes are additionally escaped by the URL builder (OData
+    /// quote doubling). Bounded length to limit DoS surface.
+    /// </summary>
+    [GeneratedRegex(@"^[\p{L}\p{M}\p{N}' ._@+\-]{1,128}$")]
+    private static partial Regex ValidSearchPattern();
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get user {UserId} from Entra ID. Returning null")]
     private partial void LogGetUserFailed(Exception exception, string userId);

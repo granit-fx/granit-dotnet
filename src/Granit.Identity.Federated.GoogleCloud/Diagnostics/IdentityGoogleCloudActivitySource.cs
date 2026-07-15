@@ -25,8 +25,6 @@ internal static class IdentityGoogleCloudActivitySource
 #pragma warning disable GRSEC003 // Operation name constants, not secrets
         public const string RevokeTokens = "firebase.revoke-tokens";
         public const string SetPassword = "firebase.set-password";
-        public const string GeneratePasswordResetLink = "firebase.generate-password-reset-link";
-        public const string VerifyCredentials = "firebase.verify-credentials";
 #pragma warning restore GRSEC003
     }
 

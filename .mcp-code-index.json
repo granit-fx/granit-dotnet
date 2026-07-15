@@ -29641,7 +29641,7 @@
           "name": "EraseAsync",
           "kind": "method",
           "signature": "EraseAsync(string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
+          "returnType": "Task<int>"
         }
       ]
     },

@@ -24,10 +24,15 @@ public sealed class UserQueryDefinition : QueryDefinition<User>
     protected override void Configure(QueryDefinitionBuilder<User> builder) =>
         builder
             .Column(u => u.DisplayName, c => c.Label("Name").LabelKey("Identity.Columns.DisplayName").Filterable().Sortable())
-            .Column(u => u.Email, c => c.Label("Email").LabelKey("Identity.Columns.Email").Filterable().Sortable())
+            // Email and PhoneNumber are [Encrypted] (random-IV AES): the ciphertext is
+            // non-deterministic, so LIKE/equality filters silently match nothing and sort
+            // orders by ciphertext. They stay projectable (shown in the grid) but are NOT
+            // filterable/sortable/searchable. Exact-match equality is routed through the
+            // *Hash lookup columns elsewhere, not the admin grid. (audit ARCHITECTURE #1)
+            .Column(u => u.Email, c => c.Label("Email").LabelKey("Identity.Columns.Email"))
             .Column(u => u.FirstName, c => c.Label("First Name").LabelKey("Identity.Columns.FirstName").Filterable().Sortable())
             .Column(u => u.LastName, c => c.Label("Last Name").LabelKey("Identity.Columns.LastName").Filterable().Sortable())
-            .Column(u => u.PhoneNumber, c => c.Label("Phone").LabelKey("Identity.Columns.PhoneNumber").Filterable())
+            .Column(u => u.PhoneNumber, c => c.Label("Phone").LabelKey("Identity.Columns.PhoneNumber"))
             .Column(u => u.IsEnabled, c => c.Label("Enabled").LabelKey("Identity.Columns.IsEnabled").Filterable().Sortable())
             .Column(u => u.PreferredLocale, c => c.Label("Locale").LabelKey("Identity.Columns.PreferredLocale").Filterable())
             .Column(u => u.Timezone, c => c.Label("Timezone").LabelKey("Identity.Columns.Timezone").Filterable())
@@ -35,7 +40,7 @@ public sealed class UserQueryDefinition : QueryDefinition<User>
             .Column(u => u.CreatedAt, c => c.Label("Created At").LabelKey("Identity.Columns.CreatedAt").Sortable())
             .Column(u => u.ModifiedAt, c => c.Label("Modified At").LabelKey("Identity.Columns.ModifiedAt").Sortable())
             .AllowGroupBy(u => u.IsEnabled)
-            .GlobalSearch(u => u.DisplayName!, u => u.Email!, u => u.FirstName!, u => u.LastName!)
+            .GlobalSearch(u => u.DisplayName!, u => u.FirstName!, u => u.LastName!)
             .DefaultSort("-CreatedAt")
             .DefaultPageSize(25);
 }

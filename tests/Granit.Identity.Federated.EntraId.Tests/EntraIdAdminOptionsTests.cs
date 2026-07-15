@@ -52,6 +52,38 @@ public sealed class EntraIdAdminOptionsTests
     }
 
     [Fact]
+    public void GetUsersEndpoint_WithQuoteInSearch_EscapesODataLiteral()
+    {
+        // Graph URL-decodes %27 back to ' before parsing $filter, so a raw quote breaks
+        // out of the literal and rewrites the predicate. OData escaping doubles it.
+        string endpoint = EntraIdAdminOptions.GetUsersEndpoint(search: "O'Brien");
+
+        endpoint.ShouldContain("O%27%27Brien");
+        endpoint.ShouldNotContain("O%27Brien");
+    }
+
+    [Fact]
+    public void GetUsersEndpoint_WithInjectionAttempt_CannotBreakOutOfLiteral()
+    {
+        string endpoint = EntraIdAdminOptions.GetUsersEndpoint(search: "x') or accountEnabled eq true or startswith(mail,'");
+
+        // Every quote in the payload is doubled (OData ABNF) then percent-encoded: after
+        // Graph URL-decodes, the value stays a single string literal and the injected
+        // predicate is inert text. A lone %27 (single quote) would signal a break-out.
+        endpoint.ShouldContain("x%27%27");
+        endpoint.ShouldNotContain("x%27)");
+    }
+
+    [Fact]
+    public void GetAuditSignInsEndpoint_WithQuoteInUserId_EscapesODataLiteral()
+    {
+        string endpoint = EntraIdAdminOptions.GetAuditSignInsEndpoint("abc'def");
+
+        endpoint.ShouldContain("abc%27%27def");
+        endpoint.ShouldNotContain("abc%27def");
+    }
+
+    [Fact]
     public void GetUserEndpoint_ReturnsCorrectUrlWithEscapedUserId()
     {
         string endpoint = EntraIdAdminOptions.GetUserEndpoint("user-123");

@@ -231,19 +231,16 @@ public sealed class GoogleCloudIdentityProviderTests
     // ── Password ────────────────────────────────────────────────────────
 
     [Fact]
-    public async Task SendPasswordResetEmailAsync_GeneratesResetLink()
+    public async Task SendPasswordResetEmailAsync_ThrowsNotSupported()
     {
-        UserRecord user = CreateUserRecord("uid-1", "john@example.com", "John Doe");
-        _transport.GetUserAsync("uid-1", Arg.Any<CancellationToken>()).Returns(user);
-        _transport.GeneratePasswordResetLinkAsync("john@example.com", Arg.Any<CancellationToken>())
-            .Returns("https://reset-link");
+        // The Admin SDK can only generate a reset link, never send the email — the
+        // capability is advertised false and a direct call must fail loud instead of
+        // publishing an Eto for an email that never left.
+        await Should.ThrowAsync<NotSupportedException>(
+            () => _sut.SendPasswordResetEmailAsync("uid-1", TestContext.Current.CancellationToken));
 
-        await _sut.SendPasswordResetEmailAsync("uid-1", TestContext.Current.CancellationToken);
-
-        await _transport.Received(1).GeneratePasswordResetLinkAsync("john@example.com", Arg.Any<CancellationToken>());
-        await _distributedEventBus.Received(1).PublishAsync(
-            Arg.Is<IdentityPasswordResetEto>(e => e.UserId == "uid-1"),
-            Arg.Any<CancellationToken>());
+        await _distributedEventBus.DidNotReceive().PublishAsync(
+            Arg.Any<IdentityPasswordResetEto>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -259,14 +256,12 @@ public sealed class GoogleCloudIdentityProviderTests
     // ── Credentials ─────────────────────────────────────────────────────
 
     [Fact]
-    public async Task VerifyUserCredentialsAsync_DelegatesToTransport()
+    public async Task VerifyUserCredentialsAsync_ThrowsNotSupported()
     {
-        _transport.VerifyPasswordAsync("john@example.com", "pass", Arg.Any<CancellationToken>())
-            .Returns(true);
-
-        bool result = await _sut.VerifyUserCredentialsAsync("john@example.com", "pass", TestContext.Current.CancellationToken);
-
-        result.ShouldBeTrue();
+        // The Admin SDK has no password-verify API — the old implementation returned
+        // false for every credential, indistinguishable from "wrong password".
+        await Should.ThrowAsync<NotSupportedException>(
+            () => _sut.VerifyUserCredentialsAsync("john@example.com", "pass", TestContext.Current.CancellationToken));
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────

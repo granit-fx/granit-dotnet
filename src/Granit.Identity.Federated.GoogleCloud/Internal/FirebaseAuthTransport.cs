@@ -98,15 +98,4 @@ internal sealed class FirebaseAuthTransport(FirebaseAuth auth) : IFirebaseAuthTr
     /// <inheritdoc />
     public Task RevokeRefreshTokensAsync(string uid, CancellationToken cancellationToken = default) =>
         auth.RevokeRefreshTokensAsync(uid, cancellationToken);
-
-    /// <inheritdoc />
-    public Task<string> GeneratePasswordResetLinkAsync(string email, CancellationToken cancellationToken = default) =>
-        auth.GeneratePasswordResetLinkAsync(email);
-
-    /// <inheritdoc />
-    public Task<bool> VerifyPasswordAsync(string email, string password, CancellationToken cancellationToken = default) =>
-        // Firebase Admin SDK does not expose a direct password verify API.
-        // This would require the Firebase Auth REST API with the Web API key.
-        // For now, this capability is not supported in the admin SDK.
-        Task.FromResult(false);
 }

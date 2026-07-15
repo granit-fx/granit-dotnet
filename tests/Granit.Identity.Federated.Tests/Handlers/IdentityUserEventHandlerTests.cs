@@ -4,6 +4,7 @@ using Granit.Identity.Federated.Events;
 using Granit.Identity.Federated.Handlers;
 using Granit.Identity.Federated.Internal;
 using Granit.Identity.Federated.RateLimiting;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Xunit;
@@ -15,14 +16,15 @@ public sealed class IdentityUserEventHandlerTests
     private readonly IIdentityProvider _provider = Substitute.For<IIdentityProvider>();
     private readonly IIdentityProviderCapabilities _capabilities = Substitute.For<IIdentityProviderCapabilities>();
     private readonly IUserCacheStore _store = Substitute.For<IUserCacheStore>();
+    private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly ILocalEventBus _localEventBus = Substitute.For<ILocalEventBus>();
     private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
     private readonly IUserSyncFailureRateLimiter _rateLimiter = Substitute.For<IUserSyncFailureRateLimiter>();
     private readonly TimeProvider _timeProvider = Substitute.For<TimeProvider>();
 
     private IdentityUserEventHandler CreateHandler() => new(
-        _provider, _capabilities, _store, _localEventBus, _distributedEventBus, _rateLimiter,
-        _timeProvider, NullLogger<IdentityUserEventHandler>.Instance);
+        _provider, _capabilities, _store, _currentTenant, _localEventBus, _distributedEventBus,
+        _rateLimiter, _timeProvider, NullLogger<IdentityUserEventHandler>.Instance);
 
     public IdentityUserEventHandlerTests()
     {
@@ -71,6 +73,26 @@ public sealed class IdentityUserEventHandlerTests
             new IdentityUserDeletedEto("user-1", tenantId), TestContext.Current.CancellationToken);
 
         await _store.Received(1).DeleteByExternalIdAsync("user-1", tenantId, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleDeleted_EstablishesTenantScope_BeforeDeleting()
+    {
+        // GDPR regression: distributed dispatch carries no ambient tenant, so without an
+        // explicit scope the multi-tenant query filter hides the row and the delete
+        // silently no-ops. The handler must establish the event's tenant before touching
+        // the store.
+        var tenantId = Guid.NewGuid();
+        IdentityUserEventHandler handler = CreateHandler();
+
+        await handler.HandleAsync(
+            new IdentityUserDeletedEto("user-1", tenantId), TestContext.Current.CancellationToken);
+
+        Received.InOrder(() =>
+        {
+            _currentTenant.Change(tenantId);
+            _store.DeleteByExternalIdAsync("user-1", tenantId, Arg.Any<CancellationToken>());
+        });
     }
 
     [Fact]
