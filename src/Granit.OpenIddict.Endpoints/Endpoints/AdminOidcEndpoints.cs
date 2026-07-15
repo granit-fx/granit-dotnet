@@ -49,6 +49,7 @@ internal static class AdminOidcEndpoints
             .Produces<AdminOidcApplicationResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status409Conflict)
             .RequireAuthorization(OpenIddictPermissions.Applications.Manage);
 
         apps.MapPut("/{clientId}", UpdateApplicationAsync)
@@ -102,6 +103,7 @@ internal static class AdminOidcEndpoints
             .Produces<AdminOidcScopeResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status409Conflict)
             .RequireAuthorization(OpenIddictPermissions.Scopes.Manage);
 
         scopes.MapPut("/{scopeName}", UpdateScopeAsync)
@@ -211,6 +213,15 @@ internal static class AdminOidcEndpoints
             return TypedResults.Problem(
                 detail: "A tenant-scoped administrator cannot assign an application to a different tenant.",
                 statusCode: StatusCodes.Status403Forbidden);
+        }
+
+        // ClientId is globally unique; a duplicate would otherwise surface as a 500 from the
+        // manager's unique-constraint violation. Report the documented 409 instead.
+        if (await applicationManager.FindByClientIdAsync(request.ClientId, cancellationToken).ConfigureAwait(false) is not null)
+        {
+            return TypedResults.Problem(
+                detail: $"An OIDC application with client ID '{request.ClientId}' already exists.",
+                statusCode: StatusCodes.Status409Conflict);
         }
 
         var descriptor = new OpenIddictApplicationDescriptor
@@ -460,6 +471,14 @@ internal static class AdminOidcEndpoints
             return TypedResults.Problem(
                 detail: "A tenant-scoped administrator cannot assign a scope to a different tenant.",
                 statusCode: StatusCodes.Status403Forbidden);
+        }
+
+        // Scope names are unique; a duplicate would otherwise surface as a 500. Report 409.
+        if (await scopeManager.FindByNameAsync(request.Name, cancellationToken).ConfigureAwait(false) is not null)
+        {
+            return TypedResults.Problem(
+                detail: $"An OIDC scope named '{request.Name}' already exists.",
+                statusCode: StatusCodes.Status409Conflict);
         }
 
         var descriptor = new OpenIddictScopeDescriptor
