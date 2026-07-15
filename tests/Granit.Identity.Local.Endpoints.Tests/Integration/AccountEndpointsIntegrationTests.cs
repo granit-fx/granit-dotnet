@@ -10,7 +10,6 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Identity.Local.Endpoints.Tests.Integration;
 
@@ -441,13 +440,10 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             "/account/session/heartbeat", null,
             TestContext.Current.CancellationToken);
 
+        // The heartbeat delegates activity recording to the current session backend (a no-op stub
+        // here); its 204 confirms the endpoint wiring. The OpenIddict provider's TouchAsync
+        // (authz → refresh-token update) is unit-tested separately.
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-
-        await _server.FusionCache.Received(1).SetAsync(
-            Arg.Is<string>(k => k.StartsWith("session:", StringComparison.Ordinal)),
-            Arg.Any<UserSessionActivity>(),
-            Arg.Any<FusionCacheEntryOptions>(),
-            Arg.Any<CancellationToken>());
     }
 
     // -------------------------------------------------------------------------
