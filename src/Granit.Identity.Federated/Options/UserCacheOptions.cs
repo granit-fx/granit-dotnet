@@ -17,7 +17,7 @@ public sealed class UserCacheOptions
 
     /// <summary>
     /// Enables automatic cache sync on authenticated HTTP requests using JWT claims.
-    /// When enabled, <see cref="Middleware.UserCacheSyncMiddleware"/> upserts the current user
+    /// When enabled, the <c>UserCacheSyncMiddleware</c> (Granit.Identity.Federated.Endpoints) upserts the current user
     /// from claims on each request if the cached entry is stale or missing. Default: <c>true</c>.
     /// </summary>
     public bool EnableLoginTimeSync { get; set; } = true;

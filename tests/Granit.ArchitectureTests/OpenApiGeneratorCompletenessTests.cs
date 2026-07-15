@@ -25,11 +25,26 @@ public sealed partial class OpenApiGeneratorCompletenessTests
     private static readonly string RepoRoot = FindRepoRoot();
     private static readonly string GeneratorDir = Path.Join(RepoRoot, "src", "Granit.OpenApi.Generator");
 
+    /// <summary>
+    /// <c>.Endpoints</c> packages that ship only ASP.NET Core HTTP-integration middleware — no
+    /// Minimal API endpoints — so they produce no OpenAPI document and are not wired into the
+    /// generator. HTTP-touching code must use the <c>.Endpoints</c> suffix (never <c>.AspNetCore</c>,
+    /// enforced by <see cref="NamingHomogeneityTests"/>), so a middleware-only package still lands
+    /// here; it is excluded from the per-endpoints-module OpenAPI rules below.
+    /// </summary>
+    private static readonly HashSet<string> MiddlewareOnlyEndpointsPackages =
+        new(StringComparer.Ordinal)
+        {
+            // Login-time UserCacheSyncMiddleware + UseGranitIdentityUserCacheSync pipeline extension.
+            "Granit.Identity.Federated.Endpoints",
+        };
+
     private static IReadOnlyList<string> EndpointsProjectNames =>
         [.. Directory.EnumerateDirectories(Path.Join(RepoRoot, "src"), "Granit.*.Endpoints")
             .Select(Path.GetFileName)
             .OfType<string>()
-            .Where(name => File.Exists(Path.Join(RepoRoot, "src", name, $"{name}.csproj")))
+            .Where(name => File.Exists(Path.Join(RepoRoot, "src", name, $"{name}.csproj"))
+                && !MiddlewareOnlyEndpointsPackages.Contains(name))
             .OrderBy(name => name, StringComparer.Ordinal)];
 
     /// <summary>

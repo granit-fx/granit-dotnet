@@ -6,7 +6,7 @@ using Granit.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace Granit.Identity.Federated.Middleware;
+namespace Granit.Identity.Federated.Endpoints;
 
 /// <summary>
 /// ASP.NET Core middleware that syncs the current authenticated user's identity data

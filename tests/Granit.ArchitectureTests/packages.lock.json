@@ -2841,6 +2841,12 @@
           "Granit.Identity.Federated.Cognito": "[0.1.0-dev, )"
         }
       },
+      "granit.identity.federated.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Identity.Federated": "[0.1.0-dev, )"
+        }
+      },
       "granit.identity.federated.entityframeworkcore": {
         "type": "Project",
         "dependencies": {

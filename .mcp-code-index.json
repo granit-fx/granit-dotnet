@@ -1422,6 +1422,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.Federated.Endpoints",
+      "deps": [
+        "Granit.Identity.Federated"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity.Federated.EntityFrameworkCore",
       "deps": [
         "Granit.Identity.Federated",
@@ -29200,6 +29207,22 @@
       ]
     },
     {
+      "name": "IdentityFederatedEndpointsApplicationBuilderExtensions",
+      "fqn": "Granit.Identity.Federated.Endpoints.Extensions.IdentityFederatedEndpointsApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Endpoints",
+      "file": "src/Granit.Identity.Federated.Endpoints/Extensions/IdentityFederatedEndpointsApplicationBuilderExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "UseGranitIdentityUserCacheSync",
+          "kind": "method",
+          "signature": "UseGranitIdentityUserCacheSync(this IApplicationBuilder app)",
+          "returnType": "IApplicationBuilder"
+        }
+      ]
+    },
+    {
       "name": "FederatedIdentityEntityDefinition",
       "fqn": "Granit.Identity.Federated.Entities.FederatedIdentityEntityDefinition",
       "kind": "class",
@@ -29212,22 +29235,6 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "IdentityEfCoreApplicationBuilderExtensions",
-      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Extensions.IdentityEfCoreApplicationBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Identity.Federated.EntityFrameworkCore",
-      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Extensions/IdentityEfCoreApplicationBuilderExtensions.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "UseGranitIdentityUserCacheSync",
-          "kind": "method",
-          "signature": "UseGranitIdentityUserCacheSync(this IApplicationBuilder app)",
-          "returnType": "IApplicationBuilder"
         }
       ]
     },

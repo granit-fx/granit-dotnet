@@ -31,6 +31,10 @@ public sealed class OpenApiTagNameConventionTests
             "Granit.Bff.Endpoints",
             // MapGranitQuery maps per-entity groups whose tag is inherited from the parent group
             // or overridden per call via QueryEndpointOptions.TagName — no static package default.
-            "Granit.QueryEngine.Endpoints");
+            "Granit.QueryEngine.Endpoints",
+            // Middleware-only HTTP-integration package (UserCacheSyncMiddleware) — ships no Minimal
+            // API endpoints and therefore no tags/options. HTTP-touching code must use the .Endpoints
+            // suffix (never .AspNetCore), so it lands here despite having no endpoint surface.
+            "Granit.Identity.Federated.Endpoints");
 
 }
