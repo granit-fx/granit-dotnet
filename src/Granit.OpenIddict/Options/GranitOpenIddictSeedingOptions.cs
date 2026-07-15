@@ -36,6 +36,7 @@ public sealed class GranitOpenIddictSeedingOptions
 /// <param name="ApplicationType">The application type (<c>"web"</c> or <c>"native"</c>). Default: <c>"web"</c>.</param>
 /// <param name="ClientSide">Optional host/tenant policy enforced at sign-in. <see cref="MultiTenancySides.Host"/> = only users with <c>TenantId = null</c> may obtain tokens for this client; <see cref="MultiTenancySides.Tenant"/> = only users with a non-null <c>TenantId</c>; <see cref="MultiTenancySides.Both"/> or <see langword="null"/> = no restriction. Stored on the OIDC application's <c>Properties</c> bag and enforced by <c>ClientSideAuthorizationHandler</c>.</param>
 /// <param name="DeviceKind">Optional device classification for the devices that authenticate through this client (e.g. <see cref="DeviceKind.MobileApp"/>, <see cref="DeviceKind.Tv"/>). Stored on the OIDC application's <c>Properties</c> bag and read by the session adapters so <c>/devices</c> shows an accurate classification. <see langword="null"/> or <see cref="DeviceKind.Unknown"/> = not declared (the adapter falls back to a redirect-URI/grant heuristic).</param>
+/// <param name="TenantId">Owning tenant. <see langword="null"/> (default) seeds a global application visible to every tenant; a value seeds a tenant-owned application. Seeding runs in host context, so an explicit tenant is honoured. The seeder reconciles this on every run.</param>
 public sealed record OidcApplicationSeedDescriptor(
     string ClientId,
     string? ClientSecret,
@@ -47,7 +48,8 @@ public sealed record OidcApplicationSeedDescriptor(
     string? ConsentType = null,
     string? ApplicationType = null,
     MultiTenancySides? ClientSide = null,
-    DeviceKind? DeviceKind = null);
+    DeviceKind? DeviceKind = null,
+    Guid? TenantId = null);
 
 /// <summary>
 /// Describes an OIDC scope to seed.
@@ -56,8 +58,10 @@ public sealed record OidcApplicationSeedDescriptor(
 /// <param name="DisplayName">A human-readable display name.</param>
 /// <param name="Resources">Resources associated with this scope.</param>
 /// <param name="Description">An optional human-readable description.</param>
+/// <param name="TenantId">Owning tenant. <see langword="null"/> (default) seeds a global scope visible to every tenant; a value seeds a tenant-owned scope. The standard OIDC scopes are always global.</param>
 public sealed record OidcScopeSeedDescriptor(
     string Name,
     string DisplayName,
     string[] Resources,
-    string? Description = null);
+    string? Description = null,
+    Guid? TenantId = null);
