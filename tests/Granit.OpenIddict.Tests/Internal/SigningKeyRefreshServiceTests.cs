@@ -75,11 +75,58 @@ public sealed class SigningKeyRefreshServiceTests
         cache.RemoveCount.ShouldBe(0);
     }
 
+    [Fact]
+    public async Task EnsureInitializedAsync_EmptyStore_GeneratesAndReloads()
+    {
+        FakeSigningKeyStore store = new([]); // fresh deployment, no keys
+        RecordingOptionsCache cache = new();
+        IKeyRotationService rotation = Substitute.For<IKeyRotationService>();
+        rotation.RotateAsync(Arg.Any<CancellationToken>())
+            .Returns(new KeyRotationResult(KeysGenerated: 2, KeysRetired: 0, KeysRevoked: 0, KeysPruned: 0));
+        SigningKeyRefreshService service = Build(store, cache, rotation);
+
+        await service.EnsureInitializedAsync(TestContext.Current.CancellationToken);
+
+        await rotation.Received(1).RotateAsync(Arg.Any<CancellationToken>());
+        cache.RemoveCount.ShouldBe(1, "freshly minted credentials must be loaded immediately");
+    }
+
+    [Fact]
+    public async Task EnsureInitializedAsync_KeysAlreadyPresent_DoesNotGenerate()
+    {
+        FakeSigningKeyStore store = new([Key("a", SigningKeyStatus.Active)]);
+        RecordingOptionsCache cache = new();
+        IKeyRotationService rotation = Substitute.For<IKeyRotationService>();
+        SigningKeyRefreshService service = Build(store, cache, rotation);
+
+        await service.EnsureInitializedAsync(TestContext.Current.CancellationToken);
+
+        await rotation.DidNotReceive().RotateAsync(Arg.Any<CancellationToken>());
+        cache.RemoveCount.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task EnsureInitializedAsync_StoreThrows_IsNoOp()
+    {
+        FakeSigningKeyStore store = new([]) { Throw = true }; // schema absent on first boot
+        RecordingOptionsCache cache = new();
+        IKeyRotationService rotation = Substitute.For<IKeyRotationService>();
+        SigningKeyRefreshService service = Build(store, cache, rotation);
+
+        await service.EnsureInitializedAsync(TestContext.Current.CancellationToken);
+
+        await rotation.DidNotReceive().RotateAsync(Arg.Any<CancellationToken>());
+        cache.RemoveCount.ShouldBe(0);
+    }
+
     private static SigningKeyRefreshService Build(
-        ISigningKeyStore store, IOptionsMonitorCache<OpenIddictServerOptions> cache)
+        ISigningKeyStore store,
+        IOptionsMonitorCache<OpenIddictServerOptions> cache,
+        IKeyRotationService? rotation = null)
     {
         ServiceProvider provider = new ServiceCollection()
             .AddScoped(_ => store)
+            .AddScoped(_ => rotation ?? Substitute.For<IKeyRotationService>())
             .BuildServiceProvider();
 
         IOptionsMonitor<OpenIddictServerOptions> monitor =
@@ -124,7 +171,10 @@ public sealed class SigningKeyRefreshServiceTests
             GetKeysAsync(statuses, default);
 
         public Task<SigningKey?> GetActiveKeyAsync(string keyType, CancellationToken cancellationToken = default) =>
-            Task.FromResult<SigningKey?>(null);
+            Throw
+                ? throw new InvalidOperationException("relation \"openiddict_signing_keys\" does not exist")
+                : Task.FromResult(Keys.FirstOrDefault(
+                    k => k.KeyType == keyType && k.Status == SigningKeyStatus.Active));
 
         public Task CreateAsync(SigningKey key, CancellationToken cancellationToken = default) =>
             Task.CompletedTask;
