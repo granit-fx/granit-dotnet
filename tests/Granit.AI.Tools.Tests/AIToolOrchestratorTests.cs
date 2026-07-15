@@ -1,9 +1,14 @@
+using Granit.AI.Diagnostics;
+using Granit.AI.Internal;
 using Granit.AI.Options;
 using Granit.AI.Tools.Diagnostics;
 using Granit.AI.Tools.Internal;
 using Granit.AI.Tools.Options;
 using Granit.AI.Tools.Tests.Fakes;
 using Granit.AI.Workspaces;
+using Granit.Guids;
+using Granit.MultiTenancy;
+using Granit.Users;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -41,29 +46,36 @@ public sealed class AIToolOrchestratorTests
         AIToolRegistry registry = new(tools);
         AIToolProjector projector = new(registry);
 
-        IAIChatClientFactory factory = Substitute.For<IAIChatClientFactory>();
-        factory.CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>()).Returns(chatClient);
+        AIWorkspace workspace = new() { Key = "default", Provider = "OpenAI", Model = "gpt-4o" };
 
         IAIWorkspaceProvider workspaceProvider = Substitute.For<IAIWorkspaceProvider>();
         workspaceProvider.GetAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(new AIWorkspace { Key = "default", Provider = "OpenAI", Model = "gpt-4o" });
+            .Returns(workspace);
 
-        IAIUsageRecordFactory recordFactory = Substitute.For<IAIUsageRecordFactory>();
-        recordFactory.Create(
-                Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<int>(), Arg.Any<int>(), Arg.Any<TimeSpan?>())
-            .Returns(call => new AIUsageRecord
-            {
-                Id = Guid.Empty,
-                WorkspaceName = (string)call[0],
-                Provider = (string)call[1],
-                Model = (string)call[2],
-                InputTokens = (int)call[3],
-                OutputTokens = (int)call[4],
-                Timestamp = DateTimeOffset.UnixEpoch,
-            });
+        // Real usage pipeline: the orchestrator populates the scoped AIUsageContext, the real
+        // record factory applies it, and the factory-applied middleware stamps one record per
+        // model round-trip — exactly what production wiring does.
+        AIUsageContext usageContext = new();
+        IAIUsageRecordFactory recordFactory = new AIUsageRecordFactory(
+            Substitute.For<ICurrentTenant>(),
+            Substitute.For<ICurrentUserService>(),
+            usageContext,
+            Substitute.For<IGuidGenerator>(),
+            TimeProvider.System);
 
         IAIUsageTracker usageTracker = Substitute.For<IAIUsageTracker>();
+
+        IAIChatClientFactory factory = Substitute.For<IAIChatClientFactory>();
+        factory.CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns(_ => new UsageTrackingChatClient(
+                chatClient,
+                "default",
+                workspace,
+                usageTracker,
+                recordFactory,
+                new AIMetrics(new TestMeterFactory()),
+                TimeProvider.System,
+                NullLogger<UsageTrackingChatClient>.Instance));
 
         IAIToolAuthorizer authorizer = Substitute.For<IAIToolAuthorizer>();
         authorizer.FilterAuthorizedAsync(Arg.Any<IReadOnlyList<IAITool>>(), Arg.Any<CancellationToken>())
@@ -76,8 +88,7 @@ public sealed class AIToolOrchestratorTests
             registry,
             authorizer,
             new DefaultAISystemPromptComposer(new DefaultAIGuardrailProvider()),
-            recordFactory,
-            usageTracker,
+            usageContext,
             MsOptions.Create(options ?? new GranitAIToolsOrchestrationOptions()),
             MsOptions.Create(new GranitAIOptions()),
             new AIToolsMetrics(new TestMeterFactory()),
@@ -235,6 +246,39 @@ public sealed class AIToolOrchestratorTests
         result.OutputTokens.ShouldBe(12);
         await harness.UsageTracker.Received(1).RecordAsync(
             Arg.Is<AIUsageRecord>(r => r.InputTokens == 30 && r.OutputTokens == 12),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Each_model_round_trip_stamps_its_own_usage_record_sharing_the_conversation()
+    {
+        // BREAKING semantics locked in by the usage middleware: an agentic turn of N model
+        // round-trips produces N records (linked by ConversationId), while the orchestration
+        // result still reports the turn totals.
+        FakeAITool echo = new(name: "echo", result: "r");
+        ChatResponse toolCall = ToolCall("c1", "echo");
+        toolCall.Usage = new UsageDetails { InputTokenCount = 10, OutputTokenCount = 2 };
+        ScriptedChatClient client = new(
+            toolCall,
+            FinalText("done", input: 20, output: 3));
+        Harness harness = CreateHarness(client, [echo]);
+
+        var conversationId = Guid.NewGuid();
+        AIOrchestrationRequest request = UserSays("hi") with { ConversationId = conversationId };
+
+        AIOrchestrationResult result = await harness.Orchestrator.RunAsync(
+            request, TestContext.Current.CancellationToken);
+
+        result.InputTokens.ShouldBe(30);
+        result.OutputTokens.ShouldBe(5);
+        await harness.UsageTracker.Received(2).RecordAsync(
+            Arg.Is<AIUsageRecord>(r => r.ConversationId == conversationId),
+            Arg.Any<CancellationToken>());
+        await harness.UsageTracker.Received(1).RecordAsync(
+            Arg.Is<AIUsageRecord>(r => r.InputTokens == 10 && r.OutputTokens == 2),
+            Arg.Any<CancellationToken>());
+        await harness.UsageTracker.Received(1).RecordAsync(
+            Arg.Is<AIUsageRecord>(r => r.InputTokens == 20 && r.OutputTokens == 3),
             Arg.Any<CancellationToken>());
     }
 

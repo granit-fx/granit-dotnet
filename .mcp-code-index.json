@@ -3181,6 +3181,22 @@
       ]
     },
     {
+      "name": "AIUsageContext",
+      "fqn": "Granit.AI.AIUsageContext",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/AIUsageContext.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Clear",
+          "kind": "method",
+          "signature": "Clear()",
+          "returnType": "Guid? ConversationId { get; set; } public string? PromptVersion { get; set; } public string? PromptTemplateName { get; set; } public int? PromptTemplateVersion { get; set; } public void"
+        }
+      ]
+    },
+    {
       "name": "AIUsageRecord",
       "fqn": "Granit.AI.AIUsageRecord",
       "kind": "record",
@@ -5091,7 +5107,7 @@
       "kind": "interface",
       "project": "Granit.AI",
       "file": "src/Granit.AI/IAIChatClientFactory.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "CreateAsync",

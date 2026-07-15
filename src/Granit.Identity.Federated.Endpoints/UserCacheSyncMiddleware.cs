@@ -28,6 +28,7 @@ internal sealed class UserCacheSyncMiddleware(RequestDelegate next)
         ICurrentUserService currentUserService,
         ICurrentTenant currentTenant,
         IUserCacheStore store,
+        IFederatedIdentityWriter writer,
         TimeProvider timeProvider,
         IOptions<UserCacheOptions> options,
         IIdentityProviderCapabilities capabilities)
@@ -53,19 +54,18 @@ internal sealed class UserCacheSyncMiddleware(RequestDelegate next)
 
             if (existing is null || now - existing.LastSyncedAt >= options.Value.StalenessThreshold)
             {
-                var entry = new FederatedIdentity
-                {
-                    ExternalUserId = userId,
-                    Username = currentUserService.UserName,
-                    Email = currentUserService.Email,
-                    FirstName = currentUserService.FirstName,
-                    LastName = currentUserService.LastName,
-                    Enabled = true,
-                    LastSyncedAt = now,
-                    TenantId = tenantId
-                };
+                // Route through the shared writer so login-time claim sync gets the same ADR-051
+                // joint hydration (canonical User + aligned Id/UserId) as the other paths, instead
+                // of inserting a FederatedIdentity with UserId = Guid.Empty and no User row.
+                var claimsUser = new FederatedIdentityUser(
+                    userId,
+                    currentUserService.UserName,
+                    currentUserService.Email,
+                    currentUserService.FirstName,
+                    currentUserService.LastName,
+                    Enabled: true);
 
-                await store.UpsertAsync(entry, httpContext.RequestAborted).ConfigureAwait(false);
+                await writer.WriteAsync(claimsUser, existing, httpContext.RequestAborted).ConfigureAwait(false);
             }
         }
 

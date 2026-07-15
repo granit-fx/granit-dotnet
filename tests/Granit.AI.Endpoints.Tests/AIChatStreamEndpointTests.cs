@@ -19,8 +19,6 @@ public sealed class AIChatStreamEndpointTests : IAsyncDisposable
 {
     private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
     private readonly IAIWorkspaceProvider _workspaceProvider = Substitute.For<IAIWorkspaceProvider>();
-    private readonly IAIUsageTracker _usageTracker = Substitute.For<IAIUsageTracker>();
-    private readonly IAIUsageRecordFactory _usageRecordFactory = Substitute.For<IAIUsageRecordFactory>();
     private readonly WebApplication _app;
     private readonly HttpClient _client;
 
@@ -28,26 +26,11 @@ public sealed class AIChatStreamEndpointTests : IAsyncDisposable
     {
         _workspaceProvider.GetAsync("my-gpt4", Arg.Any<CancellationToken>())
             .Returns(new AIWorkspace { Key = "my-gpt4", Provider = "OpenAI", Model = "gpt-4o" });
-        _usageRecordFactory.Create(
-                Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-                Arg.Any<int>(), Arg.Any<int>(), Arg.Any<TimeSpan?>())
-            .Returns(ci => new AIUsageRecord
-            {
-                Id = Guid.NewGuid(),
-                WorkspaceName = (string)ci[0],
-                Provider = (string)ci[1],
-                Model = (string)ci[2],
-                InputTokens = (int)ci[3],
-                OutputTokens = (int)ci[4],
-                Timestamp = DateTimeOffset.UnixEpoch,
-            });
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Services.AddSingleton(_chatClientFactory);
         builder.Services.AddSingleton(_workspaceProvider);
-        builder.Services.AddSingleton(_usageTracker);
-        builder.Services.AddSingleton(_usageRecordFactory);
         builder.Services.AddSingleton(Substitute.For<IAIChatCompletionService>());
 
         _app = builder.Build();
@@ -60,8 +43,10 @@ public sealed class AIChatStreamEndpointTests : IAsyncDisposable
     public async ValueTask DisposeAsync() => await _app.DisposeAsync();
 
     [Fact]
-    public async Task Stream_emits_delta_then_usage_frames_and_records_usage()
+    public async Task Stream_emits_delta_then_usage_frames()
     {
+        // Usage records are stamped by the factory-applied middleware, not by the endpoint —
+        // the endpoint only surfaces the token counts as a 'usage' SSE frame.
         _chatClientFactory.CreateAsync("my-gpt4", Arg.Any<CancellationToken>())
             .Returns(new FakeChatClient([
                 Text("Hello"),
@@ -76,8 +61,6 @@ public sealed class AIChatStreamEndpointTests : IAsyncDisposable
         usage.InputTokens.ShouldBe(5);
         usage.OutputTokens.ShouldBe(2);
         frames.ShouldNotContain(f => f.Type == "error");
-        await _usageTracker.Received(1).RecordAsync(
-            Arg.Is<AIUsageRecord>(r => r.InputTokens == 5 && r.OutputTokens == 2), Arg.Any<CancellationToken>());
     }
 
     [Fact]

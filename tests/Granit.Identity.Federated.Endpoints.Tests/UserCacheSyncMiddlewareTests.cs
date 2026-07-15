@@ -12,14 +12,15 @@ using Xunit;
 namespace Granit.Identity.Federated.Endpoints.Tests;
 
 /// <summary>
-/// Behaviour cover for the login-time <see cref="UserCacheSyncMiddleware"/> after its move out of the
-/// federated domain package into this ASP.NET Core integration package (Vague 4a). The middleware upserts
-/// the current authenticated user's cache entry from JWT claims when the entry is missing or stale, and
-/// short-circuits for local stores, unauthenticated requests, disabled sync, and fresh entries.
+/// Behaviour cover for the login-time <see cref="UserCacheSyncMiddleware"/>. When the cache entry is
+/// missing or stale it routes the claim-derived user through the shared <see cref="IFederatedIdentityWriter"/>
+/// (ADR-051 joint hydration), and short-circuits for local stores, unauthenticated requests, disabled sync,
+/// and fresh entries.
 /// </summary>
 public sealed class UserCacheSyncMiddlewareTests
 {
     private readonly IUserCacheStore _store = Substitute.For<IUserCacheStore>();
+    private readonly IFederatedIdentityWriter _writer = Substitute.For<IFederatedIdentityWriter>();
     private readonly ICurrentUserService _currentUser = Substitute.For<ICurrentUserService>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly IIdentityProviderCapabilities _capabilities = Substitute.For<IIdentityProviderCapabilities>();
@@ -40,6 +41,7 @@ public sealed class UserCacheSyncMiddlewareTests
             _currentUser,
             _currentTenant,
             _store,
+            _writer,
             _time,
             Microsoft.Extensions.Options.Options.Create(options ?? new UserCacheOptions()),
             _capabilities);
@@ -55,7 +57,7 @@ public sealed class UserCacheSyncMiddlewareTests
         await Invoke();
 
         _nextCalled.ShouldBeTrue();
-        await _store.DidNotReceiveWithAnyArgs().UpsertAsync(default!, Ct);
+        await _writer.DidNotReceiveWithAnyArgs().WriteAsync(default!, default, Ct);
     }
 
     [Fact]
@@ -67,11 +69,11 @@ public sealed class UserCacheSyncMiddlewareTests
         await Invoke();
 
         _nextCalled.ShouldBeTrue();
-        await _store.DidNotReceiveWithAnyArgs().UpsertAsync(default!, Ct);
+        await _writer.DidNotReceiveWithAnyArgs().WriteAsync(default!, default, Ct);
     }
 
     [Fact]
-    public async Task Upserts_WhenNoCachedEntry()
+    public async Task WritesThroughWriter_WhenNoCachedEntry()
     {
         _capabilities.IsLocalStore.Returns(false);
         _currentUser.IsAuthenticated.Returns(true);
@@ -82,14 +84,15 @@ public sealed class UserCacheSyncMiddlewareTests
 
         await Invoke();
 
-        await _store.Received(1).UpsertAsync(
-            Arg.Is<FederatedIdentity>(e => e.ExternalUserId == "user-1" && e.Email == "jane@test.com"),
+        await _writer.Received(1).WriteAsync(
+            Arg.Is<IIdentityUser>(u => u.UserId == "user-1" && u.Email == "jane@test.com"),
+            null,
             Arg.Any<CancellationToken>());
         _nextCalled.ShouldBeTrue();
     }
 
     [Fact]
-    public async Task SkipsUpsert_WhenCachedEntryIsFresh()
+    public async Task SkipsWrite_WhenCachedEntryIsFresh()
     {
         _capabilities.IsLocalStore.Returns(false);
         _currentUser.IsAuthenticated.Returns(true);
@@ -99,25 +102,28 @@ public sealed class UserCacheSyncMiddlewareTests
 
         await Invoke(new UserCacheOptions { StalenessThreshold = TimeSpan.FromHours(24) });
 
-        await _store.DidNotReceiveWithAnyArgs().UpsertAsync(default!, Ct);
+        await _writer.DidNotReceiveWithAnyArgs().WriteAsync(default!, default, Ct);
         _nextCalled.ShouldBeTrue();
     }
 
     [Fact]
-    public async Task Upserts_WhenCachedEntryIsStale()
+    public async Task WritesThroughWriter_WhenCachedEntryIsStale()
     {
         _capabilities.IsLocalStore.Returns(false);
         _currentUser.IsAuthenticated.Returns(true);
         _currentUser.UserId.Returns("user-1");
+        FederatedIdentity stale = new()
+        {
+            ExternalUserId = "user-1",
+            LastSyncedAt = _time.GetUtcNow() - TimeSpan.FromDays(2),
+        };
         _store.FindByExternalIdAsync("user-1", Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
-            .Returns(new FederatedIdentity
-            {
-                ExternalUserId = "user-1",
-                LastSyncedAt = _time.GetUtcNow() - TimeSpan.FromDays(2),
-            });
+            .Returns(stale);
 
         await Invoke(new UserCacheOptions { StalenessThreshold = TimeSpan.FromHours(24) });
 
-        await _store.Received(1).UpsertAsync(Arg.Any<FederatedIdentity>(), Arg.Any<CancellationToken>());
+        // Passes the stale row so the writer takes the update path (preserving the id pair).
+        await _writer.Received(1).WriteAsync(
+            Arg.Is<IIdentityUser>(u => u.UserId == "user-1"), stale, Arg.Any<CancellationToken>());
     }
 }

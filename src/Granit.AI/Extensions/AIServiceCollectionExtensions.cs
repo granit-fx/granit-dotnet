@@ -59,9 +59,11 @@ public static class AIServiceCollectionExtensions
         // Metrics
         builder.Services.TryAddSingleton<AIMetrics>();
 
-        // Usage tracking (no-op by default, overridden by EF Core package)
+        // Usage tracking (no-op by default, overridden by EF Core package). Records are stamped
+        // by the middleware the factories apply; AIUsageContext carries per-scope enrichment.
         builder.Services.TryAddScoped<IAIUsageTracker, NullAIUsageTracker>();
         builder.Services.TryAddScoped<IAIUsageRecordFactory, AIUsageRecordFactory>();
+        builder.Services.TryAddScoped<AIUsageContext>();
 
         // Quota guard: InMemory by default (no-op when MaxRequestsPerTenantPerHour=0)
         builder.Services

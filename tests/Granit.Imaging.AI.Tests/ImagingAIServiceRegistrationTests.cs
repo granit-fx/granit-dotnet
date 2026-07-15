@@ -31,8 +31,6 @@ public sealed class ImagingAIServiceRegistrationTests
         builder.Services.TryAddScoped(_ => Substitute.For<IAIChatClientFactory>());
         builder.Services.TryAddScoped(_ => Substitute.For<IAIWorkspaceProvider>());
         builder.Services.TryAddScoped(_ => Substitute.For<IAIWorkspaceCapabilityResolver>());
-        builder.Services.TryAddScoped(_ => Substitute.For<IAIUsageRecordFactory>());
-        builder.Services.TryAddScoped(_ => Substitute.For<IAIUsageTracker>());
 
         builder.AddGranitImagingAI();
 

@@ -7,8 +7,10 @@ namespace Granit.AI;
 /// </summary>
 /// <remarks>
 /// The returned <c>IChatClient</c> is pre-configured with the workspace's provider, model,
-/// system prompt, and parameters. The middleware pipeline (logging, OpenTelemetry, usage tracking,
-/// audit trail) is applied automatically via <c>ChatClientBuilder</c>.
+/// system prompt, and parameters. Middleware is applied automatically: OpenTelemetry GenAI
+/// tracing (provider-side <c>TracingChatClient</c>) and usage tracking — every model call
+/// stamps an <see cref="AIUsageRecord"/> via <see cref="IAIUsageTracker"/>, enriched from the
+/// scoped <see cref="AIUsageContext"/>. Callers must NOT stamp usage themselves.
 /// </remarks>
 public interface IAIChatClientFactory
 {

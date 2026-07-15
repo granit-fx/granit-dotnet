@@ -16,6 +16,7 @@ internal sealed partial class IdentityUserEventHandler(
     IIdentityProvider identityProvider,
     IIdentityProviderCapabilities providerCapabilities,
     IUserCacheStore store,
+    IFederatedIdentityWriter writer,
     ICurrentTenant currentTenant,
     ILocalEventBus localEventBus,
     IDistributedEventBus distributedEventBus,
@@ -100,18 +101,10 @@ internal sealed partial class IdentityUserEventHandler(
             return;
         }
 
-        var entry = new FederatedIdentity
-        {
-            ExternalUserId = user.UserId,
-            Username = user.Username,
-            Email = user.Email,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Enabled = user.Enabled,
-            LastSyncedAt = timeProvider.GetUtcNow()
-        };
-
-        await store.UpsertAsync(entry, cancellationToken).ConfigureAwait(false);
+        // Route through the shared writer so the webhook path gets the same ADR-051 joint
+        // hydration (canonical User + aligned Id/UserId) as the cache-aside path — the old
+        // inline upsert inserted a FederatedIdentity with UserId = Guid.Empty and no User row.
+        FederatedIdentity entry = await writer.SyncAsync(user, cancellationToken).ConfigureAwait(false);
 
         await distributedEventBus.PublishAsync(
             new UserCacheSyncedEto(user.UserId, entry.TenantId, entry.LastSyncedAt), cancellationToken)

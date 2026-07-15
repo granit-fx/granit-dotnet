@@ -13,15 +13,14 @@ namespace Granit.AI.Internal;
 /// Default <see cref="IStructuredCompletion"/>: resolves the workspace, applies the quota
 /// guard, pins the output with a provider-enforced JSON schema (falling back to schema-in-prompt
 /// + fence-strip when the model lacks <see cref="AIModelCapabilities.StructuredOutput"/>),
-/// deserializes, records usage, and maps every failure to a PII-safe result.
+/// deserializes, and maps every failure to a PII-safe result. Usage is stamped by the
+/// factory-applied middleware.
 /// </summary>
 internal sealed partial class DefaultStructuredCompletion(
     IAIChatClientFactory chatClientFactory,
     IAIWorkspaceProvider workspaceProvider,
     IAIWorkspaceCapabilityResolver capabilityResolver,
     IAIQuotaGuard quotaGuard,
-    IAIUsageTracker usageTracker,
-    IAIUsageRecordFactory usageRecordFactory,
     AIMetrics metrics,
     IOptions<StructuredCompletionOptions> options,
     IOptions<GranitAIOptions> aiOptions,
@@ -119,8 +118,6 @@ internal sealed partial class DefaultStructuredCompletion(
             IReadOnlyDictionary<string, object?>? responseMetadata = response.AdditionalProperties;
             UsageDetails? usage = response.Usage;
 
-            await RecordUsageAsync(workspace, workspaceName, usage, stopwatch.Elapsed, tenantId, cancellationToken)
-                .ConfigureAwait(false);
             metrics.RecordRequestDuration(tenantId, workspace.Model, workspace.Provider, stopwatch.Elapsed);
 
             string text = response.Text ?? string.Empty;
@@ -220,35 +217,6 @@ internal sealed partial class DefaultStructuredCompletion(
         builder.AppendUserTextBlock(request.ContentLabel ?? "Document", request.Content);
 
         return builder.Build();
-    }
-
-    private async Task RecordUsageAsync(
-        AIWorkspace workspace,
-        string workspaceName,
-        UsageDetails? usage,
-        TimeSpan elapsed,
-        string? tenantId,
-        CancellationToken cancellationToken)
-    {
-        if (usage is null)
-        {
-            return;
-        }
-
-        int inputTokens = (int)(usage.InputTokenCount ?? 0);
-        int outputTokens = (int)(usage.OutputTokenCount ?? 0);
-
-        metrics.RecordTokensUsed(tenantId, workspace.Model, workspace.Provider, inputTokens, outputTokens);
-
-        AIUsageRecord record = usageRecordFactory.Create(
-            workspaceName,
-            workspace.Provider,
-            workspace.Model,
-            inputTokens,
-            outputTokens,
-            elapsed);
-
-        await usageTracker.RecordAsync(record, cancellationToken).ConfigureAwait(false);
     }
 
     private static StructuredCompletionResult<T> Build<T>(
