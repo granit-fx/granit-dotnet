@@ -6363,7 +6363,7 @@
       "kind": "record",
       "project": "Granit.AI",
       "file": "src/Granit.AI/StructuredCompletionRequest.cs",
-      "line": 12,
+      "line": 16,
       "members": []
     },
     {
@@ -30882,7 +30882,7 @@
       "kind": "interface",
       "project": "Granit.Identity.Abstractions",
       "file": "src/Granit.Identity.Abstractions/IUserSessionProvider.cs",
-      "line": 27,
+      "line": 29,
       "members": [
         {
           "name": "ListAsync",
@@ -30901,6 +30901,12 @@
           "kind": "method",
           "signature": "RevokeOthersAsync(string userId, string currentSessionId, CancellationToken cancellationToken = default)",
           "returnType": "Task<int>"
+        },
+        {
+          "name": "TouchAsync",
+          "kind": "method",
+          "signature": "TouchAsync(ClaimsPrincipal principal, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -43946,6 +43952,28 @@
           "kind": "method",
           "signature": "PruneRevokedAsync(DateTimeOffset olderThan, CancellationToken cancellationToken = default)",
           "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
+      "name": "IUserSessionActivityStore",
+      "fqn": "Granit.OpenIddict.Services.IUserSessionActivityStore",
+      "kind": "interface",
+      "project": "Granit.OpenIddict.Abstractions",
+      "file": "src/Granit.OpenIddict.Abstractions/Services/IUserSessionActivityStore.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "TouchAsync",
+          "kind": "method",
+          "signature": "TouchAsync(Guid authorizationId, DateTimeOffset lastActivityAt, TimeSpan debounceWindow, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetActivitiesAsync",
+          "kind": "method",
+          "signature": "GetActivitiesAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyDictionary<string, DateTimeOffset>>"
         }
       ]
     },

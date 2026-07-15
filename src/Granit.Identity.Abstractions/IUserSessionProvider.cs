@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace Granit.Identity;
 
 /// <summary>
@@ -57,4 +59,20 @@ public interface IUserSessionProvider
         string userId,
         string currentSessionId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Records activity for the session the authenticated <paramref name="principal"/> belongs to,
+    /// so <see cref="UserSessionDescriptor.LastAccessedAt"/> stays current and the backend's idle
+    /// policy can enforce on it. Called by the session heartbeat.
+    /// </summary>
+    /// <remarks>
+    /// The default is a no-op: backends that track last-access on their own (the BFF touches on every
+    /// proxied request; a federated IdP maintains it server-side) do not need the heartbeat. Only the
+    /// OpenIddict authority — whose refresh tokens have fixed lifetimes and no ambient request pipeline
+    /// — maintains activity from the heartbeat.
+    /// </remarks>
+    /// <param name="principal">The authenticated principal whose current session was active.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task TouchAsync(ClaimsPrincipal principal, CancellationToken cancellationToken = default) =>
+        Task.CompletedTask;
 }

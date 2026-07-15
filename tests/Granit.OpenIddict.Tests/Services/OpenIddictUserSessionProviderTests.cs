@@ -1,16 +1,15 @@
 using System.Collections.Immutable;
+using System.Security.Claims;
 using System.Text.Json;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Identity;
-using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Services;
 using Granit.Timing;
 using NSubstitute;
 using OpenIddict.Abstractions;
 using Shouldly;
 using Xunit;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.OpenIddict.Tests.Services;
 
@@ -21,7 +20,8 @@ public sealed class OpenIddictUserSessionProviderTests
     private readonly IOpenIddictTokenManager _tokenManager = Substitute.For<IOpenIddictTokenManager>();
     private readonly IOpenIddictApplicationManager _applicationManager =
         Substitute.For<IOpenIddictApplicationManager>();
-    private readonly IFusionCache _cache = Substitute.For<IFusionCache>();
+    private readonly IUserSessionActivityStore _activityStore = Substitute.For<IUserSessionActivityStore>();
+    private readonly Dictionary<string, DateTimeOffset> _activities = [];
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly IDataFilter _dataFilter = Substitute.For<IDataFilter>();
 
@@ -29,10 +29,38 @@ public sealed class OpenIddictUserSessionProviderTests
     {
         _clock.Now.Returns(FixedNow);
         _dataFilter.Disable<IMultiTenant>().Returns(Substitute.For<IDisposable>());
+        _activityStore.GetActivitiesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(_ => (IReadOnlyDictionary<string, DateTimeOffset>)_activities);
     }
 
     private OpenIddictUserSessionProvider CreateSut() =>
-        new(_tokenManager, _applicationManager, _cache, _clock, _dataFilter);
+        new(_tokenManager, _applicationManager, _activityStore, _clock, _dataFilter);
+
+    // ── TouchAsync ────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task TouchAsync_WithAuthorization_TouchesTheActivityStore()
+    {
+        var authorizationId = Guid.NewGuid();
+        ClaimsPrincipal principal = new(new ClaimsIdentity(
+            [new Claim(OpenIddictConstants.Claims.Private.AuthorizationId, authorizationId.ToString())]));
+
+        await CreateSut().TouchAsync(principal, TestContext.Current.CancellationToken);
+
+        await _activityStore.Received(1).TouchAsync(
+            authorizationId, FixedNow, Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task TouchAsync_WithoutAuthorization_IsNoOp()
+    {
+        ClaimsPrincipal principal = new(new ClaimsIdentity()); // e.g. a client-credentials token
+
+        await CreateSut().TouchAsync(principal, TestContext.Current.CancellationToken);
+
+        await _activityStore.DidNotReceive().TouchAsync(
+            Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+    }
 
     // ── Multi-tenant filter bypass ────────────────────────────────────────
 
@@ -510,22 +538,14 @@ public sealed class OpenIddictUserSessionProviderTests
             .Returns(_ => ValueTask.FromResult(props));
     }
 
+    // Records last-activity for a session in the batched activity map the store returns.
     private void SetupCacheHit(string userId, string sessionId, DateTimeOffset lastActivity) =>
-        _cache.TryGetAsync<UserSessionActivity>(
-            $"session:{userId}:{sessionId}",
-            Arg.Any<FusionCacheEntryOptions?>(),
-            Arg.Any<CancellationToken>())
-            .Returns(_ => new ValueTask<MaybeValue<UserSessionActivity>>(
-                MaybeValue<UserSessionActivity>.FromValue(
-                    new UserSessionActivity(userId, sessionId, lastActivity))));
+        _activities[sessionId] = lastActivity;
 
-    private void SetupCacheMiss(string userId, string sessionId) =>
-        _cache.TryGetAsync<UserSessionActivity>(
-            $"session:{userId}:{sessionId}",
-            Arg.Any<FusionCacheEntryOptions?>(),
-            Arg.Any<CancellationToken>())
-            .Returns(_ => new ValueTask<MaybeValue<UserSessionActivity>>(
-                MaybeValue<UserSessionActivity>.None));
+    // No stored activity — the session simply is not in the map, so the provider falls back to CreatedAt.
+    private static void SetupCacheMiss(string userId, string sessionId)
+    {
+    }
 
     private void SetupTokenApplication(object token, string applicationId, object application)
     {
