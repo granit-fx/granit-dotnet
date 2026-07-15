@@ -43571,7 +43571,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 39,
+      "line": 40,
       "members": []
     },
     {
@@ -43580,7 +43580,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 59,
+      "line": 62,
       "members": []
     },
     {

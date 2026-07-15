@@ -1,4 +1,5 @@
 using Granit.Identity;
+using Granit.OpenIddict.EntityFrameworkCore.Entities;
 using Granit.OpenIddict.EntityFrameworkCore.Seeding;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Options;
@@ -6,6 +7,7 @@ using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using OpenIddict.Abstractions;
+using Shouldly;
 using Xunit;
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Tests;
@@ -370,5 +372,89 @@ public sealed class OpenIddictSeedContributorTests
             Arg.Any<object>(),
             Arg.Any<OpenIddictApplicationDescriptor>(),
             Arg.Any<CancellationToken>());
+    }
+
+    // -------------------------------------------------------------------------
+    // Tenant stamping — TenantId is not an OpenIddict descriptor field
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task SeedApplicationAsync_WithTenantId_StampsTenantOnCreatedEntity()
+    {
+        var tenant = Guid.Parse("44444444-4444-4444-4444-444444444444");
+        GranitOpenIddictApplication created = new() { TenantId = null };
+
+        _appManager.FindByClientIdAsync("tenant-client", Arg.Any<CancellationToken>())
+            .Returns((object?)null);
+        _appManager.CreateAsync(Arg.Any<OpenIddictApplicationDescriptor>(), Arg.Any<CancellationToken>())
+            .Returns(created);
+
+        OidcApplicationSeedDescriptor app = new(
+            ClientId: "tenant-client",
+            ClientSecret: null,
+            DisplayName: "Tenant Client",
+            Permissions: [],
+            RedirectUris: [],
+            PostLogoutRedirectUris: [],
+            TenantId: tenant);
+
+        OpenIddictSeedContributor contributor = CreateContributor(apps: [app]);
+        await contributor.SeedAsync(Ctx, TestContext.Current.CancellationToken);
+
+        created.TenantId.ShouldBe(tenant);
+        await _appManager.Received(1).UpdateAsync(created, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SeedApplicationAsync_GlobalApplication_DoesNotStampOrUpdate()
+    {
+        GranitOpenIddictApplication created = new() { TenantId = null };
+
+        _appManager.FindByClientIdAsync("global-client", Arg.Any<CancellationToken>())
+            .Returns((object?)null);
+        _appManager.CreateAsync(Arg.Any<OpenIddictApplicationDescriptor>(), Arg.Any<CancellationToken>())
+            .Returns(created);
+
+        OidcApplicationSeedDescriptor app = new(
+            ClientId: "global-client",
+            ClientSecret: null,
+            DisplayName: "Global Client",
+            Permissions: [],
+            RedirectUris: [],
+            PostLogoutRedirectUris: []); // TenantId defaults to null (global)
+
+        OpenIddictSeedContributor contributor = CreateContributor(apps: [app]);
+        await contributor.SeedAsync(Ctx, TestContext.Current.CancellationToken);
+
+        created.TenantId.ShouldBeNull();
+        await _appManager.DidNotReceive().UpdateAsync(created, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SeedScopeAsync_WithTenantId_StampsTenantOnCreatedEntity()
+    {
+        var tenant = Guid.Parse("55555555-5555-5555-5555-555555555555");
+        GranitOpenIddictScope created = new() { TenantId = null };
+
+        // Every scope (standard + configured) is not found → create path; the configured scope's
+        // CreateAsync returns our tenant-owned entity so we can assert the stamp.
+        _scopeManager.FindByNameAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((object?)null);
+        _scopeManager.CreateAsync(
+                Arg.Is<OpenIddictScopeDescriptor>(d => d.Name == "tenant-scope"),
+                Arg.Any<CancellationToken>())
+            .Returns(created);
+
+        OidcScopeSeedDescriptor scope = new(
+            Name: "tenant-scope",
+            DisplayName: "Tenant Scope",
+            Resources: [],
+            TenantId: tenant);
+
+        OpenIddictSeedContributor contributor = CreateContributor(scopes: [scope]);
+        await contributor.SeedAsync(Ctx, TestContext.Current.CancellationToken);
+
+        created.TenantId.ShouldBe(tenant);
+        await _scopeManager.Received(1).UpdateAsync(created, Arg.Any<CancellationToken>());
     }
 }
