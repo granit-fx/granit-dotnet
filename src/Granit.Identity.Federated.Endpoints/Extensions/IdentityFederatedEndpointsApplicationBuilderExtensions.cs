@@ -1,12 +1,11 @@
-using Granit.Identity.Federated.Middleware;
 using Microsoft.AspNetCore.Builder;
 
-namespace Granit.Identity.Federated.EntityFrameworkCore.Extensions;
+namespace Granit.Identity.Federated.Endpoints.Extensions;
 
 /// <summary>
 /// Extension methods for adding identity user cache middleware to the ASP.NET Core pipeline.
 /// </summary>
-public static class IdentityEfCoreApplicationBuilderExtensions
+public static class IdentityFederatedEndpointsApplicationBuilderExtensions
 {
     /// <summary>
     /// Adds the <see cref="UserCacheSyncMiddleware"/> to the pipeline.

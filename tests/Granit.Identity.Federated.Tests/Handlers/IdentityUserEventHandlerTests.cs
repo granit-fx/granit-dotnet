@@ -16,6 +16,7 @@ public sealed class IdentityUserEventHandlerTests
     private readonly IIdentityProvider _provider = Substitute.For<IIdentityProvider>();
     private readonly IIdentityProviderCapabilities _capabilities = Substitute.For<IIdentityProviderCapabilities>();
     private readonly IUserCacheStore _store = Substitute.For<IUserCacheStore>();
+    private readonly IFederatedIdentityWriter _writer = Substitute.For<IFederatedIdentityWriter>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly ILocalEventBus _localEventBus = Substitute.For<ILocalEventBus>();
     private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
@@ -23,7 +24,7 @@ public sealed class IdentityUserEventHandlerTests
     private readonly TimeProvider _timeProvider = Substitute.For<TimeProvider>();
 
     private IdentityUserEventHandler CreateHandler() => new(
-        _provider, _capabilities, _store, _currentTenant, _localEventBus, _distributedEventBus,
+        _provider, _capabilities, _store, _writer, _currentTenant, _localEventBus, _distributedEventBus,
         _rateLimiter, _timeProvider, NullLogger<IdentityUserEventHandler>.Instance);
 
     public IdentityUserEventHandlerTests()
@@ -31,10 +32,12 @@ public sealed class IdentityUserEventHandlerTests
         _timeProvider.GetUtcNow().Returns(DateTimeOffset.UtcNow);
         _capabilities.ProviderName.Returns("Keycloak");
         _rateLimiter.TryAcquire(Arg.Any<string>(), Arg.Any<string>()).Returns(true);
+        _writer.SyncAsync(Arg.Any<IIdentityUser>(), Arg.Any<CancellationToken>())
+            .Returns(ci => new FederatedIdentity { ExternalUserId = ci.Arg<IIdentityUser>().UserId });
     }
 
     [Fact]
-    public async Task HandleUpdated_FetchesAndUpsertsCache()
+    public async Task HandleUpdated_FetchesAndSyncsThroughWriter()
     {
         var user = new FederatedIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true);
         _provider.GetUserAsync("user-1", Arg.Any<CancellationToken>())
@@ -44,13 +47,16 @@ public sealed class IdentityUserEventHandlerTests
         await handler.HandleAsync(
             new IdentityUserUpdatedEto("user-1"), TestContext.Current.CancellationToken);
 
-        await _store.Received(1).UpsertAsync(
-            Arg.Is<FederatedIdentity>(e => e.ExternalUserId == "user-1" && e.Username == "jdoe"),
+        // The webhook path funnels through the shared writer (ADR-051 joint hydration), never a
+        // direct store.UpsertAsync that would insert a FederatedIdentity with UserId = Guid.Empty.
+        await _writer.Received(1).SyncAsync(
+            Arg.Is<IIdentityUser>(u => u.UserId == "user-1" && u.Username == "jdoe"),
             Arg.Any<CancellationToken>());
+        await _store.DidNotReceiveWithAnyArgs().UpsertAsync(default!, TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public async Task HandleUpdated_DoesNotUpsert_WhenProviderReturnsNull()
+    public async Task HandleUpdated_DoesNotSync_WhenProviderReturnsNull()
     {
         _provider.GetUserAsync("user-1", Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IIdentityUser?>(null));
@@ -59,6 +65,7 @@ public sealed class IdentityUserEventHandlerTests
         await handler.HandleAsync(
             new IdentityUserUpdatedEto("user-1"), TestContext.Current.CancellationToken);
 
+        await _writer.DidNotReceiveWithAnyArgs().SyncAsync(default!, TestContext.Current.CancellationToken);
         await _store.DidNotReceive().UpsertAsync(
             Arg.Any<FederatedIdentity>(), Arg.Any<CancellationToken>());
     }

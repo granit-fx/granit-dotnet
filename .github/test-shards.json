@@ -388,6 +388,7 @@
         "tests/Granit.Identity.EntityFrameworkCore.Tests",
         "tests/Granit.Identity.Federated.Cognito.BackgroundJobs.Tests",
         "tests/Granit.Identity.Federated.Cognito.Tests",
+        "tests/Granit.Identity.Federated.Endpoints.Tests",
         "tests/Granit.Identity.Federated.EntityFrameworkCore.Tests",
         "tests/Granit.Identity.Federated.EntraId.BackgroundJobs.Tests",
         "tests/Granit.Identity.Federated.EntraId.Tests",

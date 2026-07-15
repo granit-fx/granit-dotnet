@@ -11,7 +11,7 @@ namespace Granit.Imaging.MagickNet.Tests.Internal;
 
 public sealed class MagickNetImageProcessorTests
 {
-    private readonly MagickNetImageProcessor _processor = new(CreateTestMetrics(), new ImagingMagickNetOptions());
+    private readonly MagickNetImageProcessor _processor = new(CreateTestMetrics(), Microsoft.Extensions.Options.Options.Create(new ImagingMagickNetOptions()));
 
     private static ImagingMetrics CreateTestMetrics()
     {

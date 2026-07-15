@@ -11,7 +11,7 @@ namespace Granit.Imaging.Diagnostics;
 /// All metrics follow the <c>granit.imaging.{entity}.{action}</c> naming convention
 /// and include <c>tenant_id</c> (coalesced to <c>"global"</c>) via <see cref="TagList"/>.
 /// </remarks>
-public sealed class ImagingMetrics(IMeterFactory meterFactory)
+public sealed class ImagingMetrics
 {
     /// <summary>The meter name for this module.</summary>
     public const string MeterName = "Granit.Imaging";
@@ -19,14 +19,23 @@ public sealed class ImagingMetrics(IMeterFactory meterFactory)
     private const string TagTenantId = "tenant_id";
     private const string DefaultTenant = "global";
 
-    private readonly Counter<long> _imagesProcessed = meterFactory.Create(MeterName).CreateCounter<long>(
-        "granit.imaging.image.processed",
-        description: "Number of images processed through the pipeline.");
+    private readonly Counter<long> _imagesProcessed;
+    private readonly Histogram<double> _processingDuration;
 
-    private readonly Histogram<double> _processingDuration = meterFactory.Create(MeterName).CreateHistogram<double>(
-        "granit.imaging.image.processing_duration",
-        unit: "s",
-        description: "Duration of image processing in seconds.");
+    /// <summary>Initializes the imaging instruments on a single shared meter.</summary>
+    public ImagingMetrics(IMeterFactory meterFactory)
+    {
+        Meter meter = meterFactory.Create(MeterName);
+
+        _imagesProcessed = meter.CreateCounter<long>(
+            "granit.imaging.image.processed",
+            description: "Number of images processed through the pipeline.");
+
+        _processingDuration = meter.CreateHistogram<double>(
+            "granit.imaging.image.processing_duration",
+            unit: "s",
+            description: "Duration of image processing in seconds.");
+    }
 
     /// <summary>Records a completed image processing operation.</summary>
     public void RecordImageProcessed(string? tenantId, string outputFormat) =>

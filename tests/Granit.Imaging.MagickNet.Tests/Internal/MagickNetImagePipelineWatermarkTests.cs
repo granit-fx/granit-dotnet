@@ -22,7 +22,7 @@ public sealed class MagickNetImagePipelineWatermarkTests
     {
         Stream stream = typeof(MagickNetImagePipelineWatermarkTests).Assembly
             .GetManifestResourceStream("Granit.Imaging.MagickNet.Tests.TestAssets.test-image.png")!;
-        MagickNetImageProcessor processor = new(CreateTestMetrics(), new ImagingMagickNetOptions());
+        MagickNetImageProcessor processor = new(CreateTestMetrics(), Microsoft.Extensions.Options.Options.Create(new ImagingMagickNetOptions()));
         return (MagickNetImagePipeline)processor.Load(stream);
     }
 

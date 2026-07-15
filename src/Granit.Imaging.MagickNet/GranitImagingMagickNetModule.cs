@@ -20,5 +20,5 @@ public sealed class GranitImagingMagickNetModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>
-        context.Services.AddGranitImagingMagickNet();
+        context.Builder.AddGranitImagingMagickNet();
 }

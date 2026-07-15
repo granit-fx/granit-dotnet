@@ -193,6 +193,7 @@
     <ProjectReference Include="..\..\src\Granit.Identity.Federated\Granit.Identity.Federated.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Cognito\Granit.Identity.Federated.Cognito.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Cognito.BackgroundJobs\Granit.Identity.Federated.Cognito.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Federated.Endpoints\Granit.Identity.Federated.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntityFrameworkCore\Granit.Identity.Federated.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntraId\Granit.Identity.Federated.EntraId.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntraId.BackgroundJobs\Granit.Identity.Federated.EntraId.BackgroundJobs.csproj" />
