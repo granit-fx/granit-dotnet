@@ -187,6 +187,18 @@ internal static partial class ConnectTokenEndpoints
                 properties.Items["user_agent"] = userAgent;
             }
 
+            // Preserve the persistent-login choice across refreshes: the source principal (auth code
+            // or prior refresh token) carries remember_me. Re-stamp it as a claim (so the next refresh
+            // and the heartbeat still see it) and as a token property (so the idle-session job can
+            // exempt the session from inactivity revocation).
+            if (authenticateResult.Principal.GetClaim("remember_me") is "true")
+            {
+                Claim rememberMe = new("remember_me", "true");
+                rememberMe.SetDestinations(OpenIddictConstants.Destinations.AccessToken);
+                principal.Identities.First().AddClaim(rememberMe);
+                properties.Items["remember_me"] = "true";
+            }
+
             return Results.SignIn(principal, properties,
                 OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }

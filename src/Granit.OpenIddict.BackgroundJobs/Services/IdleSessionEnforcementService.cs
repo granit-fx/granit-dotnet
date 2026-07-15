@@ -1,37 +1,36 @@
-using Granit.Identity.Local.Services;
+using System.Collections.Immutable;
+using System.Text.Json;
+using Granit.OpenIddict.Services;
 using Granit.Settings.Services;
+using Granit.Timing;
 using Microsoft.Extensions.Logging;
 using OpenIddict.Abstractions;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.OpenIddict.BackgroundJobs.Services;
 
 /// <summary>
-/// Scans active refresh tokens and checks whether the corresponding session cache entry
-/// has expired. If so, revokes the refresh token.
+/// Revokes refresh tokens whose session has been idle beyond the configured timeout, so an
+/// abandoned session cannot be resumed indefinitely. Remember-me sessions are exempt.
 /// </summary>
 /// <remarks>
-/// <para>
-/// <strong>Temporary safe-guard:</strong> revocation is intentionally disabled. The previous
-/// implementation probed a <see cref="IFusionCache"/> key <c>session:{subject}:{refreshTokenId}</c>
-/// that the heartbeat endpoint never wrote under the same identifier (it writes
-/// <c>session:{subject}:{accessTokenJti}</c>), so every refresh token looked idle and was
-/// revoked on the first run — a mass logout — and <c>remember_me</c> sessions (which the
-/// heartbeat deliberately never tracks) were revoked too. Until the correct mechanism ships
-/// (a persistent last-activity column on the token entry, replacing this three-party cache
-/// contract), the job scans and reports what it <em>would</em> revoke but does not revoke,
-/// favouring "no enforcement" over "log everyone out".
-/// </para>
+/// Idleness is measured from the durable last-activity the heartbeat stamps on the refresh token
+/// (<see cref="IUserSessionActivityStore"/>), falling back to the token's creation date for a session
+/// that never sent a heartbeat. This replaces the earlier three-party FusionCache contract whose keys
+/// never matched — which made every session look idle, so the job was disabled as a safe-guard against
+/// a mass logout.
 /// </remarks>
 public sealed partial class IdleSessionEnforcementService(
     IOpenIddictTokenManager tokenManager,
-    IFusionCache cache,
+    IUserSessionActivityStore activityStore,
     ISettingProvider settingProvider,
+    IClock clock,
     ILogger<IdleSessionEnforcementService> logger)
 {
+    private const int BatchSize = 1_000;
+
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        // Read the idle session timeout setting (minutes, 0 = disabled)
+        // Idle session timeout in minutes (0 or unset = disabled).
         string? timeoutValue = await settingProvider
             .GetOrNullAsync(OpenIddictSettingNames.IdleSessionTimeout, cancellationToken)
             .ConfigureAwait(false);
@@ -44,55 +43,44 @@ public sealed partial class IdleSessionEnforcementService(
 
         Log.IdleSessionEnforcementStarted(logger, timeoutMinutes);
 
-        // SAFE-GUARD: the cache-key contract below is broken (the heartbeat writes
-        // session:{subject}:{accessTokenJti} while this scan probes
-        // session:{subject}:{refreshTokenId}), so every entry looks idle. We scan and count
-        // what the old logic WOULD have revoked, but do NOT revoke — a cache miss here is not
-        // trustworthy evidence of idleness. The real mechanism (persistent last-activity on the
-        // token entry) replaces this loop wholesale; see the class remarks.
-        const int pageSize = 1_000;
-        int wouldRevokeCount = 0;
-        int offset = 0;
-        bool hasMore;
+        DateTimeOffset idleSince = clock.Now - TimeSpan.FromMinutes(timeoutMinutes);
+        IReadOnlyList<string> idleIds = await activityStore
+            .GetIdleRefreshTokenIdsAsync(idleSince, BatchSize, cancellationToken).ConfigureAwait(false);
 
-        do
+        int revoked = 0;
+        int exempt = 0;
+        foreach (string tokenId in idleIds)
         {
-            int pageCount = 0;
-
-            await foreach (object token in tokenManager.ListAsync(pageSize, offset, cancellationToken))
+            object? token = await tokenManager.FindByIdAsync(tokenId, cancellationToken).ConfigureAwait(false);
+            if (token is null)
             {
-                pageCount++;
-
-                string? tokenType = await tokenManager.GetTypeAsync(token, cancellationToken).ConfigureAwait(false);
-                if (tokenType != global::OpenIddict.Abstractions.OpenIddictConstants.TokenTypeHints.RefreshToken)
-                {
-                    continue;
-                }
-
-                string? subject = await tokenManager.GetSubjectAsync(token, cancellationToken).ConfigureAwait(false);
-                string? tokenId = await tokenManager.GetIdAsync(token, cancellationToken).ConfigureAwait(false);
-                if (subject is null || tokenId is null)
-                {
-                    continue;
-                }
-
-                string cacheKey = $"session:{subject}:{tokenId}";
-                MaybeValue<UserSessionActivity> cachedEntry = await cache
-                    .TryGetAsync<UserSessionActivity>(cacheKey, token: cancellationToken).ConfigureAwait(false);
-
-                if (!cachedEntry.HasValue)
-                {
-                    // Would revoke under the old (broken) contract — counted only, never revoked.
-                    wouldRevokeCount++;
-                }
+                continue;
             }
 
-            offset += pageCount;
-            hasMore = pageCount == pageSize;
-        }
-        while (hasMore);
+            if (await IsRememberMeAsync(token, cancellationToken).ConfigureAwait(false))
+            {
+                // Persistent session — the user opted out of inactivity revocation.
+                exempt++;
+                continue;
+            }
 
-        Log.IdleSessionEnforcementDeferred(logger, wouldRevokeCount);
+            if (await tokenManager.TryRevokeAsync(token, cancellationToken).ConfigureAwait(false))
+            {
+                revoked++;
+            }
+        }
+
+        Log.IdleSessionEnforcementCompleted(logger, revoked, exempt);
+    }
+
+    private async Task<bool> IsRememberMeAsync(object token, CancellationToken cancellationToken)
+    {
+        ImmutableDictionary<string, JsonElement> properties = await tokenManager
+            .GetPropertiesAsync(token, cancellationToken).ConfigureAwait(false);
+
+        return properties.TryGetValue("remember_me", out JsonElement value)
+            && value.ValueKind == JsonValueKind.String
+            && value.GetString() is "true";
     }
 
     private static partial class Log
@@ -103,7 +91,8 @@ public sealed partial class IdleSessionEnforcementService(
         [LoggerMessage(Level = LogLevel.Debug, Message = "Idle session enforcement started (timeout = {TimeoutMinutes} min).")]
         public static partial void IdleSessionEnforcementStarted(ILogger logger, int timeoutMinutes);
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Idle session enforcement is temporarily disabled (broken cache-key contract). Would have revoked {WouldRevokeCount} refresh token(s); none were revoked. Pending the persistent last-activity mechanism.")]
-        public static partial void IdleSessionEnforcementDeferred(ILogger logger, int wouldRevokeCount);
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "Idle session enforcement completed: revoked {Revoked} idle refresh token(s), exempted {Exempt} remember-me session(s).")]
+        public static partial void IdleSessionEnforcementCompleted(ILogger logger, int revoked, int exempt);
     }
 }

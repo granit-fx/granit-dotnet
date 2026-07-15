@@ -59,5 +59,26 @@ internal sealed class EfUserSessionActivityStore(
         return rows.ToDictionary(r => r.SessionId.ToString(), r => r.LastActivityAt);
     }
 
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<string>> GetIdleRefreshTokenIdsAsync(
+        DateTimeOffset idleSince, int max, CancellationToken cancellationToken = default)
+    {
+        await using OpenIddictDbContext db = await dbFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        List<Guid> ids = await db.Set<GranitOpenIddictToken>()
+            .AsNoTracking()
+            .Where(t => t.Type == OpenIddictConstants.TokenTypeHints.RefreshToken
+                && t.Status == OpenIddictConstants.Statuses.Valid
+                && (t.LastActivityAt ?? t.CreationDate) < idleSince)
+            .OrderBy(t => t.LastActivityAt ?? t.CreationDate)
+            .Take(max)
+            .Select(t => t.Id)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return ids.ConvertAll(id => id.ToString());
+    }
+
     private readonly record struct ActivityRow(Guid SessionId, DateTimeOffset LastActivityAt);
 }

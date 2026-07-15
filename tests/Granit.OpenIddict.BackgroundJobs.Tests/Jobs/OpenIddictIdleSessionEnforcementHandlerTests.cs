@@ -1,107 +1,111 @@
+using System.Collections.Immutable;
+using System.Text.Json;
 using Granit.OpenIddict.BackgroundJobs.Services;
+using Granit.OpenIddict.Services;
 using Granit.Settings.Services;
+using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using OpenIddict.Abstractions;
-using Shouldly;
 using Xunit;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.OpenIddict.BackgroundJobs.Tests.Jobs;
 
 public sealed class OpenIddictIdleSessionEnforcementHandlerTests
 {
+    private static readonly DateTimeOffset Now = new(2026, 1, 1, 12, 0, 0, TimeSpan.Zero);
+
     private readonly IOpenIddictTokenManager _tokenManager = Substitute.For<IOpenIddictTokenManager>();
-    private readonly IFusionCache _cache = Substitute.For<IFusionCache>();
+    private readonly IUserSessionActivityStore _activityStore = Substitute.For<IUserSessionActivityStore>();
     private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
+    private readonly IClock _clock = Substitute.For<IClock>();
+
+    public OpenIddictIdleSessionEnforcementHandlerTests() => _clock.Now.Returns(Now);
 
     private IdleSessionEnforcementService CreateService() =>
-        new(_tokenManager, _cache, _settingProvider,
+        new(_tokenManager, _activityStore, _settingProvider, _clock,
             NullLogger<IdleSessionEnforcementService>.Instance);
 
     [Fact]
-    public async Task ExecuteAsync_SettingNull_DoesNotCallTokenManager()
+    public async Task ExecuteAsync_TimeoutUnset_DoesNotQueryIdleSessions()
     {
         _settingProvider.GetOrNullAsync(OpenIddictSettingNames.IdleSessionTimeout, Arg.Any<CancellationToken>())
             .Returns((string?)null);
 
         await CreateService().ExecuteAsync(TestContext.Current.CancellationToken);
 
-        _tokenManager.DidNotReceive().ListAsync(
-            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+        await _activityStore.DidNotReceive().GetIdleRefreshTokenIdsAsync(
+            Arg.Any<DateTimeOffset>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task ExecuteAsync_SettingZero_ReturnsEarly()
+    public async Task ExecuteAsync_TimeoutZero_ReturnsEarly()
     {
         _settingProvider.GetOrNullAsync(OpenIddictSettingNames.IdleSessionTimeout, Arg.Any<CancellationToken>())
             .Returns("0");
 
         await CreateService().ExecuteAsync(TestContext.Current.CancellationToken);
 
-        _tokenManager.DidNotReceive().ListAsync(
-            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+        await _activityStore.DidNotReceive().GetIdleRefreshTokenIdsAsync(
+            Arg.Any<DateTimeOffset>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task ExecuteAsync_SettingNegative_ReturnsEarly()
+    public async Task ExecuteAsync_IdleSession_IsRevoked()
     {
-        _settingProvider.GetOrNullAsync(OpenIddictSettingNames.IdleSessionTimeout, Arg.Any<CancellationToken>())
-            .Returns("-5");
+        EnableWith(timeoutMinutes: 30);
+        object token = SetupIdleToken("idle-token", rememberMe: false);
 
         await CreateService().ExecuteAsync(TestContext.Current.CancellationToken);
 
-        _tokenManager.DidNotReceive().ListAsync(
-            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+        await _tokenManager.Received(1).TryRevokeAsync(token, Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task ExecuteAsync_SettingEnabled_EmptyTokenList_DoesNotRevoke()
+    public async Task ExecuteAsync_RememberMeSession_IsExempt()
     {
+        EnableWith(timeoutMinutes: 30);
+        object token = SetupIdleToken("remember-token", rememberMe: true);
+
+        await CreateService().ExecuteAsync(TestContext.Current.CancellationToken);
+
+        await _tokenManager.DidNotReceive().TryRevokeAsync(token, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ComputesCutoffFromTimeout()
+    {
+        EnableWith(timeoutMinutes: 30);
+        _activityStore.GetIdleRefreshTokenIdsAsync(Arg.Any<DateTimeOffset>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns([]);
+
+        await CreateService().ExecuteAsync(TestContext.Current.CancellationToken);
+
+        await _activityStore.Received(1).GetIdleRefreshTokenIdsAsync(
+            Now.AddMinutes(-30), Arg.Any<int>(), Arg.Any<CancellationToken>());
+    }
+
+    private void EnableWith(int timeoutMinutes) =>
         _settingProvider.GetOrNullAsync(OpenIddictSettingNames.IdleSessionTimeout, Arg.Any<CancellationToken>())
-            .Returns("30");
+            .Returns(timeoutMinutes.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
-        _tokenManager.ListAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(EmptyAsync());
-
-        await Should.NotThrowAsync(() =>
-            CreateService().ExecuteAsync(TestContext.Current.CancellationToken));
-
-        await _tokenManager.DidNotReceive().TryRevokeAsync(
-            Arg.Any<object>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_SettingEnabled_IdleRefreshToken_DoesNotRevoke()
+    private object SetupIdleToken(string tokenId, bool rememberMe)
     {
-        // Safe-guard: even when a refresh token has no session cache entry (which the broken
-        // key contract makes universal), the job must NOT revoke — otherwise every session is
-        // logged out on the first run.
         object token = new();
-        _settingProvider.GetOrNullAsync(OpenIddictSettingNames.IdleSessionTimeout, Arg.Any<CancellationToken>())
-            .Returns("30");
-        _tokenManager.ListAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(SingleAsync(token));
-        _tokenManager.GetTypeAsync(token, Arg.Any<CancellationToken>())
-            .Returns(OpenIddictConstants.TokenTypeHints.RefreshToken);
-        _tokenManager.GetSubjectAsync(token, Arg.Any<CancellationToken>()).Returns("user-1");
-        _tokenManager.GetIdAsync(token, Arg.Any<CancellationToken>()).Returns("refresh-token-1");
+        _activityStore.GetIdleRefreshTokenIdsAsync(Arg.Any<DateTimeOffset>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns([tokenId]);
+        _tokenManager.FindByIdAsync(tokenId, Arg.Any<CancellationToken>())
+            .Returns(token);
 
-        await CreateService().ExecuteAsync(TestContext.Current.CancellationToken);
+        ImmutableDictionary<string, JsonElement> properties = rememberMe
+            ? ImmutableDictionary<string, JsonElement>.Empty.Add(
+                "remember_me", JsonDocument.Parse("\"true\"").RootElement)
+            : ImmutableDictionary<string, JsonElement>.Empty;
+        _tokenManager.GetPropertiesAsync(token, Arg.Any<CancellationToken>())
+            .Returns(properties);
 
-        await _tokenManager.DidNotReceive().TryRevokeAsync(
-            Arg.Any<object>(), Arg.Any<CancellationToken>());
-    }
-
-    private static async IAsyncEnumerable<object> EmptyAsync()
-    {
-        await Task.CompletedTask;
-        yield break;
-    }
-
-    private static async IAsyncEnumerable<object> SingleAsync(object item)
-    {
-        await Task.CompletedTask;
-        yield return item;
+        _tokenManager.TryRevokeAsync(token, Arg.Any<CancellationToken>())
+            .Returns(true);
+        return token;
     }
 }
