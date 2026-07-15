@@ -70,6 +70,10 @@ public sealed class GranitOpenIddictModule : GranitModule
             .AddOptions<GranitKeyRotationOptions>()
             .BindConfiguration(GranitKeyRotationOptions.SectionName);
 
+        // FAPI 2.0 profile → PS256 signing algorithm (unless an explicit non-default was set).
+        context.Services.AddSingleton<IPostConfigureOptions<GranitKeyRotationOptions>,
+            Fapi2SigningAlgorithmPostConfigure>();
+
         context.Services.TryAddScoped<IClaimsDestinationProvider, DefaultClaimsDestinationProvider>();
         context.Services.TryAddScoped<IOidcPrincipalFactory, OidcPrincipalFactory>();
         context.Services.TryAddScoped<ITotpService, DefaultTotpService>();
@@ -80,6 +84,10 @@ public sealed class GranitOpenIddictModule : GranitModule
         // Load signing/encryption keys from DB at startup (replaces ephemeral keys)
         context.Services.AddSingleton<IPostConfigureOptions<OpenIddictServerOptions>,
             DatabaseSigningKeyPostConfigure>();
+
+        // Keep each replica's loaded credentials in sync with the DB after a rotation (the
+        // post-configure above only runs once). No-op when key rotation is disabled.
+        context.Services.AddHostedService<SigningKeyRefreshService>();
 
         // Identity cookie configuration — neutral names to avoid leaking the technology stack.
         // PostConfigure is required because AddIdentity<TUser, TRole>() registers its own

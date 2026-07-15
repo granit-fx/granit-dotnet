@@ -3,10 +3,12 @@ using System.Diagnostics;
 using System.Security.Claims;
 using Granit.Auditing;
 using Granit.Auditing.Domain;
+using Granit.DataFiltering;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
 using Granit.OpenIddict.Diagnostics;
+using Granit.OpenIddict.Endpoints.Internal;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
@@ -245,7 +247,14 @@ internal static partial class ConnectTokenEndpoints
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
         }
 
-        LocalIdentity? user = await userManager.FindByNameAsync(username).ConfigureAwait(false);
+        // Resolve with the multi-tenant filter disabled, then align the scope to the user so the
+        // recovery-code redemption and token verification below run under the user's own tenant.
+        IDataFilter? dataFilter = context.RequestServices.GetService<IDataFilter>();
+        ICurrentTenant? currentTenant = context.RequestServices.GetService<ICurrentTenant>();
+
+        LocalIdentity? user = await OidcUserTenantResolver
+            .FindByUserNameAsync(userManager, username, dataFilter)
+            .ConfigureAwait(false);
         if (user is null)
         {
             LogUserNotFound(logger, username);
@@ -256,6 +265,11 @@ internal static partial class ConnectTokenEndpoints
             return Results.Forbid(
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
         }
+
+        // Align the scope to the user so the recovery-code redemption and token verification below
+        // run under the user's own tenant. Opened here (not in the resolver) because ICurrentTenant
+        // is AsyncLocal-backed.
+        using IDisposable? tenantScope = currentTenant?.Change(user.TenantId);
 
         bool valid;
         if (useRecoveryCode)
@@ -360,8 +374,12 @@ internal static partial class ConnectTokenEndpoints
 
         UserManager<LocalIdentity> userManager = context.RequestServices
             .GetRequiredService<UserManager<LocalIdentity>>();
+        IDataFilter? dataFilter = context.RequestServices.GetService<IDataFilter>();
+        ICurrentTenant? currentTenant = context.RequestServices.GetService<ICurrentTenant>();
 
-        LocalIdentity? user = await userManager.FindByIdAsync(assertion.UserId).ConfigureAwait(false);
+        LocalIdentity? user = await OidcUserTenantResolver
+            .FindBySubjectAsync(userManager, assertion.UserId, dataFilter)
+            .ConfigureAwait(false);
         if (user is null)
         {
             LogUserNotFound(logger, assertion.UserId);
@@ -372,6 +390,10 @@ internal static partial class ConnectTokenEndpoints
             return Results.Forbid(
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
         }
+
+        // Align the scope to the user for the principal build. Opened here (not in the resolver)
+        // because ICurrentTenant is AsyncLocal-backed.
+        using IDisposable? tenantScope = currentTenant?.Change(user.TenantId);
 
         ImmutableArray<string> scopes = request.GetScopes();
         IOidcPrincipalFactory principalFactory = context.RequestServices.GetRequiredService<IOidcPrincipalFactory>();

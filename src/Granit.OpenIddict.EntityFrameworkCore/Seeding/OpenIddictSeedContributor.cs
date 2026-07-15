@@ -1,3 +1,4 @@
+using Granit.Domain;
 using Granit.Identity;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Options;
@@ -68,6 +69,7 @@ internal sealed partial class OpenIddictSeedContributor(
         object? existing = await applicationManager.FindByClientIdAsync(descriptor.ClientId, cancellationToken)
             .ConfigureAwait(false);
 
+        object entity;
         if (existing is null)
         {
             var appDescriptor = new OpenIddictApplicationDescriptor
@@ -78,28 +80,51 @@ internal sealed partial class OpenIddictSeedContributor(
 
             PopulateDescriptor(appDescriptor, descriptor);
 
-            await applicationManager.CreateAsync(appDescriptor, cancellationToken).ConfigureAwait(false);
+            entity = await applicationManager.CreateAsync(appDescriptor, cancellationToken).ConfigureAwait(false);
             Log.ApplicationCreated(logger, descriptor.ClientId);
         }
         else
         {
+            entity = existing;
             var appDescriptor = new OpenIddictApplicationDescriptor();
             await applicationManager.PopulateAsync(appDescriptor, existing, cancellationToken)
                 .ConfigureAwait(false);
 
-            // Skip update when values are already up to date — prevents ConcurrencyException
-            // when migrator and API both execute seeders concurrently at startup.
-            if (!ApplicationNeedsUpdate(appDescriptor, descriptor))
+            // Skip the descriptor update when values are already up to date — prevents
+            // ConcurrencyException when migrator and API both run seeders concurrently at
+            // startup. Tenant reconciliation below still runs (it is a separate write).
+            if (ApplicationNeedsUpdate(appDescriptor, descriptor))
+            {
+                PopulateDescriptor(appDescriptor, descriptor);
+
+                await applicationManager.UpdateAsync(existing, appDescriptor, cancellationToken)
+                    .ConfigureAwait(false);
+                Log.ApplicationUpdated(logger, descriptor.ClientId);
+            }
+            else
             {
                 Log.ApplicationUnchanged(logger, descriptor.ClientId);
-                return;
             }
+        }
 
-            PopulateDescriptor(appDescriptor, descriptor);
+        await StampTenantAsync(entity, descriptor.TenantId, descriptor.ClientId, cancellationToken)
+            .ConfigureAwait(false);
+    }
 
-            await applicationManager.UpdateAsync(existing, appDescriptor, cancellationToken)
-                .ConfigureAwait(false);
-            Log.ApplicationUpdated(logger, descriptor.ClientId);
+    /// <summary>
+    /// Reconciles the owning tenant on a seeded application. The tenant is not an OpenIddict
+    /// descriptor field, and OpenIddict entities are not audited, so the persistence interceptor
+    /// never assigns their <c>TenantId</c> — stamp it directly. <see langword="null"/> = global.
+    /// No-op (no write) when the entity already carries the desired tenant.
+    /// </summary>
+    private async Task StampTenantAsync(
+        object entity, Guid? tenantId, string clientId, CancellationToken cancellationToken)
+    {
+        if (entity is IMultiTenant multiTenant && multiTenant.TenantId != tenantId)
+        {
+            multiTenant.TenantId = tenantId;
+            await applicationManager.UpdateAsync(entity, cancellationToken).ConfigureAwait(false);
+            Log.ApplicationTenantStamped(logger, clientId, tenantId);
         }
     }
 
@@ -235,6 +260,7 @@ internal sealed partial class OpenIddictSeedContributor(
         object? existing = await scopeManager.FindByNameAsync(descriptor.Name, cancellationToken)
             .ConfigureAwait(false);
 
+        object entity;
         if (existing is null)
         {
             var scopeDescriptor = new OpenIddictScopeDescriptor
@@ -249,37 +275,49 @@ internal sealed partial class OpenIddictSeedContributor(
                 scopeDescriptor.Resources.Add(resource);
             }
 
-            await scopeManager.CreateAsync(scopeDescriptor, cancellationToken).ConfigureAwait(false);
+            entity = await scopeManager.CreateAsync(scopeDescriptor, cancellationToken).ConfigureAwait(false);
             Log.ScopeCreated(logger, descriptor.Name);
         }
         else
         {
+            entity = existing;
             var scopeDescriptor = new OpenIddictScopeDescriptor();
             await scopeManager.PopulateAsync(scopeDescriptor, existing, cancellationToken)
                 .ConfigureAwait(false);
 
-            // Skip update when values are already up to date — prevents ConcurrencyException
-            // when migrator and API both execute seeders concurrently at startup.
+            // Skip the descriptor update when values are already up to date — prevents
+            // ConcurrencyException when migrator and API both run seeders concurrently at
+            // startup. Tenant reconciliation below still runs (it is a separate write).
             if (scopeDescriptor.DisplayName == descriptor.DisplayName
                 && scopeDescriptor.Description == descriptor.Description
                 && scopeDescriptor.Resources.SetEquals(descriptor.Resources))
             {
                 Log.ScopeUnchanged(logger, descriptor.Name);
-                return;
             }
-
-            scopeDescriptor.DisplayName = descriptor.DisplayName;
-            scopeDescriptor.Description = descriptor.Description;
-
-            scopeDescriptor.Resources.Clear();
-            foreach (string resource in descriptor.Resources)
+            else
             {
-                scopeDescriptor.Resources.Add(resource);
-            }
+                scopeDescriptor.DisplayName = descriptor.DisplayName;
+                scopeDescriptor.Description = descriptor.Description;
 
-            await scopeManager.UpdateAsync(existing, scopeDescriptor, cancellationToken)
-                .ConfigureAwait(false);
-            Log.ScopeUpdated(logger, descriptor.Name);
+                scopeDescriptor.Resources.Clear();
+                foreach (string resource in descriptor.Resources)
+                {
+                    scopeDescriptor.Resources.Add(resource);
+                }
+
+                await scopeManager.UpdateAsync(existing, scopeDescriptor, cancellationToken)
+                    .ConfigureAwait(false);
+                Log.ScopeUpdated(logger, descriptor.Name);
+            }
+        }
+
+        // Reconcile the owning tenant (not an OpenIddict descriptor field; entities are not
+        // audited). null = global — the standard OIDC scopes always resolve here.
+        if (entity is IMultiTenant multiTenant && multiTenant.TenantId != descriptor.TenantId)
+        {
+            multiTenant.TenantId = descriptor.TenantId;
+            await scopeManager.UpdateAsync(entity, cancellationToken).ConfigureAwait(false);
+            Log.ScopeTenantStamped(logger, descriptor.Name, descriptor.TenantId);
         }
     }
 
@@ -321,6 +359,9 @@ internal sealed partial class OpenIddictSeedContributor(
         [LoggerMessage(Level = LogLevel.Debug, Message = "OIDC application '{ClientId}' is already up to date — skipping update.")]
         public static partial void ApplicationUnchanged(ILogger logger, string clientId);
 
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Stamped OIDC application '{ClientId}' with tenant '{TenantId}'.")]
+        public static partial void ApplicationTenantStamped(ILogger logger, string clientId, Guid? tenantId);
+
         [LoggerMessage(Level = LogLevel.Debug, Message = "Created OIDC scope '{ScopeName}'.")]
         public static partial void ScopeCreated(ILogger logger, string scopeName);
 
@@ -329,5 +370,8 @@ internal sealed partial class OpenIddictSeedContributor(
 
         [LoggerMessage(Level = LogLevel.Debug, Message = "OIDC scope '{ScopeName}' is already up to date — skipping update.")]
         public static partial void ScopeUnchanged(ILogger logger, string scopeName);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Stamped OIDC scope '{ScopeName}' with tenant '{TenantId}'.")]
+        public static partial void ScopeTenantStamped(ILogger logger, string scopeName, Guid? tenantId);
     }
 }

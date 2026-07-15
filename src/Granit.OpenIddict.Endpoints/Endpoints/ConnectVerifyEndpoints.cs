@@ -1,8 +1,9 @@
 using System.Collections.Immutable;
 using System.Security.Claims;
 using Granit.DataFiltering;
-using Granit.Domain;
 using Granit.Identity.Local.Domain;
+using Granit.MultiTenancy;
+using Granit.OpenIddict.Endpoints.Internal;
 using Granit.OpenIddict.Endpoints.Options;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore;
@@ -111,22 +112,17 @@ internal static partial class ConnectVerifyEndpoints
             return Results.Redirect(loginUrl);
         }
 
-        // Resolve the user — bypass the multi-tenant filter: the authenticated user ID is globally
-        // unique and the cookie signature already guarantees authenticity.
+        // Resolve the user with the multi-tenant filter disabled (globally-unique id, already
+        // authenticated by cookie) and align the tenant scope to the user for the principal build
+        // and sign-in that follow. See OidcUserTenantResolver.
         UserManager<LocalIdentity> userManager = context.RequestServices
             .GetRequiredService<UserManager<LocalIdentity>>();
         IDataFilter? dataFilter = context.RequestServices.GetService<IDataFilter>();
+        ICurrentTenant? currentTenant = context.RequestServices.GetService<ICurrentTenant>();
 
-        LocalIdentity? user;
-        IDisposable? filterScope = dataFilter?.Disable<IMultiTenant>();
-        try
-        {
-            user = await userManager.GetUserAsync(identityResult.Principal).ConfigureAwait(false);
-        }
-        finally
-        {
-            filterScope?.Dispose();
-        }
+        LocalIdentity? user = await OidcUserTenantResolver
+            .FindByPrincipalAsync(userManager, identityResult.Principal, dataFilter)
+            .ConfigureAwait(false);
 
         if (user is null)
         {
@@ -135,6 +131,10 @@ internal static partial class ConnectVerifyEndpoints
             string verifyReturnUrl = $"{options.DeviceVerificationPath}?user_code={Uri.EscapeDataString(userCode)}";
             return Results.Redirect($"{options.LoginPath}?returnUrl={Uri.EscapeDataString(verifyReturnUrl)}");
         }
+
+        // Align the tenant scope to the resolved user for the principal build and sign-in that
+        // follow. Opened here (not in the resolver) because ICurrentTenant is AsyncLocal-backed.
+        using IDisposable? tenantScope = currentTenant?.Change(user.TenantId);
 
         // Build a principal from the authenticated user with the device authorization's requested scopes.
         // The principal from oidcResult carries the scopes originally requested by the device.

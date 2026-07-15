@@ -43013,7 +43013,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcCreateScopeRequest.cs",
-      "line": 10,
+      "line": 11,
       "members": []
     },
     {
@@ -43031,7 +43031,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcScopeResponse.cs",
-      "line": 10,
+      "line": 11,
       "members": []
     },
     {
@@ -43498,6 +43498,12 @@
           "returnType": "TimeSpan RotationLeadTime { get; set; } = TimeSpan."
         },
         {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan RefreshCheckInterval { get; set; } = TimeSpan."
+        },
+        {
           "name": "RsaKeySize",
           "kind": "property",
           "signature": "int RsaKeySize",
@@ -43571,7 +43577,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 39,
+      "line": 40,
       "members": []
     },
     {
@@ -43580,7 +43586,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 59,
+      "line": 62,
       "members": []
     },
     {

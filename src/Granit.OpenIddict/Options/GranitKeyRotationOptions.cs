@@ -37,6 +37,14 @@ public sealed class GranitKeyRotationOptions
     public TimeSpan RotationLeadTime { get; set; } = TimeSpan.FromDays(7);
 
     /// <summary>
+    /// Gets or sets how often each running instance polls the key store for changes and reloads the
+    /// signing/encryption credentials when the active key set has changed (e.g. after the rotation
+    /// job minted a new key on another node). Default: 5 minutes. Must be well below
+    /// <see cref="GracePeriod"/> so a rotated-in key is picked up before the retired key is revoked.
+    /// </summary>
+    public TimeSpan RefreshCheckInterval { get; set; } = TimeSpan.FromMinutes(5);
+
+    /// <summary>
     /// Gets or sets the RSA key size in bits.
     /// Default: 2048. Use 4096 for higher security requirements.
     /// </summary>
