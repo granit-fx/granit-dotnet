@@ -82,13 +82,39 @@ public sealed class SigningKeyRefreshServiceTests
         RecordingOptionsCache cache = new();
         IKeyRotationService rotation = Substitute.For<IKeyRotationService>();
         rotation.RotateAsync(Arg.Any<CancellationToken>())
-            .Returns(new KeyRotationResult(KeysGenerated: 2, KeysRetired: 0, KeysRevoked: 0, KeysPruned: 0));
+            .Returns(_ =>
+            {
+                store.Keys = [Key("a", SigningKeyStatus.Active)]; // generation persisted the key
+                return new KeyRotationResult(KeysGenerated: 2, KeysRetired: 0, KeysRevoked: 0, KeysPruned: 0);
+            });
         SigningKeyRefreshService service = Build(store, cache, rotation);
 
         await service.EnsureInitializedAsync(TestContext.Current.CancellationToken);
 
         await rotation.Received(1).RotateAsync(Arg.Any<CancellationToken>());
         cache.RemoveCount.ShouldBe(1, "freshly minted credentials must be loaded immediately");
+    }
+
+    [Fact]
+    public async Task EnsureInitializedAsync_LostGenerationRace_ReloadsPeerKeys()
+    {
+        FakeSigningKeyStore store = new([]); // empty at startup
+        RecordingOptionsCache cache = new();
+        IKeyRotationService rotation = Substitute.For<IKeyRotationService>();
+
+        // A peer wins the race: it persisted the active key, then our duplicate insert is rejected.
+        rotation.RotateAsync(Arg.Any<CancellationToken>())
+            .Returns<KeyRotationResult>(_ =>
+            {
+                store.Keys = [Key("peer", SigningKeyStatus.Active)];
+                throw new InvalidOperationException("duplicate key value violates unique constraint");
+            });
+        SigningKeyRefreshService service = Build(store, cache, rotation);
+
+        await service.EnsureInitializedAsync(TestContext.Current.CancellationToken);
+
+        // The race loss is swallowed, but the peer's keys must still be loaded — not left ephemeral.
+        cache.RemoveCount.ShouldBe(1, "a replica that lost the race must still load the peer's keys");
     }
 
     [Fact]
