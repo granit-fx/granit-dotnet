@@ -40,6 +40,7 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
         // EF Core stores
         context.Services.TryAddScoped<ILocalIdentityGroupStore, OpenIddictGroupStore>();
         context.Services.TryAddScoped<ISigningKeyStore, EfSigningKeyStore>();
+        context.Services.TryAddScoped<IPendingAccountDeletionStore, EfPendingAccountDeletionStore>();
 
         // LocalIdentity implements IHasMetadata — apps can extend user properties
         // by calling AddMetadataMappings<LocalIdentity> in their own module.

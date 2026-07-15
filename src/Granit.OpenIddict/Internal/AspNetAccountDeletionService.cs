@@ -1,6 +1,4 @@
-using Granit.Events;
 using Granit.Identity.Local.Domain;
-using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
@@ -10,13 +8,18 @@ namespace Granit.OpenIddict.Internal;
 
 /// <summary>
 /// <see cref="IAccountDeletionService"/> implementation backed by ASP.NET Core Identity.
-/// Soft-deletes the user, revokes all active tokens, and publishes <see cref="AccountDeletedEto"/>
-/// via <see cref="IDistributedEventBus"/>.
+/// Soft-deletes the user and revokes all active tokens.
 /// </summary>
+/// <remarks>
+/// The GDPR Art. 17 erasure event (<c>AccountDeletedEto</c>) is <em>not</em> published inline: the
+/// OpenIddict DbContext is not enrolled in the Wolverine outbox, so a post-commit publish could be
+/// lost to a crash. The soft-delete row (<see cref="LocalIdentity.IsDeleted"/> with a null
+/// <see cref="LocalIdentity.DeletionEventDispatchedAt"/>) is the durable intent; the recurring
+/// reconciler (<c>AccountDeletionEtoReconciler</c>) publishes the event at-least-once from it.
+/// </remarks>
 internal sealed class AspNetAccountDeletionService(
     UserManager<LocalIdentity> userManager,
     IOpenIddictTokenManager tokenManager,
-    IDistributedEventBus eventBus,
     IClock clock) : IAccountDeletionService
 {
     /// <inheritdoc/>
@@ -49,9 +52,7 @@ internal sealed class AspNetAccountDeletionService(
             await tokenManager.TryRevokeAsync(token, cancellationToken).ConfigureAwait(false);
         }
 
-        // Publish integration event for downstream cleanup
-        await eventBus.PublishAsync(
-            new AccountDeletedEto(user.Id, user.TenantId),
-            cancellationToken).ConfigureAwait(false);
+        // The AccountDeletedEto is published by AccountDeletionEtoReconciler from the durable
+        // soft-delete row — see the class remarks — so a crash here cannot drop the erasure event.
     }
 }

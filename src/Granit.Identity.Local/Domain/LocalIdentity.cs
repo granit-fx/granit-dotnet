@@ -77,6 +77,14 @@ public class LocalIdentity
     /// <summary>Gets or sets the identifier of the user who performed the deletion.</summary>
     public string? DeletedBy { get; set; }
 
+    /// <summary>
+    /// Gets or sets the UTC timestamp at which the <c>AccountDeletedEto</c> was dispatched for this
+    /// deletion. <see langword="null"/> while the deletion is soft-deleted but the erasure event has
+    /// not yet been published — the reconciliation job sweeps these and publishes idempotently, so
+    /// the GDPR Art. 17 event survives a crash between the soft-delete commit and the publish.
+    /// </summary>
+    public DateTimeOffset? DeletionEventDispatchedAt { get; set; }
+
     /// <summary>Gets or sets a JSON column for custom extensible attributes.</summary>
     public string? CustomAttributesJson { get; set; }
 
