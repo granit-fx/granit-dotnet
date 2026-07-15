@@ -81,14 +81,16 @@ public sealed partial class DPoPTokenBindingHandler(
             {
                 LogDPoPRequiredFapi2(logger);
                 context.Reject(
-                    error: OpenIddictConstants.Errors.InvalidRequest,
+                    error: InvalidDPoPProof,
                     description: "DPoP proof header is required in FAPI 2.0 profile.");
             }
 
             return;
         }
 
-        string requestUri = $"{request.Scheme}://{request.Host}{request.Path}";
+        // Include PathBase so htu matches behind a path-prefixed ingress (RFC 9449 §4.3): the
+        // client builds htu from the externally-visible URL, which carries the prefix.
+        string requestUri = $"{request.Scheme}://{request.Host}{request.PathBase}{request.Path}";
         DPoPValidationResult result = await validator
             .ValidateAsync(proofJwt, request.Method, requestUri, context.CancellationToken)
             .ConfigureAwait(false);
@@ -97,7 +99,7 @@ public sealed partial class DPoPTokenBindingHandler(
         {
             LogProofRejected(logger, result.Error!);
             context.Reject(
-                error: OpenIddictConstants.Errors.InvalidRequest,
+                error: InvalidDPoPProof,
                 description: $"DPoP proof validation failed: {result.Error}");
             return;
         }
@@ -108,11 +110,24 @@ public sealed partial class DPoPTokenBindingHandler(
             return;
         }
 
+        // Replace, don't append: on refresh_token grants the principal rebuilt from the refresh
+        // token can already carry a cnf claim — appending would emit duplicate Confirmation claims
+        // on the new access token (RFC 9449 §5).
+        ClaimsIdentity identity = principal.Identities.First();
+        foreach (Claim existing in identity.FindAll(OpenIddictConstants.Claims.Confirmation).ToList())
+        {
+            identity.RemoveClaim(existing);
+        }
+
         string cnfJson = JsonSerializer.Serialize(new { jkt = result.JwkThumbprint });
         Claim cnf = new(OpenIddictConstants.Claims.Confirmation, cnfJson, "JSON");
         cnf.SetDestinations(OpenIddictConstants.Destinations.AccessToken);
-        principal.Identities.First().AddClaim(cnf);
+        identity.AddClaim(cnf);
     }
+
+    // RFC 9449 §5 error code for token-endpoint DPoP proof failures. Not exposed as an
+    // OpenIddict constant in this version — pin the RFC literal.
+    private const string InvalidDPoPProof = "invalid_dpop_proof";
 
     [LoggerMessage(
         Level = LogLevel.Warning,

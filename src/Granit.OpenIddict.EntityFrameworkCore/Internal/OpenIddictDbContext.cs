@@ -90,8 +90,12 @@ internal sealed class OpenIddictDbContext(
     private void ConfigureMultiTenantFilter<TEntity>(ModelBuilder builder)
         where TEntity : class
     {
+        // null-is-global: a row with TenantId == null belongs to no tenant and is visible
+        // to every tenant (and to anonymous requests). The CurrentTenantId disjunct stays
+        // parameterised (@ef_filter__CurrentTenantId) — see MultiTenantFilterParameterizationReproTests.
         Expression<Func<TEntity, bool>> filter = e =>
             !IsMultiTenantFilterEnabled
+            || EF.Property<Guid?>(e, nameof(IMultiTenant.TenantId)) == null
             || EF.Property<Guid?>(e, nameof(IMultiTenant.TenantId)) == CurrentTenantId;
         builder.Entity<TEntity>()
             .HasQueryFilter(GranitFilterNames.MultiTenant, filter);
