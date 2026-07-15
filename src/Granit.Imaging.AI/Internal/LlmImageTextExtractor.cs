@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Granit.AI;
 using Granit.AI.Workspaces;
 using Granit.Imaging.AI.Options;
@@ -18,8 +17,6 @@ internal sealed partial class LlmImageTextExtractor(
     IAIChatClientFactory chatClientFactory,
     IAIWorkspaceProvider workspaceProvider,
     IAIWorkspaceCapabilityResolver capabilityResolver,
-    IAIUsageRecordFactory usageRecordFactory,
-    IAIUsageTracker usageTracker,
     IOptions<ImagingAIOptions> options,
     ILogger<LlmImageTextExtractor> logger) : IImageTextExtractor
 {
@@ -43,7 +40,6 @@ internal sealed partial class LlmImageTextExtractor(
         }
 
         ImagingAIOptions opts = options.Value;
-        long startTimestamp = Stopwatch.GetTimestamp();
 
         using IChatClient client = await chatClientFactory
             .CreateAsync(workspace.Key, cancellationToken)
@@ -58,22 +54,11 @@ internal sealed partial class LlmImageTextExtractor(
         using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeoutCts.CancelAfter(TimeSpan.FromSeconds(opts.TimeoutSeconds));
 
+        // Usage is stamped by the factory-applied middleware (per ADR-067 the vision call
+        // records its own usage, now via the IChatClient pipeline).
         ChatResponse response = await client
             .GetResponseAsync([message], cancellationToken: timeoutCts.Token)
             .ConfigureAwait(false);
-
-        if (response.Usage is { } usage)
-        {
-            AIUsageRecord record = usageRecordFactory.Create(
-                workspace.Key,
-                workspace.Provider,
-                workspace.Model,
-                (int)(usage.InputTokenCount ?? 0),
-                (int)(usage.OutputTokenCount ?? 0),
-                Stopwatch.GetElapsedTime(startTimestamp));
-
-            await usageTracker.RecordAsync(record, cancellationToken).ConfigureAwait(false);
-        }
 
         return new ImageTextExtractionResult(response.Text ?? string.Empty, workspace.Key);
     }

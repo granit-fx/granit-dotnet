@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Granit.AI.Endpoints.Dtos;
 using Granit.AI.Endpoints.Internal;
@@ -95,8 +94,6 @@ internal static class AIChatEndpoints
         AIChatRequest request,
         [FromServices] IAIChatClientFactory chatClientFactory,
         [FromServices] IAIWorkspaceProvider workspaceProvider,
-        [FromServices] IAIUsageTracker usageTracker,
-        [FromServices] IAIUsageRecordFactory usageRecordFactory,
         CancellationToken cancellationToken)
     {
         AIWorkspace? workspace = await workspaceProvider
@@ -144,7 +141,7 @@ internal static class AIChatEndpoints
         }
 
         return TypedResults.ServerSentEvents(StreamUpdatesAsync(
-            chatClient, updates, hasFirst, workspace, workspaceName, usageTracker, usageRecordFactory, cancellationToken));
+            chatClient, updates, hasFirst, workspace, cancellationToken));
     }
 
     private static async IAsyncEnumerable<AIChatStreamEvent> StreamUpdatesAsync(
@@ -152,15 +149,11 @@ internal static class AIChatEndpoints
         IAsyncEnumerator<ChatResponseUpdate> updates,
         bool hasFirst,
         AIWorkspace workspace,
-        string workspaceName,
-        IAIUsageTracker usageTracker,
-        IAIUsageRecordFactory usageRecordFactory,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         using IChatClient client = chatClient;
         await using IAsyncEnumerator<ChatResponseUpdate> enumerator = updates;
 
-        long startTimestamp = Stopwatch.GetTimestamp();
         UsageContent? accumulatedUsage = null;
         string? streamError = null;
 
@@ -202,20 +195,12 @@ internal static class AIChatEndpoints
             yield break;
         }
 
+        // The usage record itself is stamped by the factory-applied middleware; the endpoint
+        // only surfaces the token counts to the SSE client.
         if (accumulatedUsage is not null)
         {
             int inputTokens = (int)(accumulatedUsage.Details.InputTokenCount ?? 0);
             int outputTokens = (int)(accumulatedUsage.Details.OutputTokenCount ?? 0);
-
-            AIUsageRecord usageRecord = usageRecordFactory.Create(
-                workspaceName,
-                workspace.Provider,
-                workspace.Model,
-                inputTokens,
-                outputTokens,
-                Stopwatch.GetElapsedTime(startTimestamp));
-
-            await usageTracker.RecordAsync(usageRecord, CancellationToken.None).ConfigureAwait(false);
 
             yield return new AIChatStreamEvent("usage", InputTokens: inputTokens, OutputTokens: outputTokens);
         }

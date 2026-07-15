@@ -28,8 +28,7 @@ internal sealed partial class AIToolOrchestrator(
     IAIToolRegistry registry,
     IAIToolAuthorizer toolAuthorizer,
     IAISystemPromptComposer systemPromptComposer,
-    IAIUsageRecordFactory usageRecordFactory,
-    IAIUsageTracker usageTracker,
+    AIUsageContext usageContext,
     IOptions<GranitAIToolsOrchestrationOptions> orchestrationOptions,
     IOptions<GranitAIOptions> aiOptions,
     AIToolsMetrics metrics,
@@ -110,6 +109,13 @@ internal sealed partial class AIToolOrchestrator(
         using Activity? activity = AIToolsActivitySource.Instance.StartActivity("ai.tools.orchestrate");
         activity?.SetTag("ai.workspace", workspaceName);
         activity?.SetTag("ai.guardrails.version", systemPrompt.Guardrails.Version);
+
+        // Enrich the usage records the factory middleware stamps for each model round-trip of
+        // this run: they all carry the same ConversationId / prompt identity (ADR-067).
+        usageContext.ConversationId = request.ConversationId;
+        usageContext.PromptVersion = systemPrompt.Guardrails.Version;
+        usageContext.PromptTemplateName = request.InvokedPromptName;
+        usageContext.PromptTemplateVersion = request.InvokedPromptVersion;
 
         IChatClient workspaceClient = await chatClientFactory.CreateAsync(workspaceName, cancellationToken).ConfigureAwait(false);
 
@@ -197,22 +203,17 @@ internal sealed partial class AIToolOrchestrator(
             yield return AIOrchestrationUpdate.Delta(tail);
         }
 
-        yield return AIOrchestrationUpdate.Completed(await FinalizeAsync(
+        yield return AIOrchestrationUpdate.Completed(Finalize(
             new RunTelemetry(allUpdates, loopClient, state, maxIterations, startTimestamp, anyUsage, totalInput, totalOutput, tenantId),
-            workspaceName,
-            workspace,
-            systemPrompt,
-            request).ConfigureAwait(false));
+            workspaceName));
     }
 
     // Assembles the settled result once the stream ends: reconstructs the final response, derives the
-    // iteration / max-reached signals, records iteration + usage metrics, and logs the run outcome.
-    private async Task<AIOrchestrationResult> FinalizeAsync(
+    // iteration / max-reached signals, records iteration metrics, and logs the run outcome. Usage
+    // records are stamped per round-trip by the factory middleware, enriched via AIUsageContext.
+    private AIOrchestrationResult Finalize(
         RunTelemetry telemetry,
-        string workspaceName,
-        AIWorkspace workspace,
-        AISystemPrompt systemPrompt,
-        AIOrchestrationRequest request)
+        string workspaceName)
     {
         var finalResponse = telemetry.Updates.ToChatResponse();
 
@@ -243,12 +244,6 @@ internal sealed partial class AIToolOrchestrator(
             LogInterrupted(telemetry.State.Interrupt.Kind);
         }
 
-        if (telemetry.AnyUsage)
-        {
-            await RecordUsageAsync(telemetry, workspaceName, workspace, systemPrompt, request, duration)
-                .ConfigureAwait(false);
-        }
-
         LogRunCompleted(workspaceName, iterations, telemetry.State.Outcomes.Count, maxReached);
 
         return new AIOrchestrationResult
@@ -265,35 +260,7 @@ internal sealed partial class AIToolOrchestrator(
         };
     }
 
-    private async Task RecordUsageAsync(
-        RunTelemetry telemetry,
-        string workspaceName,
-        AIWorkspace workspace,
-        AISystemPrompt systemPrompt,
-        AIOrchestrationRequest request,
-        TimeSpan duration)
-    {
-        AIUsageRecord record = usageRecordFactory.Create(
-            workspaceName,
-            workspace.Provider,
-            workspace.Model,
-            (int)telemetry.TotalInput,
-            (int)telemetry.TotalOutput,
-            duration) with
-        {
-            ConversationId = request.ConversationId,
-            PromptVersion = systemPrompt.Guardrails.Version,
-            PromptTemplateName = request.InvokedPromptName,
-            PromptTemplateVersion = request.InvokedPromptVersion,
-        };
-
-        // Stamp usage even if the caller's request was aborted mid-stream, but cap the write so a
-        // stuck sink can't leak an orphaned task.
-        using CancellationTokenSource usageCts = new(TimeSpan.FromSeconds(5));
-        await usageTracker.RecordAsync(record, usageCts.Token).ConfigureAwait(false);
-    }
-
-    // The accumulated signals the loop hands to FinalizeAsync once the stream ends.
+    // The accumulated signals the loop hands to Finalize once the stream ends.
     private sealed record RunTelemetry(
         List<ChatResponseUpdate> Updates,
         ModelLoopChatClient LoopClient,

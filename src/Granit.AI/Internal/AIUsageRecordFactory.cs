@@ -5,11 +5,13 @@ using Granit.Users;
 namespace Granit.AI.Internal;
 
 /// <summary>
-/// Creates <see cref="AIUsageRecord"/> instances with tenant and user context resolved from the current scope.
+/// Creates <see cref="AIUsageRecord"/> instances with tenant, user, and
+/// <see cref="AIUsageContext"/> enrichment resolved from the current scope.
 /// </summary>
 internal sealed class AIUsageRecordFactory(
     ICurrentTenant currentTenant,
     ICurrentUserService currentUserService,
+    AIUsageContext usageContext,
     IGuidGenerator guidGenerator,
     TimeProvider timeProvider) : IAIUsageRecordFactory
 {
@@ -30,6 +32,10 @@ internal sealed class AIUsageRecordFactory(
             Model = model,
             InputTokens = inputTokens,
             OutputTokens = outputTokens,
+            ConversationId = usageContext.ConversationId,
+            PromptVersion = usageContext.PromptVersion,
+            PromptTemplateName = usageContext.PromptTemplateName,
+            PromptTemplateVersion = usageContext.PromptTemplateVersion,
             Timestamp = timeProvider.GetUtcNow(),
             Duration = duration,
         };

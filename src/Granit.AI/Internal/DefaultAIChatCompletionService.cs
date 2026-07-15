@@ -5,14 +5,12 @@ using Microsoft.Extensions.AI;
 namespace Granit.AI.Internal;
 
 /// <summary>
-/// Default implementation of <see cref="IAIChatCompletionService"/>. Resolves the workspace,
-/// invokes the chat client, and records usage.
+/// Default implementation of <see cref="IAIChatCompletionService"/>. Resolves the workspace and
+/// invokes the chat client; usage is stamped by the factory-applied middleware.
 /// </summary>
 internal sealed class DefaultAIChatCompletionService(
     IAIChatClientFactory chatClientFactory,
-    IAIWorkspaceProvider workspaceProvider,
-    IAIUsageTracker usageTracker,
-    IAIUsageRecordFactory usageRecordFactory) : IAIChatCompletionService
+    IAIWorkspaceProvider workspaceProvider) : IAIChatCompletionService
 {
     /// <inheritdoc/>
     public async Task<AIChatCompletionResult?> CompleteAsync(
@@ -57,16 +55,6 @@ internal sealed class DefaultAIChatCompletionService(
         {
             inputTokens = (int)(usage.InputTokenCount ?? 0);
             outputTokens = (int)(usage.OutputTokenCount ?? 0);
-
-            AIUsageRecord usageRecord = usageRecordFactory.Create(
-                workspaceName,
-                workspace.Provider,
-                workspace.Model,
-                inputTokens.Value,
-                outputTokens.Value,
-                stopwatch.Elapsed);
-
-            await usageTracker.RecordAsync(usageRecord, cancellationToken).ConfigureAwait(false);
         }
 
         return new AIChatCompletionResult(

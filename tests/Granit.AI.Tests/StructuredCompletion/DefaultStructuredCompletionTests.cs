@@ -24,8 +24,6 @@ public sealed class DefaultStructuredCompletionTests
     private readonly IAIWorkspaceProvider _workspaceProvider = Substitute.For<IAIWorkspaceProvider>();
     private readonly IAIWorkspaceCapabilityResolver _capabilityResolver = Substitute.For<IAIWorkspaceCapabilityResolver>();
     private readonly IAIQuotaGuard _quotaGuard = Substitute.For<IAIQuotaGuard>();
-    private readonly IAIUsageTracker _usageTracker = Substitute.For<IAIUsageTracker>();
-    private readonly IAIUsageRecordFactory _usageRecordFactory = Substitute.For<IAIUsageRecordFactory>();
 
     private readonly DefaultStructuredCompletion _sut;
 
@@ -50,8 +48,6 @@ public sealed class DefaultStructuredCompletionTests
             _workspaceProvider,
             _capabilityResolver,
             _quotaGuard,
-            _usageTracker,
-            _usageRecordFactory,
             new AIMetrics(new StubMeterFactory()),
             Microsoft.Extensions.Options.Options.Create(new StructuredCompletionOptions { TimeoutSeconds = 30 }),
             Microsoft.Extensions.Options.Options.Create(new GranitAIOptions { DefaultWorkspace = "test" }),
@@ -219,8 +215,9 @@ public sealed class DefaultStructuredCompletionTests
     }
 
     [Fact]
-    public async Task CompleteAsync_WithUsage_SurfacesUsageAndRecordsIt()
+    public async Task CompleteAsync_WithUsage_SurfacesUsage()
     {
+        // The usage record itself is stamped by the factory-applied middleware, not here.
         var usage = new UsageDetails { InputTokenCount = 120, OutputTokenCount = 30 };
         RespondWith(new ChatResponse(new ChatMessage(ChatRole.Assistant, """{"title":"H"}"""))
         {
@@ -233,7 +230,6 @@ public sealed class DefaultStructuredCompletionTests
 
         result.Usage.ShouldNotBeNull();
         result.Usage.InputTokenCount.ShouldBe(120);
-        await _usageTracker.Received(1).RecordAsync(Arg.Any<AIUsageRecord>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

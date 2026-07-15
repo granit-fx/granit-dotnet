@@ -18,8 +18,6 @@ public sealed class LlmImageTextExtractorTests
     private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
     private readonly IAIWorkspaceProvider _workspaceProvider = Substitute.For<IAIWorkspaceProvider>();
     private readonly IAIWorkspaceCapabilityResolver _capabilityResolver = Substitute.For<IAIWorkspaceCapabilityResolver>();
-    private readonly IAIUsageRecordFactory _usageRecordFactory = Substitute.For<IAIUsageRecordFactory>();
-    private readonly IAIUsageTracker _usageTracker = Substitute.For<IAIUsageTracker>();
 
     private static AIWorkspace Workspace(string key, string provider = "OpenAI", string model = "gpt-4o") =>
         new() { Key = key, Provider = provider, Model = model };
@@ -38,18 +36,16 @@ public sealed class LlmImageTextExtractorTests
     }
 
     private LlmImageTextExtractor CreateExtractor(string? workspaceName) =>
-        new(_chatClientFactory, _workspaceProvider, _capabilityResolver, _usageRecordFactory, _usageTracker,
+        new(_chatClientFactory, _workspaceProvider, _capabilityResolver,
             MsOptions.Create(new ImagingAIOptions { WorkspaceName = workspaceName, TimeoutSeconds = 30 }),
             NullLogger<LlmImageTextExtractor>.Instance);
 
     [Fact]
-    public async Task Uses_the_explicitly_configured_workspace_and_stamps_usage()
+    public async Task Uses_the_explicitly_configured_workspace()
     {
+        // Usage stamping now lives in the factory-applied IChatClient middleware.
         _workspaceProvider.GetAsync("vision", Arg.Any<CancellationToken>()).Returns(Workspace("vision"));
         SetupResponse("INVOICE #42");
-        _usageRecordFactory.Create(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
-            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<TimeSpan?>())
-            .Returns(new AIUsageRecord { Id = Guid.Empty, WorkspaceName = "vision", Provider = "OpenAI", Model = "gpt-4o", Timestamp = DateTimeOffset.UnixEpoch });
 
         LlmImageTextExtractor extractor = CreateExtractor("vision");
 
@@ -58,7 +54,6 @@ public sealed class LlmImageTextExtractorTests
         result.ShouldNotBeNull();
         result.Text.ShouldBe("INVOICE #42");
         result.Workspace.ShouldBe("vision");
-        await _usageTracker.Received(1).RecordAsync(Arg.Any<AIUsageRecord>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.AI.Tests" />
+    <InternalsVisibleTo Include="Granit.AI.Tools.Tests" />
     <InternalsVisibleTo Include="Granit.AI.Anthropic" />
     <InternalsVisibleTo Include="Granit.AI.Anthropic.Tests" />
     <InternalsVisibleTo Include="Granit.AI.AzureOpenAI" />
