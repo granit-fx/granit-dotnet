@@ -23,8 +23,8 @@
       "Microsoft.Extensions.TimeProvider.Testing": {
         "type": "Direct",
         "requested": "[10.*, )",
-        "resolved": "10.7.0",
-        "contentHash": "THd3CJ9e/ftm/3+Z69E51MQy4n46so4Zs/vUevMCYR5tjZsP+INqD4npXARVQwB2nnG+eQ8SI6ERLe/tn6gwSA=="
+        "resolved": "10.8.0",
+        "contentHash": "xXcxGfXSO/8o7IfYK36r3eZTl9RMKAl5K6x3x6o/QQBolI0t8vsLIGmhc3HJBTd11u1uPLHz61VnOTSTmY7ZVA=="
       },
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
@@ -235,16 +235,16 @@
       },
       "OpenAI": {
         "type": "Transitive",
-        "resolved": "2.11.0",
-        "contentHash": "f0y5zOZVNhuc/gPQUHGkiljZlDUq2SddGOkGTPLHnjQC5mCiTCXq1BqxZ+xxxHU6bY0mEtFQJj1RlB2BpwD7Lw==",
+        "resolved": "2.12.0",
+        "contentHash": "rKyVV0sJPo7pn0Ya5dgRs5ggGbjvnKcYSvYV2jITKgFIfeo2XHjgyi6UqNT/OnF0YBqjsNpPdgM6QjzYczWplg==",
         "dependencies": {
-          "System.ClientModel": "1.10.0"
+          "System.ClientModel": "1.14.0"
         }
       },
       "System.ClientModel": {
         "type": "Transitive",
-        "resolved": "1.10.0",
-        "contentHash": "lBEWs54F5Y5pZ9hC+8z4S/X76957ex+DPk7WecRHlbIHtrPfbRMMlOgI3iDn4Jpb3bSxvBnKaaHoD59auFjlBA==",
+        "resolved": "1.14.0",
+        "contentHash": "yhIJHDW3Hh5kcvhHv3ww1T8qvya06Nlwo/SR/rke4/fHXtyKiqQV/9b/VDhnVI7QUcMnpfvh4pIEFhNsTDLeKQ==",
         "dependencies": {
           "Microsoft.Extensions.Configuration.Abstractions": "10.0.3",
           "Microsoft.Extensions.Hosting.Abstractions": "10.0.3",
@@ -478,17 +478,17 @@
       "Microsoft.Extensions.AI.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.7.0",
-        "contentHash": "Lf822igMm8NkTYHZhTp7kjoNYkLLEvJnX3SkG/LVBvsZHC0Y9choogHz8YtITBoy0TOylM3kVUZ6iaHf0my0ug=="
+        "resolved": "10.8.0",
+        "contentHash": "1tJZ5sAYrEq1YjNg8GrZSL1tVodsWRfrgybGsZo5DQsWQgLZ+dSR5uFowIS6vb/9zxGBPl7xpYq53QMjNObO9w=="
       },
       "Microsoft.Extensions.AI.OpenAI": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.7.0",
-        "contentHash": "K/xC0SRJeQiHJNNx+ZIYq9liAB5Uy/wUGjHPljEtRW63TCyGWEBkNVU7/UwizTxQk0Tm9pclDEoNmKTw7xtKfg==",
+        "resolved": "10.8.0",
+        "contentHash": "IpBw2p0QW6GxLFSWGWj0qZliXnhW2OLKkOf9nsxPPLP8yBbbuvM98JjpcpVHkI5wH27mcgu99wUbCwyWM2iVaQ==",
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.7.0",
-          "OpenAI": "2.11.0"
+          "Microsoft.Extensions.AI.Abstractions": "10.8.0",
+          "OpenAI": "2.12.0"
         }
       },
       "Microsoft.Extensions.Caching.Abstractions": {

@@ -753,8 +753,8 @@
       "Microsoft.Extensions.AI.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.7.0",
-        "contentHash": "Lf822igMm8NkTYHZhTp7kjoNYkLLEvJnX3SkG/LVBvsZHC0Y9choogHz8YtITBoy0TOylM3kVUZ6iaHf0my0ug=="
+        "resolved": "10.8.0",
+        "contentHash": "1tJZ5sAYrEq1YjNg8GrZSL1tVodsWRfrgybGsZo5DQsWQgLZ+dSR5uFowIS6vb/9zxGBPl7xpYq53QMjNObO9w=="
       },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "CentralTransitive",

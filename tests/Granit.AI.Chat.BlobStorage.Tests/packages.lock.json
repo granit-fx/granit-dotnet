@@ -214,8 +214,8 @@
       },
       "System.Numerics.Tensors": {
         "type": "Transitive",
-        "resolved": "10.0.9",
-        "contentHash": "Rb71S3gggYVwEce9ugNw91vbr4vC4gThtx/imSJtLBW3AupEKujJPPQL6xF9q0DcNm6+z7hnYk7XqXaUpA4wDg=="
+        "resolved": "10.0.10",
+        "contentHash": "9Ildb4Y9maDztB0ZRGxsNShbpCQ2Tjv2dr4IjskBxpTGhH7aIz1+oC+Hl833ASs/htWwsH6myNe+sRpeyCzeMQ=="
       },
       "xunit.analyzers": {
         "type": "Transitive",
@@ -513,21 +513,21 @@
       "Microsoft.Extensions.AI": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.7.0",
-        "contentHash": "r8z4uyPq0kTk4+jH92/hPshf3HNUXKOQ9axJwp57QFz43G45BG4DNYpVE0vuSan1dI69LtWx9ttF0Z2ibnghNg==",
+        "resolved": "10.8.0",
+        "contentHash": "QfthL8e2X/Z6jRs4YyVS2+HTApJvhz725l35HYZ9cfwlEuQnpzY89NJoGNmpuNZn4LIvvQOQeZIbu3jggBXgUg==",
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.7.0",
-          "Microsoft.Extensions.Caching.Abstractions": "10.0.9",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.9",
-          "Microsoft.Extensions.Logging.Abstractions": "10.0.9",
-          "System.Numerics.Tensors": "10.0.9"
+          "Microsoft.Extensions.AI.Abstractions": "10.8.0",
+          "Microsoft.Extensions.Caching.Abstractions": "10.0.10",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.10",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.10",
+          "System.Numerics.Tensors": "10.0.10"
         }
       },
       "Microsoft.Extensions.AI.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.7.0",
-        "contentHash": "Lf822igMm8NkTYHZhTp7kjoNYkLLEvJnX3SkG/LVBvsZHC0Y9choogHz8YtITBoy0TOylM3kVUZ6iaHf0my0ug=="
+        "resolved": "10.8.0",
+        "contentHash": "1tJZ5sAYrEq1YjNg8GrZSL1tVodsWRfrgybGsZo5DQsWQgLZ+dSR5uFowIS6vb/9zxGBPl7xpYq53QMjNObO9w=="
       },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "CentralTransitive",

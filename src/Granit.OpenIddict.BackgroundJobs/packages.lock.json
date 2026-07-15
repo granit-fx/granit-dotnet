@@ -369,11 +369,6 @@
           "OpenIddict.Abstractions": "7.5.0"
         }
       },
-      "OpenIddict.EntityFrameworkCore.Models": {
-        "type": "Transitive",
-        "resolved": "7.5.0",
-        "contentHash": "n21lCWOkjvu0sA9EwnDrlZ61WdzAd2KuTUSBeJeF5QGe6Sw/nLvu7Yr1yZ1I8t5iQw+QlI7PQAVPLkLLlHE5Yw=="
-      },
       "OpenIddict.Server": {
         "type": "Transitive",
         "resolved": "7.5.0",
@@ -646,8 +641,7 @@
           "Granit.Identity.Local.AspNetIdentity": "[0.1.0-dev, )",
           "Granit.OpenIddict.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "OpenIddict": "[7.*, )",
-          "OpenIddict.EntityFrameworkCore": "[7.*, )"
+          "OpenIddict": "[7.*, )"
         }
       },
       "granit.openiddict.abstractions": {
@@ -877,17 +871,6 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.10",
           "Microsoft.Extensions.Options": "10.0.10",
           "Microsoft.Extensions.Primitives": "10.0.10"
-        }
-      },
-      "OpenIddict.EntityFrameworkCore": {
-        "type": "CentralTransitive",
-        "requested": "[7.*, )",
-        "resolved": "7.5.0",
-        "contentHash": "3xamhrqh8y+l22wiyy+A9D/UvWPjsS6N8TGybpVlpJIFU5g2QGqk3JPamHuXn3gvwmP4OlwzgAZDzzLv8YWEeQ==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.7",
-          "OpenIddict.Core": "7.5.0",
-          "OpenIddict.EntityFrameworkCore.Models": "7.5.0"
         }
       },
       "OpenIddict.Validation.SystemNetHttp": {

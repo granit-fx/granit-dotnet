@@ -23,13 +23,13 @@
       "Microsoft.Extensions.Caching.Hybrid": {
         "type": "Direct",
         "requested": "[10.*, )",
-        "resolved": "10.7.0",
-        "contentHash": "DWdLkc6SCZhlQPXFuOjMee1wotUcsdLHzOrN2GN9JsWVscYrGXR91SjH1g7bhUrF6f8ayZD31KxoXAoXxVpCvA==",
+        "resolved": "10.8.0",
+        "contentHash": "RCtCTK3eqKXx8LXqd7B8GjbTkIp4k3EgKeunaCmBJ+WA55Nva83CI2I+wVyp0S9jTG+aT6AYWQbkKOfvFOlmLA==",
         "dependencies": {
-          "Microsoft.Extensions.Caching.Abstractions": "10.0.9",
-          "Microsoft.Extensions.Caching.Memory": "10.0.9",
-          "Microsoft.Extensions.Logging.Abstractions": "10.0.9",
-          "Microsoft.Extensions.Options": "10.0.9"
+          "Microsoft.Extensions.Caching.Abstractions": "10.0.10",
+          "Microsoft.Extensions.Caching.Memory": "10.0.10",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.10",
+          "Microsoft.Extensions.Options": "10.0.10"
         }
       },
       "Microsoft.Extensions.Hosting.Abstractions": {
