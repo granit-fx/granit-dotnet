@@ -158,37 +158,59 @@ internal sealed class EfCoreUserCacheStore(
 
     // -- Write --
 
-    public async Task UpsertAsync(FederatedIdentity entry, CancellationToken cancellationToken = default)
+    public async Task<Guid> UpsertAsync(FederatedIdentity entry, CancellationToken cancellationToken = default)
     {
         // Keep EmailHash in sync with Email so admin search finds the row. Callers
         // may pre-compute this (CachedUserLookupService does), but the store also
         // recomputes defensively so direct consumers of UpsertAsync stay correct.
         entry.EmailHash = hasher.ComputeEmailHash(entry.Email);
 
-        await using IdentityFederatedDbContext db = await contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        FederatedIdentity? existing = await db.FederatedIdentities
-            .FirstOrDefaultAsync(
-                e => e.TenantId == entry.TenantId && e.ExternalUserId == entry.ExternalUserId,
-                cancellationToken).ConfigureAwait(false);
-
-        if (existing is null)
+        // Upsert with one retry: two concurrent first-logins of the same (TenantId, ExternalUserId)
+        // — e.g. the same user hitting two pods — both miss the existing row and both insert,
+        // tripping the unique index. On that conflict, re-read and update the row the winner
+        // created instead of surfacing the DbUpdateException. Provider-agnostic (no ON CONFLICT).
+        // Returns the persisted row's Id so the caller can detect a lost insert race (persisted Id
+        // != entry.Id) and compensate — FederatedIdentityWriter deletes the orphaned canonical
+        // User it created for its losing insert. The second attempt's own DbUpdateException is not
+        // caught (filter is attempt == 0), so a genuine failure still surfaces and bounds the loop.
+        for (int attempt = 0; attempt <= 1; attempt++)
         {
-            db.FederatedIdentities.Add(entry);
-        }
-        else
-        {
-            existing.Username = entry.Username;
-            existing.Email = entry.Email;
-            existing.EmailHash = entry.EmailHash;
-            existing.FirstName = entry.FirstName;
-            existing.LastName = entry.LastName;
-            existing.Enabled = entry.Enabled;
-            existing.LastSyncedAt = entry.LastSyncedAt;
+            await using IdentityFederatedDbContext db = await contextFactory
+                .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+            FederatedIdentity? existing = await db.FederatedIdentities
+                .FirstOrDefaultAsync(
+                    e => e.TenantId == entry.TenantId && e.ExternalUserId == entry.ExternalUserId,
+                    cancellationToken).ConfigureAwait(false);
+
+            if (existing is null)
+            {
+                db.FederatedIdentities.Add(entry);
+            }
+            else
+            {
+                existing.Username = entry.Username;
+                existing.Email = entry.Email;
+                existing.EmailHash = entry.EmailHash;
+                existing.FirstName = entry.FirstName;
+                existing.LastName = entry.LastName;
+                existing.Enabled = entry.Enabled;
+                existing.LastSyncedAt = entry.LastSyncedAt;
+            }
+
+            try
+            {
+                await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                return existing?.Id ?? entry.Id;
+            }
+            catch (DbUpdateException) when (attempt == 0)
+            {
+                // Lost an insert race; loop once to re-read and update the winner's row.
+            }
         }
 
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        // Unreachable: attempt 1 either returns or rethrows its own DbUpdateException.
+        throw new InvalidOperationException("UpsertAsync retry loop exited without persisting.");
     }
 
     public async Task UpsertManyAsync(

@@ -1,25 +1,23 @@
-using Granit.Identity.Federated.EntityFrameworkCore.Internal;
 using Granit.Identity.Federated.Internal;
 using Granit.Identity.Federated.Options;
 using Granit.MultiTenancy;
-using Granit.Testing.Fakes;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Identity.Federated.EntityFrameworkCore.Tests;
+namespace Granit.Identity.Federated.Tests.Internal;
 
-public sealed class EfCoreUserCacheStatsTests
+public sealed class UserCacheStatsTests
 {
     private readonly IUserCacheStore _store = Substitute.For<IUserCacheStore>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
-    private readonly FakeTimeProvider _timeProvider = new();
-    private readonly EfCoreUserCacheStats _stats;
+    private readonly TimeProvider _timeProvider = Substitute.For<TimeProvider>();
+    private readonly UserCacheStats _stats;
 
-    public EfCoreUserCacheStatsTests()
+    public UserCacheStatsTests()
     {
         UserCacheOptions options = new() { StalenessThreshold = TimeSpan.FromHours(24) };
-        _stats = new EfCoreUserCacheStats(
+        _stats = new UserCacheStats(
             _store,
             _currentTenant,
             _timeProvider,
@@ -56,7 +54,7 @@ public sealed class EfCoreUserCacheStatsTests
     public async Task GetStaleCountAsync_ComputesThreshold()
     {
         DateTimeOffset now = new(2026, 3, 21, 12, 0, 0, TimeSpan.Zero);
-        _timeProvider.SetUtcNow(now);
+        _timeProvider.GetUtcNow().Returns(now);
         _currentTenant.IsAvailable.Returns(false);
 
         DateTimeOffset expectedThreshold = now - TimeSpan.FromHours(24);

@@ -37,6 +37,9 @@ public sealed class FederatedIdentityWriterTests
         _tenant.IsAvailable.Returns(true);
         _tenant.Id.Returns(Guid.NewGuid());
         _timeProvider.GetUtcNow().Returns(DateTimeOffset.UtcNow);
+        // Default: the store persists our row and returns our own Id (no insert race).
+        _store.UpsertAsync(Arg.Any<FederatedIdentity>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ci.Arg<FederatedIdentity>().Id);
     }
 
     [Fact]
@@ -90,14 +93,47 @@ public sealed class FederatedIdentityWriterTests
 
         FederatedIdentityWriter writer = CreateWriter();
 
-        // The canonical User is created first; if the cache insert throws, the freshly-created
-        // user must be hard-deleted so the directory does not orphan it. The exception surfaces.
+        // The canonical User is created first; if the cache insert throws (a genuine store
+        // failure), the freshly-created user must be hard-deleted and the exception surfaces.
         await Should.ThrowAsync<InvalidOperationException>(() =>
             writer.WriteAsync(CreateUser(), existing: null, TestContext.Current.CancellationToken));
 
         await _userDirectoryWriter.Received(1).CreateAsync(
             Arg.Is<User>(u => u.Id == generatedId), Arg.Any<CancellationToken>());
         await _userDirectoryWriter.Received(1).DeleteAsync(generatedId, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task WriteAsync_CompensatesUserDelete_WithoutThrowing_OnBenignInsertRace()
+    {
+        // A concurrent first-login won the insert race: the store resolved the conflict by
+        // updating the winner's row (which points at the winner's own User) and returns the
+        // winner's Id — different from ours. Our canonical User is now orphaned; the writer must
+        // delete it silently (no throw — the row exists and carries our data).
+        var ourId = Guid.NewGuid();
+        var winnerId = Guid.NewGuid();
+        _guidGenerator.Create().Returns(ourId);
+        _store.UpsertAsync(Arg.Any<FederatedIdentity>(), Arg.Any<CancellationToken>())
+            .Returns(winnerId);
+
+        FederatedIdentityWriter writer = CreateWriter();
+        await writer.WriteAsync(CreateUser(), existing: null, TestContext.Current.CancellationToken);
+
+        await _userDirectoryWriter.Received(1).CreateAsync(
+            Arg.Is<User>(u => u.Id == ourId), Arg.Any<CancellationToken>());
+        await _userDirectoryWriter.Received(1).DeleteAsync(ourId, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task WriteAsync_DoesNotCompensate_OnSuccessfulInsert()
+    {
+        var generatedId = Guid.NewGuid();
+        _guidGenerator.Create().Returns(generatedId);
+
+        FederatedIdentityWriter writer = CreateWriter();
+        await writer.WriteAsync(CreateUser(), existing: null, TestContext.Current.CancellationToken);
+
+        await _userDirectoryWriter.DidNotReceiveWithAnyArgs().DeleteAsync(default, TestContext.Current.CancellationToken);
     }
 
     [Fact]

@@ -91,13 +91,15 @@ public sealed class EfCoreUserCacheStoreTests : IDisposable
     }
 
     [Fact]
-    public async Task UpsertAsync_InsertsNewEntry()
+    public async Task UpsertAsync_InsertsNewEntry_AndReturnsItsId()
     {
         EfCoreUserCacheStore store = CreateStore();
         FederatedIdentity entry = CreateEntry();
 
-        await store.UpsertAsync(entry, TestContext.Current.CancellationToken);
+        Guid persistedId = await store.UpsertAsync(entry, TestContext.Current.CancellationToken);
 
+        // A clean insert returns our own Id — the writer reads this to know no race happened.
+        persistedId.ShouldBe(entry.Id);
         FederatedIdentity? found = await store.FindByExternalIdAsync(
             "user-1", null, TestContext.Current.CancellationToken);
         found.ShouldNotBeNull();
@@ -105,15 +107,20 @@ public sealed class EfCoreUserCacheStoreTests : IDisposable
     }
 
     [Fact]
-    public async Task UpsertAsync_UpdatesExistingEntry()
+    public async Task UpsertAsync_UpdatesExistingEntry_AndReturnsExistingId()
     {
         EfCoreUserCacheStore store = CreateStore();
         FederatedIdentity entry = CreateEntry();
         await store.UpsertAsync(entry, TestContext.Current.CancellationToken);
 
+        // A second upsert for the same (tenant, external id) but a DIFFERENT row Id must resolve
+        // onto the existing row and return the EXISTING Id — the signal the writer uses to detect a
+        // lost insert race and compensate its orphaned canonical User.
         FederatedIdentity updated = CreateEntry(username: "jdoe-updated", email: "updated@test.com");
-        await store.UpsertAsync(updated, TestContext.Current.CancellationToken);
+        Guid persistedId = await store.UpsertAsync(updated, TestContext.Current.CancellationToken);
 
+        persistedId.ShouldBe(entry.Id);
+        persistedId.ShouldNotBe(updated.Id);
         FederatedIdentity? found = await store.FindByExternalIdAsync(
             "user-1", null, TestContext.Current.CancellationToken);
         found.ShouldNotBeNull();

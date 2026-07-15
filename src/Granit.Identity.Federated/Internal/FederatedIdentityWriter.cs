@@ -79,14 +79,24 @@ internal sealed class FederatedIdentityWriter(
 
         await userDirectoryWriter.CreateAsync(canonical, cancellationToken).ConfigureAwait(false);
 
+        Guid persistedId;
         try
         {
-            await store.UpsertAsync(newEntry, cancellationToken).ConfigureAwait(false);
+            persistedId = await store.UpsertAsync(newEntry, cancellationToken).ConfigureAwait(false);
         }
         catch
         {
+            // Genuine store failure — the canonical User we just created would orphan; remove it.
             await userDirectoryWriter.DeleteAsync(newEntry.Id, cancellationToken).ConfigureAwait(false);
             throw;
+        }
+
+        if (persistedId != newEntry.Id)
+        {
+            // Lost a benign insert race: a concurrent write already created the row for this key
+            // (under the winner's own User), so our canonical User is orphaned — remove it. The
+            // winner's row now carries our data (the store's retry updated it), so no throw needed.
+            await userDirectoryWriter.DeleteAsync(newEntry.Id, cancellationToken).ConfigureAwait(false);
         }
 
         return newEntry;

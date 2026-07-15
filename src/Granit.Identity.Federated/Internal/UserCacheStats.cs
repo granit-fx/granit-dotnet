@@ -1,15 +1,14 @@
-using Granit.Identity.Federated.Internal;
 using Granit.Identity.Federated.Options;
 using Granit.MultiTenancy;
 using Microsoft.Extensions.Options;
 
-namespace Granit.Identity.Federated.EntityFrameworkCore.Internal;
+namespace Granit.Identity.Federated.Internal;
 
 /// <summary>
-/// EF Core implementation of <see cref="IUserCacheStats"/>.
-/// Delegates to <see cref="IUserCacheStore"/> for all queries.
+/// Default <see cref="IUserCacheStats"/> implementation: tenant-scoped counts and sync range
+/// derived by delegating to <see cref="IUserCacheStore"/> — no EF Core types of its own.
 /// </summary>
-internal sealed class EfCoreUserCacheStats(
+internal sealed class UserCacheStats(
     IUserCacheStore store,
     ICurrentTenant currentTenant,
     TimeProvider timeProvider,
