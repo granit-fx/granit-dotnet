@@ -2219,7 +2219,7 @@
         "Granit.Encryption",
         "Granit.Identity.Local",
         "Granit.MultiTenancy",
-        "Granit.OpenIddict.Server",
+        "Granit.OpenIddict",
         "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -43256,12 +43256,12 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 28,
+      "line": 27,
       "members": [
         {
-          "name": "AddGranitOpenIddict",
+          "name": "AddGranitOpenIddictEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitOpenIddict(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitOpenIddictEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -43304,7 +43304,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/GranitOpenIddictEntityFrameworkCoreModule.cs",
-      "line": 33,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",

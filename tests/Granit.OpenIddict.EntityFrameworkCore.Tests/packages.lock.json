@@ -526,25 +526,10 @@
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
-      "granit.authentication": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
       "granit.authentication.external": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.authentication.openiddict": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Authentication": "[0.1.0-dev, )",
-          "OpenIddict.Validation.AspNetCore": "[7.*, )",
-          "OpenIddict.Validation.SystemNetHttp": "[7.*, )"
         }
       },
       "granit.authorization": {
@@ -732,25 +717,13 @@
           "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
-          "Granit.OpenIddict.Server": "[0.1.0-dev, )",
+          "Granit.OpenIddict": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[10.*, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
           "OpenIddict": "[7.*, )",
           "OpenIddict.EntityFrameworkCore": "[7.*, )"
-        }
-      },
-      "granit.openiddict.server": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authentication": "[0.1.0-dev, )",
-          "Granit.Authentication.OpenIddict": "[0.1.0-dev, )",
-          "Granit.Identity.Abstractions": "[0.1.0-dev, )",
-          "Granit.OpenIddict": "[0.1.0-dev, )",
-          "OpenIddict": "[7.*, )",
-          "OpenIddict.Server.AspNetCore": "[7.*, )",
-          "OpenIddict.Validation.AspNetCore": "[7.*, )"
         }
       },
       "granit.persistence": {
@@ -926,24 +899,6 @@
           "Microsoft.EntityFrameworkCore.Relational": "10.0.7",
           "OpenIddict.Core": "7.5.0",
           "OpenIddict.EntityFrameworkCore.Models": "7.5.0"
-        }
-      },
-      "OpenIddict.Server.AspNetCore": {
-        "type": "CentralTransitive",
-        "requested": "[7.*, )",
-        "resolved": "7.5.0",
-        "contentHash": "dPgoG/y7oJcngY+xILxrp+lgGjrOMIrlt/mQcGKMj/g+QlNW8Xod5ibAMbFIQUUWXGVKd+lZKPMa7wPfioLpTw==",
-        "dependencies": {
-          "OpenIddict.Server": "7.5.0"
-        }
-      },
-      "OpenIddict.Validation.AspNetCore": {
-        "type": "CentralTransitive",
-        "requested": "[7.*, )",
-        "resolved": "7.5.0",
-        "contentHash": "yTHifKNJLe0uH4fotBQcii8XpHYQOwmACXK2aEeAYadxYlysiO67glfxdETzeAfpJ/QM4cG7V2bjXUCZLCHEbg==",
-        "dependencies": {
-          "OpenIddict.Validation": "7.5.0"
         }
       },
       "OpenIddict.Validation.SystemNetHttp": {

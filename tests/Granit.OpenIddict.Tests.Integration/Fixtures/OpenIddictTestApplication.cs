@@ -15,6 +15,7 @@ using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Endpoints.Extensions;
 using Granit.OpenIddict.EntityFrameworkCore.Extensions;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
+using Granit.OpenIddict.Server.Extensions;
 using Granit.OpenIddict.Tests.Integration.Helpers;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -75,9 +76,10 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
         // worth provisioning for an in-memory integration suite.
         builder.Configuration["OpenIddict:AllowEphemeralKeys"] = "true";
 
-        // 1. Register OpenIddict EF Core + Server + Identity
-        builder.AddGranitOpenIddict(
+        // 1. Register OpenIddict EF Core + Identity, then the server pipeline.
+        builder.AddGranitOpenIddictEntityFrameworkCore(
             options => options.UseNpgsql(_postgres.ConnectionString));
+        builder.AddGranitOpenIddictServer();
 
         // Disable HTTPS requirement — TestServer runs over HTTP in-memory
         builder.Services.AddOpenIddict()

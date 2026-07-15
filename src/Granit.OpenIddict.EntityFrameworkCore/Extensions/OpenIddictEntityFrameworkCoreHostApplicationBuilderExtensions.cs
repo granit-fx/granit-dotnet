@@ -8,7 +8,6 @@ using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Models;
 using Granit.OpenIddict.Options;
-using Granit.OpenIddict.Server.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.SharedConnection;
 using Granit.QueryEngine;
@@ -28,13 +27,21 @@ namespace Granit.OpenIddict.EntityFrameworkCore.Extensions;
 public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions
 {
     /// <summary>
-    /// Registers the complete Granit OpenIddict stack: ASP.NET Core Identity, OpenIddict
-    /// (core + server + validation), and EF Core persistence.
+    /// Registers the persistence + identity layer for OpenIddict: the isolated
+    /// <see cref="OpenIddictDbContext"/>, ASP.NET Core Identity backed by it, OpenIddict Core with
+    /// EF Core stores, the group store and DbContext accessor, the session/device provider, and
+    /// the query engine / export sources for applications and scopes.
     /// </summary>
+    /// <remarks>
+    /// Does NOT wire the OpenIddict server pipeline — that is added on top by
+    /// <c>Granit.Bundle.OpenIddict</c> (<c>AddGranitOpenIddict</c>), so this package carries no
+    /// dependency on <c>Granit.OpenIddict.Server</c>. A migration host or admin tool that needs
+    /// only the schema, stores, and identity can reference this package without the server.
+    /// </remarks>
     /// <param name="builder">The host application builder.</param>
     /// <param name="configure">EF Core provider configuration (e.g. <c>options.UseNpgsql(cs)</c>).</param>
     /// <returns>The builder for chaining.</returns>
-    public static IHostApplicationBuilder AddGranitOpenIddict(
+    public static IHostApplicationBuilder AddGranitOpenIddictEntityFrameworkCore(
         this IHostApplicationBuilder builder,
         Action<DbContextOptionsBuilder> configure)
     {
@@ -54,7 +61,7 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
         builder.Services.Configure<GranitLockoutOptions>(
             builder.Configuration.GetSection(GranitLockoutOptions.SectionName));
 
-        // 3. Register ASP.NET Core Identity
+        // 3. Register ASP.NET Core Identity backed by the OpenIddict DbContext.
         builder.Services
             .AddIdentity<LocalIdentity, GranitRole>(options =>
             {
@@ -68,7 +75,7 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
             .AddEntityFrameworkStores<OpenIddictDbContext>()
             .AddDefaultTokenProviders();
 
-        // 3. Register OpenIddict Core — EF Core stores
+        // 4. Register OpenIddict Core — EF Core stores
         builder.Services.AddOpenIddict()
             .AddCore(options =>
             {
@@ -88,21 +95,18 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
                 }
             });
 
-        // 4. Register OpenIddict Server + Validation (delegated to Granit.OpenIddict.Server)
-        builder.AddGranitOpenIddictServer();
-
-        // 5. Register group store — required by AspNetIdentityProvider
+        // 5. Group store — required by AspNetIdentityProvider.
         builder.Services.TryAddScoped<ILocalIdentityGroupStore, OpenIddictGroupStore>();
 
         // 6. Accessor exposing the scoped OpenIddictDbContext as IIdentityDbContextAccessor —
-        //    consumed by IGranitRoleOrchestrator to share the Identity transaction
-        //    with the host authorization DbContext when both target the same database.
+        //    consumed by IGranitRoleOrchestrator to share the Identity transaction with the host
+        //    authorization DbContext when both target the same database.
         builder.Services.TryAddScoped<IIdentityDbContextAccessor,
             OpenIddictIdentityDbContextAccessor>();
 
-        // 7. Session/device provider for the canonical /sessions + /devices API. Registered here, with
-        //    the authority wiring, so a host cannot enable OpenIddict auth and still silently serve the
-        //    no-op session defaults (the failure mode when GranitOpenIddictModule is absent from the graph).
+        // 7. Session/device provider for the canonical /sessions + /devices API. Registered here so a
+        //    host cannot enable OpenIddict persistence and still silently serve the no-op session
+        //    defaults (the failure mode when GranitOpenIddictModule is absent from the graph).
         builder.Services.AddOpenIddictUserSessionProvider();
 
         // 8. Query engine sources for the identity entities owned by the consolidated

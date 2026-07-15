@@ -28,7 +28,7 @@ public sealed class OpenIddictEfCoreQueryableSourceRegistrationTests
             new HostApplicationBuilderSettings { EnvironmentName = Environments.Development });
         // The provider callback is only invoked at context creation, not registration — an
         // empty configure is enough to assert the DI descriptors without an EF provider package.
-        builder.AddGranitOpenIddict(_ => { });
+        builder.AddGranitOpenIddictEntityFrameworkCore(_ => { });
         return builder.Services;
     }
 
