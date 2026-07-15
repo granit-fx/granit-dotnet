@@ -194,6 +194,15 @@ public static class OpenIddictModelBuilderExtensions
 
             b.HasIndex(k => new { k.KeyType, k.Status })
                 .HasDatabaseName($"ix_{prefix}signing_keys_type_status");
+
+            // At most one Active key per type. Makes concurrent first-boot generation race-safe:
+            // when two replicas boot against an empty store, the second replica's insert of a
+            // duplicate active key is rejected by the database (SigningKeyRefreshService swallows
+            // the loss and reloads the winner's keys). Status is persisted as its PascalCase string.
+            b.HasIndex(k => k.KeyType)
+                .IsUnique()
+                .HasFilter("\"Status\" = 'Active'")
+                .HasDatabaseName($"uq_{prefix}signing_keys_active_type");
         });
 
         // ──── Dynamic user extension columns ────

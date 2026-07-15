@@ -104,15 +104,30 @@ internal sealed partial class SigningKeyRefreshService(
             ISigningKeyStore store = scope.ServiceProvider.GetRequiredService<ISigningKeyStore>();
             if (await store.GetActiveKeyAsync("signing", cancellationToken).ConfigureAwait(false) is not null)
             {
+                // Already initialised — the post-configure loaded the keys at startup.
                 return;
             }
 
-            IKeyRotationService rotation = scope.ServiceProvider.GetRequiredService<IKeyRotationService>();
-            KeyRotationResult result = await rotation.RotateAsync(cancellationToken).ConfigureAwait(false);
-            if (result.KeysGenerated > 0)
+            // Empty at startup. Generate the initial key set; a peer racing us against the same empty
+            // store may win first — the unique "one active key per type" index rejects our duplicate
+            // insert, which surfaces here as an exception we swallow (the peer's keys are authoritative).
+            try
             {
-                Log.FirstBootGenerated(logger, result.KeysGenerated);
+                IKeyRotationService rotation = scope.ServiceProvider.GetRequiredService<IKeyRotationService>();
+                await rotation.RotateAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                Log.FirstBootGenerationRace(logger, ex);
+            }
+
+            // Whether we generated the keys or a racing peer did, the post-configure loaded none at
+            // startup — reload so this replica serves the persisted keys instead of its bootstrap
+            // ephemeral set. Without this a replica that lost the generation race stays ephemeral.
+            if (await store.GetActiveKeyAsync("signing", cancellationToken).ConfigureAwait(false) is not null)
+            {
                 InvalidateOptionsCache();
+                Log.FirstBootInitialized(logger);
             }
         }
         catch (OperationCanceledException)
@@ -170,8 +185,12 @@ internal sealed partial class SigningKeyRefreshService(
         public static partial void KeySetChanged(ILogger logger);
 
         [LoggerMessage(Level = LogLevel.Information,
-            Message = "First boot: generated {Count} initial signing/encryption key(s) and loaded them.")]
-        public static partial void FirstBootGenerated(ILogger logger, int count);
+            Message = "First boot: initial signing/encryption keys are present — loaded them from the database.")]
+        public static partial void FirstBootInitialized(ILogger logger);
+
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "First-boot key generation lost the race to another replica (its keys are authoritative) or hit a transient error.")]
+        public static partial void FirstBootGenerationRace(ILogger logger, Exception exception);
 
         [LoggerMessage(Level = LogLevel.Warning,
             Message = "First-boot key generation failed; staying on ephemeral keys until the next boot or rotation.")]
