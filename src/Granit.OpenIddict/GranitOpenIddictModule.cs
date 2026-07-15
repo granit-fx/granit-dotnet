@@ -81,6 +81,10 @@ public sealed class GranitOpenIddictModule : GranitModule
         context.Services.AddSingleton<IPostConfigureOptions<OpenIddictServerOptions>,
             DatabaseSigningKeyPostConfigure>();
 
+        // Keep each replica's loaded credentials in sync with the DB after a rotation (the
+        // post-configure above only runs once). No-op when key rotation is disabled.
+        context.Services.AddHostedService<SigningKeyRefreshService>();
+
         // Identity cookie configuration — neutral names to avoid leaking the technology stack.
         // PostConfigure is required because AddIdentity<TUser, TRole>() registers its own
         // PostConfigure that resets names to ASP.NET Core defaults.

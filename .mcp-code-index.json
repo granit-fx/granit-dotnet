@@ -43498,6 +43498,12 @@
           "returnType": "TimeSpan RotationLeadTime { get; set; } = TimeSpan."
         },
         {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan RefreshCheckInterval { get; set; } = TimeSpan."
+        },
+        {
           "name": "RsaKeySize",
           "kind": "property",
           "signature": "int RsaKeySize",
