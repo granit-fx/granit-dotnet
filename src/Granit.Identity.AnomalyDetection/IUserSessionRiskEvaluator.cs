@@ -2,7 +2,7 @@ namespace Granit.Identity.AnomalyDetection;
 
 /// <summary>
 /// Orchestrates session risk evaluation: runs the anomaly detector, persists a non-<c>None</c> verdict to the
-/// <see cref="IUserSessionRiskStore"/>, and raises a <c>SuspiciousUserSessionDetectedEto</c> for Medium/High
+/// <see cref="IIdentitySecurityStateStore"/>, and raises a <c>SuspiciousUserSessionDetectedEto</c> for Medium/High
 /// risk. Consumers (the BFF login flow, the identity authority) call this when a session is established.
 /// </summary>
 public interface IUserSessionRiskEvaluator

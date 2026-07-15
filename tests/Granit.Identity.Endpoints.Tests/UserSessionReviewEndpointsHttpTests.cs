@@ -16,9 +16,7 @@ namespace Granit.Identity.Endpoints.Tests;
 public sealed class UserSessionReviewEndpointsHttpTests : IAsyncDisposable
 {
     private readonly ISessionReviewTokenService _tokens = Substitute.For<ISessionReviewTokenService>();
-    private readonly IUserSessionReviewStore _reviews = Substitute.For<IUserSessionReviewStore>();
-    private readonly IDeviceTrustStore _deviceTrust = Substitute.For<IDeviceTrustStore>();
-    private readonly IUserBehavioralProfileStore _profile = Substitute.For<IUserBehavioralProfileStore>();
+    private readonly IIdentitySecurityStateStore _securityState = Substitute.For<IIdentitySecurityStateStore>();
     private readonly IUserSessionManager _manager = Substitute.For<IUserSessionManager>();
     private readonly IDistributedEventBus _bus = Substitute.For<IDistributedEventBus>();
     private readonly GranitEndpointTestHost _host;
@@ -36,9 +34,7 @@ public sealed class UserSessionReviewEndpointsHttpTests : IAsyncDisposable
             {
                 services.AddAuthorizationBuilder();
                 services.AddSingleton(_tokens);
-                services.AddSingleton(_reviews);
-                services.AddSingleton(_deviceTrust);
-                services.AddSingleton(_profile);
+                services.AddSingleton(_securityState);
                 services.AddSingleton(_manager);
                 services.AddSingleton(_bus);
                 services.AddSingleton(Substitute.For<ICurrentTenant>());
@@ -54,7 +50,7 @@ public sealed class UserSessionReviewEndpointsHttpTests : IAsyncDisposable
     [Fact]
     public async Task Get_ValidToken_ReturnsContext_WithoutSideEffects()
     {
-        _reviews.GetDecisionAsync("user-1", "s1", Arg.Any<CancellationToken>())
+        _securityState.GetSessionReviewDecisionAsync("user-1", "s1", Arg.Any<CancellationToken>())
             .Returns((UserSessionReviewDecision?)null);
 
         SessionReviewContextResponse? body = await _anon
@@ -65,7 +61,7 @@ public sealed class UserSessionReviewEndpointsHttpTests : IAsyncDisposable
         body.Decision.ShouldBeNull();
 
         // GET is side-effect-free: a link scanner prefetching it must not record, revoke, or publish anything.
-        await _reviews.DidNotReceiveWithAnyArgs().TryRecordDecisionAsync(default!, default!, default, default, Ct);
+        await _securityState.DidNotReceiveWithAnyArgs().TryRecordSessionReviewDecisionAsync(default!, default!, default, default, Ct);
         await _manager.DidNotReceiveWithAnyArgs().RevokeAllAsync(default!, Ct);
     }
 
@@ -80,7 +76,7 @@ public sealed class UserSessionReviewEndpointsHttpTests : IAsyncDisposable
     [Fact]
     public async Task Post_ConfirmedFirstTime_TrustsDeviceAndReinforcesProfile()
     {
-        _reviews.TryRecordDecisionAsync("user-1", "s1", UserSessionReviewDecision.Confirmed, Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
+        _securityState.TryRecordSessionReviewDecisionAsync("user-1", "s1", UserSessionReviewDecision.Confirmed, Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
             .Returns(true);
 
         HttpResponseMessage response = await _anon.PostAsJsonAsync(
@@ -92,11 +88,11 @@ public sealed class UserSessionReviewEndpointsHttpTests : IAsyncDisposable
         SessionReviewResultResponse? body = await response.Content.ReadFromJsonAsync<SessionReviewResultResponse>(Ct);
         body!.Applied.ShouldBeTrue();
 
-        await _deviceTrust.Received(1).SetAsync(
+        await _securityState.Received(1).SetDeviceTrustAsync(
             "user-1", "dev-1",
             Arg.Is<DeviceTrustVerdict>(v => v.Level == DeviceTrustLevel.Remembered && v.Reason == "user_confirmed"),
             Arg.Any<CancellationToken>());
-        await _profile.Received(1).RecordObservationAsync(
+        await _securityState.Received(1).RecordBehavioralObservationAsync(
             "user-1", "US", null, null, Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());
         await _manager.DidNotReceiveWithAnyArgs().RevokeAllAsync(default!, Ct);
     }
@@ -104,7 +100,7 @@ public sealed class UserSessionReviewEndpointsHttpTests : IAsyncDisposable
     [Fact]
     public async Task Post_DeniedFirstTime_RevokesAllAndPublishesDeniedEto()
     {
-        _reviews.TryRecordDecisionAsync("user-1", "s1", UserSessionReviewDecision.Denied, Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
+        _securityState.TryRecordSessionReviewDecisionAsync("user-1", "s1", UserSessionReviewDecision.Denied, Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
             .Returns(true);
 
         HttpResponseMessage response = await _anon.PostAsJsonAsync(
@@ -125,9 +121,9 @@ public sealed class UserSessionReviewEndpointsHttpTests : IAsyncDisposable
     public async Task Post_AlreadyReviewed_IsIdempotentNoOp()
     {
         // The single-use gate denies the second commit: no re-revoke, no re-publish.
-        _reviews.TryRecordDecisionAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<UserSessionReviewDecision>(), Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
+        _securityState.TryRecordSessionReviewDecisionAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<UserSessionReviewDecision>(), Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
             .Returns(false);
-        _reviews.GetDecisionAsync("user-1", "s1", Arg.Any<CancellationToken>())
+        _securityState.GetSessionReviewDecisionAsync("user-1", "s1", Arg.Any<CancellationToken>())
             .Returns(UserSessionReviewDecision.Denied);
 
         HttpResponseMessage response = await _anon.PostAsJsonAsync(

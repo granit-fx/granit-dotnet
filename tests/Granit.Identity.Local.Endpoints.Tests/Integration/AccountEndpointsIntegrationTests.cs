@@ -667,7 +667,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // The passkey proves a device-bound credential — trust is raised to Strong with the "passkey" reason.
-        await _server.DeviceTrustStore.Received(1).SetAsync(
+        await _server.SecurityStateStore.Received(1).SetDeviceTrustAsync(
             AccountEndpointsTestServer.TestUserIdString,
             "device-123",
             Arg.Is<DeviceTrustVerdict>(v => v.Level == DeviceTrustLevel.Strong && v.Reason == "passkey"),
@@ -699,7 +699,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        await _server.DeviceTrustStore.DidNotReceive().SetAsync(
+        await _server.SecurityStateStore.DidNotReceive().SetDeviceTrustAsync(
             Arg.Any<string>(), Arg.Any<string>(),
             Arg.Any<DeviceTrustVerdict>(), Arg.Any<CancellationToken>());
     }

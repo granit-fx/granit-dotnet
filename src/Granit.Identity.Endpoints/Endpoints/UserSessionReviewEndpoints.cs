@@ -48,7 +48,7 @@ internal static class UserSessionReviewEndpoints
     private static async Task<Results<Ok<SessionReviewContextResponse>, ProblemHttpResult>> GetAsync(
         [FromQuery] string token,
         [FromServices] ISessionReviewTokenService tokenService,
-        [FromServices] IUserSessionReviewStore reviewStore,
+        [FromServices] IIdentitySecurityStateStore securityState,
         CancellationToken cancellationToken)
     {
         SessionReviewTokenPayload? payload = tokenService.Validate(token);
@@ -58,8 +58,8 @@ internal static class UserSessionReviewEndpoints
         }
 
         // Read-only: report the country and whether a decision was already recorded. No state changes.
-        UserSessionReviewDecision? decision = await reviewStore
-            .GetDecisionAsync(payload.UserId, payload.SessionId, cancellationToken).ConfigureAwait(false);
+        UserSessionReviewDecision? decision = await securityState
+            .GetSessionReviewDecisionAsync(payload.UserId, payload.SessionId, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Ok(new SessionReviewContextResponse(payload.Country, decision));
     }
@@ -68,10 +68,8 @@ internal static class UserSessionReviewEndpoints
         SessionReviewDecisionRequest request,
         HttpContext httpContext,
         [FromServices] ISessionReviewTokenService tokenService,
-        [FromServices] IUserSessionReviewStore reviewStore,
+        [FromServices] IIdentitySecurityStateStore securityState,
         [FromServices] IUserSessionManager sessionManager,
-        [FromServices] IDeviceTrustStore deviceTrustStore,
-        [FromServices] IUserBehavioralProfileStore profileStore,
         [FromServices] IOptions<DeviceTrustOptions> deviceTrustOptions,
         [FromServices] ICurrentTenant currentTenant,
         [FromServices] TimeProvider timeProvider,
@@ -87,13 +85,13 @@ internal static class UserSessionReviewEndpoints
 
         // Single-use gate: only the first call performs side effects. A repeat (double-click, scanner prefetch
         // of a POST) returns the authoritative recorded decision without re-revoking or re-publishing.
-        bool applied = await reviewStore
-            .TryRecordDecisionAsync(payload.UserId, payload.SessionId, request.Decision, now, cancellationToken)
+        bool applied = await securityState
+            .TryRecordSessionReviewDecisionAsync(payload.UserId, payload.SessionId, request.Decision, now, cancellationToken)
             .ConfigureAwait(false);
         if (!applied)
         {
-            UserSessionReviewDecision recorded = await reviewStore
-                .GetDecisionAsync(payload.UserId, payload.SessionId, cancellationToken).ConfigureAwait(false)
+            UserSessionReviewDecision recorded = await securityState
+                .GetSessionReviewDecisionAsync(payload.UserId, payload.SessionId, cancellationToken).ConfigureAwait(false)
                 ?? request.Decision;
             return TypedResults.Ok(new SessionReviewResultResponse(recorded, Applied: false));
         }
@@ -102,7 +100,7 @@ internal static class UserSessionReviewEndpoints
         {
             if (payload.DeviceId is { } deviceId)
             {
-                await deviceTrustStore.SetAsync(
+                await securityState.SetDeviceTrustAsync(
                     payload.UserId,
                     deviceId,
                     new DeviceTrustVerdict(
@@ -112,8 +110,8 @@ internal static class UserSessionReviewEndpoints
 
             if (!string.IsNullOrEmpty(payload.Country))
             {
-                await profileStore
-                    .RecordObservationAsync(payload.UserId, payload.Country, null, null, now, cancellationToken)
+                await securityState
+                    .RecordBehavioralObservationAsync(payload.UserId, payload.Country, null, null, now, cancellationToken)
                     .ConfigureAwait(false);
             }
         }

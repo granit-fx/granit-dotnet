@@ -35,13 +35,13 @@ public sealed class UserSessionCreatedHandlerTests
                 new("s-old", "user-1", IsCurrent: false, Now.AddDays(-1), Now.AddDays(-1), "ua2", "2.2.2.2", Location: null),
             ]);
 
-        IUserBehavioralProfileStore profileStore = Substitute.For<IUserBehavioralProfileStore>();
+        IIdentitySecurityStateStore securityState = Substitute.For<IIdentitySecurityStateStore>();
         TimeProvider timeProvider = Substitute.For<TimeProvider>();
         timeProvider.GetUtcNow().Returns(Now);
 
         UserSessionCreatedEto evt = new("user-1", "s-new", TenantId: null, UserSessionSource.Bff, "ua", "1.1.1.1", Now);
 
-        await UserSessionCreatedHandler.HandleAsync(evt, tenant, evaluator, provider, geo, profileStore, timeProvider, Ct);
+        await UserSessionCreatedHandler.HandleAsync(evt, tenant, evaluator, provider, geo, securityState, timeProvider, Ct);
 
         await evaluator.Received(1).EvaluateAsync(
             Arg.Is<UserSessionDescriptor>(c =>
@@ -52,7 +52,7 @@ public sealed class UserSessionCreatedHandlerTests
             Arg.Any<CancellationToken>());
 
         // The candidate's observation is recorded into the durable profile after assessment.
-        await profileStore.Received(1).RecordObservationAsync(
+        await securityState.Received(1).RecordBehavioralObservationAsync(
             "user-1", "BE", Arg.Any<string?>(), Arg.Any<string?>(), Now, Arg.Any<CancellationToken>());
     }
 
@@ -72,13 +72,13 @@ public sealed class UserSessionCreatedHandlerTests
                 new("s1", "user-1", IsCurrent: true, Now, null, "ua", null, Location: null),
             ]);
 
-        IUserBehavioralProfileStore profileStore = Substitute.For<IUserBehavioralProfileStore>();
+        IIdentitySecurityStateStore securityState = Substitute.For<IIdentitySecurityStateStore>();
         TimeProvider timeProvider = Substitute.For<TimeProvider>();
         timeProvider.GetUtcNow().Returns(Now);
 
         UserSessionCreatedEto evt = new("user-1", "s1", eventTenant, UserSessionSource.Bff, "ua", null, Now);
 
-        await UserSessionCreatedHandler.HandleAsync(evt, tenant, evaluator, provider, geo, profileStore, timeProvider, Ct);
+        await UserSessionCreatedHandler.HandleAsync(evt, tenant, evaluator, provider, geo, securityState, timeProvider, Ct);
 
         tenant.Received(1).Change(eventTenant);
     }
@@ -101,20 +101,20 @@ public sealed class UserSessionCreatedHandlerTests
                 new("bff-sid", "user-1", IsCurrent: true, Now, null, "ua", "1.1.1.1", Location: null),
             ]);
 
-        IUserBehavioralProfileStore profileStore = Substitute.For<IUserBehavioralProfileStore>();
+        IIdentitySecurityStateStore securityState = Substitute.For<IIdentitySecurityStateStore>();
         TimeProvider timeProvider = Substitute.For<TimeProvider>();
         timeProvider.GetUtcNow().Returns(Now);
 
         UserSessionCreatedEto evt = new(
             "user-1", "oidc-token-id", TenantId: null, UserSessionSource.OpenIddict, "ua", "1.1.1.1", Now);
 
-        await UserSessionCreatedHandler.HandleAsync(evt, tenant, evaluator, provider, geo, profileStore, timeProvider, Ct);
+        await UserSessionCreatedHandler.HandleAsync(evt, tenant, evaluator, provider, geo, securityState, timeProvider, Ct);
 
         await evaluator.DidNotReceiveWithAnyArgs().EvaluateAsync(default!, default!, default, Ct);
         await geo.DidNotReceiveWithAnyArgs().ResolveAsync(default, Ct);
 
         // A session this topology does not own is neither assessed nor recorded into the profile.
-        await profileStore.DidNotReceiveWithAnyArgs().RecordObservationAsync(
+        await securityState.DidNotReceiveWithAnyArgs().RecordBehavioralObservationAsync(
             default!, default, default, default, default, Ct);
     }
 }

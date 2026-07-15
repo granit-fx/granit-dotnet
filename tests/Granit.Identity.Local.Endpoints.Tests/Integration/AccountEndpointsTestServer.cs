@@ -74,7 +74,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
     public ICurrentTenant CurrentTenant { get; }
     public IDataFilter DataFilter { get; }
     public IDeviceTrustCookieService DeviceTrustCookieService { get; }
-    public IDeviceTrustStore DeviceTrustStore { get; }
+    public IIdentitySecurityStateStore SecurityStateStore { get; }
 
     private AccountEndpointsTestServer(
         WebApplication app,
@@ -105,7 +105,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         ICurrentTenant currentTenant,
         IDataFilter dataFilter,
         IDeviceTrustCookieService deviceTrustCookieService,
-        IDeviceTrustStore deviceTrustStore)
+        IIdentitySecurityStateStore securityState)
     {
         _app = app;
         AuthenticatedClient = authenticatedClient;
@@ -135,7 +135,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         CurrentTenant = currentTenant;
         DataFilter = dataFilter;
         DeviceTrustCookieService = deviceTrustCookieService;
-        DeviceTrustStore = deviceTrustStore;
+        SecurityStateStore = securityState;
     }
 
     public static async Task<AccountEndpointsTestServer> CreateAsync(
@@ -159,7 +159,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         // already bound (the cookie service resolves a device id). Default: no bound device (ResolveDeviceId
         // returns null), so the raise is a no-op and pre-existing tests are unaffected.
         IDeviceTrustCookieService deviceTrustCookieService = Substitute.For<IDeviceTrustCookieService>();
-        IDeviceTrustStore deviceTrustStore = Substitute.For<IDeviceTrustStore>();
+        IIdentitySecurityStateStore securityState = Substitute.For<IIdentitySecurityStateStore>();
         IImpersonationService impersonationService = Substitute.For<IImpersonationService>();
         IAccountDeletionService deletionService = Substitute.For<IAccountDeletionService>();
         IDistributedEventBus eventBus = Substitute.For<IDistributedEventBus>();
@@ -237,7 +237,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(externalProviderRegistry);
         builder.Services.AddSingleton(passkeyService);
         builder.Services.AddSingleton(deviceTrustCookieService);
-        builder.Services.AddSingleton(deviceTrustStore);
+        builder.Services.AddSingleton(securityState);
         builder.Services.AddSingleton(impersonationService);
         builder.Services.AddSingleton(deletionService);
         builder.Services.AddSingleton(eventBus);
@@ -299,7 +299,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
             passkeyService, impersonationService, deletionService,
             eventBus, fusionCache, settingProvider, timeProvider,
             signInManager, userManager, currentTenant, dataFilter,
-            deviceTrustCookieService, deviceTrustStore);
+            deviceTrustCookieService, securityState);
     }
 
     /// <summary>

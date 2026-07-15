@@ -7,7 +7,7 @@ namespace Granit.Identity;
 /// <remarks>
 /// This is what <see cref="IUserSessionManager"/> returns — the descriptor comes from the backend
 /// <see cref="IUserSessionProvider"/>, the manager fills <see cref="UserSessionDescriptor.Location"/>
-/// and attaches <see cref="Risk"/> read from <see cref="IUserSessionRiskStore"/>. Keeping risk as a
+/// and attaches <see cref="Risk"/> read from <see cref="IIdentitySecurityStateStore"/>. Keeping risk as a
 /// separate member (rather than folding it into the descriptor) preserves the descriptor's role as the
 /// detector's input and avoids a circular shape.
 /// </remarks>

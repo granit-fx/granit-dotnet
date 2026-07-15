@@ -11,12 +11,11 @@ public sealed class DefaultUserSessionManagerTests
 
     private readonly IUserSessionProvider _sessions = Substitute.For<IUserSessionProvider>();
     private readonly IUserDeviceProvider _devices = Substitute.For<IUserDeviceProvider>();
-    private readonly IUserSessionRiskStore _risk = Substitute.For<IUserSessionRiskStore>();
-    private readonly IDeviceTrustStore _deviceTrust = Substitute.For<IDeviceTrustStore>();
+    private readonly IIdentitySecurityStateStore _securityState = Substitute.For<IIdentitySecurityStateStore>();
     private readonly DefaultUserSessionManager _sut;
 
     public DefaultUserSessionManagerTests() =>
-        _sut = new(_sessions, _devices, _risk, _deviceTrust, TimeProvider.System);
+        _sut = new(_sessions, _devices, _securityState, TimeProvider.System);
 
     private static UserSessionDescriptor Session(string id) =>
         new(id, "user-1", IsCurrent: id == "s1", CreatedAt: DateTimeOffset.UnixEpoch,
@@ -27,7 +26,7 @@ public sealed class DefaultUserSessionManagerTests
     {
         _sessions.ListAsync("user-1", "s1", Ct).Returns([Session("s1"), Session("s2")]);
         UserSessionRiskVerdict verdict = new(UserSessionRiskLevel.High, ["impossible_travel"], DateTimeOffset.UnixEpoch);
-        _risk.GetManyAsync("user-1", Arg.Any<IReadOnlyCollection<string>>(), Ct)
+        _securityState.GetSessionRisksAsync("user-1", Arg.Any<IReadOnlyCollection<string>>(), Ct)
             .Returns(new Dictionary<string, UserSessionRiskVerdict> { ["s2"] = verdict });
 
         IReadOnlyList<UserSessionView> result = await _sut.ListAsync("user-1", "s1", Ct);
@@ -44,7 +43,7 @@ public sealed class DefaultUserSessionManagerTests
         _sessions.ListAsync("user-1", null, Ct).Returns([]);
 
         (await _sut.ListAsync("user-1", null, Ct)).ShouldBeEmpty();
-        await _risk.DidNotReceiveWithAnyArgs().GetManyAsync(default!, default!, Ct);
+        await _securityState.DidNotReceiveWithAnyArgs().GetSessionRisksAsync(default!, default!, Ct);
     }
 
     [Fact]

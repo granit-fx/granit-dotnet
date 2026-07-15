@@ -28082,7 +28082,7 @@
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(UserSessionCreatedEto evt, ICurrentTenant currentTenant, IUserSessionRiskEvaluator evaluator, IUserSessionProvider sessionProvider, IIpGeolocationResolver geoResolver, IUserBehavioralProfileStore profileStore, TimeProvider timeProvider, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(UserSessionCreatedEto evt, ICurrentTenant currentTenant, IUserSessionRiskEvaluator evaluator, IUserSessionProvider sessionProvider, IIpGeolocationResolver geoResolver, IIdentitySecurityStateStore securityState, TimeProvider timeProvider, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -30281,40 +30281,6 @@
       ]
     },
     {
-      "name": "IDeviceTrustStore",
-      "fqn": "Granit.Identity.IDeviceTrustStore",
-      "kind": "interface",
-      "project": "Granit.Identity.Abstractions",
-      "file": "src/Granit.Identity.Abstractions/IDeviceTrustStore.cs",
-      "line": 20,
-      "members": [
-        {
-          "name": "SetAsync",
-          "kind": "method",
-          "signature": "SetAsync(string userId, string deviceId, DeviceTrustVerdict verdict, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "GetAsync",
-          "kind": "method",
-          "signature": "GetAsync(string userId, string deviceId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<DeviceTrustVerdict?>"
-        },
-        {
-          "name": "GetManyAsync",
-          "kind": "method",
-          "signature": "GetManyAsync(string userId, IReadOnlyCollection<string> deviceIds, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyDictionary<string, DeviceTrustVerdict>>"
-        },
-        {
-          "name": "RevokeAsync",
-          "kind": "method",
-          "signature": "RevokeAsync(string userId, string deviceId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
       "name": "IFallbackUserSessionProvider",
       "fqn": "Granit.Identity.IFallbackUserSessionProvider",
       "kind": "interface",
@@ -30519,6 +30485,82 @@
       ]
     },
     {
+      "name": "IIdentitySecurityStateStore",
+      "fqn": "Granit.Identity.IIdentitySecurityStateStore",
+      "kind": "interface",
+      "project": "Granit.Identity.Abstractions",
+      "file": "src/Granit.Identity.Abstractions/IIdentitySecurityStateStore.cs",
+      "line": 33,
+      "members": [
+        {
+          "name": "SetSessionRiskAsync",
+          "kind": "method",
+          "signature": "SetSessionRiskAsync(string userId, string sessionId, UserSessionRiskVerdict verdict, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetSessionRiskAsync",
+          "kind": "method",
+          "signature": "GetSessionRiskAsync(string userId, string sessionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<UserSessionRiskVerdict?>"
+        },
+        {
+          "name": "GetSessionRisksAsync",
+          "kind": "method",
+          "signature": "GetSessionRisksAsync(string userId, IReadOnlyCollection<string> sessionIds, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyDictionary<string, UserSessionRiskVerdict>>"
+        },
+        {
+          "name": "SetDeviceTrustAsync",
+          "kind": "method",
+          "signature": "SetDeviceTrustAsync(string userId, string deviceId, DeviceTrustVerdict verdict, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetDeviceTrustAsync",
+          "kind": "method",
+          "signature": "GetDeviceTrustAsync(string userId, string deviceId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DeviceTrustVerdict?>"
+        },
+        {
+          "name": "GetDeviceTrustsAsync",
+          "kind": "method",
+          "signature": "GetDeviceTrustsAsync(string userId, IReadOnlyCollection<string> deviceIds, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyDictionary<string, DeviceTrustVerdict>>"
+        },
+        {
+          "name": "RevokeDeviceTrustAsync",
+          "kind": "method",
+          "signature": "RevokeDeviceTrustAsync(string userId, string deviceId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetBehavioralProfileAsync",
+          "kind": "method",
+          "signature": "GetBehavioralProfileAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<UserBehavioralProfile>"
+        },
+        {
+          "name": "RecordBehavioralObservationAsync",
+          "kind": "method",
+          "signature": "RecordBehavioralObservationAsync(string userId, string? country, string? deviceFamily, string? coarseLocation, DateTimeOffset observedAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetSessionReviewDecisionAsync",
+          "kind": "method",
+          "signature": "GetSessionReviewDecisionAsync(string userId, string sessionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<UserSessionReviewDecision?>"
+        },
+        {
+          "name": "TryRecordSessionReviewDecisionAsync",
+          "kind": "method",
+          "signature": "TryRecordSessionReviewDecisionAsync(string userId, string sessionId, UserSessionReviewDecision decision, DateTimeOffset reviewedAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
       "name": "IIdentityUser",
       "fqn": "Granit.Identity.IIdentityUser",
       "kind": "interface",
@@ -30596,28 +30638,6 @@
           "kind": "method",
           "signature": "Validate(string token)",
           "returnType": "SessionReviewTokenPayload?"
-        }
-      ]
-    },
-    {
-      "name": "IUserBehavioralProfileStore",
-      "fqn": "Granit.Identity.IUserBehavioralProfileStore",
-      "kind": "interface",
-      "project": "Granit.Identity.Abstractions",
-      "file": "src/Granit.Identity.Abstractions/IUserBehavioralProfileStore.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "GetAsync",
-          "kind": "method",
-          "signature": "GetAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<UserBehavioralProfile>"
-        },
-        {
-          "name": "RecordObservationAsync",
-          "kind": "method",
-          "signature": "RecordObservationAsync(string userId, string? country, string? deviceFamily, string? coarseLocation, DateTimeOffset observedAt, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
         }
       ]
     },
@@ -30858,56 +30878,6 @@
           "kind": "method",
           "signature": "RevokeOthersAsync(string userId, string currentSessionId, CancellationToken cancellationToken = default)",
           "returnType": "Task<int>"
-        }
-      ]
-    },
-    {
-      "name": "IUserSessionReviewStore",
-      "fqn": "Granit.Identity.IUserSessionReviewStore",
-      "kind": "interface",
-      "project": "Granit.Identity.Abstractions",
-      "file": "src/Granit.Identity.Abstractions/IUserSessionReviewStore.cs",
-      "line": 25,
-      "members": [
-        {
-          "name": "GetDecisionAsync",
-          "kind": "method",
-          "signature": "GetDecisionAsync(string userId, string sessionId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<UserSessionReviewDecision?>"
-        },
-        {
-          "name": "TryRecordDecisionAsync",
-          "kind": "method",
-          "signature": "TryRecordDecisionAsync(string userId, string sessionId, UserSessionReviewDecision decision, DateTimeOffset reviewedAt, CancellationToken cancellationToken = default)",
-          "returnType": "Task<bool>"
-        }
-      ]
-    },
-    {
-      "name": "IUserSessionRiskStore",
-      "fqn": "Granit.Identity.IUserSessionRiskStore",
-      "kind": "interface",
-      "project": "Granit.Identity.Abstractions",
-      "file": "src/Granit.Identity.Abstractions/IUserSessionRiskStore.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "SetAsync",
-          "kind": "method",
-          "signature": "SetAsync(string userId, string sessionId, UserSessionRiskVerdict verdict, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "GetAsync",
-          "kind": "method",
-          "signature": "GetAsync(string userId, string sessionId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<UserSessionRiskVerdict?>"
-        },
-        {
-          "name": "GetManyAsync",
-          "kind": "method",
-          "signature": "GetManyAsync(string userId, IReadOnlyCollection<string> sessionIds, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyDictionary<string, UserSessionRiskVerdict>>"
         }
       ]
     },
@@ -33549,8 +33519,8 @@
       "fqn": "Granit.Identity.UserSessionReviewDecision",
       "kind": "enum",
       "project": "Granit.Identity.Abstractions",
-      "file": "src/Granit.Identity.Abstractions/IUserSessionReviewStore.cs",
-      "line": 4,
+      "file": "src/Granit.Identity.Abstractions/IIdentitySecurityStateStore.cs",
+      "line": 6,
       "members": []
     },
     {

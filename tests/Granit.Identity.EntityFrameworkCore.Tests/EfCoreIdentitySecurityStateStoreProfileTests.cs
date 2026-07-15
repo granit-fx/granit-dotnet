@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Granit.Identity.EntityFrameworkCore.Tests;
 
-public sealed class EfCoreUserBehavioralProfileStoreTests : IDisposable
+public sealed class EfCoreIdentitySecurityStateStoreProfileTests : IDisposable
 {
     private static readonly DateTimeOffset T0 = new(2026, 6, 12, 10, 0, 0, TimeSpan.Zero);
 
@@ -21,10 +21,10 @@ public sealed class EfCoreUserBehavioralProfileStoreTests : IDisposable
     [Fact]
     public async Task RecordThenGet_RoundtripsObservations()
     {
-        EfCoreUserBehavioralProfileStore store = CreateStore();
+        EfCoreIdentitySecurityStateStore store = CreateStore();
 
-        await store.RecordObservationAsync("user-1", "BE", "windows", "50,4", T0, Ct);
-        UserBehavioralProfile profile = await store.GetAsync("user-1", Ct);
+        await store.RecordBehavioralObservationAsync("user-1", "BE", "windows", "50,4", T0, Ct);
+        UserBehavioralProfile profile = await store.GetBehavioralProfileAsync("user-1", Ct);
 
         profile.Observations.Count.ShouldBe(3);
         BehavioralObservation country = profile.Observations
@@ -37,15 +37,15 @@ public sealed class EfCoreUserBehavioralProfileStoreTests : IDisposable
     [Fact]
     public async Task Record_Twice_IncrementsCount_OneRowPerValue()
     {
-        EfCoreUserBehavioralProfileStore store = CreateStore();
+        EfCoreIdentitySecurityStateStore store = CreateStore();
 
-        await store.RecordObservationAsync("user-1", "BE", null, null, T0, Ct);
-        await store.RecordObservationAsync("user-1", "BE", null, null, T0.AddDays(1), Ct);
+        await store.RecordBehavioralObservationAsync("user-1", "BE", null, null, T0, Ct);
+        await store.RecordBehavioralObservationAsync("user-1", "BE", null, null, T0.AddDays(1), Ct);
 
         await using IdentityDbContext db = _factory.CreateDbContext();
         (await db.UserBehavioralProfiles.CountAsync(Ct)).ShouldBe(1);
 
-        BehavioralObservation be = (await store.GetAsync("user-1", Ct)).Observations.Single();
+        BehavioralObservation be = (await store.GetBehavioralProfileAsync("user-1", Ct)).Observations.Single();
         be.Count.ShouldBe(2);
         be.FirstSeenAt.ShouldBe(T0);
         be.LastSeenAt.ShouldBe(T0.AddDays(1));
@@ -57,15 +57,15 @@ public sealed class EfCoreUserBehavioralProfileStoreTests : IDisposable
         // Two observations of the same (user, country) racing from a cold start both miss the existing row and
         // both insert; SQLite trips the unique index on one, and the store's retry re-reads and increments the
         // winner's row. Invariant: exactly one row, count 2, no exception escapes.
-        EfCoreUserBehavioralProfileStore store = CreateStore();
+        EfCoreIdentitySecurityStateStore store = CreateStore();
 
         await Task.WhenAll(
-            store.RecordObservationAsync("user-1", "BE", null, null, T0, Ct),
-            store.RecordObservationAsync("user-1", "BE", null, null, T0, Ct));
+            store.RecordBehavioralObservationAsync("user-1", "BE", null, null, T0, Ct),
+            store.RecordBehavioralObservationAsync("user-1", "BE", null, null, T0, Ct));
 
         await using IdentityDbContext db = _factory.CreateDbContext();
         (await db.UserBehavioralProfiles.CountAsync(Ct)).ShouldBe(1);
-        (await store.GetAsync("user-1", Ct)).Observations.Single().Count.ShouldBe(2);
+        (await store.GetBehavioralProfileAsync("user-1", Ct)).Observations.Single().Count.ShouldBe(2);
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public sealed class EfCoreUserBehavioralProfileStoreTests : IDisposable
 
     [Fact]
     public async Task Get_UnknownUser_ReturnsEmpty() =>
-        (await CreateStore().GetAsync("nobody", Ct)).ShouldBe(UserBehavioralProfile.Empty);
+        (await CreateStore().GetBehavioralProfileAsync("nobody", Ct)).ShouldBe(UserBehavioralProfile.Empty);
 
     private static UserBehavioralProfileEntity NewEntity(string userId, string value) => new()
     {
@@ -99,10 +99,10 @@ public sealed class EfCoreUserBehavioralProfileStoreTests : IDisposable
         LastSeenAt = T0,
     };
 
-    private EfCoreUserBehavioralProfileStore CreateStore()
+    private EfCoreIdentitySecurityStateStore CreateStore()
     {
         IGuidGenerator guid = Substitute.For<IGuidGenerator>();
         guid.Create().Returns(_ => Guid.NewGuid());
-        return new EfCoreUserBehavioralProfileStore(_factory, guid);
+        return new EfCoreIdentitySecurityStateStore(_factory, guid);
     }
 }

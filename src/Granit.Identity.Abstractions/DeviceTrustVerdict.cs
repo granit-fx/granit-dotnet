@@ -2,7 +2,7 @@ namespace Granit.Identity;
 
 /// <summary>
 /// A recorded device-trust decision for a <c>(userId, deviceId)</c> pair — the value stored in
-/// <see cref="IDeviceTrustStore"/> and surfaced on <see cref="UserDevice"/>.
+/// <see cref="IIdentitySecurityStateStore"/> and surfaced on <see cref="UserDevice"/>.
 /// </summary>
 /// <param name="Level">The trust strength.</param>
 /// <param name="TrustedAt">When trust was established.</param>

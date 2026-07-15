@@ -31,8 +31,7 @@ public sealed class DefaultUserSessionRiskEvaluatorTests
         detector.AssessAsync(Arg.Any<UserSessionDescriptor>(), Arg.Any<IReadOnlyList<UserSessionDescriptor>>(), Arg.Any<CancellationToken>())
             .Returns(new UserSessionRiskAssessment(UserSessionRiskLevel.High, 0.9, ["impossible_travel"]));
 
-        IUserSessionRiskStore store = Substitute.For<IUserSessionRiskStore>();
-        IDeviceTrustStore deviceTrustStore = Substitute.For<IDeviceTrustStore>();
+        IIdentitySecurityStateStore securityState = Substitute.For<IIdentitySecurityStateStore>();
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(false);
 
@@ -47,7 +46,7 @@ public sealed class DefaultUserSessionRiskEvaluatorTests
                 new IdentityAnomalyDetectionOptions { IncludeClientIpInAlert = includeIp });
 
         var evaluator = new DefaultUserSessionRiskEvaluator(
-            detector, store, deviceTrustStore, TimeProvider.System, tenant, options, bus);
+            detector, securityState, TimeProvider.System, tenant, options, bus);
 
         await evaluator.EvaluateAsync(Candidate(), [], cancellationToken: Ct);
 
@@ -81,12 +80,10 @@ public sealed class DefaultUserSessionRiskEvaluatorTests
         detector.AssessAsync(Arg.Any<UserSessionDescriptor>(), Arg.Any<IReadOnlyList<UserSessionDescriptor>>(), Arg.Any<CancellationToken>())
             .Returns(new UserSessionRiskAssessment(UserSessionRiskLevel.Medium, 0.5, ["new_country"]));
 
-        IUserSessionRiskStore store = Substitute.For<IUserSessionRiskStore>();
+        IIdentitySecurityStateStore securityState = Substitute.For<IIdentitySecurityStateStore>();
         UserSessionRiskVerdict? storedVerdict = null;
-        await store.SetAsync("user-1", "s-new", Arg.Do<UserSessionRiskVerdict>(v => storedVerdict = v), Arg.Any<CancellationToken>());
-
-        IDeviceTrustStore deviceTrustStore = Substitute.For<IDeviceTrustStore>();
-        deviceTrustStore.GetAsync("user-1", "trusted-device", Arg.Any<CancellationToken>())
+        await securityState.SetSessionRiskAsync("user-1", "s-new", Arg.Do<UserSessionRiskVerdict>(v => storedVerdict = v), Arg.Any<CancellationToken>());
+        securityState.GetDeviceTrustAsync("user-1", "trusted-device", Arg.Any<CancellationToken>())
             .Returns(new DeviceTrustVerdict(DeviceTrustLevel.Remembered, Now, DateTimeOffset.MaxValue, "user_marked"));
 
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
@@ -96,7 +93,7 @@ public sealed class DefaultUserSessionRiskEvaluatorTests
             Microsoft.Extensions.Options.Options.Create(new IdentityAnomalyDetectionOptions());
 
         var evaluator = new DefaultUserSessionRiskEvaluator(
-            detector, store, deviceTrustStore, TimeProvider.System, tenant, options, bus);
+            detector, securityState, TimeProvider.System, tenant, options, bus);
 
         UserSessionRiskAssessment result = await evaluator.EvaluateAsync(Candidate(), [], "trusted-device", Ct);
 
@@ -116,15 +113,15 @@ public sealed class DefaultUserSessionRiskEvaluatorTests
         detector.AssessAsync(Arg.Any<UserSessionDescriptor>(), Arg.Any<IReadOnlyList<UserSessionDescriptor>>(), Arg.Any<CancellationToken>())
             .Returns(new UserSessionRiskAssessment(UserSessionRiskLevel.High, 0.95, ["impossible_travel"]));
 
-        IDeviceTrustStore deviceTrustStore = Substitute.For<IDeviceTrustStore>();
-        deviceTrustStore.GetAsync("user-1", "trusted-device", Arg.Any<CancellationToken>())
+        IIdentitySecurityStateStore securityState = Substitute.For<IIdentitySecurityStateStore>();
+        securityState.GetDeviceTrustAsync("user-1", "trusted-device", Arg.Any<CancellationToken>())
             .Returns(new DeviceTrustVerdict(DeviceTrustLevel.Strong, Now, DateTimeOffset.MaxValue, "passkey"));
 
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.IsAvailable.Returns(false);
         IDistributedEventBus bus = Substitute.For<IDistributedEventBus>();
         var evaluator = new DefaultUserSessionRiskEvaluator(
-            detector, Substitute.For<IUserSessionRiskStore>(), deviceTrustStore, TimeProvider.System, tenant,
+            detector, securityState, TimeProvider.System, tenant,
             Microsoft.Extensions.Options.Options.Create(new IdentityAnomalyDetectionOptions()), bus);
 
         UserSessionRiskAssessment result = await evaluator.EvaluateAsync(Candidate(), [], "trusted-device", Ct);

@@ -9,7 +9,7 @@ namespace Granit.Identity;
 /// <summary>
 /// Granit module for the shared identity contracts: the session contracts
 /// (<see cref="UserSessionDescriptor"/>, <see cref="IUserSessionProvider"/>,
-/// <see cref="IUserSessionAnomalyDetector"/>, <see cref="IUserSessionRiskStore"/>) and the
+/// <see cref="IUserSessionAnomalyDetector"/>, <see cref="IIdentitySecurityStateStore"/>) and the
 /// single <see cref="IUserLookupHasher"/> shared by the local and federated PII stores.
 /// </summary>
 /// <remarks>
@@ -23,10 +23,7 @@ public sealed class GranitIdentityAbstractionsModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.TryAddScoped<IUserSessionAnomalyDetector, NullUserSessionAnomalyDetector>();
-        context.Services.TryAddSingleton<IUserSessionRiskStore, MemoryUserSessionRiskStore>();
-        context.Services.TryAddSingleton<IUserBehavioralProfileStore, MemoryUserBehavioralProfileStore>();
-        context.Services.TryAddSingleton<IUserSessionReviewStore, MemoryUserSessionReviewStore>();
-        context.Services.TryAddSingleton<IDeviceTrustStore, MemoryDeviceTrustStore>();
+        context.Services.TryAddSingleton<IIdentitySecurityStateStore, MemoryIdentitySecurityStateStore>();
         context.Services.TryAddScoped<IUserSessionProvider, NullUserSessionProvider>();
         context.Services.TryAddScoped<IUserDeviceProvider, NullUserDeviceProvider>();
 

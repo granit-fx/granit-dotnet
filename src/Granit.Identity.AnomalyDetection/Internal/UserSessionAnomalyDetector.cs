@@ -21,7 +21,7 @@ internal sealed class UserSessionAnomalyDetector(
     IAICallRateLimiter rateLimiter,
     IOptions<IdentityAnomalyDetectionOptions> options,
     ICurrentTenant currentTenant,
-    IUserBehavioralProfileStore profileStore,
+    IIdentitySecurityStateStore securityState,
     TimeProvider timeProvider,
     IdentityAnomalyDetectionMetrics metrics) : IUserSessionAnomalyDetector
 {
@@ -46,7 +46,7 @@ internal sealed class UserSessionAnomalyDetector(
         // Source the "known" facts from the durable habitual profile (not just active sessions), so a familiar
         // country/device is not re-flagged once active sessions for it have expired.
         UserBehavioralProfile profile = candidate.UserId is { } profileUserId
-            ? await profileStore.GetAsync(profileUserId, cancellationToken).ConfigureAwait(false)
+            ? await securityState.GetBehavioralProfileAsync(profileUserId, cancellationToken).ConfigureAwait(false)
             : UserBehavioralProfile.Empty;
         DateTimeOffset now = timeProvider.GetUtcNow();
 

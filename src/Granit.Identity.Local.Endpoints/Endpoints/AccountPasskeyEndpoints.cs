@@ -295,8 +295,8 @@ internal static partial class AccountPasskeyEndpoints
         CancellationToken cancellationToken)
     {
         IDeviceTrustCookieService? cookieService = httpContext.RequestServices.GetService<IDeviceTrustCookieService>();
-        IDeviceTrustStore? trustStore = httpContext.RequestServices.GetService<IDeviceTrustStore>();
-        if (cookieService is null || trustStore is null)
+        IIdentitySecurityStateStore? securityState = httpContext.RequestServices.GetService<IIdentitySecurityStateStore>();
+        if (cookieService is null || securityState is null)
         {
             return;
         }
@@ -314,7 +314,7 @@ internal static partial class AccountPasskeyEndpoints
 
         try
         {
-            await trustStore.SetAsync(
+            await securityState.SetDeviceTrustAsync(
                 userId,
                 deviceId,
                 new DeviceTrustVerdict(DeviceTrustLevel.Strong, now, now + options.TrustDuration, PasskeyMethod),

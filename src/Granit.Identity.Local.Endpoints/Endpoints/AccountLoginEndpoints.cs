@@ -639,8 +639,8 @@ internal static partial class AccountLoginEndpoints
             return false;
         }
 
-        DeviceTrustVerdict? verdict = await services.GetRequiredService<IDeviceTrustStore>()
-            .GetAsync(userId, deviceId, cancellationToken).ConfigureAwait(false);
+        DeviceTrustVerdict? verdict = await services.GetRequiredService<IIdentitySecurityStateStore>()
+            .GetDeviceTrustAsync(userId, deviceId, cancellationToken).ConfigureAwait(false);
         if (verdict?.IsActive(services.GetRequiredService<TimeProvider>().GetUtcNow()) != true)
         {
             return false;

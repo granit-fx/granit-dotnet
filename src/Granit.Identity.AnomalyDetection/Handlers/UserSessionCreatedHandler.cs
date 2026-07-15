@@ -21,7 +21,7 @@ public class UserSessionCreatedHandler
         IUserSessionRiskEvaluator evaluator,
         IUserSessionProvider sessionProvider,
         IIpGeolocationResolver geoResolver,
-        IUserBehavioralProfileStore profileStore,
+        IIdentitySecurityStateStore securityState,
         TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
@@ -66,7 +66,7 @@ public class UserSessionCreatedHandler
         // sighting still scores; repeated visits to the same country/device then become habitual and stop
         // re-flagging. "unknown" device families are not recorded (they would not help suppression).
         string deviceFamily = DeviceFingerprint.Family(evt.UserAgent);
-        await profileStore.RecordObservationAsync(
+        await securityState.RecordBehavioralObservationAsync(
             evt.UserId,
             candidateLocation?.CountryCode,
             deviceFamily == DeviceFingerprint.Unknown ? null : deviceFamily,

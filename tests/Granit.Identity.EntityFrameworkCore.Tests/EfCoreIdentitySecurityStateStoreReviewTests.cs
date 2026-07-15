@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Granit.Identity.EntityFrameworkCore.Tests;
 
-public sealed class EfCoreUserSessionReviewStoreTests : IDisposable
+public sealed class EfCoreIdentitySecurityStateStoreReviewTests : IDisposable
 {
     private static readonly DateTimeOffset Now = new(2026, 6, 13, 10, 0, 0, TimeSpan.Zero);
 
@@ -21,26 +21,26 @@ public sealed class EfCoreUserSessionReviewStoreTests : IDisposable
     [Fact]
     public async Task TryRecordThenGet_RoundtripsDecision()
     {
-        EfCoreUserSessionReviewStore store = CreateStore();
+        EfCoreIdentitySecurityStateStore store = CreateStore();
 
-        bool first = await store.TryRecordDecisionAsync("u1", "s1", UserSessionReviewDecision.Denied, Now, Ct);
+        bool first = await store.TryRecordSessionReviewDecisionAsync("u1", "s1", UserSessionReviewDecision.Denied, Now, Ct);
 
         first.ShouldBeTrue();
-        (await store.GetDecisionAsync("u1", "s1", Ct)).ShouldBe(UserSessionReviewDecision.Denied);
+        (await store.GetSessionReviewDecisionAsync("u1", "s1", Ct)).ShouldBe(UserSessionReviewDecision.Denied);
     }
 
     [Fact]
     public async Task TryRecord_Repeat_ReturnsFalse_OneRow_FirstDecisionWins()
     {
-        EfCoreUserSessionReviewStore store = CreateStore();
+        EfCoreIdentitySecurityStateStore store = CreateStore();
 
-        await store.TryRecordDecisionAsync("u1", "s1", UserSessionReviewDecision.Confirmed, Now, Ct);
-        bool second = await store.TryRecordDecisionAsync("u1", "s1", UserSessionReviewDecision.Denied, Now, Ct);
+        await store.TryRecordSessionReviewDecisionAsync("u1", "s1", UserSessionReviewDecision.Confirmed, Now, Ct);
+        bool second = await store.TryRecordSessionReviewDecisionAsync("u1", "s1", UserSessionReviewDecision.Denied, Now, Ct);
 
         second.ShouldBeFalse();
         await using IdentityDbContext db = _factory.CreateDbContext();
         (await db.UserSessionReviews.CountAsync(Ct)).ShouldBe(1);
-        (await store.GetDecisionAsync("u1", "s1", Ct)).ShouldBe(UserSessionReviewDecision.Confirmed);
+        (await store.GetSessionReviewDecisionAsync("u1", "s1", Ct)).ShouldBe(UserSessionReviewDecision.Confirmed);
     }
 
     [Fact]
@@ -48,11 +48,11 @@ public sealed class EfCoreUserSessionReviewStoreTests : IDisposable
     {
         // Two reviews of the same (user, session) racing both attempt an insert; SQLite trips the unique index
         // on one. Invariant: exactly one true, exactly one row — the single-use guarantee under concurrency.
-        EfCoreUserSessionReviewStore store = CreateStore();
+        EfCoreIdentitySecurityStateStore store = CreateStore();
 
         bool[] results = await Task.WhenAll(
-            store.TryRecordDecisionAsync("u1", "s1", UserSessionReviewDecision.Confirmed, Now, Ct),
-            store.TryRecordDecisionAsync("u1", "s1", UserSessionReviewDecision.Denied, Now, Ct));
+            store.TryRecordSessionReviewDecisionAsync("u1", "s1", UserSessionReviewDecision.Confirmed, Now, Ct),
+            store.TryRecordSessionReviewDecisionAsync("u1", "s1", UserSessionReviewDecision.Denied, Now, Ct));
 
         results.Count(r => r).ShouldBe(1);
         await using IdentityDbContext db = _factory.CreateDbContext();
@@ -61,12 +61,12 @@ public sealed class EfCoreUserSessionReviewStoreTests : IDisposable
 
     [Fact]
     public async Task GetDecision_NotReviewed_ReturnsNull() =>
-        (await CreateStore().GetDecisionAsync("u1", "missing", Ct)).ShouldBeNull();
+        (await CreateStore().GetSessionReviewDecisionAsync("u1", "missing", Ct)).ShouldBeNull();
 
-    private EfCoreUserSessionReviewStore CreateStore()
+    private EfCoreIdentitySecurityStateStore CreateStore()
     {
         IGuidGenerator guid = Substitute.For<IGuidGenerator>();
         guid.Create().Returns(_ => Guid.NewGuid());
-        return new EfCoreUserSessionReviewStore(_factory, guid);
+        return new EfCoreIdentitySecurityStateStore(_factory, guid);
     }
 }

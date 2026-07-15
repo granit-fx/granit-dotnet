@@ -21,8 +21,7 @@ namespace Granit.Identity.AnomalyDetection.Internal;
 /// </remarks>
 internal sealed class DefaultUserSessionRiskEvaluator(
     IUserSessionAnomalyDetector detector,
-    IUserSessionRiskStore riskStore,
-    IDeviceTrustStore deviceTrustStore,
+    IIdentitySecurityStateStore securityState,
     TimeProvider timeProvider,
     ICurrentTenant currentTenant,
     IOptions<IdentityAnomalyDetectionOptions> options,
@@ -44,8 +43,8 @@ internal sealed class DefaultUserSessionRiskEvaluator(
         if (candidate.UserId is { } userId && assessment.Level != UserSessionRiskLevel.None)
         {
             DateTimeOffset now = timeProvider.GetUtcNow();
-            await riskStore
-                .SetAsync(userId, candidate.SessionId, new UserSessionRiskVerdict(assessment.Level, assessment.Reasons, now), cancellationToken)
+            await securityState
+                .SetSessionRiskAsync(userId, candidate.SessionId, new UserSessionRiskVerdict(assessment.Level, assessment.Reasons, now), cancellationToken)
                 .ConfigureAwait(false);
 
             // Best-effort, non-atomic with the store write above — see the class remarks for the rationale.
@@ -92,7 +91,7 @@ internal sealed class DefaultUserSessionRiskEvaluator(
             return assessment;
         }
 
-        DeviceTrustVerdict? trust = await deviceTrustStore.GetAsync(userId, deviceId, cancellationToken)
+        DeviceTrustVerdict? trust = await securityState.GetDeviceTrustAsync(userId, deviceId, cancellationToken)
             .ConfigureAwait(false);
         if (trust?.IsActive(timeProvider.GetUtcNow()) != true)
         {

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Granit.Identity.EntityFrameworkCore.Tests;
 
-public sealed class EfCoreUserSessionRiskStoreTests : IDisposable
+public sealed class EfCoreIdentitySecurityStateStoreRiskTests : IDisposable
 {
     private static readonly DateTimeOffset AssessedAt = new(2026, 6, 12, 10, 0, 0, TimeSpan.Zero);
 
@@ -24,11 +24,11 @@ public sealed class EfCoreUserSessionRiskStoreTests : IDisposable
     [Fact]
     public async Task SetThenGet_RoundtripsVerdict()
     {
-        EfCoreUserSessionRiskStore store = CreateStore();
+        EfCoreIdentitySecurityStateStore store = CreateStore();
         UserSessionRiskVerdict verdict = new(UserSessionRiskLevel.High, ["impossible_travel"], AssessedAt);
 
-        await store.SetAsync("user-1", "s1", verdict, Ct);
-        UserSessionRiskVerdict? result = await store.GetAsync("user-1", "s1", Ct);
+        await store.SetSessionRiskAsync("user-1", "s1", verdict, Ct);
+        UserSessionRiskVerdict? result = await store.GetSessionRiskAsync("user-1", "s1", Ct);
 
         result.ShouldNotBeNull();
         result.Level.ShouldBe(UserSessionRiskLevel.High);
@@ -39,14 +39,14 @@ public sealed class EfCoreUserSessionRiskStoreTests : IDisposable
     [Fact]
     public async Task SetAsync_Upserts_DoesNotDuplicate()
     {
-        EfCoreUserSessionRiskStore store = CreateStore();
+        EfCoreIdentitySecurityStateStore store = CreateStore();
 
-        await store.SetAsync("user-1", "s1", new UserSessionRiskVerdict(UserSessionRiskLevel.Low, [], AssessedAt), Ct);
-        await store.SetAsync("user-1", "s1", new UserSessionRiskVerdict(UserSessionRiskLevel.High, ["x"], AssessedAt), Ct);
+        await store.SetSessionRiskAsync("user-1", "s1", new UserSessionRiskVerdict(UserSessionRiskLevel.Low, [], AssessedAt), Ct);
+        await store.SetSessionRiskAsync("user-1", "s1", new UserSessionRiskVerdict(UserSessionRiskLevel.High, ["x"], AssessedAt), Ct);
 
         await using IdentityDbContext db = _factory.CreateDbContext();
         (await db.UserSessionRisks.CountAsync(Ct)).ShouldBe(1);
-        (await store.GetAsync("user-1", "s1", Ct))!.Level.ShouldBe(UserSessionRiskLevel.High);
+        (await store.GetSessionRiskAsync("user-1", "s1", Ct))!.Level.ShouldBe(UserSessionRiskLevel.High);
     }
 
     [Fact]
@@ -56,15 +56,15 @@ public sealed class EfCoreUserSessionRiskStoreTests : IDisposable
         // both attempt an insert; SQLite enforces the unique index, so one insert trips DbUpdateException and the
         // store's retry re-reads and updates the winner's row. Whatever the interleaving, the invariant holds:
         // exactly one row, no exception escapes. (On InMemory this test was vacuous — no index to trip.)
-        EfCoreUserSessionRiskStore store = CreateStore();
+        EfCoreIdentitySecurityStateStore store = CreateStore();
 
         await Task.WhenAll(
-            store.SetAsync("user-1", "s1", new UserSessionRiskVerdict(UserSessionRiskLevel.High, ["a"], AssessedAt), Ct),
-            store.SetAsync("user-1", "s1", new UserSessionRiskVerdict(UserSessionRiskLevel.High, ["b"], AssessedAt), Ct));
+            store.SetSessionRiskAsync("user-1", "s1", new UserSessionRiskVerdict(UserSessionRiskLevel.High, ["a"], AssessedAt), Ct),
+            store.SetSessionRiskAsync("user-1", "s1", new UserSessionRiskVerdict(UserSessionRiskLevel.High, ["b"], AssessedAt), Ct));
 
         await using IdentityDbContext db = _factory.CreateDbContext();
         (await db.UserSessionRisks.CountAsync(Ct)).ShouldBe(1);
-        (await store.GetAsync("user-1", "s1", Ct))!.Level.ShouldBe(UserSessionRiskLevel.High);
+        (await store.GetSessionRiskAsync("user-1", "s1", Ct))!.Level.ShouldBe(UserSessionRiskLevel.High);
     }
 
     [Fact]
@@ -87,18 +87,18 @@ public sealed class EfCoreUserSessionRiskStoreTests : IDisposable
 
     [Fact]
     public async Task Get_Unknown_ReturnsNull() =>
-        (await CreateStore().GetAsync("user-1", "missing", Ct)).ShouldBeNull();
+        (await CreateStore().GetSessionRiskAsync("user-1", "missing", Ct)).ShouldBeNull();
 
     [Fact]
     public async Task GetManyAsync_ReturnsOnlyRecordedSessionsForUser()
     {
-        EfCoreUserSessionRiskStore store = CreateStore();
-        await store.SetAsync("user-1", "a", new UserSessionRiskVerdict(UserSessionRiskLevel.Low, [], AssessedAt), Ct);
-        await store.SetAsync("user-1", "c", new UserSessionRiskVerdict(UserSessionRiskLevel.Medium, [], AssessedAt), Ct);
-        await store.SetAsync("user-2", "a", new UserSessionRiskVerdict(UserSessionRiskLevel.High, [], AssessedAt), Ct);
+        EfCoreIdentitySecurityStateStore store = CreateStore();
+        await store.SetSessionRiskAsync("user-1", "a", new UserSessionRiskVerdict(UserSessionRiskLevel.Low, [], AssessedAt), Ct);
+        await store.SetSessionRiskAsync("user-1", "c", new UserSessionRiskVerdict(UserSessionRiskLevel.Medium, [], AssessedAt), Ct);
+        await store.SetSessionRiskAsync("user-2", "a", new UserSessionRiskVerdict(UserSessionRiskLevel.High, [], AssessedAt), Ct);
 
         IReadOnlyDictionary<string, UserSessionRiskVerdict> result =
-            await store.GetManyAsync("user-1", ["a", "b", "c"], Ct);
+            await store.GetSessionRisksAsync("user-1", ["a", "b", "c"], Ct);
 
         result.Keys.ShouldBe(["a", "c"], ignoreOrder: true);
         result["c"].Level.ShouldBe(UserSessionRiskLevel.Medium);
@@ -114,10 +114,10 @@ public sealed class EfCoreUserSessionRiskStoreTests : IDisposable
         AssessedAt = AssessedAt,
     };
 
-    private EfCoreUserSessionRiskStore CreateStore()
+    private EfCoreIdentitySecurityStateStore CreateStore()
     {
         IGuidGenerator guid = Substitute.For<IGuidGenerator>();
         guid.Create().Returns(_ => Guid.NewGuid());
-        return new EfCoreUserSessionRiskStore(_factory, guid);
+        return new EfCoreIdentitySecurityStateStore(_factory, guid);
     }
 }

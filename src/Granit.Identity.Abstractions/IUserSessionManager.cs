@@ -8,7 +8,7 @@ namespace Granit.Identity;
 /// <remarks>
 /// <para>
 /// The manager centralizes all policy: it enriches each session with geolocation and the persisted
-/// risk verdict (<see cref="IUserSessionRiskStore"/>) exactly once, and dispatches revoke commands to
+/// risk verdict (<see cref="IIdentitySecurityStateStore"/>) exactly once, and dispatches revoke commands to
 /// the registered backend <see cref="IUserSessionProvider"/> / <see cref="IUserDeviceProvider"/>.
 /// Backends contribute only the irreducible mechanism (querying and revoking in their store);
 /// they never duplicate this enrichment or authorization logic.

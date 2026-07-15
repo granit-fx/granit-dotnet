@@ -3,15 +3,14 @@ namespace Granit.Identity.Internal;
 /// <summary>
 /// Default <see cref="IUserSessionManager"/>: the single orchestrator behind the canonical session API.
 /// It lists sessions through the registered backend <see cref="IUserSessionProvider"/>, attaches the
-/// persisted risk verdict from <see cref="IUserSessionRiskStore"/>, and dispatches revoke commands back
-/// to the provider. Geolocation enrichment is applied at session creation (stored on the descriptor),
+/// persisted risk verdict from <see cref="IIdentitySecurityStateStore"/>, and dispatches revoke commands
+/// back to the provider. Geolocation enrichment is applied at session creation (stored on the descriptor),
 /// not recomputed here.
 /// </summary>
 internal sealed class DefaultUserSessionManager(
     IUserSessionProvider sessionProvider,
     IUserDeviceProvider deviceProvider,
-    IUserSessionRiskStore riskStore,
-    IDeviceTrustStore deviceTrustStore,
+    IIdentitySecurityStateStore securityState,
     TimeProvider timeProvider) : IUserSessionManager
 {
     public async Task<IReadOnlyList<UserSessionView>> ListAsync(
@@ -27,7 +26,7 @@ internal sealed class DefaultUserSessionManager(
         }
 
         IReadOnlyDictionary<string, UserSessionRiskVerdict> verdicts =
-            await riskStore.GetManyAsync(userId, [.. sessions.Select(s => s.SessionId)], cancellationToken)
+            await securityState.GetSessionRisksAsync(userId, [.. sessions.Select(s => s.SessionId)], cancellationToken)
                 .ConfigureAwait(false);
 
         List<UserSessionView> views = new(sessions.Count);
@@ -92,8 +91,8 @@ internal sealed class DefaultUserSessionManager(
         // Attach device-trust state from the store (best-effort: surfaces on devices whose backend id matches a
         // trust key). The authoritative trust path for the current browser is the signed device cookie, consulted
         // at the step-up decision — not list reconciliation.
-        IReadOnlyDictionary<string, DeviceTrustVerdict> trust = await deviceTrustStore
-            .GetManyAsync(userId, [.. devices.Select(d => d.DeviceId)], cancellationToken)
+        IReadOnlyDictionary<string, DeviceTrustVerdict> trust = await securityState
+            .GetDeviceTrustsAsync(userId, [.. devices.Select(d => d.DeviceId)], cancellationToken)
             .ConfigureAwait(false);
         if (trust.Count == 0)
         {

@@ -135,10 +135,10 @@ internal sealed class BffEndpointsTestServer : IAsyncDisposable
 
         // Session-enrichment defaults (normally provided by Granit.IpGeolocation / Granit.Identity modules).
         builder.Services.AddSingleton(Substitute.For<Granit.IpGeolocation.IIpGeolocationResolver>());
-        Granit.Identity.IUserSessionRiskStore riskStore = Substitute.For<Granit.Identity.IUserSessionRiskStore>();
-        riskStore.GetManyAsync(Arg.Any<string>(), Arg.Any<IReadOnlyCollection<string>>(), Arg.Any<CancellationToken>())
+        Granit.Identity.IIdentitySecurityStateStore securityState = Substitute.For<Granit.Identity.IIdentitySecurityStateStore>();
+        securityState.GetSessionRisksAsync(Arg.Any<string>(), Arg.Any<IReadOnlyCollection<string>>(), Arg.Any<CancellationToken>())
             .Returns(new Dictionary<string, Granit.Identity.UserSessionRiskVerdict>());
-        builder.Services.AddSingleton(riskStore);
+        builder.Services.AddSingleton(securityState);
 
         // Options: configure a test frontend under /app
         BffFrontendOptions testFrontend = new()

@@ -27,22 +27,11 @@ public sealed class GranitIdentityEntityFrameworkCoreModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        // Durable session-risk store, persisting verdicts in the User DbContext. Overrides the in-memory
-        // default from Granit.Identity.Abstractions so a Medium/High verdict survives restarts and is shared
-        // across instances. The DbContext itself is registered by AddGranitIdentityEntityFrameworkCore.
-        context.Services.AddScoped<IUserSessionRiskStore, EfCoreUserSessionRiskStore>();
-
-        // Durable device-trust store, in the same context — a device marked trusted survives restarts and is
-        // honoured across instances. Overrides the in-memory default from Granit.Identity.Abstractions.
-        context.Services.AddScoped<IDeviceTrustStore, EfCoreDeviceTrustStore>();
-
-        // Durable habitual-profile store, in the same context — a habitual location/device stays recognised
-        // between visits instead of resetting on restart. Overrides the in-memory default.
-        context.Services.AddScoped<IUserBehavioralProfileStore, EfCoreUserBehavioralProfileStore>();
-
-        // Durable single-use session-review store — the idempotency anchor for "was this you?" survives restarts
-        // and spans instances (so a repeat click / link-scanner prefetch never re-runs remediation). Overrides
-        // the in-memory default.
-        context.Services.AddScoped<IUserSessionReviewStore, EfCoreUserSessionReviewStore>();
+        // Durable session-security state store (risk verdicts, device trust, behavioural profile, single-use
+        // session-review decisions), persisting to the User DbContext. Overrides the in-memory default from
+        // Granit.Identity.Abstractions so verdicts, trusted devices, habitual profiles and review idempotency
+        // all survive restarts and span instances. The DbContext itself is registered by
+        // AddGranitIdentityEntityFrameworkCore.
+        context.Services.AddScoped<IIdentitySecurityStateStore, EfCoreIdentitySecurityStateStore>();
     }
 }

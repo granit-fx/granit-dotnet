@@ -68,7 +68,7 @@ internal static class MyUserDeviceEndpoints
     private static async Task<Results<Ok<DeviceTrustedResponse>, ProblemHttpResult>> TrustAsync(
         HttpContext httpContext,
         [FromServices] IDeviceTrustCookieService cookieService,
-        [FromServices] IDeviceTrustStore trustStore,
+        [FromServices] IIdentitySecurityStateStore securityState,
         [FromServices] ICurrentUserService currentUser,
         [FromServices] IOptions<DeviceTrustOptions> options,
         [FromServices] TimeProvider timeProvider,
@@ -84,7 +84,7 @@ internal static class MyUserDeviceEndpoints
         DateTimeOffset now = timeProvider.GetUtcNow();
         DateTimeOffset trustedUntil = now + options.Value.TrustDuration;
 
-        await trustStore.SetAsync(
+        await securityState.SetDeviceTrustAsync(
             currentUser.UserId,
             deviceId,
             new DeviceTrustVerdict(DeviceTrustLevel.Remembered, now, trustedUntil, "user_marked"),
@@ -97,7 +97,7 @@ internal static class MyUserDeviceEndpoints
         string deviceId,
         HttpContext httpContext,
         [FromServices] IDeviceTrustCookieService cookieService,
-        [FromServices] IDeviceTrustStore trustStore,
+        [FromServices] IIdentitySecurityStateStore securityState,
         [FromServices] ICurrentUserService currentUser,
         CancellationToken cancellationToken)
     {
@@ -106,7 +106,7 @@ internal static class MyUserDeviceEndpoints
             return NotAUser();
         }
 
-        await trustStore.RevokeAsync(currentUser.UserId, deviceId, cancellationToken).ConfigureAwait(false);
+        await securityState.RevokeDeviceTrustAsync(currentUser.UserId, deviceId, cancellationToken).ConfigureAwait(false);
 
         if (string.Equals(cookieService.ResolveDeviceId(httpContext, currentUser.UserId), deviceId, StringComparison.Ordinal))
         {
