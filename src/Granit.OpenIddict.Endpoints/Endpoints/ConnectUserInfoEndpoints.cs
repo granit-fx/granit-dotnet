@@ -1,6 +1,9 @@
 using System.Collections.Immutable;
 using System.Security.Claims;
+using Granit.DataFiltering;
 using Granit.Identity.Local.Domain;
+using Granit.MultiTenancy;
+using Granit.OpenIddict.Endpoints.Internal;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -48,15 +51,27 @@ internal static class ConnectUserInfoEndpoints
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
         }
 
+        // Resolve the user with the multi-tenant filter disabled, then align the tenant scope to
+        // the user. userinfo is called by a resource server with no tenant middleware, so a bare
+        // lookup would fail closed for every tenant user (and leak nothing for host users).
         UserManager<LocalIdentity> userManager = context.RequestServices
             .GetRequiredService<UserManager<LocalIdentity>>();
-        LocalIdentity? user = await userManager.FindByIdAsync(subject).ConfigureAwait(false);
+        IDataFilter? dataFilter = context.RequestServices.GetService<IDataFilter>();
+        ICurrentTenant? currentTenant = context.RequestServices.GetService<ICurrentTenant>();
+
+        LocalIdentity? user = await OidcUserTenantResolver
+            .FindBySubjectAsync(userManager, subject, dataFilter)
+            .ConfigureAwait(false);
 
         if (user is null)
         {
             return Results.Forbid(
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
         }
+
+        // Align the tenant scope to the resolved user for the rest of the request. Opened here (not
+        // inside the resolver) because ICurrentTenant is AsyncLocal-backed.
+        using IDisposable? tenantScope = currentTenant?.Change(user.TenantId);
 
         // Build claims based on granted scopes.
         ImmutableArray<string> scopes = principal.GetScopes();

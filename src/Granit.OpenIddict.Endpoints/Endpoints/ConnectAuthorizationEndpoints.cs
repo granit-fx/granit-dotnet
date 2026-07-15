@@ -1,10 +1,10 @@
 using System.Collections.Immutable;
 using System.Security.Claims;
 using Granit.DataFiltering;
-using Granit.Domain;
 using Granit.Identity.Local.Domain;
 using Granit.MultiTenancy;
 using Granit.OpenIddict.Diagnostics;
+using Granit.OpenIddict.Endpoints.Internal;
 using Granit.OpenIddict.Endpoints.Options;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore;
@@ -113,20 +113,17 @@ internal static partial class ConnectAuthorizationEndpoints
         // hide the user whenever their TenantId does not match the active scope —
         // host admins (TenantId = null) in particular become invisible on every
         // request that has inherited a tenant context from another source.
+        // Resolve the user with the multi-tenant filter disabled (globally-unique id, already
+        // authenticated by cookie) and align the tenant scope to the user for the rest of the flow
+        // (authorization-record lookup, principal build, metrics). See OidcUserTenantResolver.
         UserManager<LocalIdentity> userManager = context.RequestServices
             .GetRequiredService<UserManager<LocalIdentity>>();
         IDataFilter? dataFilter = context.RequestServices.GetService<IDataFilter>();
+        ICurrentTenant? requestTenant = context.RequestServices.GetService<ICurrentTenant>();
 
-        LocalIdentity? user;
-        IDisposable? filterScope = dataFilter?.Disable<IMultiTenant>();
-        try
-        {
-            user = await userManager.GetUserAsync(authenticateResult.Principal).ConfigureAwait(false);
-        }
-        finally
-        {
-            filterScope?.Dispose();
-        }
+        LocalIdentity? user = await OidcUserTenantResolver
+            .FindByPrincipalAsync(userManager, authenticateResult.Principal, dataFilter)
+            .ConfigureAwait(false);
 
         if (user is null)
         {
@@ -139,12 +136,9 @@ internal static partial class ConnectAuthorizationEndpoints
             return Results.Redirect(BuildLoginRedirectUrl(context, request, options));
         }
 
-        // Align the tenant context with the resolved user for the rest of the flow
-        // (authorization-record lookup, principal build, metrics). When the user is
-        // a host admin (TenantId = null) this clears any stale tenant leaked from
-        // a prior request; when the user is a tenant user this switches the scope
-        // to their own tenant regardless of what the resolver pipeline produced.
-        ICurrentTenant? requestTenant = context.RequestServices.GetService<ICurrentTenant>();
+        // Align the tenant scope to the resolved user for the rest of the flow (authorization-record
+        // lookup, principal build, metrics). Opened here (not in the resolver) because ICurrentTenant
+        // is AsyncLocal-backed; a host user (TenantId null) clears any stale leaked scope.
         using IDisposable? tenantScope = requestTenant?.Change(user.TenantId);
 
         // Build the principal with requested scopes.
