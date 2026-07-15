@@ -1,6 +1,5 @@
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.EntityFrameworkCore.Internal;
-using Granit.Identity.Federated.Internal;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
