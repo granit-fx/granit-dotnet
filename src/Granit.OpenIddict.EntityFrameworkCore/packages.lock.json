@@ -365,25 +365,10 @@
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
-      "granit.authentication": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
       "granit.authentication.external": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.authentication.openiddict": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Authentication": "[0.1.0-dev, )",
-          "OpenIddict.Validation.AspNetCore": "[7.*, )",
-          "OpenIddict.Validation.SystemNetHttp": "[7.*, )"
         }
       },
       "granit.authorization": {
@@ -564,18 +549,6 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.openiddict.server": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Authentication": "[0.1.0-dev, )",
-          "Granit.Authentication.OpenIddict": "[0.1.0-dev, )",
-          "Granit.Identity.Abstractions": "[0.1.0-dev, )",
-          "Granit.OpenIddict": "[0.1.0-dev, )",
-          "OpenIddict": "[7.*, )",
-          "OpenIddict.Server.AspNetCore": "[7.*, )",
-          "OpenIddict.Validation.AspNetCore": "[7.*, )"
-        }
-      },
       "granit.persistence": {
         "type": "Project",
         "dependencies": {
@@ -693,24 +666,6 @@
         "requested": "[2.7.5, )",
         "resolved": "2.7.5",
         "contentHash": "0FA67RSnRM4tcBKqiqVu/HPdZ9+QOKbmeRjxRUGTCjPU4C0bmUhd97Dso7Yild5P7nOV6GxJ2xrK0Kv/O9xp0w=="
-      },
-      "OpenIddict.Server.AspNetCore": {
-        "type": "CentralTransitive",
-        "requested": "[7.*, )",
-        "resolved": "7.5.0",
-        "contentHash": "dPgoG/y7oJcngY+xILxrp+lgGjrOMIrlt/mQcGKMj/g+QlNW8Xod5ibAMbFIQUUWXGVKd+lZKPMa7wPfioLpTw==",
-        "dependencies": {
-          "OpenIddict.Server": "7.5.0"
-        }
-      },
-      "OpenIddict.Validation.AspNetCore": {
-        "type": "CentralTransitive",
-        "requested": "[7.*, )",
-        "resolved": "7.5.0",
-        "contentHash": "yTHifKNJLe0uH4fotBQcii8XpHYQOwmACXK2aEeAYadxYlysiO67glfxdETzeAfpJ/QM4cG7V2bjXUCZLCHEbg==",
-        "dependencies": {
-          "OpenIddict.Validation": "7.5.0"
-        }
       },
       "OpenIddict.Validation.SystemNetHttp": {
         "type": "CentralTransitive",
