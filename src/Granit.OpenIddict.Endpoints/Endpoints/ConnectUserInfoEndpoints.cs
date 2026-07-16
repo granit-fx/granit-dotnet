@@ -32,6 +32,10 @@ internal static class ConnectUserInfoEndpoints
 
     private static async Task<IResult> HandleUserInfoAsync(HttpContext context)
     {
+        // userinfo returns PII (name, email, phone, roles). It must never be cached by a browser or an
+        // intermediary proxy — set no-store before any response is produced (OIDC Core §5.3.4).
+        context.Response.Headers.CacheControl = "no-store";
+
         // OpenIddict has already validated the access token via the middleware.
         AuthenticateResult authenticateResult = await context.AuthenticateAsync(
             OpenIddictServerAspNetCoreDefaults.AuthenticationScheme).ConfigureAwait(false);
