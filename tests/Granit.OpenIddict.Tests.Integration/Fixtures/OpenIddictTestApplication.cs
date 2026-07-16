@@ -9,6 +9,7 @@ using Granit.Identity.Extensions;
 using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Extensions;
+using Granit.Identity.Local.EntityFrameworkCore.Internal;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
 using Granit.OpenIddict.Diagnostics;
@@ -23,6 +24,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
@@ -147,14 +150,23 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
         _app.MapGranitOpenIddict();
         _app.MapGranitAccount();
 
-        // 6. EnsureCreated + seed
+        // 6. Create the schema for both isolated contexts (disjoint tables, same database) + seed.
+        //    EnsureCreated is all-or-nothing on the database, so the identity context creates the
+        //    database + its tables, then the OpenIddict context adds its own tables into it.
         await using AsyncServiceScope scope = _app.Services.CreateAsyncScope();
-#pragma warning disable EF1001 // OpenIddictDbContext is internal — accessible via InternalsVisibleTo
+#pragma warning disable EF1001 // OpenIddictDbContext / IdentityLocalDbContext are internal — accessible via InternalsVisibleTo
+        IDbContextFactory<IdentityLocalDbContext> identityFactory =
+            scope.ServiceProvider.GetRequiredService<IDbContextFactory<IdentityLocalDbContext>>();
+        await using (IdentityLocalDbContext identityDb = await identityFactory.CreateDbContextAsync())
+        {
+            await identityDb.Database.EnsureCreatedAsync();
+        }
+
         IDbContextFactory<OpenIddictDbContext> dbFactory =
             scope.ServiceProvider.GetRequiredService<IDbContextFactory<OpenIddictDbContext>>();
         await using OpenIddictDbContext db = await dbFactory.CreateDbContextAsync();
 #pragma warning restore EF1001
-        await db.Database.EnsureCreatedAsync();
+        await db.Database.GetService<IRelationalDatabaseCreator>().CreateTablesAsync();
 
         await SeedTestDataAsync(scope.ServiceProvider);
 

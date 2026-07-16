@@ -503,6 +503,16 @@
           "Microsoft.EntityFrameworkCore": "[10.*, )"
         }
       },
+      "granit.identity.local.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Identity.Local": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[10.*, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
       "granit.ipgeolocation.abstractions": {
         "type": "Project",
         "dependencies": {

@@ -47,6 +47,7 @@
       "src/Granit.Identity.Federated/Granit.Identity.Federated.csproj",
       "src/Granit.Identity.Local.AspNetIdentity/Granit.Identity.Local.AspNetIdentity.csproj",
       "src/Granit.Identity.Local.Endpoints/Granit.Identity.Local.Endpoints.csproj",
+      "src/Granit.Identity.Local.EntityFrameworkCore/Granit.Identity.Local.EntityFrameworkCore.csproj",
       "src/Granit.Identity.Local/Granit.Identity.Local.csproj",
       "src/Granit.Identity/Granit.Identity.csproj",
       "src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj",

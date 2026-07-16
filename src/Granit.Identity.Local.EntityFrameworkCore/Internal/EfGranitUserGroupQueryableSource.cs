@@ -3,20 +3,20 @@ using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
+namespace Granit.Identity.Local.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// EF Core implementation of <see cref="IQueryableSource{TEntity}"/> for <see cref="GranitUserGroup"/>,
-/// projecting from the consolidated <see cref="OpenIddictDbContext"/>.
+/// projecting from the consolidated <see cref="IdentityLocalDbContext"/>.
 /// When no tenant context is active (host admin), the multi-tenant query filter is
 /// bypassed so all user groups are returned cross-tenant.
 /// </summary>
 internal sealed class EfGranitUserGroupQueryableSource(
-    IDbContextFactory<OpenIddictDbContext> contextFactory,
+    IDbContextFactory<IdentityLocalDbContext> contextFactory,
     ITenantQueryScope scope)
     : IQueryableSource<GranitUserGroup>, IAsyncDisposable, IDisposable
 {
-    private OpenIddictDbContext? _context;
+    private IdentityLocalDbContext? _context;
 
     public IQueryable<GranitUserGroup> GetQueryable()
     {
@@ -27,7 +27,7 @@ internal sealed class EfGranitUserGroupQueryableSource(
 
     public ValueTask DisposeAsync()
     {
-        OpenIddictDbContext? context = _context;
+        IdentityLocalDbContext? context = _context;
         _context = null;
         return context?.DisposeAsync() ?? ValueTask.CompletedTask;
     }

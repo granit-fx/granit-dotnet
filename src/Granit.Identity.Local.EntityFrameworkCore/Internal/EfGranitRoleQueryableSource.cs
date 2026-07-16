@@ -2,23 +2,23 @@ using Granit.Identity.Local.Domain;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
+namespace Granit.Identity.Local.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// EF Core implementation of <see cref="IQueryableSource{TEntity}"/> for <see cref="GranitRole"/>,
 /// backing <c>MapGranitQuery&lt;GranitRole&gt;</c> and the analytics runner over <c>GranitRoleQuery</c>.
 /// Projects from the inherited ASP.NET Identity <c>Roles</c> set owned by the consolidated
-/// <see cref="OpenIddictDbContext"/>.
+/// <see cref="IdentityLocalDbContext"/>.
 /// </summary>
 /// <remarks>
 /// <see cref="GranitRole"/> is not <c>IMultiTenant</c> (roles are host-global), so no
 /// query-filter bypass is required.
 /// </remarks>
 internal sealed class EfGranitRoleQueryableSource(
-    IDbContextFactory<OpenIddictDbContext> contextFactory)
+    IDbContextFactory<IdentityLocalDbContext> contextFactory)
     : IQueryableSource<GranitRole>, IAsyncDisposable, IDisposable
 {
-    private OpenIddictDbContext? _context;
+    private IdentityLocalDbContext? _context;
 
     public IQueryable<GranitRole> GetQueryable()
     {
@@ -28,7 +28,7 @@ internal sealed class EfGranitRoleQueryableSource(
 
     public ValueTask DisposeAsync()
     {
-        OpenIddictDbContext? context = _context;
+        IdentityLocalDbContext? context = _context;
         _context = null;
         return context?.DisposeAsync() ?? ValueTask.CompletedTask;
     }

@@ -1,4 +1,5 @@
 using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.EntityFrameworkCore.Internal;
 using Granit.MultiTenancy;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.Services;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 
-#pragma warning disable EF1001 // EfPendingRegistrationStore / OpenIddictDbContext are internal — accessible via InternalsVisibleTo
+#pragma warning disable EF1001 // EfPendingRegistrationStore / IdentityLocalDbContext are internal — accessible via InternalsVisibleTo
 
 namespace Granit.OpenIddict.Tests.Integration.Persistence;
 
@@ -32,13 +33,13 @@ public sealed class PendingRegistrationStoreTests : IAsyncLifetime
     {
         await _postgres.InitializeAsync();
 
-        DbContextOptions<OpenIddictDbContext> options =
-            new DbContextOptionsBuilder<OpenIddictDbContext>()
+        DbContextOptions<IdentityLocalDbContext> options =
+            new DbContextOptionsBuilder<IdentityLocalDbContext>()
                 .UseNpgsql(_postgres.ConnectionString)
                 .Options;
         _factory = new Factory(options);
 
-        await using OpenIddictDbContext db = _factory.CreateDbContext();
+        await using IdentityLocalDbContext db = _factory.CreateDbContext();
         await db.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
     }
 
@@ -76,7 +77,7 @@ public sealed class PendingRegistrationStoreTests : IAsyncLifetime
     private async Task<Guid> SeedAsync(Guid? tenantId, bool pending, bool deleted, CancellationToken ct)
     {
         var id = Guid.NewGuid();
-        await using OpenIddictDbContext db = _factory!.CreateDbContext();
+        await using IdentityLocalDbContext db = _factory!.CreateDbContext();
         db.Set<LocalIdentity>().Add(new LocalIdentity
         {
             Id = id,
@@ -93,10 +94,10 @@ public sealed class PendingRegistrationStoreTests : IAsyncLifetime
         return id;
     }
 
-    private sealed class Factory(DbContextOptions<OpenIddictDbContext> options)
-        : IDbContextFactory<OpenIddictDbContext>
+    private sealed class Factory(DbContextOptions<IdentityLocalDbContext> options)
+        : IDbContextFactory<IdentityLocalDbContext>
     {
-        public OpenIddictDbContext CreateDbContext() => new(options, NullTenantContext.Instance);
+        public IdentityLocalDbContext CreateDbContext() => new(options, NullTenantContext.Instance);
     }
 }
 

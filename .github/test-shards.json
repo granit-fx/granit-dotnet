@@ -352,6 +352,7 @@
         "tests/Granit.OpenIddict.Abstractions.Tests",
         "tests/Granit.OpenIddict.BackgroundJobs.Tests",
         "tests/Granit.OpenIddict.Endpoints.Tests",
+        "tests/Granit.Identity.Local.EntityFrameworkCore.Tests",
         "tests/Granit.OpenIddict.EntityFrameworkCore.Tests",
         "tests/Granit.OpenIddict.Server.DPoP.Tests",
         "tests/Granit.OpenIddict.Server.Tests",

@@ -1,13 +1,16 @@
 using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.Services;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
+#pragma warning disable EF1001 // IdentityLocalDbContext is internal to the sibling identity package, reached via InternalsVisibleTo
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// EF Core implementation of <see cref="IPendingAccountDeletionStore"/> over the consolidated
-/// <see cref="OpenIddictDbContext"/>.
+/// <see cref="IdentityLocalDbContext"/>.
 /// </summary>
 /// <remarks>
 /// The reconciliation sweep runs in host context with no active tenant, so it ignores the query
@@ -15,13 +18,13 @@ namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 /// (to see the deleted users at all — a soft-deleted row is hidden by default).
 /// </remarks>
 internal sealed class EfPendingAccountDeletionStore(
-    IDbContextFactory<OpenIddictDbContext> dbFactory) : IPendingAccountDeletionStore
+    IDbContextFactory<IdentityLocalDbContext> dbFactory) : IPendingAccountDeletionStore
 {
     /// <inheritdoc/>
     public async Task<IReadOnlyList<PendingAccountDeletion>> GetPendingAsync(
         int max, CancellationToken cancellationToken = default)
     {
-        await using OpenIddictDbContext db = await dbFactory
+        await using IdentityLocalDbContext db = await dbFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         return await db.Set<LocalIdentity>()
@@ -39,7 +42,7 @@ internal sealed class EfPendingAccountDeletionStore(
     public async Task MarkDispatchedAsync(
         Guid userId, DateTimeOffset dispatchedAt, CancellationToken cancellationToken = default)
     {
-        await using OpenIddictDbContext db = await dbFactory
+        await using IdentityLocalDbContext db = await dbFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         await db.Set<LocalIdentity>()

@@ -1,46 +1,28 @@
 using Granit.DataFiltering;
-using Granit.Identity.Local.Domain;
 using Granit.MultiTenancy;
 using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore;
-using Granit.Persistence.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// Isolated DbContext for the OpenIddict module and its co-located ASP.NET Core Identity tables.
+/// Isolated DbContext for the OpenIddict entities (applications, authorizations, scopes, tokens) and
+/// the signing-key table.
 /// </summary>
 /// <remarks>
-/// <para>
-/// Built on <see cref="GranitDbContext"/> — the parameterised <c>IMultiTenant</c> filter and
-/// <c>ApplyGranitConventions</c> come from the base, so the reflection-based filter replication a
-/// non-<c>GranitDbContext</c> derivative would need is gone.
-/// </para>
-/// <para>
-/// The context does <b>not</b> inherit <c>IdentityDbContext</c>: the entire model — the Identity
-/// tables (users/roles/claims/logins/tokens/passkeys), their keys, unique indexes
-/// (<c>UserNameIndex</c>/<c>EmailIndex</c>/<c>RoleNameIndex</c>), maxlengths and relationships, plus
-/// the OpenIddict entities, group tables and signing keys — is defined self-contained by
-/// <see cref="OpenIddictModelBuilderExtensions.ConfigureOpenIddictModule"/>. A relational-model
-/// pinning test guards that this produces a byte-identical schema.
-/// </para>
+/// Built on <see cref="GranitDbContext"/>. Owns a disjoint set of tables from the sibling
+/// <c>IdentityLocalDbContext</c> (users/roles/groups) in the same database, so the two isolated
+/// contexts never collide. A relational-model pinning test guards that the composed schema stays
+/// byte-identical to the pre-split consolidated model.
 /// </remarks>
 internal sealed class OpenIddictDbContext(
     DbContextOptions<OpenIddictDbContext> options,
     ICurrentTenant currentTenant,
-    IDataFilter? dataFilter = null,
-    IOptions<MetadataMappingOptions<LocalIdentity>>? extensionOptions = null)
+    IDataFilter? dataFilter = null)
     : GranitDbContext(options, currentTenant, dataFilter)
 {
-    /// <summary>Gets the user groups set.</summary>
-    public DbSet<GranitUserGroup> UserGroups => Set<GranitUserGroup>();
-
-    /// <summary>Gets the user group members set.</summary>
-    public DbSet<GranitUserGroupMember> UserGroupMembers => Set<GranitUserGroupMember>();
-
     /// <summary>Gets the signing keys set.</summary>
     public DbSet<SigningKey> SigningKeys => Set<SigningKey>();
 
@@ -55,9 +37,8 @@ internal sealed class OpenIddictDbContext(
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
 
-        // Self-contained model: Identity + OpenIddict entities, the openiddict_* prefix, column
-        // constraints and the manual LocalIdentity soft-delete filter. The IMultiTenant filter and
-        // ApplyGranitConventions run in GranitDbContext.OnModelCreating after this override.
-        modelBuilder.ConfigureOpenIddictModule(DataFilter, extensionOptions?.Value);
+        // The IMultiTenant filter and ApplyGranitConventions run in GranitDbContext.OnModelCreating
+        // after this override.
+        modelBuilder.ConfigureGranitOpenIddict();
     }
 }

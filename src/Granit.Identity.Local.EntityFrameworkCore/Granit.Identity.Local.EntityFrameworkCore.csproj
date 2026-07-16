@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Identity.Local.EntityFrameworkCore</PackageId>
+    <Description>EF Core persistence for Granit.Identity.Local: the isolated IdentityLocalDbContext (users, roles, claims, logins, tokens, passkeys, groups), ASP.NET Core Identity stores, group store, query sources, and the registration/account-deletion reconciliation stores. Database-provider agnostic, ISO 27001-compliant.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Identity.Local.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.OpenIddict.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.OpenIddict.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.OpenIddict.Tests.Integration" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Identity.Local\Granit.Identity.Local.csproj" />
+    <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,5 +1,8 @@
 using System.Text;
-using Granit.OpenIddict.EntityFrameworkCore.Internal;
+using Granit.Identity.Local.EntityFrameworkCore.Extensions;
+using Granit.MultiTenancy;
+using Granit.OpenIddict.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Testing.Fakes;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -10,38 +13,56 @@ using Xunit;
 namespace Granit.OpenIddict.EntityFrameworkCore.Tests;
 
 /// <summary>
-/// Golden-master snapshot of the consolidated <see cref="OpenIddictDbContext"/> relational model —
-/// tables, columns (name, CLR type, nullability), primary keys, indexes (columns, uniqueness) and
-/// named query filters. Any change to the produced schema flips this test.
+/// Golden-master snapshot of the full relational model — tables, columns (name, CLR type,
+/// nullability, maxlength), primary keys, indexes (columns, uniqueness, name, filter) and named query
+/// filters. Any change to the produced schema flips this test.
 /// </summary>
 /// <remarks>
-/// This is the safety net for the Identity/OpenIddict DbContext decomposition (Phase 3): once the
-/// model is split across <c>IdentityLocalDbContext</c> and <c>OpenIddictDbContext</c>, the composed
-/// model a host builds must remain byte-identical to this snapshot so no data migration is emitted.
-/// It also guards every other change against accidental schema drift (a dropped unique index, a
-/// widened nullability, a lost filter). Provider-agnostic: store types are intentionally excluded so
-/// the snapshot holds across PostgreSQL/SQLite.
+/// The model is now split across <c>IdentityLocalDbContext</c> and <c>OpenIddictDbContext</c>; a host
+/// migration context owns the whole schema by applying both <c>ConfigureGranitIdentityLocal</c> and
+/// <c>ConfigureGranitOpenIddict</c>. This test builds exactly such a composed context and asserts it
+/// stays byte-identical to the pre-split consolidated snapshot — proving the decomposition emits no
+/// data migration. It also guards every change against accidental schema drift (a dropped unique
+/// index, a widened nullability, a lost filter). Provider-agnostic: store types are excluded so the
+/// snapshot holds across PostgreSQL/SQLite.
 /// </remarks>
 public sealed class RelationalModelPinningTests
 {
     [Fact]
-    public void ConsolidatedModel_MatchesPinnedSnapshot()
+    public void ComposedHostModel_MatchesPinnedSnapshot()
     {
         using SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
-        DbContextOptions<OpenIddictDbContext> options =
-            new DbContextOptionsBuilder<OpenIddictDbContext>()
+        DbContextOptions<CompositeMigrationDbContext> options =
+            new DbContextOptionsBuilder<CompositeMigrationDbContext>()
                 .UseSqlite(connection)
                 .Options;
-        using OpenIddictDbContext context = new(options, new FakeCurrentTenant());
+        using CompositeMigrationDbContext context = new(options, new FakeCurrentTenant());
 
         string snapshot = BuildSnapshot(context.Model);
 
         // A diff here is intentional: regenerate RelationalModel.approved.txt only when the schema
-        // change is deliberate. During the DbContext decomposition the composed model must keep this
-        // snapshot byte-identical (zero data migration).
+        // change is deliberate. The composed host model must stay byte-identical (zero data migration).
         snapshot.ShouldBe(ReadApprovedSnapshot());
+    }
+
+    /// <summary>
+    /// Stand-in for a host migration context that owns the whole schema, mirroring the
+    /// <c>ShowcaseHostDbContext</c> pattern: a single <see cref="GranitDbContext"/> that applies both
+    /// module model builders.
+    /// </summary>
+    private sealed class CompositeMigrationDbContext(
+        DbContextOptions<CompositeMigrationDbContext> options, ICurrentTenant currentTenant)
+        : GranitDbContext(options, currentTenant)
+    {
+        protected override bool TenantFilterTreatsNullAsGlobal => true;
+
+        protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ConfigureGranitIdentityLocal();
+            modelBuilder.ConfigureGranitOpenIddict();
+        }
     }
 
     private static string BuildSnapshot(IModel model)

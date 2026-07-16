@@ -1,21 +1,16 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.DataExchange.Export;
-using Granit.Identity.Local.Domain;
-using Granit.Identity.Local.Options;
-using Granit.Identity.Local.Services;
+using Granit.Identity.Local.EntityFrameworkCore.Extensions;
 using Granit.OpenIddict.EntityFrameworkCore.Entities;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Models;
 using Granit.OpenIddict.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
-using Granit.Persistence.EntityFrameworkCore.SharedConnection;
 using Granit.QueryEngine;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Extensions;
@@ -52,28 +47,12 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
         GranitOpenIddictOptions granitOptions = new();
         builder.Configuration.GetSection(GranitOpenIddictOptions.SectionName).Bind(granitOptions);
 
-        // 1. Register the isolated DbContext with Granit interceptors
+        // 0. Local-identity persistence (its own isolated IdentityLocalDbContext + ASP.NET Core
+        //    Identity stores + query sources), configured against the same database/provider.
+        builder.AddGranitIdentityLocalEntityFrameworkCore(configure);
+
+        // 1. Register the isolated OpenIddict DbContext with Granit interceptors
         builder.Services.AddGranitDbContext<OpenIddictDbContext>(configure);
-
-        // 2. Bind lockout options (exponential backoff)
-        GranitLockoutOptions lockoutOptions = new();
-        builder.Configuration.GetSection(GranitLockoutOptions.SectionName).Bind(lockoutOptions);
-        builder.Services.Configure<GranitLockoutOptions>(
-            builder.Configuration.GetSection(GranitLockoutOptions.SectionName));
-
-        // 3. Register ASP.NET Core Identity backed by the OpenIddict DbContext.
-        builder.Services
-            .AddIdentity<LocalIdentity, GranitRole>(options =>
-            {
-                options.User.RequireUniqueEmail = true;
-                options.Lockout.MaxFailedAccessAttempts = lockoutOptions.MaxFailedAccessAttempts;
-                options.Lockout.DefaultLockoutTimeSpan = lockoutOptions.BaseLockoutDuration;
-                options.SignIn.RequireConfirmedEmail = true;
-                // Version3 adds IdentityUserPasskey — required for WebAuthn/passkey support.
-                options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
-            })
-            .AddEntityFrameworkStores<OpenIddictDbContext>()
-            .AddDefaultTokenProviders();
 
         // 4. Register OpenIddict Core — EF Core stores
         builder.Services.AddOpenIddict()
@@ -95,28 +74,12 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
                 }
             });
 
-        // 5. Group store — required by AspNetIdentityProvider.
-        builder.Services.TryAddScoped<ILocalIdentityGroupStore, OpenIddictGroupStore>();
-
-        // 6. Accessor exposing the scoped OpenIddictDbContext as IIdentityDbContextAccessor —
-        //    consumed by IGranitRoleOrchestrator to share the Identity transaction with the host
-        //    authorization DbContext when both target the same database.
-        builder.Services.TryAddScoped<IIdentityDbContextAccessor,
-            OpenIddictIdentityDbContextAccessor>();
-
         // 7. Session/device provider for the canonical /sessions + /devices API. Registered here so a
         //    host cannot enable OpenIddict persistence and still silently serve the no-op session
         //    defaults (the failure mode when GranitOpenIddictModule is absent from the graph).
         builder.Services.AddOpenIddictUserSessionProvider();
 
-        // 8. Query engine sources for the identity entities owned by the consolidated
-        //    OpenIddictDbContext — back MapGranitQuery<T> + the analytics runner over
-        //    GranitRoleQuery / GranitUserGroupQuery (Granit.Identity.Local) and
-        //    ApplicationQuery / ScopeQuery (Granit.OpenIddict). Without these the grids and
-        //    analytics runners throw "No service for type IQueryableSource<T>" at first request.
-        builder.Services.AddScoped<IQueryableSource<GranitRole>, EfGranitRoleQueryableSource>();
-        builder.Services.AddScoped<IQueryableSource<GranitUserGroup>, EfGranitUserGroupQueryableSource>();
-
+        // 8. Query engine + export sources for the OpenIddict-owned entities.
         // The OpenIddict application/scope sources project the EF entity onto the framework-owned
         // model, so they back BOTH the query engine (IQueryableSource) and exports (IExportDataSource,
         // whose DbSet-discovering fallback cannot resolve a projection record). Register the concrete

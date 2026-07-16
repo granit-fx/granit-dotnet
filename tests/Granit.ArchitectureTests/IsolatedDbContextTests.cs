@@ -222,9 +222,10 @@ public sealed partial class IsolatedDbContextTests
                 {
                     string rel = Path.GetRelativePath(RepoRoot, csFile);
 
-                    // LocalIdentity cannot implement ISoftDeletable (incompatible with UserManager),
-                    // so OpenIddict's model builder must register the soft-delete filter manually.
-                    if (rel.Contains("OpenIddict", StringComparison.Ordinal))
+                    // LocalIdentity cannot implement ISoftDeletable (incompatible with UserManager), so
+                    // the local-identity model builder must register its soft-delete filter manually.
+                    if (rel.Contains("OpenIddict", StringComparison.Ordinal)
+                        || rel.Contains("Identity.Local.EntityFrameworkCore", StringComparison.Ordinal))
                     {
                         continue;
                     }

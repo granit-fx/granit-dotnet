@@ -1,13 +1,16 @@
 using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.Services;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
+#pragma warning disable EF1001 // IdentityLocalDbContext is internal to the sibling identity package, reached via InternalsVisibleTo
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// EF Core implementation of <see cref="IPendingRegistrationStore"/> over the consolidated
-/// <see cref="OpenIddictDbContext"/>.
+/// <see cref="IdentityLocalDbContext"/>.
 /// </summary>
 /// <remarks>
 /// The reconciliation sweep runs in host context with no active tenant, so it ignores the
@@ -16,13 +19,13 @@ namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 /// correctly hidden.
 /// </remarks>
 internal sealed class EfPendingRegistrationStore(
-    IDbContextFactory<OpenIddictDbContext> dbFactory) : IPendingRegistrationStore
+    IDbContextFactory<IdentityLocalDbContext> dbFactory) : IPendingRegistrationStore
 {
     /// <inheritdoc/>
     public async Task<IReadOnlyList<PendingRegistration>> GetPendingAsync(
         int max, CancellationToken cancellationToken = default)
     {
-        await using OpenIddictDbContext db = await dbFactory
+        await using IdentityLocalDbContext db = await dbFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         return await db.Set<LocalIdentity>()
@@ -39,7 +42,7 @@ internal sealed class EfPendingRegistrationStore(
     /// <inheritdoc/>
     public async Task MarkDispatchedAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        await using OpenIddictDbContext db = await dbFactory
+        await using IdentityLocalDbContext db = await dbFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         await db.Set<LocalIdentity>()
