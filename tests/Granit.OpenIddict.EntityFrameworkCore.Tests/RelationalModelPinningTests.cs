@@ -62,7 +62,9 @@ public sealed class RelationalModelPinningTests
                 .OrderBy(p => p.GetColumnName(), StringComparer.Ordinal))
             {
                 string nullability = property.IsNullable ? "NULL" : "NOT NULL";
-                Line($"  COL {property.GetColumnName()} {TypeName(property.ClrType)} {nullability}");
+                int? maxLength = property.GetMaxLength();
+                string len = maxLength.HasValue ? $" len={maxLength.Value}" : string.Empty;
+                Line($"  COL {property.GetColumnName()} {TypeName(property.ClrType)} {nullability}{len}");
             }
 
             IKey? pk = entityType.FindPrimaryKey();
@@ -71,12 +73,19 @@ public sealed class RelationalModelPinningTests
                 Line($"  PK {ColumnList(pk.Properties)}");
             }
 
-            IEnumerable<(string Cols, bool IsUnique)> indexes = entityType.GetIndexes()
-                .Select(i => (Cols: ColumnList(i.Properties), i.IsUnique))
-                .OrderBy(i => i.Cols, StringComparer.Ordinal);
-            foreach ((string cols, bool isUnique) in indexes)
+            IEnumerable<(string Line, string Sort)> indexes = entityType.GetIndexes()
+                .Select(i =>
+                {
+                    string cols = ColumnList(i.Properties);
+                    string unique = i.IsUnique ? " UNIQUE" : string.Empty;
+                    string name = i.GetDatabaseName() ?? "(none)";
+                    string filter = i.GetFilter() is { Length: > 0 } f ? $" FILTER[{f}]" : string.Empty;
+                    return (Line: $"  INDEX {cols}{unique} name={name}{filter}", Sort: cols + "|" + name);
+                })
+                .OrderBy(i => i.Sort, StringComparer.Ordinal);
+            foreach ((string line, string _) in indexes)
             {
-                Line(isUnique ? $"  INDEX {cols} UNIQUE" : $"  INDEX {cols}");
+                Line(line);
             }
 
             foreach (string filter in entityType.GetDeclaredQueryFilters()
