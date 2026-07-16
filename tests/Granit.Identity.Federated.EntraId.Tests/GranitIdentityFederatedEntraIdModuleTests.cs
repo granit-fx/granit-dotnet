@@ -45,9 +45,15 @@ public sealed class GranitIdentityFederatedEntraIdModuleTests
 
         ServiceDescriptor? descriptor = builder.Services.FirstOrDefault(
             d => d.ServiceType == typeof(IIdentityProvider));
+        // IIdentityProvider now resolves to the graceful-degradation decorator (a factory
+        // registration); the concrete provider is registered by its own type.
         descriptor.ShouldNotBeNull();
-        descriptor!.ImplementationType.ShouldBe(typeof(EntraIdIdentityProvider));
+        descriptor!.ImplementationType.ShouldBeNull();
         descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
+        ServiceDescriptor? concrete = builder.Services.FirstOrDefault(
+            d => d.ServiceType == typeof(EntraIdIdentityProvider));
+        concrete.ShouldNotBeNull();
+        concrete!.ImplementationType.ShouldBe(typeof(EntraIdIdentityProvider));
     }
 
     [Fact]

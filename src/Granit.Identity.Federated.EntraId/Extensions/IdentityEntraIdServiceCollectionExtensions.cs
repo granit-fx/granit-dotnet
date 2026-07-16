@@ -5,6 +5,7 @@ using Granit.Identity.Federated.EntraId.HealthChecks;
 using Granit.Identity.Federated.EntraId.Internal;
 using Granit.Identity.Federated.EntraId.Options;
 using Granit.Identity.Federated.EntraId.Sync;
+using Granit.Identity.Federated.Extensions;
 using Granit.Identity.Federated.Sync;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -59,26 +60,26 @@ public static class IdentityEntraIdServiceCollectionExtensions
         services.TryAddSingleton<EntraIdAdminTokenService>();
         services.TryAddScoped<IPasswordResetNotifier, NullPasswordResetNotifier>();
         services.AddIdentityProvider<EntraIdIdentityProvider>();
+
+        // Wrap IIdentityProvider with graceful degradation; registers EntraIdIdentityProvider by
+        // its concrete type so the facets the decorator does not carry (client-role, session,
+        // device) resolve the raw provider directly below.
+        services.DecorateIdentityProviderWithGracefulDegradation<EntraIdIdentityProvider>();
         services.Replace(ServiceDescriptor.Scoped<IIdentityProviderCapabilities, EntraIdIdentityProviderCapabilities>());
 
-        // Client-role capability (Phase 2). Forwards to the scoped IIdentityProvider so
-        // IIdentityProvider and IIdentityClientRoleManager resolve to the SAME scoped
-        // EntraIdIdentityProvider instance — avoids doubling Graph admin-token acquisition
-        // and keeps internal state coherent across the two facets.
-        services.TryAddScoped<IIdentityClientRoleManager>(sp =>
-            sp.GetRequiredService<IIdentityProvider>() as IIdentityClientRoleManager
-            ?? throw new InvalidOperationException(
-                "The registered IIdentityProvider does not implement IIdentityClientRoleManager — " +
-                "AddGranitIdentityEntraId must be the last provider-registration call."));
+        // Client-role capability (Phase 2). Resolves the concrete EntraIdIdentityProvider so this
+        // facet — which IIdentityProvider does not compose, and the decorator therefore does not
+        // implement — shares the SAME scoped instance, avoiding doubled Graph admin-token acquisition.
+        services.TryAddScoped<IIdentityClientRoleManager>(sp => sp.GetRequiredService<EntraIdIdentityProvider>());
 
-        // Session/device facets — forward to the scoped IIdentityProvider so the EntraId provider
-        // surfaces sessions and devices to IUserSessionManager, replacing the Null defaults from
-        // Granit.Identity.Abstractions. Same forwarding rationale as IIdentityClientRoleManager above.
+        // Session/device facets — resolve the concrete EntraIdIdentityProvider (the decorator does
+        // not implement these facets) so the EntraId provider surfaces sessions and devices to
+        // IUserSessionManager, replacing the Null defaults from Granit.Identity.Abstractions.
         // Registered at Federated precedence: a co-resident BFF wins the session facet deterministically.
         services.SetUserSessionProvider(
             UserSessionProviderPrecedence.Federated,
-            sessionFactory: sp => (IUserSessionProvider)sp.GetRequiredService<IIdentityProvider>(),
-            deviceFactory: sp => (IUserDeviceProvider)sp.GetRequiredService<IIdentityProvider>());
+            sessionFactory: sp => sp.GetRequiredService<EntraIdIdentityProvider>(),
+            deviceFactory: sp => sp.GetRequiredService<EntraIdIdentityProvider>());
 
         // Client-role sync pipeline — enumerates Entra ID App Roles for each tracked appId
         // at host boot and upserts RoleMetadata rows. See ADR-026 for details.

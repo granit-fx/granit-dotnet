@@ -3,6 +3,7 @@ using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using Granit.Diagnostics;
 using Granit.Identity.Extensions;
+using Granit.Identity.Federated.Extensions;
 using Granit.Identity.Federated.GoogleCloud.HealthChecks;
 using Granit.Identity.Federated.GoogleCloud.Internal;
 using Granit.Identity.Federated.GoogleCloud.Options;
@@ -53,6 +54,10 @@ public static class IdentityGoogleCloudServiceCollectionExtensions
 
         services.TryAddSingleton<IFirebaseAuthTransport, FirebaseAuthTransport>();
         services.AddIdentityProvider<GoogleCloudIdentityProvider>();
+
+        // Wrap IIdentityProvider with graceful degradation (GoogleCloud exposes neither the
+        // client-role nor session/device facets, so no concrete-type forwarders are needed).
+        services.DecorateIdentityProviderWithGracefulDegradation<GoogleCloudIdentityProvider>();
         services.Replace(ServiceDescriptor.Scoped<IIdentityProviderCapabilities, GoogleCloudIdentityProviderCapabilities>());
 
         return services;

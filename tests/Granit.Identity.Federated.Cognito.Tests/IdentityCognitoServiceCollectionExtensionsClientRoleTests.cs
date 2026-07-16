@@ -1,6 +1,7 @@
 using Granit.Events;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.Cognito.Extensions;
+using Granit.Identity.Federated.Cognito.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -37,12 +38,14 @@ public sealed class IdentityCognitoServiceCollectionExtensionsClientRoleTests
         using IServiceScope scope = sp.CreateScope();
 
         IIdentityProvider provider = scope.ServiceProvider.GetRequiredService<IIdentityProvider>();
+        CognitoIdentityProvider concrete = scope.ServiceProvider.GetRequiredService<CognitoIdentityProvider>();
         IIdentityClientRoleManager clientRoleManager =
             scope.ServiceProvider.GetRequiredService<IIdentityClientRoleManager>();
 
-        object.ReferenceEquals(provider, clientRoleManager).ShouldBeTrue(
-            "IIdentityProvider and IIdentityClientRoleManager must resolve to the same " +
-            "scoped CognitoIdentityProvider instance — see ADR-027 and the DI block " +
-            "in AddGranitIdentityCognito.");
+        // The client-role facet (which IIdentityProvider does not compose) resolves the concrete
+        // provider, while IIdentityProvider is the graceful-degradation decorator wrapping that
+        // same scoped instance — see ADR-027 and the DI block in AddGranitIdentityCognito.
+        clientRoleManager.ShouldBeSameAs(concrete);
+        provider.ShouldNotBeSameAs(concrete);
     }
 }

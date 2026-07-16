@@ -2,6 +2,7 @@ using Granit.Events;
 using Granit.Guids.Extensions;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.EntraId.Extensions;
+using Granit.Identity.Federated.EntraId.Internal;
 using Granit.Timing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,12 +45,14 @@ public sealed class IdentityEntraIdServiceCollectionExtensionsClientRoleTests
         using IServiceScope scope = sp.CreateScope();
 
         IIdentityProvider provider = scope.ServiceProvider.GetRequiredService<IIdentityProvider>();
+        EntraIdIdentityProvider concrete = scope.ServiceProvider.GetRequiredService<EntraIdIdentityProvider>();
         IIdentityClientRoleManager clientRoleManager =
             scope.ServiceProvider.GetRequiredService<IIdentityClientRoleManager>();
 
-        object.ReferenceEquals(provider, clientRoleManager).ShouldBeTrue(
-            "IIdentityProvider and IIdentityClientRoleManager must resolve to the same " +
-            "scoped EntraIdIdentityProvider instance — see ADR-026 and the DI block " +
-            "in AddGranitIdentityEntraId.");
+        // The client-role facet (which IIdentityProvider does not compose) resolves the concrete
+        // provider, while IIdentityProvider is the graceful-degradation decorator wrapping that
+        // same scoped instance — see ADR-026 and the DI block in AddGranitIdentityEntraId.
+        clientRoleManager.ShouldBeSameAs(concrete);
+        provider.ShouldNotBeSameAs(concrete);
     }
 }
