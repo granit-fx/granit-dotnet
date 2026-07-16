@@ -46,7 +46,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         GranitOpenIddictApplication app1 = new() { TenantId = null };
         GranitOpenIddictApplication app2 = new() { TenantId = Guid.NewGuid() };
 
-        _server.ApplicationManager.ListAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+        _server.ApplicationManager.ListAsync(Arg.Any<int?>(), Arg.Any<int?>(), Arg.Any<CancellationToken>())
             .Returns(ToAsyncEnumerable<object>(app1, app2));
 
 #pragma warning disable CA2012 // NSubstitute mock setup intentionally doesn't await ValueTask
@@ -83,6 +83,11 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
 
         result.ShouldNotBeNull();
         result.Count.ShouldBe(2);
+
+        // The list must not silently cap: no count/offset is passed to the manager, so every
+        // registered application is returned.
+        _ = _server.ApplicationManager.Received(1)
+            .ListAsync(null, null, Arg.Any<CancellationToken>());
 
         result[0].ClientId.ShouldBe("client-1");
         result[0].DisplayName.ShouldBe("App One");
@@ -448,7 +453,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         object scope1 = new();
         object scope2 = new();
 
-        _server.ScopeManager.ListAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+        _server.ScopeManager.ListAsync(Arg.Any<int?>(), Arg.Any<int?>(), Arg.Any<CancellationToken>())
             .Returns(ToAsyncEnumerable<object>(scope1, scope2));
 
 #pragma warning disable CA2012

@@ -69,9 +69,9 @@ internal sealed class OidcEndpointsTestServer : IAsyncDisposable
         IOpenIddictTokenManager tokenManager = Substitute.For<IOpenIddictTokenManager>();
 
         // Default: empty async enumerables
-        applicationManager.ListAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+        applicationManager.ListAsync(Arg.Any<int?>(), Arg.Any<int?>(), Arg.Any<CancellationToken>())
             .Returns(AsyncEnumerable.Empty<object>());
-        scopeManager.ListAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+        scopeManager.ListAsync(Arg.Any<int?>(), Arg.Any<int?>(), Arg.Any<CancellationToken>())
             .Returns(AsyncEnumerable.Empty<object>());
         authorizationManager.ListAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(AsyncEnumerable.Empty<object>());

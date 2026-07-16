@@ -44,7 +44,7 @@ internal static class AdminOidcEndpoints
         apps.MapPost("/", CreateApplicationAsync)
             .WithName("CreateOidcApplication")
             .WithSummary("Creates a new OIDC application.")
-            .WithDescription("Registers a new OIDC client with the specified permissions, redirect URIs, and consent policy. For confidential clients, a client secret is generated and returned once in the response. Returns 409 Conflict if a client with the same client ID already exists.")
+            .WithDescription("Registers a new OIDC client with the specified permissions, redirect URIs, and consent policy. Providing a client secret creates a confidential client (the secret is stored hashed); omitting it creates a public client. Returns 409 Conflict if a client with the same client ID already exists.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcApplicationResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
@@ -141,7 +141,7 @@ internal static class AdminOidcEndpoints
         auths.MapGet("/", ListAuthorizationsAsync)
             .WithName("ListOidcAuthorizations")
             .WithSummary("Returns OIDC authorizations.")
-            .WithDescription("Returns OIDC authorizations filterable by user ID and client ID. Each authorization represents a user's consent grant to an application. Includes the authorization status (valid, revoked) and type (permanent, ad-hoc).")
+            .WithDescription("Returns up to the first 100 OIDC authorizations. Each authorization represents a user's consent grant to an application, with its status (valid, revoked) and type (permanent, ad-hoc). Server-side filtering by user or client and pagination are not yet implemented.")
             .Produces<IReadOnlyList<AdminOidcAuthorizationResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Authorizations.Read);
 
@@ -191,7 +191,7 @@ internal static class AdminOidcEndpoints
     {
         var results = new List<AdminOidcApplicationResponse>();
 
-        await foreach (object app in applicationManager.ListAsync(100, 0, cancellationToken).ConfigureAwait(false))
+        await foreach (object app in applicationManager.ListAsync(null, null, cancellationToken).ConfigureAwait(false))
         {
             var descriptor = new OpenIddictApplicationDescriptor();
             await applicationManager.PopulateAsync(descriptor, app, cancellationToken).ConfigureAwait(false);
@@ -449,7 +449,7 @@ internal static class AdminOidcEndpoints
     {
         var results = new List<AdminOidcScopeResponse>();
 
-        await foreach (object scope in scopeManager.ListAsync(100, 0, cancellationToken).ConfigureAwait(false))
+        await foreach (object scope in scopeManager.ListAsync(null, null, cancellationToken).ConfigureAwait(false))
         {
             var descriptor = new OpenIddictScopeDescriptor();
             await scopeManager.PopulateAsync(descriptor, scope, cancellationToken).ConfigureAwait(false);
