@@ -64,6 +64,7 @@
       "src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",
       "src/Granit.Templating/Granit.Templating.csproj",
+      "src/Granit.Testing.IdentityProviders/Granit.Testing.IdentityProviders.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",
@@ -91,7 +92,8 @@
       "tests/Granit.Identity.Local.Privacy.Tests/Granit.Identity.Local.Privacy.Tests.csproj",
       "tests/Granit.Identity.Local.Tests/Granit.Identity.Local.Tests.csproj",
       "tests/Granit.Identity.Notifications.Tests/Granit.Identity.Notifications.Tests.csproj",
-      "tests/Granit.Identity.Tests/Granit.Identity.Tests.csproj"
+      "tests/Granit.Identity.Tests/Granit.Identity.Tests.csproj",
+      "tests/Granit.Testing.IdentityProviders.Tests/Granit.Testing.IdentityProviders.Tests.csproj"
     ]
   }
 }

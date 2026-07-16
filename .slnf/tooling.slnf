@@ -7,16 +7,20 @@
       "src/Granit.DataLookup.Abstractions/Granit.DataLookup.Abstractions.csproj",
       "src/Granit.Guids/Granit.Guids.csproj",
       "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
+      "src/Granit.Identity.Abstractions/Granit.Identity.Abstractions.csproj",
+      "src/Granit.IpGeolocation.Abstractions/Granit.IpGeolocation.Abstractions.csproj",
       "src/Granit.Persistence.EntityFrameworkCore/Granit.Persistence.EntityFrameworkCore.csproj",
       "src/Granit.Persistence/Granit.Persistence.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
       "src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj",
+      "src/Granit.Testing.IdentityProviders/Granit.Testing.IdentityProviders.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit/Granit.csproj",
       "tests/Granit.Analyzers.CodeFixes.Tests/Granit.Analyzers.CodeFixes.Tests.csproj",
       "tests/Granit.Analyzers.Tests/Granit.Analyzers.Tests.csproj",
       "tests/Granit.Testing.EntityFrameworkCore.Tests/Granit.Testing.EntityFrameworkCore.Tests.csproj",
+      "tests/Granit.Testing.IdentityProviders.Tests/Granit.Testing.IdentityProviders.Tests.csproj",
       "tests/Granit.Testing.Tests/Granit.Testing.Tests.csproj"
     ]
   }

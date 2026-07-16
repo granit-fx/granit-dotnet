@@ -371,6 +371,7 @@
     <Project Path="src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj" />
     <Project Path="src/Granit.Analyzers/Granit.Analyzers.csproj" />
     <Project Path="src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Testing.IdentityProviders/Granit.Testing.IdentityProviders.csproj" />
     <Project Path="src/Granit.Testing/Granit.Testing.csproj" />
   </Folder>
   <Folder Name="/src/Bundles/">
@@ -764,6 +765,7 @@
     <Project Path="tests/Granit.Analyzers.CodeFixes.Tests/Granit.Analyzers.CodeFixes.Tests.csproj" />
     <Project Path="tests/Granit.Analyzers.Tests/Granit.Analyzers.Tests.csproj" />
     <Project Path="tests/Granit.Testing.EntityFrameworkCore.Tests/Granit.Testing.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Testing.IdentityProviders.Tests/Granit.Testing.IdentityProviders.Tests.csproj" />
     <Project Path="tests/Granit.Testing.Tests/Granit.Testing.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/Architecture Tests/">

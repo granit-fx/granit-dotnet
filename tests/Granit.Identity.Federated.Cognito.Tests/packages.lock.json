@@ -422,6 +422,12 @@
           "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
         }
       },
+      "granit.testing.identityproviders": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Identity.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.timing": {
         "type": "Project",
         "dependencies": {

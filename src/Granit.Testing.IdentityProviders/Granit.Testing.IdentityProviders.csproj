@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Testing.IdentityProviders</PackageId>
+    <Description>Provider-agnostic conformance checks for Granit identity providers: assert that an IIdentityProviderCapabilities implementation is self-consistent and honest about the facets its provider actually implements. Invoke from a provider's own test project so every provider is held to the same contract.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Identity.Abstractions\Granit.Identity.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

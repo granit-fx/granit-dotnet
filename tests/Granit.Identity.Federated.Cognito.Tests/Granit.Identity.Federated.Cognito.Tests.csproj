@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Cognito\Granit.Identity.Federated.Cognito.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Testing.IdentityProviders\Granit.Testing.IdentityProviders.csproj" />
   </ItemGroup>
 
 </Project>

@@ -102,6 +102,7 @@
       "src/Granit.QueryEngine.EntityFrameworkCore/Granit.QueryEngine.EntityFrameworkCore.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",
       "src/Granit.Templating/Granit.Templating.csproj",
+      "src/Granit.Testing.IdentityProviders/Granit.Testing.IdentityProviders.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",

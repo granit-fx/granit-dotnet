@@ -2694,6 +2694,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Testing.IdentityProviders",
+      "deps": [
+        "Granit.Identity.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.TextExtraction",
       "deps": [
         "Granit"
@@ -54475,6 +54482,31 @@
           "kind": "method",
           "signature": "new()",
           "returnType": "FakeGuidGenerator GuidGenerator { get; } ="
+        }
+      ]
+    },
+    {
+      "name": "IdentityProviderConformanceException",
+      "fqn": "Granit.Testing.IdentityProviders.Exceptions.IdentityProviderConformanceException",
+      "kind": "class",
+      "project": "Granit.Testing.IdentityProviders",
+      "file": "src/Granit.Testing.IdentityProviders/Exceptions/IdentityProviderConformanceException.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "IdentityProviderCapabilityConformance",
+      "fqn": "Granit.Testing.IdentityProviders.IdentityProviderCapabilityConformance",
+      "kind": "class",
+      "project": "Granit.Testing.IdentityProviders",
+      "file": "src/Granit.Testing.IdentityProviders/IdentityProviderCapabilityConformance.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "AssertConforms",
+          "kind": "method",
+          "signature": "AssertConforms(IIdentityProviderCapabilities capabilities, Type providerType)",
+          "returnType": "void"
         }
       ]
     },

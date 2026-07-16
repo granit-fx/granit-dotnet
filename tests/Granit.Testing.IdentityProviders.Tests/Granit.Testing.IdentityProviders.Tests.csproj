@@ -9,16 +9,12 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
-    <PackageReference Include="NSubstitute" />
     <PackageReference Include="Shouldly" />
     <PackageReference Include="coverlet.collector" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.Guids\Granit.Guids.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntraId\Granit.Identity.Federated.EntraId.csproj" />
     <ProjectReference Include="..\..\src\Granit.Testing.IdentityProviders\Granit.Testing.IdentityProviders.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Timing\Granit.Timing.csproj" />
   </ItemGroup>
 
 </Project>

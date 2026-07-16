@@ -4058,6 +4058,12 @@
           "SQLitePCLRaw.core": "[3.0.3, )"
         }
       },
+      "granit.testing.identityproviders": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Identity.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.textextraction": {
         "type": "Project",
         "dependencies": {
@@ -4506,8 +4512,8 @@
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.101.1",
-        "contentHash": "im0VVAu/dHFVPFBttps3rfKBehux3AOm0mbDn31vmwu+m0eOPrxNdxjoIDujZrcapbl9z6aafAWHtM2GA7Znpw==",
+        "resolved": "4.0.101.2",
+        "contentHash": "kYd4oTKCNUE1JGTCyrdUFDKZYiKgLLzgoJB9KdgPGfrPP+KjUFA2IOI03N+4C5Ihv9YKKCgsUArYQnaWw2HJjQ==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.100.5, 5.0.0)"
         }
@@ -5308,8 +5314,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.16.12",
-        "contentHash": "XUNn40HQ2r9G9XdNfLu8tXI4e4JNaA15ZZt3GDx4CcZPwANJRtuZSMUPMpvEB/czIdMiCdTG+GeEzxVzzLdwdg=="
+        "resolved": "2.16.14",
+        "contentHash": "JwetOkrJ+qySqDm8uzXkmRuYXuq5G5MgID2+c84jWjFVAcpNicj20NcfuBmm8/IqUDyFg8q7dCt4eJO2Uk8Ifw=="
       },
       "Scriban": {
         "type": "CentralTransitive",

@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Keycloak\Granit.Identity.Federated.Keycloak.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Testing.IdentityProviders\Granit.Testing.IdentityProviders.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timing\Granit.Timing.csproj" />
   </ItemGroup>
 

@@ -305,6 +305,7 @@
       "src/Granit.Templating.Workflow/Granit.Templating.Workflow.csproj",
       "src/Granit.Templating/Granit.Templating.csproj",
       "src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj",
+      "src/Granit.Testing.IdentityProviders/Granit.Testing.IdentityProviders.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.TextExtraction.Email/Granit.TextExtraction.Email.csproj",
       "src/Granit.TextExtraction.Ocr.AI/Granit.TextExtraction.Ocr.AI.csproj",

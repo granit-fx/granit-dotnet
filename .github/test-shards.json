@@ -402,7 +402,8 @@
         "tests/Granit.Identity.Local.Privacy.Tests",
         "tests/Granit.Identity.Local.Tests",
         "tests/Granit.Identity.Notifications.Tests",
-        "tests/Granit.Identity.Tests"
+        "tests/Granit.Identity.Tests",
+        "tests/Granit.Testing.IdentityProviders.Tests"
       ]
     },
     {
