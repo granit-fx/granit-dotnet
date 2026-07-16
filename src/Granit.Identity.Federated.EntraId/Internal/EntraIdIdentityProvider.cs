@@ -68,6 +68,41 @@ internal sealed partial class EntraIdIdentityProvider(
         _ => new IdentityProviderTransientException(ProviderName, operation, ex),
     };
 
+    /// <summary>
+    /// Fetches every page of a Microsoft Graph collection by following <c>@odata.nextLink</c>. Graph
+    /// uses cursor pagination — <c>$skip</c> is unsupported on <c>/users</c> and most collections — so
+    /// a single GET returns only the first page (100 items by default). Accumulates up to
+    /// <paramref name="maxItems"/> results when set (a fetch bound so callers requesting a small window
+    /// do not walk the entire directory). The first request uses <paramref name="firstPageEndpoint"/>;
+    /// each continuation uses the absolute next-link URL Graph returns.
+    /// </summary>
+    private static async Task<List<T>> GetAllPagesAsync<T>(
+        HttpClient client, string firstPageEndpoint, int? maxItems, CancellationToken cancellationToken)
+    {
+        List<T> all = [];
+        string? next = firstPageEndpoint;
+
+        while (next is not null)
+        {
+            GraphCollectionResponse<T>? page = await client
+                .GetFromJsonAsync<GraphCollectionResponse<T>>(next, cancellationToken).ConfigureAwait(false);
+
+            if (page?.Value is { Count: > 0 })
+            {
+                all.AddRange(page.Value);
+            }
+
+            next = page?.NextLink;
+
+            if (maxItems.HasValue && all.Count >= maxItems.Value)
+            {
+                break;
+            }
+        }
+
+        return all;
+    }
+
     /// <inheritdoc/>
     public async Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
         string? search = null,
@@ -89,13 +124,27 @@ internal sealed partial class EntraIdIdentityProvider(
         try
         {
             HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
-            string endpoint = EntraIdAdminOptions.GetUsersEndpoint(search, first, max);
+            string endpoint = EntraIdAdminOptions.GetUsersEndpoint(search, top: max);
 
-            GraphCollectionResponse<GraphUserRepresentation>? response = await client
-                .GetFromJsonAsync<GraphCollectionResponse<GraphUserRepresentation>>(endpoint, cancellationToken)
-                .ConfigureAwait(false);
+            // Graph paginates via @odata.nextLink and rejects $skip on /users, so the caller's
+            // offset window (first/max) is applied client-side over the followed pages. Cap the
+            // fetch at first+max so a small window does not walk the whole directory.
+            int? fetchLimit = max.HasValue ? (first ?? 0) + max.Value : null;
+            List<GraphUserRepresentation> all = await GetAllPagesAsync<GraphUserRepresentation>(
+                client, endpoint, fetchLimit, cancellationToken).ConfigureAwait(false);
 
-            return response?.Value?.ConvertAll(ToIdentityUser) ?? [];
+            IEnumerable<GraphUserRepresentation> window = all;
+            if (first is > 0)
+            {
+                window = window.Skip(first.Value);
+            }
+
+            if (max.HasValue)
+            {
+                window = window.Take(max.Value);
+            }
+
+            return window.Select(ToIdentityUser).ToList();
         }
         catch (HttpRequestException ex) when (IsAuthorizationFailure(ex))
         {
@@ -399,12 +448,12 @@ internal sealed partial class EntraIdIdentityProvider(
         {
             HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
 
-            // Get all App Role assignments on the Service Principal
+            // Get all App Role assignments on the Service Principal (paginated — a popular app can
+            // have well over one page of assigned users).
             string endpoint = options.Value.GetServicePrincipalAppRoleAssignedToEndpoint();
 
-            GraphCollectionResponse<GraphAppRoleAssignmentRepresentation>? assignments = await client
-                .GetFromJsonAsync<GraphCollectionResponse<GraphAppRoleAssignmentRepresentation>>(endpoint, cancellationToken)
-                .ConfigureAwait(false);
+            List<GraphAppRoleAssignmentRepresentation> assignments = await GetAllPagesAsync<GraphAppRoleAssignmentRepresentation>(
+                client, endpoint, maxItems: null, cancellationToken).ConfigureAwait(false);
 
             // Resolve the role name to an App Role ID
             string? roleId = await ResolveRoleIdByNameAsync(client, roleName, cancellationToken).ConfigureAwait(false);
@@ -414,10 +463,10 @@ internal sealed partial class EntraIdIdentityProvider(
             }
 
             // Filter assignments by role ID and resolve each user
-            List<string> userIds = assignments?.Value?
+            var userIds = assignments
                 .Where(a => string.Equals(a.AppRoleId, roleId, StringComparison.OrdinalIgnoreCase))
                 .Select(a => a.PrincipalId)
-                .ToList() ?? [];
+                .ToList();
 
             List<IIdentityUser> users = [];
             foreach (string uid in userIds)
@@ -1024,11 +1073,10 @@ internal sealed partial class EntraIdIdentityProvider(
             HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
             const string endpoint = EntraIdAdminOptions.GroupsEndpoint;
 
-            GraphCollectionResponse<GraphGroupRepresentation>? response = await client
-                .GetFromJsonAsync<GraphCollectionResponse<GraphGroupRepresentation>>(endpoint, cancellationToken)
-                .ConfigureAwait(false);
+            List<GraphGroupRepresentation> groups = await GetAllPagesAsync<GraphGroupRepresentation>(
+                client, endpoint, maxItems: null, cancellationToken).ConfigureAwait(false);
 
-            return response?.Value?.ConvertAll(ToIdentityGroup) ?? [];
+            return groups.ConvertAll(ToIdentityGroup);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -1057,11 +1105,10 @@ internal sealed partial class EntraIdIdentityProvider(
             HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
             string endpoint = EntraIdAdminOptions.GetUserGroupsEndpoint(userId);
 
-            GraphCollectionResponse<GraphGroupRepresentation>? response = await client
-                .GetFromJsonAsync<GraphCollectionResponse<GraphGroupRepresentation>>(endpoint, cancellationToken)
-                .ConfigureAwait(false);
+            List<GraphGroupRepresentation> groups = await GetAllPagesAsync<GraphGroupRepresentation>(
+                client, endpoint, maxItems: null, cancellationToken).ConfigureAwait(false);
 
-            return response?.Value?.ConvertAll(ToIdentityGroup) ?? [];
+            return groups.ConvertAll(ToIdentityGroup);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {

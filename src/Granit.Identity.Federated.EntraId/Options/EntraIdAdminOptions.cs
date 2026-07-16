@@ -85,9 +85,11 @@ public sealed class EntraIdAdminOptions
     // ──── Users ────
 
     /// <summary>
-    /// Builds the Graph API URL for listing users with optional search and pagination.
+    /// Builds the Graph API URL for listing users with an optional search filter and page size.
+    /// Graph paginates via <c>@odata.nextLink</c> and rejects <c>$skip</c> on <c>/users</c>, so only
+    /// <c>$top</c> (page size) is emitted; continuation is by following the next-link.
     /// </summary>
-    internal static string GetUsersEndpoint(string? search = null, int? skip = null, int? top = null)
+    internal static string GetUsersEndpoint(string? search = null, int? top = null)
     {
         List<string> queryParams =
         [
@@ -98,11 +100,6 @@ public sealed class EntraIdAdminOptions
         {
             string escaped = EscapeODataStringLiteral(search);
             queryParams.Add($"$filter=startswith(displayName,'{Uri.EscapeDataString(escaped)}') or startswith(mail,'{Uri.EscapeDataString(escaped)}')");
-        }
-
-        if (skip.HasValue)
-        {
-            queryParams.Add($"$skip={skip.Value}");
         }
 
         if (top.HasValue)

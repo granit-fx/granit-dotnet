@@ -61,6 +61,30 @@ public sealed class CognitoIdentityProviderTests
     }
 
     [Fact]
+    public async Task GetUsersAsync_FollowsPaginationToken_ReturnsEveryPage()
+    {
+        // Cognito caps a page at 60 and continues via PaginationToken. A single call (the old
+        // behaviour) truncated the pool — this drives two pages and asserts all three users surface.
+        ListUsersResponse page1 = new()
+        {
+            Users = [CreateUserType("u1", "u1@t.com", "A", "B", true), CreateUserType("u2", "u2@t.com", "C", "D", true)],
+            PaginationToken = "NEXT",
+        };
+        ListUsersResponse page2 = new()
+        {
+            Users = [CreateUserType("u3", "u3@t.com", "E", "F", true)],
+        };
+        _cognitoClient.ListUsersAsync(Arg.Any<ListUsersRequest>(), Arg.Any<CancellationToken>())
+            .Returns(page1, page2);
+
+        IReadOnlyList<IIdentityUser> result = await _sut.GetUsersAsync(
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        result.Select(u => u.Username).ShouldBe(["u1", "u2", "u3"]);
+        await _cognitoClient.Received(2).ListUsersAsync(Arg.Any<ListUsersRequest>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task GetUsersAsync_OnException_ThrowsTransient()
     {
         _cognitoClient.ListUsersAsync(Arg.Any<ListUsersRequest>(), Arg.Any<CancellationToken>())

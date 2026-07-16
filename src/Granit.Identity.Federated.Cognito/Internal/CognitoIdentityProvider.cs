@@ -28,6 +28,9 @@ internal sealed partial class CognitoIdentityProvider(
     : IIdentityProvider, IIdentityClientRoleManager, IUserSessionProvider, IUserDeviceProvider
 {
     private const string ProviderName = "cognito";
+
+    // AWS Cognito caps ListUsers at 60 users per page; larger result sets continue via PaginationToken.
+    private const int CognitoListUsersPageSize = 60;
     private const string EmailAttribute = "email";
     private const string GivenNameAttribute = "given_name";
     private const string FamilyNameAttribute = "family_name";
@@ -104,16 +107,38 @@ internal sealed partial class CognitoIdentityProvider(
                 request.Filter = $"username ^= \"{search}\"";
             }
 
-            if (max.HasValue)
+            // Cognito ListUsers caps a page at 60 users and continues via PaginationToken. A single
+            // call (the old behaviour) silently truncated the directory to the first 60. Follow the
+            // token, bounded by the caller's window (first+max) so a small request does not walk the
+            // whole pool.
+            request.Limit = Math.Min(max ?? CognitoListUsersPageSize, CognitoListUsersPageSize);
+            int? fetchLimit = max.HasValue ? (first ?? 0) + max.Value : null;
+
+            List<Amazon.CognitoIdentityProvider.Model.UserType> allUsers = [];
+            do
             {
-                request.Limit = max.Value;
+                ListUsersResponse response = await cognitoClient
+                    .ListUsersAsync(request, cancellationToken)
+                    .ConfigureAwait(false);
+
+                allUsers.AddRange(response.Users);
+                request.PaginationToken = response.PaginationToken;
+            }
+            while (!string.IsNullOrEmpty(request.PaginationToken)
+                && (!fetchLimit.HasValue || allUsers.Count < fetchLimit.Value));
+
+            IEnumerable<Amazon.CognitoIdentityProvider.Model.UserType> window = allUsers;
+            if (first is > 0)
+            {
+                window = window.Skip(first.Value);
             }
 
-            ListUsersResponse response = await cognitoClient
-                .ListUsersAsync(request, cancellationToken)
-                .ConfigureAwait(false);
+            if (max.HasValue)
+            {
+                window = window.Take(max.Value);
+            }
 
-            return response.Users.ConvertAll(ToIdentityUser);
+            return window.Select(ToIdentityUser).ToList();
         }
         catch (NotAuthorizedException ex)
         {
