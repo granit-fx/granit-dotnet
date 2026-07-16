@@ -285,7 +285,11 @@
         "type": "Project",
         "dependencies": {
           "Granit.Imaging": "[0.1.0-dev, )",
-          "Magick.NET-Q8-AnyCPU": "[14.*, )"
+          "Magick.NET-Q8-AnyCPU": "[14.*, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
         }
       },
       "granit.textextraction": {
