@@ -50,7 +50,7 @@ public sealed partial class IsolatedDbContextTests
     /// Every concrete DbContext in <c>*.EntityFrameworkCore</c> or <c>*.Database</c> packages
     /// must either inherit from <c>GranitDbContext</c> (preferred) or carry the inline
     /// <c>ConfigureMultiTenantFilter</c> pattern (forced when single-inheritance already binds
-    /// the type elsewhere — currently only OpenIddictDbContext). Calling the legacy
+    /// the type elsewhere — no context currently needs this). Calling the legacy
     /// <c>modelBuilder.ApplyGranitConventions(currentTenant, ...)</c> with a non-null tenant
     /// re-introduces the "frozen tenant" SQL leak fixed in #2129.
     /// </summary>

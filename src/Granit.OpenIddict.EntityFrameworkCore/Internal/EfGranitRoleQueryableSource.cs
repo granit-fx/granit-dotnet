@@ -23,7 +23,7 @@ internal sealed class EfGranitRoleQueryableSource(
     public IQueryable<GranitRole> GetQueryable()
     {
         _context ??= contextFactory.CreateDbContext();
-        return _context.Roles.AsNoTracking();
+        return _context.Set<GranitRole>().AsNoTracking();
     }
 
     public ValueTask DisposeAsync()

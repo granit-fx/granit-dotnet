@@ -66,6 +66,22 @@ public static class OpenIddictModelBuilderExtensions
             b.Property(u => u.CreatedBy).HasMaxLength(256);
             b.Property(u => u.ModifiedBy).HasMaxLength(256);
 
+            // ── Replicated IdentityDbContext<TUser,TRole,TKey> conventions ──
+            // This context is built on GranitDbContext, not IdentityDbContext, so the identity
+            // schema (indexes, maxlengths, concurrency token, join relationships) is declared here.
+            // Names and lengths mirror the framework defaults byte-for-byte (pinning-test guarded).
+            b.Property(u => u.UserName).HasMaxLength(256);
+            b.Property(u => u.NormalizedUserName).HasMaxLength(256);
+            b.Property(u => u.Email).HasMaxLength(256);
+            b.Property(u => u.NormalizedEmail).HasMaxLength(256);
+            b.Property(u => u.ConcurrencyStamp).IsConcurrencyToken();
+            b.HasIndex(u => u.NormalizedUserName).HasDatabaseName("UserNameIndex").IsUnique();
+            b.HasIndex(u => u.NormalizedEmail).HasDatabaseName("EmailIndex");
+            b.HasMany<IdentityUserClaim<Guid>>().WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
+            b.HasMany<IdentityUserLogin<Guid>>().WithOne().HasForeignKey(ul => ul.UserId).IsRequired();
+            b.HasMany<IdentityUserToken<Guid>>().WithOne().HasForeignKey(ut => ut.UserId).IsRequired();
+            b.HasMany<IdentityUserRole<Guid>>().WithOne().HasForeignKey(ur => ur.UserId).IsRequired();
+
             // Manual soft-delete filter with IDataFilter bypass support.
             // LocalIdentity does NOT implement ISoftDeletable (incompatible with UserManager),
             // so ApplyGranitConventions cannot register this filter automatically.
@@ -90,6 +106,14 @@ public static class OpenIddictModelBuilderExtensions
         {
             b.ToTable(prefix + "roles", schema);
             b.Property(r => r.Description).HasMaxLength(512);
+
+            // Replicated IdentityDbContext role conventions (see the LocalIdentity block).
+            b.Property(r => r.Name).HasMaxLength(256);
+            b.Property(r => r.NormalizedName).HasMaxLength(256);
+            b.Property(r => r.ConcurrencyStamp).IsConcurrencyToken();
+            b.HasIndex(r => r.NormalizedName).HasDatabaseName("RoleNameIndex").IsUnique();
+            b.HasMany<IdentityUserRole<Guid>>().WithOne().HasForeignKey(ur => ur.RoleId).IsRequired();
+            b.HasMany<IdentityRoleClaim<Guid>>().WithOne().HasForeignKey(rc => rc.RoleId).IsRequired();
         });
 
         // ASP.NET Identity join/claim entities — define keys explicitly so that

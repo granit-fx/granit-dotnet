@@ -1,33 +1,31 @@
-using System.Linq.Expressions;
-using System.Reflection;
 using Granit.DataFiltering;
-using Granit.Domain;
 using Granit.Identity.Local.Domain;
 using Granit.MultiTenancy;
 using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Metadata;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// Isolated DbContext for the OpenIddict module, extending
-/// <see cref="IdentityDbContext{TUser,TRole,TKey}"/> with OpenIddict entity support.
+/// Isolated DbContext for the OpenIddict module and its co-located ASP.NET Core Identity tables.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Cannot inherit from <see cref="GranitDbContext"/> because the C# single-inheritance
-/// constraint already binds this type to ASP.NET Identity's
-/// <see cref="IdentityDbContext{TUser,TRole,TKey}"/>. The parameterised IMultiTenant
-/// filter is therefore replicated inline (see <see cref="CurrentTenantId"/>,
-/// <see cref="IsMultiTenantFilterEnabled"/>, <see cref="ConfigureMultiTenantFilter"/>) —
-/// any change to the GranitDbContext filter shape must mirror here.
+/// Built on <see cref="GranitDbContext"/> — the parameterised <c>IMultiTenant</c> filter and
+/// <c>ApplyGranitConventions</c> come from the base, so the reflection-based filter replication a
+/// non-<c>GranitDbContext</c> derivative would need is gone.
+/// </para>
+/// <para>
+/// The context does <b>not</b> inherit <c>IdentityDbContext</c>: the entire model — the Identity
+/// tables (users/roles/claims/logins/tokens/passkeys), their keys, unique indexes
+/// (<c>UserNameIndex</c>/<c>EmailIndex</c>/<c>RoleNameIndex</c>), maxlengths and relationships, plus
+/// the OpenIddict entities, group tables and signing keys — is defined self-contained by
+/// <see cref="OpenIddictModelBuilderExtensions.ConfigureOpenIddictModule"/>. A relational-model
+/// pinning test guards that this produces a byte-identical schema.
 /// </para>
 /// </remarks>
 internal sealed class OpenIddictDbContext(
@@ -35,23 +33,8 @@ internal sealed class OpenIddictDbContext(
     ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null,
     IOptions<MetadataMappingOptions<LocalIdentity>>? extensionOptions = null)
-    : IdentityDbContext<LocalIdentity, GranitRole, Guid>(options)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
-    private static readonly MethodInfo ConfigureMultiTenantFilterMethod =
-        typeof(OpenIddictDbContext).GetMethod(
-            nameof(ConfigureMultiTenantFilter),
-            BindingFlags.Instance | BindingFlags.NonPublic)!; // NOSONAR S3011 - intentional: ConfigureMultiTenantFilter must stay private to keep its `this`-binding (load-bearing for EF Core parameter extraction); reflection is the only way to invoke a generic instance method per-entity-type.
-
-    private readonly ICurrentTenant _currentTenant = currentTenant
-        ?? throw new ArgumentNullException(nameof(currentTenant));
-    private readonly IDataFilter? _dataFilter = dataFilter;
-
-    /// <inheritdoc cref="GranitDbContext.CurrentTenantId" />
-    public Guid? CurrentTenantId => _currentTenant.IsAvailable ? _currentTenant.Id : null;
-
-    /// <inheritdoc cref="GranitDbContext.IsMultiTenantFilterEnabled" />
-    public bool IsMultiTenantFilterEnabled => _dataFilter?.IsEnabled<IMultiTenant>() ?? true;
-
     /// <summary>Gets the user groups set.</summary>
     public DbSet<GranitUserGroup> UserGroups => Set<GranitUserGroup>();
 
@@ -61,43 +44,20 @@ internal sealed class OpenIddictDbContext(
     /// <summary>Gets the signing keys set.</summary>
     public DbSet<SigningKey> SigningKeys => Set<SigningKey>();
 
+    /// <summary>
+    /// OpenIddict's null-tenant applications, scopes and tokens are global — visible under every
+    /// tenant scope (the ClientId already carries the tenant, so isolation holds via app + subject).
+    /// </summary>
+    protected override bool TenantFilterTreatsNullAsGlobal => true;
+
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder builder)
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {
-        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(modelBuilder);
 
-        // 1. ASP.NET Identity conventions (default table names, keys, indexes).
-        base.OnModelCreating(builder);
-
-        // 2. Granit OpenIddict conventions (Identity keys, OpenIddict conventions,
-        //    openiddict_* table prefix, column constraints, manual soft-delete filter)
-        builder.ConfigureOpenIddictModule(_dataFilter, extensionOptions?.Value);
-
-        // 3. Granit cross-cutting conventions WITHOUT the IMultiTenant filter (currentTenant: null).
-        builder.ApplyGranitConventions(currentTenant: null, _dataFilter);
-
-        // 4. Parameterised IMultiTenant filter — inlined here because we cannot inherit
-        //    from GranitDbContext (see remarks on the class).
-        foreach (IMutableEntityType entityType in builder.Model.GetEntityTypes()
-            .Where(et => typeof(IMultiTenant).IsAssignableFrom(et.ClrType)))
-        {
-            ConfigureMultiTenantFilterMethod
-                .MakeGenericMethod(entityType.ClrType)
-                .Invoke(this, [builder]);
-        }
-    }
-
-    private void ConfigureMultiTenantFilter<TEntity>(ModelBuilder builder)
-        where TEntity : class
-    {
-        // null-is-global: a row with TenantId == null belongs to no tenant and is visible
-        // to every tenant (and to anonymous requests). The CurrentTenantId disjunct stays
-        // parameterised (@ef_filter__CurrentTenantId) — see MultiTenantFilterParameterizationReproTests.
-        Expression<Func<TEntity, bool>> filter = e =>
-            !IsMultiTenantFilterEnabled
-            || EF.Property<Guid?>(e, nameof(IMultiTenant.TenantId)) == null
-            || EF.Property<Guid?>(e, nameof(IMultiTenant.TenantId)) == CurrentTenantId;
-        builder.Entity<TEntity>()
-            .HasQueryFilter(GranitFilterNames.MultiTenant, filter);
+        // Self-contained model: Identity + OpenIddict entities, the openiddict_* prefix, column
+        // constraints and the manual LocalIdentity soft-delete filter. The IMultiTenant filter and
+        // ApplyGranitConventions run in GranitDbContext.OnModelCreating after this override.
+        modelBuilder.ConfigureOpenIddictModule(DataFilter, extensionOptions?.Value);
     }
 }

@@ -175,6 +175,15 @@ public abstract class GranitDbContext : DbContext
     }
 
     /// <summary>
+    /// When <c>true</c>, a row whose <see cref="IMultiTenant.TenantId"/> is <see langword="null"/> is
+    /// treated as global and stays visible under every tenant scope (and to anonymous requests), in
+    /// addition to the current tenant's own rows. Defaults to <c>false</c> — strict isolation, where a
+    /// tenant sees only its own rows. Override to <c>true</c> in a context whose null-tenant rows are
+    /// deliberately shared (e.g. OpenIddict's global clients and scopes).
+    /// </summary>
+    protected virtual bool TenantFilterTreatsNullAsGlobal => false;
+
+    /// <summary>
     /// Registers the parameterised <see cref="IMultiTenant"/> filter for
     /// <typeparamref name="TEntity"/>. Called via reflection from
     /// <see cref="OnModelCreating"/> so the lambda's <c>this</c> reference is bound to the
@@ -184,9 +193,14 @@ public abstract class GranitDbContext : DbContext
     private void ConfigureMultiTenantFilter<TEntity>(ModelBuilder modelBuilder)
         where TEntity : class
     {
-        Expression<Func<TEntity, bool>> filter = e =>
-            !IsMultiTenantFilterEnabled
-            || EF.Property<Guid?>(e, nameof(IMultiTenant.TenantId)) == CurrentTenantId;
+        // The disjunction is chosen at model-creation time (per derived context type). Both branches
+        // read CurrentTenantId via `this`, so EF Core still parameterises it (@ef_filter__CurrentTenantId).
+        Expression<Func<TEntity, bool>> filter = TenantFilterTreatsNullAsGlobal
+            ? e => !IsMultiTenantFilterEnabled
+                || EF.Property<Guid?>(e, nameof(IMultiTenant.TenantId)) == null
+                || EF.Property<Guid?>(e, nameof(IMultiTenant.TenantId)) == CurrentTenantId
+            : e => !IsMultiTenantFilterEnabled
+                || EF.Property<Guid?>(e, nameof(IMultiTenant.TenantId)) == CurrentTenantId;
 
         modelBuilder.Entity<TEntity>()
             .HasQueryFilter(GranitFilterNames.MultiTenant, filter);
