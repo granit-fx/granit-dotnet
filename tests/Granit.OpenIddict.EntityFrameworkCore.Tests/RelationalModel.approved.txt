@@ -1,0 +1,208 @@
+TABLE openiddict_applications [Granit.OpenIddict.EntityFrameworkCore.Entities.GranitOpenIddictApplication]
+  COL ApplicationType String NULL
+  COL ClientId String NULL
+  COL ClientSecret String NULL
+  COL ClientType String NULL
+  COL ConcurrencyToken String NULL
+  COL ConsentType String NULL
+  COL DisplayName String NULL
+  COL DisplayNames String NULL
+  COL Id Guid NOT NULL
+  COL JsonWebKeySet String NULL
+  COL Permissions String NULL
+  COL PostLogoutRedirectUris String NULL
+  COL Properties String NULL
+  COL RedirectUris String NULL
+  COL Requirements String NULL
+  COL Settings String NULL
+  COL TenantId Guid? NULL
+  PK Id
+  INDEX ClientId UNIQUE
+  FILTER MultiTenant
+TABLE openiddict_authorizations [Granit.OpenIddict.EntityFrameworkCore.Entities.GranitOpenIddictAuthorization]
+  COL ApplicationId Guid? NULL
+  COL ConcurrencyToken String NULL
+  COL CreationDate DateTime? NULL
+  COL Id Guid NOT NULL
+  COL Properties String NULL
+  COL Scopes String NULL
+  COL Status String NULL
+  COL Subject String NULL
+  COL TenantId Guid? NULL
+  COL Type String NULL
+  PK Id
+  INDEX ApplicationId, Status, Subject, Type
+  FILTER MultiTenant
+TABLE openiddict_role_claims [Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>]
+  COL ClaimType String NULL
+  COL ClaimValue String NULL
+  COL Id Int32 NOT NULL
+  COL RoleId Guid NOT NULL
+  PK Id
+  INDEX RoleId
+TABLE openiddict_roles [Granit.Identity.Local.Domain.GranitRole]
+  COL ConcurrencyStamp String NULL
+  COL Description String NULL
+  COL Id Guid NOT NULL
+  COL Name String NULL
+  COL NormalizedName String NULL
+  PK Id
+  INDEX NormalizedName UNIQUE
+TABLE openiddict_scopes [Granit.OpenIddict.EntityFrameworkCore.Entities.GranitOpenIddictScope]
+  COL ConcurrencyToken String NULL
+  COL Description String NULL
+  COL Descriptions String NULL
+  COL DisplayName String NULL
+  COL DisplayNames String NULL
+  COL Id Guid NOT NULL
+  COL Name String NULL
+  COL Properties String NULL
+  COL Resources String NULL
+  COL TenantId Guid? NULL
+  PK Id
+  INDEX Name UNIQUE
+  FILTER MultiTenant
+TABLE openiddict_signing_keys [Granit.OpenIddict.Domain.SigningKey]
+  COL ActivatedAt DateTimeOffset NOT NULL
+  COL Algorithm String NOT NULL
+  COL ConcurrencyStamp String NOT NULL
+  COL CreatedAt DateTimeOffset NOT NULL
+  COL CreatedBy String NOT NULL
+  COL EncryptedKeyMaterial String NOT NULL
+  COL ExpiresAt DateTimeOffset NOT NULL
+  COL Id Guid NOT NULL
+  COL KeyId String NOT NULL
+  COL KeySize Int32 NOT NULL
+  COL KeyType String NOT NULL
+  COL RetiredAt DateTimeOffset? NULL
+  COL Status SigningKeyStatus NOT NULL
+  PK Id
+  INDEX KeyId UNIQUE
+  INDEX KeyType UNIQUE
+  INDEX KeyType, Status
+TABLE openiddict_tokens [Granit.OpenIddict.EntityFrameworkCore.Entities.GranitOpenIddictToken]
+  COL ApplicationId Guid? NULL
+  COL AuthorizationId Guid? NULL
+  COL ConcurrencyToken String NULL
+  COL CreationDate DateTime? NULL
+  COL ExpirationDate DateTime? NULL
+  COL Id Guid NOT NULL
+  COL LastActivityAt DateTimeOffset? NULL
+  COL Payload String NULL
+  COL Properties String NULL
+  COL RedemptionDate DateTime? NULL
+  COL ReferenceId String NULL
+  COL Status String NULL
+  COL Subject String NULL
+  COL TenantId Guid? NULL
+  COL Type String NULL
+  PK Id
+  INDEX ApplicationId, Status, Subject, Type
+  INDEX AuthorizationId
+  INDEX ReferenceId UNIQUE
+  FILTER MultiTenant
+TABLE openiddict_user_claims [Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>]
+  COL ClaimType String NULL
+  COL ClaimValue String NULL
+  COL Id Int32 NOT NULL
+  COL UserId Guid NOT NULL
+  PK Id
+  INDEX UserId
+TABLE openiddict_user_group_members [Granit.Identity.Local.Domain.GranitUserGroupMember]
+  COL CreatedAt DateTimeOffset NOT NULL
+  COL CreatedBy String NOT NULL
+  COL GroupId Guid NOT NULL
+  COL Id Guid NOT NULL
+  COL ModifiedAt DateTimeOffset? NULL
+  COL ModifiedBy String NULL
+  COL TenantId Guid? NULL
+  COL UserId Guid NOT NULL
+  PK Id
+  INDEX GroupId, UserId UNIQUE
+  INDEX UserId
+  FILTER MultiTenant
+TABLE openiddict_user_groups [Granit.Identity.Local.Domain.GranitUserGroup]
+  COL CreatedAt DateTimeOffset NOT NULL
+  COL CreatedBy String NOT NULL
+  COL Description String NULL
+  COL Id Guid NOT NULL
+  COL ModifiedAt DateTimeOffset? NULL
+  COL ModifiedBy String NULL
+  COL Name String NOT NULL
+  COL TenantId Guid? NULL
+  PK Id
+  INDEX TenantId, Name UNIQUE
+  FILTER MultiTenant
+TABLE openiddict_user_logins [Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>]
+  COL LoginProvider String NOT NULL
+  COL ProviderDisplayName String NULL
+  COL ProviderKey String NOT NULL
+  COL UserId Guid NOT NULL
+  PK LoginProvider, ProviderKey
+  INDEX UserId
+TABLE openiddict_user_passkeys [Microsoft.AspNetCore.Identity.IdentityPasskeyData]
+  COL AttestationObject Byte[] NOT NULL
+  COL ClientDataJson Byte[] NOT NULL
+  COL CreatedAt DateTimeOffset NOT NULL
+  COL IdentityUserPasskeyCredentialId Byte[] NOT NULL
+  COL IsBackedUp Boolean NOT NULL
+  COL IsBackupEligible Boolean NOT NULL
+  COL IsUserVerified Boolean NOT NULL
+  COL Name String NULL
+  COL PublicKey Byte[] NOT NULL
+  COL SignCount UInt32 NOT NULL
+  COL Transports String[] NULL
+  PK IdentityUserPasskeyCredentialId
+TABLE openiddict_user_passkeys [Microsoft.AspNetCore.Identity.IdentityUserPasskey<System.Guid>]
+  COL CredentialId Byte[] NOT NULL
+  COL UserId Guid NOT NULL
+  PK CredentialId
+  INDEX UserId
+TABLE openiddict_user_roles [Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>]
+  COL RoleId Guid NOT NULL
+  COL UserId Guid NOT NULL
+  PK UserId, RoleId
+  INDEX RoleId
+TABLE openiddict_user_tokens [Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>]
+  COL LoginProvider String NOT NULL
+  COL Name String NOT NULL
+  COL UserId Guid NOT NULL
+  COL Value String NULL
+  PK UserId, LoginProvider, Name
+TABLE openiddict_users [Granit.Identity.Local.Domain.LocalIdentity]
+  COL AccessFailedCount Int32 NOT NULL
+  COL ConcurrencyStamp String NULL
+  COL ConsecutiveLockouts Int32 NOT NULL
+  COL CreatedAt DateTimeOffset NOT NULL
+  COL CreatedBy String NOT NULL
+  COL CustomAttributesJson String NULL
+  COL DeletedAt DateTimeOffset? NULL
+  COL DeletedBy String NULL
+  COL DeletionEventDispatchedAt DateTimeOffset? NULL
+  COL Email String NULL
+  COL EmailConfirmed Boolean NOT NULL
+  COL FirstName String NULL
+  COL Id Guid NOT NULL
+  COL IsDeleted Boolean NOT NULL
+  COL LastName String NULL
+  COL LockoutEnabled Boolean NOT NULL
+  COL LockoutEnd DateTimeOffset? NULL
+  COL ModifiedAt DateTimeOffset? NULL
+  COL ModifiedBy String NULL
+  COL NormalizedEmail String NULL
+  COL NormalizedUserName String NULL
+  COL PasswordHash String NULL
+  COL PhoneNumber String NULL
+  COL PhoneNumberConfirmed Boolean NOT NULL
+  COL RegistrationEventPendingSince DateTimeOffset? NULL
+  COL SecurityStamp String NULL
+  COL TenantId Guid? NULL
+  COL TwoFactorEnabled Boolean NOT NULL
+  COL UserId Guid NOT NULL
+  COL UserName String NULL
+  PK Id
+  INDEX NormalizedEmail
+  INDEX NormalizedUserName UNIQUE
+  INDEX TenantId
+  FILTER MultiTenant
+  FILTER SoftDelete
