@@ -674,7 +674,6 @@
           "Granit.Entities.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }

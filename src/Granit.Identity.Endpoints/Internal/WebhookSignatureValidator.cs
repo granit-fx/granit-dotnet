@@ -141,7 +141,7 @@ internal sealed partial class WebhookSignatureValidator
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Identity webhook secret is not configured — all webhook requests will be rejected. " +
-                  "Set 'IdentityWebhook:Secret' to enable the webhook endpoint")]
+                  "Set 'Identity:Webhook:Secret' to enable the webhook endpoint")]
     private static partial void LogWebhookSecretNotConfigured(ILogger logger);
 
     [LoggerMessage(Level = LogLevel.Warning,

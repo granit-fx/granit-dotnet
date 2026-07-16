@@ -1398,7 +1398,6 @@
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Identity",
-        "Granit.Localization",
         "Granit.Entities.Abstractions",
         "Granit.Persistence",
         "Granit.QueryEngine.Abstractions"
