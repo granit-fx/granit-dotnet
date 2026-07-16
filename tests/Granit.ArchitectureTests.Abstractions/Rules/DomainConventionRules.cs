@@ -1,3 +1,4 @@
+
 using ArchUnitNET.Domain;
 using Shouldly;
 
@@ -286,4 +287,73 @@ public static class DomainConventionRules
             d is ArchUnitNET.Domain.Dependencies.InheritsBaseClassDependency
             && (d.Target.FullName == baseFullName
                 || (d.Target is Class baseClass && HasBaseClass(baseClass, baseFullName))));
+
+    private static readonly string[] s_aggregateRootBaseNames =
+    [
+        "AggregateRoot", "CreationAuditedAggregateRoot", "AuditedAggregateRoot", "FullAuditedAggregateRoot",
+    ];
+
+    /// <summary>
+    /// Reflection-based complement to <see cref="AggregateRootsShouldNotHavePublicSetters"/>: returns
+    /// every aggregate-root property that exposes a <b>public</b> setter. The ArchUnitNET rule
+    /// under-reports a public setter that <em>implicitly</em> implements an interface member (e.g. an
+    /// <c>IMultiTenant.TenantId</c> auto-property declared <c>public Guid? TenantId { get; set; }</c>);
+    /// reading the real accessor via reflection closes that blind spot. A <c>private set</c> plus an
+    /// explicit interface implementation is the correct, non-violating shape.
+    /// </summary>
+    public static IReadOnlyList<string> FindAggregateRootsWithPublicPropertySetters(
+        IEnumerable<System.Reflection.Assembly> assemblies, string typePrefix)
+    {
+        List<string> violations = [];
+
+        foreach (System.Reflection.Assembly assembly in assemblies)
+        {
+            foreach (Type type in SafeGetTypes(assembly))
+            {
+                if (type.IsAbstract
+                    || !(type.FullName ?? string.Empty).StartsWith(typePrefix, StringComparison.Ordinal)
+                    || !InheritsAggregateRootBase(type))
+                {
+                    continue;
+                }
+
+                foreach (System.Reflection.PropertyInfo property in type.GetProperties(
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly))
+                {
+                    if (property.GetSetMethod(nonPublic: false) is { IsPublic: true })
+                    {
+                        violations.Add($"{type.Name}.{property.Name}");
+                    }
+                }
+            }
+        }
+
+        return violations;
+    }
+
+    private static IEnumerable<Type> SafeGetTypes(System.Reflection.Assembly assembly)
+    {
+        try
+        {
+            return assembly.GetTypes();
+        }
+        catch (System.Reflection.ReflectionTypeLoadException ex)
+        {
+            return ex.Types.Where(t => t is not null)!;
+        }
+    }
+
+    private static bool InheritsAggregateRootBase(Type type)
+    {
+        for (Type? baseType = type.BaseType; baseType is not null; baseType = baseType.BaseType)
+        {
+            if (baseType.Namespace == "Granit.Domain"
+                && s_aggregateRootBaseNames.Contains(baseType.Name, StringComparer.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

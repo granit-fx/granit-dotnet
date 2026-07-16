@@ -49,6 +49,39 @@ public static class ArchitectureLoader
     }
 
     /// <summary>
+    /// Returns the framework assemblies (matching <paramref name="assemblyPrefix"/>, excluding test /
+    /// analyzer / source-generator dlls) from the caller's output directory. Use for reflection-based
+    /// conventions that need real <see cref="System.Type"/> metadata beyond what ArchUnitNET surfaces.
+    /// </summary>
+    public static IReadOnlyList<Assembly> LoadAssemblies(
+        string assemblyPrefix,
+        Assembly callerAssembly,
+        params string[] additionalExclusions)
+    {
+        ArgumentNullException.ThrowIfNull(assemblyPrefix);
+        ArgumentNullException.ThrowIfNull(callerAssembly);
+
+        string outputDir = Path.GetDirectoryName(callerAssembly.Location)!;
+
+        return Directory.GetFiles(outputDir, $"{assemblyPrefix}*.dll")
+            .Where(path =>
+            {
+                string name = Path.GetFileNameWithoutExtension(path);
+                return !name.Contains("Tests", StringComparison.Ordinal)
+                    && !name.Contains("Analyzers", StringComparison.Ordinal)
+                    && !name.Contains("SourceGenerator", StringComparison.Ordinal)
+                    && !additionalExclusions.Any(ex => name.Contains(ex, StringComparison.Ordinal));
+            })
+            .Select(path =>
+            {
+                try { return Assembly.LoadFrom(path); }
+                catch { return null; }
+            })
+            .Where(a => a is not null)
+            .ToList()!;
+    }
+
+    /// <summary>
     /// Loads assemblies matching multiple prefixes into a single architecture graph.
     /// </summary>
     public static ArchUnitNET.Domain.Architecture Load(

@@ -98,7 +98,19 @@ public sealed class User : AuditedAggregateRoot, IIdentityUser, IMultiTenant
     public bool IsEnabled { get; private set; } = true;
 
     /// <summary>Tenant identifier, or <see langword="null"/> for cross-tenant / host-side users.</summary>
-    public Guid? TenantId { get; set; }
+    public Guid? TenantId { get; private set; }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Explicit implementation preserves the <c>private set</c> DDD encapsulation on the public
+    /// property while satisfying the interface contract. Used by <c>AuditedEntityInterceptor</c>
+    /// to inject the tenant identifier.
+    /// </remarks>
+    Guid? IMultiTenant.TenantId
+    {
+        get => TenantId;
+        set => TenantId = value;
+    }
 
     /// <inheritdoc cref="IIdentityUser.Username"/>
     string? IIdentityUser.Username => Email;

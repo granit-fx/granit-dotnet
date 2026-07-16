@@ -28310,12 +28310,6 @@
           "returnType": "string?"
         },
         {
-          "name": "TenantId",
-          "kind": "property",
-          "signature": "Guid? TenantId",
-          "returnType": "Guid?"
-        },
-        {
           "name": "Create",
           "kind": "method",
           "signature": "Create(Guid id, string email, string displayName, string? firstName = null, string? lastName = null, string? phoneNumber = null, Guid? tenantId = null)",
