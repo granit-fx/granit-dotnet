@@ -106,6 +106,32 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
             () => _provider.GetUsersAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
+    [Fact]
+    public async Task GetUsersAsync_FollowsODataNextLink_ReturnsEveryPage()
+    {
+        // Graph returns 100 users per page and a @odata.nextLink cursor. A single GET (the old
+        // behaviour) silently truncated to the first page — this drives two pages and asserts all
+        // three users surface, and that the provider actually followed the next-link.
+        const string page1 = """{"value":[{"id":"u1","userPrincipalName":"a@x.com","mail":null,"givenName":null,"surname":null,"accountEnabled":true},{"id":"u2","userPrincipalName":"b@x.com","mail":null,"givenName":null,"surname":null,"accountEnabled":true}],"@odata.nextLink":"https://graph.microsoft.com/v1.0/users?$skiptoken=NEXT"}""";
+        const string page2 = """{"value":[{"id":"u3","userPrincipalName":"c@x.com","mail":null,"givenName":null,"surname":null,"accountEnabled":true}]}""";
+
+        MockSequenceHttpMessageHandler graphHandler = new([page1, page2]);
+        using HttpClient graphClient = new(graphHandler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
+        IHttpClientFactory graphFactory = Substitute.For<IHttpClientFactory>();
+        graphFactory.CreateClient("MicrosoftGraph").Returns(graphClient);
+
+        EntraIdIdentityProvider provider = new(
+            _tokenService, graphFactory, Microsoft.Extensions.Options.Options.Create(_options),
+            _passwordResetNotifier, _distributedEventBus, new SimpleGuidGenerator(),
+            NullLogger<EntraIdIdentityProvider>.Instance);
+
+        IReadOnlyList<IIdentityUser> result = await provider.GetUsersAsync(
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        result.Select(u => u.UserId).ShouldBe(["u1", "u2", "u3"]);
+        graphHandler.CallCount.ShouldBe(2);
+    }
+
     [Theory]
     [InlineData("x') or accountEnabled eq true or startswith(mail,'")]
     [InlineData("a\" or 1 eq 1")]

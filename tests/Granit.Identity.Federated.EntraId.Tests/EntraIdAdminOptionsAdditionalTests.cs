@@ -88,12 +88,13 @@ public sealed class EntraIdAdminOptionsAdditionalTests
     }
 
     [Fact]
-    public void GetUsersEndpoint_WithSkipAndTop_IncludesParams()
+    public void GetUsersEndpoint_WithTop_EmitsTopButNeverSkip()
     {
-        string endpoint = EntraIdAdminOptions.GetUsersEndpoint(skip: 10, top: 25);
+        // Graph rejects $skip on /users — the page size is $top and continuation is via @odata.nextLink.
+        string endpoint = EntraIdAdminOptions.GetUsersEndpoint(top: 25);
 
-        endpoint.ShouldContain("$skip=10");
         endpoint.ShouldContain("$top=25");
+        endpoint.ShouldNotContain("$skip");
     }
 
     [Fact]
