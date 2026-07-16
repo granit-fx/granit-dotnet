@@ -1,8 +1,6 @@
 using System.Diagnostics.Metrics;
-using Granit.Events;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
-using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Internal;
 using Granit.Timing;
@@ -21,7 +19,6 @@ public sealed class AspNetImpersonationServiceTests
 
     private readonly UserManager<LocalIdentity> _userManager;
     private readonly IOpenIddictTokenManager _tokenManager = Substitute.For<IOpenIddictTokenManager>();
-    private readonly IDistributedEventBus _eventBus = Substitute.For<IDistributedEventBus>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly AspNetImpersonationService _sut;
 
@@ -39,7 +36,6 @@ public sealed class AspNetImpersonationServiceTests
         _sut = new AspNetImpersonationService(
             _userManager,
             _tokenManager,
-            _eventBus,
             metrics,
             _clock,
             NullLogger<AspNetImpersonationService>.Instance);
@@ -77,31 +73,6 @@ public sealed class AspNetImpersonationServiceTests
         result.AccessToken.ShouldBe("access-token-value");
         result.RefreshToken.ShouldBe("refresh-token-value");
         result.ExpiresIn.ShouldBe(3600);
-    }
-
-    [Fact]
-    public async Task ImpersonateAsync_PublishesUserImpersonatedEto()
-    {
-        LocalIdentity target = CreateUser();
-        var tenantId = Guid.NewGuid();
-        target.TenantId = tenantId;
-        string targetId = target.Id.ToString();
-        var impersonatorGuid = Guid.NewGuid();
-        string impersonatorId = impersonatorGuid.ToString();
-
-        _userManager.FindByIdAsync(targetId).Returns(target);
-        _userManager.GetRolesAsync(target).Returns([]);
-        SetupTokenCreation();
-
-        await _sut.ImpersonateAsync(
-            targetId, impersonatorId, "Admin User", TestContext.Current.CancellationToken);
-
-        await _eventBus.Received(1).PublishAsync(
-            Arg.Is<UserImpersonatedEto>(e =>
-                e.TargetUserId == target.Id &&
-                e.ImpersonatorId == impersonatorGuid &&
-                e.TenantId == tenantId),
-            Arg.Any<CancellationToken>());
     }
 
     [Fact]

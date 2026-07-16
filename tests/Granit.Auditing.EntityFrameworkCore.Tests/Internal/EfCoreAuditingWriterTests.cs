@@ -91,6 +91,38 @@ public sealed class EfCoreAuditingWriterTests
     }
 
     [Fact]
+    public async Task WriteAsync_PopulatesPrimaryEntityTypeFromFirstChange()
+    {
+        DbContextOptions<AuditingDbContext> dbOptions = CreateOptions();
+        EfCoreAuditingWriter writer = CreateWriter(dbOptions);
+
+        AuditEntry entry = new()
+        {
+            Id = Guid.NewGuid(),
+            Timestamp = DateTimeOffset.UtcNow,
+            UserId = "admin-1",
+            Category = AuditCategory.PrivilegedAccess,
+            EntityChanges =
+            [
+                new AuditEntityChange
+                {
+                    EntityType = "Impersonation",
+                    EntityId = "target-1",
+                    ChangeType = AuditChangeType.Created,
+                },
+            ],
+        };
+
+        await writer.WriteAsync(entry, TestContext.Current.CancellationToken);
+
+        await _eventDispatcher.Received(1).DispatchAsync(
+            Arg.Is<IReadOnlyList<IIntegrationEvent>>(events =>
+                events.Count == 1 &&
+                ((AuditEntryPersistedEto)events[0]).PrimaryEntityType == "Impersonation"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task WriteAsync_WithEntityChanges_PersistsHierarchy()
     {
         DbContextOptions<AuditingDbContext> dbOptions = CreateOptions();

@@ -1,4 +1,8 @@
+using Granit.Auditing;
+using Granit.Auditing.Domain;
+using Granit.Auditing.Events;
 using Granit.Domain;
+using Granit.Identity.Local.Auditing;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Notifications.Handlers;
 using Granit.Identity.Local.Notifications.NotificationTypes;
@@ -321,55 +325,68 @@ public sealed class HandlerTests
             Arg.Any<CancellationToken>());
     }
 
-    // --- UserImpersonatedHandler ---
+    // --- ImpersonationAuditNotificationHandler ---
 
     [Fact]
-    public async Task UserImpersonated_PublishesWithDisplayName()
+    public async Task Impersonation_PublishesAlertToTarget_DerivedFromAuditEntry()
     {
-        IIdentityUser impersonator = Substitute.For<IIdentityUser>();
-        impersonator.FirstName.Returns("Admin");
-        impersonator.LastName.Returns("User");
-        _userReader.GetUserAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(impersonator);
-
+        IAuditingReader auditingReader = Substitute.For<IAuditingReader>();
+        var entryId = Guid.NewGuid();
+        var targetUserId = Guid.Parse("00000000-0000-0000-0000-000000000002");
         DateTimeOffset occurredAt = DateTimeOffset.UtcNow;
-        var evt = new UserImpersonatedEto(
-            Guid.Parse("00000000-0000-0000-0000-000000000002"),
-            Guid.Parse("00000000-0000-0000-0000-000000000001"),
-            null,
-            occurredAt);
 
-        await UserImpersonatedHandler.HandleAsync(evt, _userReader, _publisher, TestContext.Current.CancellationToken);
+        AuditEntry entry = new()
+        {
+            Timestamp = occurredAt,
+            UserId = "00000000-0000-0000-0000-000000000001",
+            UserName = "Admin User",
+            Category = AuditCategory.PrivilegedAccess,
+            EntityChanges =
+            [
+                new AuditEntityChange
+                {
+                    EntityType = ImpersonationAuditMarker.AuditEntityType,
+                    EntityId = targetUserId.ToString(),
+                    ChangeType = AuditChangeType.Created,
+                },
+            ],
+        };
+        auditingReader.GetByIdAsync(entryId, Arg.Any<CancellationToken>()).Returns(entry);
+
+        AuditEntryPersistedEto evt = new(
+            entryId, occurredAt, entry.UserId, AuditCategory.PrivilegedAccess, 1, null,
+            ImpersonationAuditMarker.AuditEntityType);
+
+        await ImpersonationAuditNotificationHandler.HandleAsync(
+            evt, auditingReader, _publisher, TestContext.Current.CancellationToken);
 
         await _publisher.Received(1).PublishAsync(
             ImpersonationAlertNotificationType.Instance,
             Arg.Is<ImpersonationAlertNotificationData>(d =>
                 d.OccurredAt == occurredAt &&
                 d.ImpersonatorDisplayName == "Admin User"),
-            Arg.Is<IReadOnlyList<string>>(r => r.Count == 1),
+            Arg.Is<IReadOnlyList<string>>(r => r.Count == 1 && r[0] == targetUserId.ToString()),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task UserImpersonated_ImpersonatorNotFound_PublishesWithNullDisplayName()
+    public async Task Impersonation_NonImpersonationEntry_IsIgnoredWithoutLoad()
     {
-        _userReader.GetUserAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((IIdentityUser?)null);
+        IAuditingReader auditingReader = Substitute.For<IAuditingReader>();
 
-        DateTimeOffset occurredAt = DateTimeOffset.UtcNow;
-        var evt = new UserImpersonatedEto(
-            Guid.Parse("00000000-0000-0000-0000-000000000002"),
-            Guid.Parse("00000000-0000-0000-0000-000000000001"),
-            null,
-            occurredAt);
+        // A successful login is also PrivilegedAccess, but carries a different synthetic entity type.
+        AuditEntryPersistedEto evt = new(
+            Guid.NewGuid(), DateTimeOffset.UtcNow, "actor", AuditCategory.PrivilegedAccess, 1, null,
+            "Authentication");
 
-        await UserImpersonatedHandler.HandleAsync(evt, _userReader, _publisher, TestContext.Current.CancellationToken);
+        await ImpersonationAuditNotificationHandler.HandleAsync(
+            evt, auditingReader, _publisher, TestContext.Current.CancellationToken);
 
-        await _publisher.Received(1).PublishAsync(
+        await auditingReader.DidNotReceive().GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        await _publisher.DidNotReceive().PublishAsync(
             ImpersonationAlertNotificationType.Instance,
-            Arg.Is<ImpersonationAlertNotificationData>(d =>
-                d.ImpersonatorDisplayName == null),
-            Arg.Is<IReadOnlyList<string>>(r => r.Count == 1),
+            Arg.Any<ImpersonationAlertNotificationData>(),
+            Arg.Any<IReadOnlyList<string>>(),
             Arg.Any<CancellationToken>());
     }
 

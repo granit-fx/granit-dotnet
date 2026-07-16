@@ -6,16 +6,17 @@ namespace Granit.Identity.Local.Services;
 /// <remarks>
 /// <para>
 /// Impersonation issues a short-lived token (max 1h) with <c>impersonator_id</c>
-/// and <c>impersonator_name</c> claims. The impersonated user receives a transparency
-/// notification via <c>Granit.Notifications</c>.
+/// and <c>impersonator_name</c> claims. The impersonating endpoint writes a durable audit entry;
+/// the impersonated user's transparency notification derives from that record via
+/// <c>AuditEntryPersistedEto</c> (see <see cref="Granit.Identity.Local.Auditing.ImpersonationAuditMarker"/>).
 /// </para>
 /// <para>
 /// Security constraints:
 /// <list type="bullet">
 /// <item>Impersonated tokens cannot chain-impersonate (no re-impersonation)</item>
 /// <item>Token duration: max 1h, hardcoded, non-configurable</item>
-/// <item>Mandatory audit log entry on every impersonation</item>
-/// <item>Mandatory <see cref="Granit.Identity.Local.Events.UserImpersonatedEto"/> publication</item>
+/// <item>Mandatory durable audit log entry on every impersonation</item>
+/// <item>Transparency notification derived from the durable audit entry</item>
 /// </list>
 /// </para>
 /// </remarks>
