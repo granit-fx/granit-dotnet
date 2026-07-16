@@ -134,6 +134,7 @@ public sealed class LlmLogAnalyzerTests : IDisposable
             [new LogEntry(DateTimeOffset.UtcNow, "Error", "boom happened", null)], TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
+        captured.Content.ShouldNotBeNull();
         captured.Content.ShouldContain("boom happened");
         captured.WorkspaceName.ShouldBe("test-workspace");
     }

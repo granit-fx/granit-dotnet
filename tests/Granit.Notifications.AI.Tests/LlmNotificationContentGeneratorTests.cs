@@ -108,6 +108,7 @@ public sealed class LlmNotificationContentGeneratorTests
 
         captured.ShouldNotBeNull();
         // Untrusted business data flows through the Content channel...
+        captured.Content.ShouldNotBeNull();
         captured.Content.ShouldContain("ORD-001");
         // ...the locale is developer-controlled instruction...
         captured.Instruction!.ShouldContain("fr");
@@ -129,6 +130,7 @@ public sealed class LlmNotificationContentGeneratorTests
         // GDPR: the payload may contain personal data — it must never reach the LLM
         // unless the host explicitly sets AllowPersonalDataInPrompts = true.
         captured.ShouldNotBeNull();
+        captured.Content.ShouldNotBeNull();
         captured.Content.ShouldBe("{}");
         captured.Content.ShouldNotContain("ORD-001");
     }

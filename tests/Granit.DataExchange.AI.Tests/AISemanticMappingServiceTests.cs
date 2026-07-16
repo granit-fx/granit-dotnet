@@ -142,6 +142,7 @@ public sealed class AISemanticMappingServiceTests
         await CreateService().SuggestSemanticMappingsAsync(_headers, _targetFields, TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
+        captured.Content.ShouldNotBeNull();
         // Untrusted source columns flow through the sanitized Content channel...
         captured.Content.ShouldContain("Email");
         captured.Content.ShouldContain("Phone Number");
@@ -168,6 +169,7 @@ public sealed class AISemanticMappingServiceTests
 
         result.Count.ShouldBe(1);
         captured.ShouldNotBeNull();
+        captured.Content.ShouldNotBeNull();
         captured.Content.ShouldNotContain("Sample data");
         captured.Content.ShouldNotContain("john@example.com");
     }
@@ -188,6 +190,7 @@ public sealed class AISemanticMappingServiceTests
 
         result.Count.ShouldBe(1);
         captured.ShouldNotBeNull();
+        captured.Content.ShouldNotBeNull();
         captured.Content.ShouldContain("Sample data");
         captured.Content.ShouldContain("john@example.com");
     }

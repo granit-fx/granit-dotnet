@@ -133,6 +133,7 @@ public sealed class LlmChannelSelectorTests
         captured.Instruction.ShouldContain("email");
         captured.Instruction.ShouldContain("push");
         // The notification context is the analyzed content.
+        captured.Content.ShouldNotBeNull();
         captured.Content.ShouldContain("order.completed");
         captured.Content.ShouldContain("Fatal");
     }

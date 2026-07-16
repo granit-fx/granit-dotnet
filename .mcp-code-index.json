@@ -29092,7 +29092,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Cognito",
       "file": "src/Granit.Identity.Federated.Cognito/Extensions/IdentityCognitoServiceCollectionExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitIdentityCognito",
@@ -29177,6 +29177,22 @@
           "kind": "property",
           "signature": "OrphanedRolePolicy OrphanedRolePolicy",
           "returnType": "OrphanedRolePolicy"
+        }
+      ]
+    },
+    {
+      "name": "IdentityFederatedMetrics",
+      "fqn": "Granit.Identity.Federated.Diagnostics.IdentityFederatedMetrics",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Diagnostics/IdentityFederatedMetrics.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "RecordProviderFailure",
+          "kind": "method",
+          "signature": "RecordProviderFailure(string providerName, string operation, IdentityProviderFailureCategory category, string? tenantId)",
+          "returnType": "void"
         }
       ]
     },
@@ -29312,7 +29328,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntraId",
       "file": "src/Granit.Identity.Federated.EntraId/Extensions/IdentityEntraIdServiceCollectionExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitIdentityEntraId",
@@ -29480,12 +29496,57 @@
       "members": []
     },
     {
+      "name": "IdentityProviderException",
+      "fqn": "Granit.Identity.Federated.Exceptions.IdentityProviderException",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Exceptions/IdentityProviderException.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "IdentityProviderFailureCategory",
+      "fqn": "Granit.Identity.Federated.Exceptions.IdentityProviderFailureCategory",
+      "kind": "enum",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Exceptions/IdentityProviderException.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "IdentityProviderNotFoundException",
+      "fqn": "Granit.Identity.Federated.Exceptions.IdentityProviderNotFoundException",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Exceptions/IdentityProviderNotFoundException.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "IdentityProviderThrottledException",
+      "fqn": "Granit.Identity.Federated.Exceptions.IdentityProviderThrottledException",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Exceptions/IdentityProviderThrottledException.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "IdentityProviderTransientException",
+      "fqn": "Granit.Identity.Federated.Exceptions.IdentityProviderTransientException",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Exceptions/IdentityProviderTransientException.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "IdentityProviderUnauthorizedException",
       "fqn": "Granit.Identity.Federated.Exceptions.IdentityProviderUnauthorizedException",
       "kind": "class",
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/Exceptions/IdentityProviderUnauthorizedException.cs",
-      "line": 19,
+      "line": 21,
       "members": []
     },
     {
@@ -29505,6 +29566,15 @@
       ]
     },
     {
+      "name": "IdentityProviderDegradationExtensions",
+      "fqn": "Granit.Identity.Federated.Extensions.IdentityProviderDegradationExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Extensions/IdentityProviderDegradationExtensions.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "FederatedIdentityUser",
       "fqn": "Granit.Identity.Federated.FederatedIdentityUser",
       "kind": "record",
@@ -29519,7 +29589,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.GoogleCloud",
       "file": "src/Granit.Identity.Federated.GoogleCloud/Extensions/IdentityGoogleCloudServiceCollectionExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitIdentityGoogleCloud",
@@ -29579,7 +29649,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/GranitIdentityFederatedModule.cs",
-      "line": 31,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
@@ -29645,7 +29715,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Keycloak",
       "file": "src/Granit.Identity.Federated.Keycloak/Extensions/IdentityKeycloakServiceCollectionExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitIdentityKeycloak",

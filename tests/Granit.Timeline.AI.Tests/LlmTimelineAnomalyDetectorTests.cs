@@ -144,6 +144,7 @@ public sealed class LlmTimelineAnomalyDetectorTests
         await CreateSut().DetectAnomaliesAsync("Ticket", TestEntityId, TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
+        captured.Content.ShouldNotBeNull();
         captured.Content.ShouldContain("Did a thing");
         captured.Content.ShouldContain("User-abcdef12"); // pseudonymized author
         captured.Content.ShouldNotContain("Jane Doe");   // raw author name never sent
