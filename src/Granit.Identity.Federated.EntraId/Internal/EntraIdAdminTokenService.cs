@@ -1,8 +1,6 @@
-using System.Diagnostics;
-using System.Net.Http.Json;
-using System.Text.Json.Serialization;
 using Granit.Identity.Federated.EntraId.Diagnostics;
 using Granit.Identity.Federated.EntraId.Options;
+using Granit.Identity.Federated.Internal;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,90 +8,38 @@ using Microsoft.Extensions.Options;
 namespace Granit.Identity.Federated.EntraId.Internal;
 
 /// <summary>
-/// Singleton service that obtains and caches a Microsoft Entra ID service account token
-/// using the OAuth 2.0 <c>client_credentials</c> flow.
+/// Singleton service that obtains and caches a Microsoft Entra ID service-account token using the
+/// OAuth 2.0 <c>client_credentials</c> flow. Thin adapter over the shared
+/// <see cref="OAuth2ClientCredentialsTokenService"/>: it supplies the Graph token endpoint,
+/// credentials, the <c>https://graph.microsoft.com/.default</c> scope, and the Entra ID span.
 /// </summary>
-/// <remarks>
-/// Thread-safe: uses a <see cref="SemaphoreSlim"/> to serialize token refresh.
-/// The token is cached until 30 seconds before its actual expiry.
-/// </remarks>
-internal sealed partial class EntraIdAdminTokenService(
+internal sealed class EntraIdAdminTokenService(
     IHttpClientFactory httpClientFactory,
     IOptions<EntraIdAdminOptions> options,
     IClock clock,
     ILogger<EntraIdAdminTokenService> logger) : IDisposable
 {
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
-    private string? _cachedToken;
-    private DateTimeOffset _tokenExpiry;
+    private readonly OAuth2ClientCredentialsTokenService _tokenService = new(httpClientFactory, clock, logger);
 
     /// <summary>
     /// Returns a valid access token, refreshing it if expired or not yet obtained.
     /// </summary>
-    public async Task<string> GetTokenAsync(CancellationToken cancellationToken)
+    public Task<string> GetTokenAsync(CancellationToken cancellationToken)
     {
-        if (_cachedToken is not null && clock.Now < _tokenExpiry)
-        {
-            return _cachedToken;
-        }
-
-        await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-        try
-        {
-            // Double-check after acquiring the lock.
-            if (_cachedToken is not null && clock.Now < _tokenExpiry)
-            {
-                return _cachedToken;
-            }
-
-            using Activity? activity = IdentityEntraIdActivitySource.Source.StartActivity(IdentityEntraIdActivitySource.TokenAcquire);
-
-            EntraIdAdminOptions opts = options.Value;
-            HttpClient client = httpClientFactory.CreateClient("MicrosoftGraph");
-
-            using FormUrlEncodedContent content = new(
-            [
-                new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                new KeyValuePair<string, string>("client_id", opts.ClientId),
-                new KeyValuePair<string, string>("client_secret", opts.ClientSecret),
-                new KeyValuePair<string, string>("scope", "https://graph.microsoft.com/.default"),
-            ]);
-
-            using HttpResponseMessage response = await client.PostAsync(
-                opts.GetTokenEndpoint(), content, cancellationToken).ConfigureAwait(false);
-
-            response.EnsureSuccessStatusCode();
-
-            TokenResponse? token = await response.Content
-                .ReadFromJsonAsync<TokenResponse>(cancellationToken).ConfigureAwait(false);
-
-            if (token is null || string.IsNullOrEmpty(token.AccessToken))
-            {
-                throw new InvalidOperationException(
-                    "Entra ID token endpoint returned an empty access token.");
-            }
-
-            // Cache with a 30-second safety margin.
-            _cachedToken = token.AccessToken;
-            _tokenExpiry = clock.Now.AddSeconds(Math.Max(token.ExpiresIn - 30, 10));
-
-            LogAdminTokenObtained(_tokenExpiry);
-
-            return _cachedToken;
-        }
-        finally
-        {
-            _semaphore.Release();
-        }
+        EntraIdAdminOptions opts = options.Value;
+        return _tokenService.GetTokenAsync(
+            new OAuth2ClientCredentialsRequest(
+                ProviderName: "Entra ID",
+                HttpClientName: "MicrosoftGraph",
+                TokenEndpoint: opts.GetTokenEndpoint(),
+                ClientId: opts.ClientId,
+                ClientSecret: opts.ClientSecret,
+                Scope: "https://graph.microsoft.com/.default",
+                ActivitySource: IdentityEntraIdActivitySource.Source,
+                ActivityName: IdentityEntraIdActivitySource.TokenAcquire),
+            cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void Dispose() => _semaphore.Dispose();
-
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Entra ID admin token obtained, expires at {Expiry}")]
-    private partial void LogAdminTokenObtained(DateTimeOffset expiry);
-
-    private sealed record TokenResponse(
-        [property: JsonPropertyName("access_token")] string AccessToken,
-        [property: JsonPropertyName("expires_in")] int ExpiresIn);
+    public void Dispose() => _tokenService.Dispose();
 }

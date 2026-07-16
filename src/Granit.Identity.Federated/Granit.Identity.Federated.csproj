@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Identity.Federated.Tests" />
+    <InternalsVisibleTo Include="Granit.Identity.Federated.EntraId" />
+    <InternalsVisibleTo Include="Granit.Identity.Federated.Keycloak" />
     <InternalsVisibleTo Include="Granit.Identity.Federated.Endpoints" />
     <InternalsVisibleTo Include="Granit.Identity.Federated.Endpoints.Tests" />
     <InternalsVisibleTo Include="Granit.Identity.Federated.EntityFrameworkCore" />
