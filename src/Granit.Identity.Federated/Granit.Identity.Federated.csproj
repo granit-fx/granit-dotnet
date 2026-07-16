@@ -25,14 +25,9 @@
     <ProjectReference Include="..\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Identity\Granit.Identity.csproj" />
-    <ProjectReference Include="..\Granit.Localization\Granit.Localization.csproj" />
     <ProjectReference Include="..\Granit.Entities.Abstractions\Granit.Entities.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Localization\**\*.json" />
   </ItemGroup>
 
 </Project>
