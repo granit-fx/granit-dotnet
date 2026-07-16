@@ -55,7 +55,9 @@ internal static class IdentityKeycloakActivitySource
     internal const string TagClientId = "identity.keycloak.client_id";
     internal const string TagGroupId = "identity.keycloak.group_id";
     internal const string TagEnabled = "identity.keycloak.enabled";
-    internal const string TagSearch = "identity.keycloak.search";
+    // Records ONLY whether a search filter was supplied, never the search term itself —
+    // the term is user-controlled and can carry PII (email, name) into traces.
+    internal const string TagHasSearch = "identity.keycloak.search_present";
 
 #pragma warning disable GRSEC003 // Operation name constants, not secrets
     internal const string GetPasswordChangedAt = "identity.keycloak.get-password-changed-at";

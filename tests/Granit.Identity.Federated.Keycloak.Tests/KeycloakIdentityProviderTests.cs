@@ -5,6 +5,7 @@ using Granit.Events;
 using Granit.Identity.Diagnostics;
 using Granit.Identity.Events;
 using Granit.Identity.Federated.Exceptions;
+using Granit.Identity.Federated.Keycloak.Diagnostics;
 using Granit.Identity.Federated.Keycloak.Internal;
 using Granit.Identity.Federated.Keycloak.Options;
 using Granit.Identity.Federated.RateLimiting;
@@ -170,6 +171,31 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         _handler.Requests[0].Url.ShouldContain("search=alice");
         _handler.Requests[0].Url.ShouldContain("first=0");
         _handler.Requests[0].Url.ShouldContain("max=10");
+    }
+
+    [Fact]
+    public async Task GetUsersAsync_DoesNotLeakSearchTermIntoTelemetry()
+    {
+        // The search term is user-controlled and can carry PII (email, display name). The span
+        // must record only whether a search was performed, never the term itself.
+        const string piiSearch = "alice@example.com";
+        _handler.ResponseBody = "[]";
+
+        List<Activity> captured = [];
+        using ActivityListener listener = new()
+        {
+            ShouldListenTo = source => source.Name == IdentityKeycloakActivitySource.Name,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = captured.Add,
+        };
+        ActivitySource.AddActivityListener(listener);
+
+        await _provider.GetUsersAsync(search: piiSearch, cancellationToken: TestContext.Current.CancellationToken);
+
+        Activity getUsers = captured.Single(a =>
+            a.OperationName == IdentityKeycloakActivitySource.GetUsers);
+        getUsers.GetTagItem("identity.keycloak.search_present").ShouldBe(true);
+        getUsers.Tags.ShouldNotContain(t => t.Value == piiSearch);
     }
 
     [Fact]

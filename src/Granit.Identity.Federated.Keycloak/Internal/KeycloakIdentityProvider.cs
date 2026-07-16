@@ -85,7 +85,7 @@ internal sealed partial class KeycloakIdentityProvider(
         CancellationToken cancellationToken = default)
     {
         using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.GetUsers);
-        activity?.SetTag(IdentityKeycloakActivitySource.TagSearch, search);
+        activity?.SetTag(IdentityKeycloakActivitySource.TagHasSearch, !string.IsNullOrWhiteSpace(search));
 
         try
         {
