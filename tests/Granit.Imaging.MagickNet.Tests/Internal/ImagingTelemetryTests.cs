@@ -61,6 +61,12 @@ public sealed class ImagingTelemetryTests
         };
         ActivitySource.AddActivityListener(listener);
 
+        // The listener is process-global, so a MagickNet test class running in parallel
+        // emits its own imaging.load/imaging.encode activities into this same list. Anchor
+        // a correlation activity so the pipeline's activities inherit its TraceId, then keep
+        // only ours — otherwise First(...) can grab a foreign activity and flake.
+        using Activity correlation = new Activity(nameof(TerminalOperation_EmitsEncodeActivityWithOutputFormat)).Start();
+
         MagickNetImageProcessor processor = CreateProcessor(NullTenantContext.Instance, out Meter meter);
         using (meter)
         {
@@ -69,10 +75,10 @@ public sealed class ImagingTelemetryTests
             await pipeline.ConvertTo(ImageFormat.Jpeg).ToResultAsync(TestContext.Current.CancellationToken);
         }
 
-        Activity load = activities.First(a => a.OperationName == "imaging.load");
+        Activity load = activities.First(a => a.OperationName == "imaging.load" && a.TraceId == correlation.TraceId);
         load.GetTagItem("imaging.source_format").ShouldBe("Png");
 
-        Activity encode = activities.First(a => a.OperationName == "imaging.encode");
+        Activity encode = activities.First(a => a.OperationName == "imaging.encode" && a.TraceId == correlation.TraceId);
         encode.GetTagItem("imaging.output_format").ShouldBe("Jpeg");
         encode.GetTagItem("imaging.width").ShouldBe(100);
     }

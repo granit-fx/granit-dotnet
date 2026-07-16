@@ -145,7 +145,7 @@ public sealed class AILanguageDetectorTests
 
         // The Content sent to the primitive is the (truncated) sample — the primitive owns
         // the <data> isolation envelope.
-        string content = harness.LastRequest.ShouldNotBeNull().Content;
+        string content = harness.LastRequest.ShouldNotBeNull().Content.ShouldNotBeNull();
         content.ShouldNotMatch(@"[\uD800-\uDBFF](?![\uDC00-\uDFFF])");
         content.ShouldNotMatch(@"(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]");
         content.Length.ShouldBeLessThanOrEqualTo(harness.Options.MaxContentLength);
