@@ -5,6 +5,7 @@ using Granit.Guids;
 using Granit.Identity.Events;
 using Granit.Identity.Federated.EntraId.Internal;
 using Granit.Identity.Federated.EntraId.Options;
+using Granit.Identity.Federated.Exceptions;
 using Granit.Identity.Models;
 using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -260,10 +261,8 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.ServiceUnavailable;
         _handler.ResponseBody = string.Empty;
 
-        DateTimeOffset? result = await _provider.GetPasswordChangedAtAsync(
-            "user-1", TestContext.Current.CancellationToken);
-
-        result.ShouldBeNull();
+        await Should.ThrowAsync<IdentityProviderTransientException>(
+            () => _provider.GetPasswordChangedAtAsync("user-1", TestContext.Current.CancellationToken));
     }
 
     // ──── GetRolesAsync ────

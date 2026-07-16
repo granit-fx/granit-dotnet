@@ -5,6 +5,7 @@ using Granit.Guids;
 using Granit.Identity.Events;
 using Granit.Identity.Federated.EntraId.Internal;
 using Granit.Identity.Federated.EntraId.Options;
+using Granit.Identity.Federated.Exceptions;
 using Granit.Identity.Models;
 using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -101,10 +102,8 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.ServiceUnavailable;
         _handler.ResponseBody = string.Empty;
 
-        IReadOnlyList<IIdentityUser> result = await _provider.GetUsersAsync(
-            cancellationToken: TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
+        await Should.ThrowAsync<IdentityProviderTransientException>(
+            () => _provider.GetUsersAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Theory]

@@ -5,6 +5,7 @@ using Granit.Guids;
 using Granit.Identity.Federated.EntraId.Diagnostics;
 using Granit.Identity.Federated.EntraId.Internal;
 using Granit.Identity.Federated.EntraId.Options;
+using Granit.Identity.Federated.Exceptions;
 using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -106,10 +107,12 @@ public sealed class IdentityEntraIdActivitySourceTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.ServiceUnavailable;
         _handler.ResponseBody = string.Empty;
 
-        await _provider.GetUsersAsync(cancellationToken: TestContext.Current.CancellationToken);
+        await Should.ThrowAsync<IdentityProviderTransientException>(
+            () => _provider.GetUsersAsync(cancellationToken: TestContext.Current.CancellationToken));
 
-        // Filter by both operation name AND status to avoid cross-contamination from parallel test classes
-        // (EntraIdIdentityProviderTests also calls GetUsersAsync with success, producing Unset activities).
+        // The activity is tagged Error before the fault is thrown. Filter by both operation name AND
+        // status to avoid cross-contamination from parallel test classes (EntraIdIdentityProviderTests
+        // also calls GetUsersAsync with success, producing Unset activities).
         _activities.ShouldContain(a =>
             a.OperationName == IdentityEntraIdActivitySource.GetUsers
             && a.Status == ActivityStatusCode.Error);
@@ -145,7 +148,8 @@ public sealed class IdentityEntraIdActivitySourceTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.InternalServerError;
         _handler.ResponseBody = string.Empty;
 
-        await _provider.GetGroupsAsync(TestContext.Current.CancellationToken);
+        await Should.ThrowAsync<IdentityProviderTransientException>(
+            () => _provider.GetGroupsAsync(TestContext.Current.CancellationToken));
 
         // Filter by both operation name AND status to avoid cross-contamination from parallel test classes
         // (EntraIdIdentityProviderTests also calls GetGroupsAsync with success, producing Unset activities).
@@ -175,7 +179,10 @@ public sealed class IdentityEntraIdActivitySourceTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.Forbidden;
         _handler.ResponseBody = string.Empty;
 
-        await _provider.GetRolesAsync(TestContext.Current.CancellationToken);
+        // 403 is an authorization failure: it surfaces as IdentityProviderUnauthorizedException
+        // (the decorator re-throws it rather than degrading — an IAM outage must not read as "no roles").
+        await Should.ThrowAsync<IdentityProviderUnauthorizedException>(
+            () => _provider.GetRolesAsync(TestContext.Current.CancellationToken));
 
         // Filter by both operation name AND status to avoid cross-contamination from parallel test classes
         // (EntraIdIdentityProviderAdditionalTests also calls GetRolesAsync with success, producing Unset activities).

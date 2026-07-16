@@ -50,6 +50,24 @@ internal sealed partial class EntraIdIdentityProvider(
     private static bool IsAuthorizationFailure(HttpRequestException ex) =>
         ex.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden;
 
+    /// <summary>
+    /// Classifies a non-authorization Graph fault into the taxonomy the graceful-degradation
+    /// decorator understands: HTTP 429 → <see cref="IdentityProviderThrottledException"/>, 404 →
+    /// <see cref="IdentityProviderNotFoundException"/>, everything else (5xx, timeout, connection
+    /// reset) → <see cref="IdentityProviderTransientException"/>. Applied only to the decorated
+    /// <see cref="IIdentityProvider"/> read methods; the caller re-throws genuine cancellation first.
+    /// </summary>
+    private static Exception ClassifyReadFault(Exception ex, string operation) => ex switch
+    {
+        HttpRequestException { StatusCode: HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden } =>
+            new IdentityProviderUnauthorizedException(ProviderName, operation, ex),
+        HttpRequestException { StatusCode: HttpStatusCode.TooManyRequests } =>
+            new IdentityProviderThrottledException(ProviderName, operation, retryAfter: null, ex),
+        HttpRequestException { StatusCode: HttpStatusCode.NotFound } =>
+            new IdentityProviderNotFoundException(ProviderName, operation, ex),
+        _ => new IdentityProviderTransientException(ProviderName, operation, ex),
+    };
+
     /// <inheritdoc/>
     public async Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
         string? search = null,
@@ -84,11 +102,15 @@ internal sealed partial class EntraIdIdentityProvider(
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             throw new IdentityProviderUnauthorizedException(ProviderName, "list_users", ex);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             LogGetUsersFailed(ex);
-            return [];
+            throw ClassifyReadFault(ex, "list_users");
         }
     }
 
@@ -118,11 +140,21 @@ internal sealed partial class EntraIdIdentityProvider(
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             throw new IdentityProviderUnauthorizedException(ProviderName, "get_user", ex);
         }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            // A single-user GET returning 404 is a normal negative result, not a fault.
+            LogGetUserFailed(ex, userId);
+            return null;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             LogGetUserFailed(ex, userId);
-            return null;
+            throw ClassifyReadFault(ex, "get_user");
         }
     }
 
@@ -308,11 +340,15 @@ internal sealed partial class EntraIdIdentityProvider(
 
             return user?.LastPasswordChangeDateTime;
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             LogGetPasswordChangedAtFailed(ex, userId);
-            return null;
+            throw ClassifyReadFault(ex, "get_password_changed_at");
         }
     }
 
@@ -337,11 +373,15 @@ internal sealed partial class EntraIdIdentityProvider(
                 .Select(r => new IdentityRole(r.Id, r.Value, r.Description))
                 .ToList() ?? [];
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             LogGetRolesFailed(ex);
-            return [];
+            throw ClassifyReadFault(ex, "list_roles");
         }
     }
 
@@ -391,11 +431,15 @@ internal sealed partial class EntraIdIdentityProvider(
 
             return users;
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             LogGetRoleMembersFailed(ex, roleName);
-            return [];
+            throw ClassifyReadFault(ex, "list_role_members");
         }
     }
 
@@ -438,11 +482,15 @@ internal sealed partial class EntraIdIdentityProvider(
                 })
                 .ToList();
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             LogGetUserRolesFailed(ex, userId);
-            return [];
+            throw ClassifyReadFault(ex, "list_user_roles");
         }
     }
 
@@ -982,11 +1030,15 @@ internal sealed partial class EntraIdIdentityProvider(
 
             return response?.Value?.ConvertAll(ToIdentityGroup) ?? [];
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             LogGetGroupsFailed(ex);
-            return [];
+            throw ClassifyReadFault(ex, "list_groups");
         }
     }
 
@@ -1011,11 +1063,15 @@ internal sealed partial class EntraIdIdentityProvider(
 
             return response?.Value?.ConvertAll(ToIdentityGroup) ?? [];
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             LogGetUserGroupsFailed(ex, userId);
-            return [];
+            throw ClassifyReadFault(ex, "list_user_groups");
         }
     }
 

@@ -37,6 +37,26 @@ internal sealed partial class GoogleCloudIdentityProvider(
     private static bool IsAuthorizationFailure(FirebaseException ex) =>
         ex.ErrorCode is ErrorCode.Unauthenticated or ErrorCode.PermissionDenied;
 
+    /// <summary>
+    /// Classifies a non-authorization Firebase read fault into the taxonomy the graceful-degradation
+    /// decorator understands: HTTP 429 (<see cref="ErrorCode.ResourceExhausted"/>, quota exhaustion) →
+    /// <see cref="IdentityProviderThrottledException"/>; a missing user/resource →
+    /// <see cref="IdentityProviderNotFoundException"/>; everything else (5xx, timeout, connection
+    /// reset, non-Firebase transport error) → <see cref="IdentityProviderTransientException"/>.
+    /// Applied only to the decorated <see cref="IIdentityProvider"/> read methods; the caller must
+    /// re-throw genuine cancellation before reaching here.
+    /// </summary>
+    private static Exception ClassifyReadFault(Exception ex, string operation) => ex switch
+    {
+        FirebaseException { ErrorCode: ErrorCode.ResourceExhausted } =>
+            new IdentityProviderThrottledException(ProviderName, operation, retryAfter: null, ex),
+        FirebaseAuthException { AuthErrorCode: AuthErrorCode.UserNotFound } =>
+            new IdentityProviderNotFoundException(ProviderName, operation, ex),
+        FirebaseException { ErrorCode: ErrorCode.NotFound } =>
+            new IdentityProviderNotFoundException(ProviderName, operation, ex),
+        _ => new IdentityProviderTransientException(ProviderName, operation, ex),
+    };
+
     // ── Users ─────────────────────────────────────────────────────────
 
     public async Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
@@ -71,10 +91,14 @@ internal sealed partial class GoogleCloudIdentityProvider(
         {
             throw new IdentityProviderUnauthorizedException(ProviderName, "list_users", ex);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is not NotSupportedException)
         {
             LogListUsersFailed(ex);
-            return [];
+            throw ClassifyReadFault(ex, "list_users");
         }
     }
 
@@ -97,10 +121,14 @@ internal sealed partial class GoogleCloudIdentityProvider(
         {
             throw new IdentityProviderUnauthorizedException(ProviderName, "get_user", ex);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             LogGetUserFailed(userId, ex);
-            return null;
+            throw ClassifyReadFault(ex, "get_user");
         }
     }
 
@@ -189,10 +217,14 @@ internal sealed partial class GoogleCloudIdentityProvider(
             List<string> roleNames = ExtractRoleNames(user.CustomClaims);
             return roleNames.ConvertAll(name => new IdentityRole(name, name, null));
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             LogGetUserRolesFailed(userId, ex);
-            return [];
+            throw ClassifyReadFault(ex, "list_user_roles");
         }
     }
 

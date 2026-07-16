@@ -4,6 +4,7 @@ using System.Net;
 using Granit.Events;
 using Granit.Identity.Diagnostics;
 using Granit.Identity.Events;
+using Granit.Identity.Federated.Exceptions;
 using Granit.Identity.Federated.Keycloak.Internal;
 using Granit.Identity.Federated.Keycloak.Options;
 using Granit.Identity.Federated.RateLimiting;
@@ -140,10 +141,8 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.ServiceUnavailable;
         _handler.ResponseBody = string.Empty;
 
-        IReadOnlyList<IIdentityUser> result = await _provider.GetRoleMembersAsync(
-            "editor", TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
+        await Should.ThrowAsync<IdentityProviderTransientException>(
+            () => _provider.GetRoleMembersAsync("editor", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -218,10 +217,8 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.InternalServerError;
         _handler.ResponseBody = string.Empty;
 
-        IReadOnlyList<IdentityRole> result = await _provider.GetRolesAsync(
-            TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
+        await Should.ThrowAsync<IdentityProviderTransientException>(
+            () => _provider.GetRolesAsync(TestContext.Current.CancellationToken));
     }
 
     // --- Argument guard tests ---
@@ -383,10 +380,8 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.ServiceUnavailable;
         _handler.ResponseBody = string.Empty;
 
-        IReadOnlyList<IIdentityUser> result = await _provider.GetUsersAsync(
-            cancellationToken: TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
+        await Should.ThrowAsync<IdentityProviderTransientException>(
+            () => _provider.GetUsersAsync(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -826,10 +821,8 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.ServiceUnavailable;
         _handler.ResponseBody = string.Empty;
 
-        IReadOnlyList<IdentityRole> result = await _provider.GetUserRolesAsync(
-            "user-1", TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
+        await Should.ThrowAsync<IdentityProviderTransientException>(
+            () => _provider.GetUserRolesAsync("user-1", TestContext.Current.CancellationToken));
     }
 
     [Fact]
