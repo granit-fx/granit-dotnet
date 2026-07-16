@@ -1,6 +1,7 @@
 using Granit.Events;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.Keycloak.Extensions;
+using Granit.Identity.Federated.Keycloak.Internal;
 using Granit.Timing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,13 +44,15 @@ public sealed class IdentityKeycloakServiceCollectionExtensionsClientRoleTests
         using IServiceScope scope = sp.CreateScope();
 
         IIdentityProvider provider = scope.ServiceProvider.GetRequiredService<IIdentityProvider>();
+        KeycloakIdentityProvider concrete = scope.ServiceProvider.GetRequiredService<KeycloakIdentityProvider>();
         IIdentityClientRoleManager clientRoleManager =
             scope.ServiceProvider.GetRequiredService<IIdentityClientRoleManager>();
 
-        object.ReferenceEquals(provider, clientRoleManager).ShouldBeTrue(
-            "IIdentityProvider and IIdentityClientRoleManager must resolve to the same " +
-            "scoped KeycloakIdentityProvider instance — see ADR-025 and the DI block " +
-            "in AddGranitIdentityKeycloak.");
+        // The client-role facet (which IIdentityProvider does not compose) resolves the concrete
+        // provider, while IIdentityProvider is the graceful-degradation decorator wrapping that
+        // same scoped instance — see ADR-025 and the DI block in AddGranitIdentityKeycloak.
+        clientRoleManager.ShouldBeSameAs(concrete);
+        provider.ShouldNotBeSameAs(concrete);
     }
 
     [Fact]
@@ -75,19 +78,16 @@ public sealed class IdentityKeycloakServiceCollectionExtensionsClientRoleTests
         using ServiceProvider sp = services.BuildServiceProvider();
         using IServiceScope scope = sp.CreateScope();
 
-        IIdentityProvider provider = scope.ServiceProvider.GetRequiredService<IIdentityProvider>();
+        KeycloakIdentityProvider concrete = scope.ServiceProvider.GetRequiredService<KeycloakIdentityProvider>();
         IUserSessionProvider sessionProvider =
             scope.ServiceProvider.GetRequiredService<IUserSessionProvider>();
         IUserDeviceProvider deviceProvider =
             scope.ServiceProvider.GetRequiredService<IUserDeviceProvider>();
 
-        object.ReferenceEquals(provider, sessionProvider).ShouldBeTrue(
-            "IIdentityProvider and IUserSessionProvider must resolve to the same scoped " +
-            "KeycloakIdentityProvider instance so the canonical /sessions API surfaces Keycloak " +
-            "sessions — see the DI block in AddGranitIdentityKeycloak (#2659).");
-        object.ReferenceEquals(provider, deviceProvider).ShouldBeTrue(
-            "IIdentityProvider and IUserDeviceProvider must resolve to the same scoped " +
-            "KeycloakIdentityProvider instance so the canonical /devices API surfaces Keycloak " +
-            "devices — see the DI block in AddGranitIdentityKeycloak (#2659).");
+        // The session/device facets (which IIdentityProvider does not compose) resolve the concrete
+        // KeycloakIdentityProvider so the canonical /sessions and /devices APIs surface Keycloak data
+        // — see the DI block in AddGranitIdentityKeycloak (#2659).
+        sessionProvider.ShouldBeSameAs(concrete);
+        deviceProvider.ShouldBeSameAs(concrete);
     }
 }

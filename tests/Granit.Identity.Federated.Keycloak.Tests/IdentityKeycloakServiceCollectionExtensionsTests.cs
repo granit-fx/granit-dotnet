@@ -22,8 +22,14 @@ public sealed class IdentityKeycloakServiceCollectionExtensionsTests
 
         ServiceDescriptor? descriptor = builder.Services.FirstOrDefault(
             d => d.ServiceType == typeof(IIdentityProvider));
+        // IIdentityProvider now resolves to the graceful-degradation decorator (a factory
+        // registration); the concrete provider is registered by its own type.
         descriptor.ShouldNotBeNull();
-        descriptor!.ImplementationType.ShouldBe(typeof(KeycloakIdentityProvider));
+        descriptor!.ImplementationType.ShouldBeNull();
+        ServiceDescriptor? concrete = builder.Services.FirstOrDefault(
+            d => d.ServiceType == typeof(KeycloakIdentityProvider));
+        concrete.ShouldNotBeNull();
+        concrete!.ImplementationType.ShouldBe(typeof(KeycloakIdentityProvider));
     }
 
     [Fact]

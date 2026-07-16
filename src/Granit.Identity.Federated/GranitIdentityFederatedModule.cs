@@ -1,6 +1,7 @@
 using Granit.Authorization;
 using Granit.DataExchange.Extensions;
 using Granit.Entities.Extensions;
+using Granit.Identity.Federated.Diagnostics;
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Entities;
 using Granit.Identity.Federated.Exports;
@@ -33,6 +34,9 @@ public sealed class GranitIdentityFederatedModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        // Provider-failure metrics, emitted by the graceful-degradation decorator.
+        context.Services.TryAddSingleton<IdentityFederatedMetrics>();
+
         // Query + Export definitions (ADR-020: owned by the base module).
         context.Services.AddQueryDefinition<FederatedIdentity, FederatedIdentityQueryDefinition>();
         context.Services.AddExportDefinition<FederatedIdentity, FederatedIdentityExportDefinition>();

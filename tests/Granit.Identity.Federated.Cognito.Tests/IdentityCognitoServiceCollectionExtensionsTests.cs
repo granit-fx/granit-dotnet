@@ -41,9 +41,10 @@ public sealed class IdentityCognitoServiceCollectionExtensionsTests
     {
         ServiceProvider provider = BuildProvider();
 
-        IIdentityProvider identityProvider = provider.GetRequiredService<IIdentityProvider>();
-
-        identityProvider.ShouldBeOfType<CognitoIdentityProvider>();
+        // IIdentityProvider resolves to the graceful-degradation decorator, which wraps the concrete
+        // CognitoIdentityProvider (registered by its own type).
+        provider.GetRequiredService<CognitoIdentityProvider>().ShouldNotBeNull();
+        provider.GetRequiredService<IIdentityProvider>().ShouldNotBeOfType<CognitoIdentityProvider>();
     }
 
     [Fact]

@@ -1,6 +1,7 @@
 using Granit.Diagnostics;
 using Granit.Http.Resilience.Extensions;
 using Granit.Identity.Extensions;
+using Granit.Identity.Federated.Extensions;
 using Granit.Identity.Federated.Keycloak.HealthChecks;
 using Granit.Identity.Federated.Keycloak.Internal;
 using Granit.Identity.Federated.Keycloak.Options;
@@ -70,28 +71,27 @@ public static class IdentityKeycloakServiceCollectionExtensions
         // RFC 8693 naked-impersonation flow is unbounded per target user.
         services.TryAddSingleton<ITokenExchangeRateLimiter, NullTokenExchangeRateLimiter>();
         services.AddIdentityProvider<KeycloakIdentityProvider>();
+
+        // Wrap IIdentityProvider with graceful degradation; registers KeycloakIdentityProvider by
+        // its concrete type so the facets the decorator does not carry (client-role, session,
+        // device) resolve the raw provider directly below.
+        services.DecorateIdentityProviderWithGracefulDegradation<KeycloakIdentityProvider>();
         services.Replace(ServiceDescriptor.Scoped<IIdentityProviderCapabilities, KeycloakIdentityProviderCapabilities>());
 
-        // Client-role capability (Phase 2). Forwards to the scoped IIdentityProvider so
-        // IIdentityProvider and IIdentityClientRoleManager resolve to the SAME scoped
-        // KeycloakIdentityProvider instance — avoids doubling the admin-token acquisition
-        // and keeps internal state coherent across the two facets.
-        services.TryAddScoped<IIdentityClientRoleManager>(sp =>
-            sp.GetRequiredService<IIdentityProvider>() as IIdentityClientRoleManager
-            ?? throw new InvalidOperationException(
-                "The registered IIdentityProvider does not implement IIdentityClientRoleManager — " +
-                "AddGranitIdentityKeycloak must be the last provider-registration call."));
+        // Client-role capability (Phase 2). Resolves the concrete KeycloakIdentityProvider so this
+        // facet — which IIdentityProvider does not compose, and the decorator therefore does not
+        // implement — shares the SAME scoped instance, avoiding doubled admin-token acquisition.
+        services.TryAddScoped<IIdentityClientRoleManager>(sp => sp.GetRequiredService<KeycloakIdentityProvider>());
 
         // Session/device facets. Replace the Null defaults (from the Identity Abstractions module)
         // so the canonical /sessions and /devices APIs surface Keycloak SSO sessions and devices —
-        // and revoke them via the Admin API. Both forward to the same scoped IIdentityProvider so
-        // every facet resolves to the SAME KeycloakIdentityProvider instance, sharing its admin-token
-        // acquisition (same instance-sharing rationale as IIdentityClientRoleManager above).
+        // and revoke them via the Admin API. Both resolve the concrete KeycloakIdentityProvider (the
+        // decorator does not implement these facets), sharing its admin-token acquisition.
         // Registered at Federated precedence: a co-resident BFF wins the session facet deterministically.
         services.SetUserSessionProvider(
             UserSessionProviderPrecedence.Federated,
-            sessionFactory: sp => (IUserSessionProvider)sp.GetRequiredService<IIdentityProvider>(),
-            deviceFactory: sp => (IUserDeviceProvider)sp.GetRequiredService<IIdentityProvider>());
+            sessionFactory: sp => sp.GetRequiredService<KeycloakIdentityProvider>(),
+            deviceFactory: sp => sp.GetRequiredService<KeycloakIdentityProvider>());
 
         // Client-role sync pipeline — enumerates Keycloak client roles for each tracked
         // clientId at host boot and upserts RoleMetadata rows. See ADR-025 for details.

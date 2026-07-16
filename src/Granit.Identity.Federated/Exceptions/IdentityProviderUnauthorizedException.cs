@@ -13,21 +13,20 @@ namespace Granit.Identity.Federated.Exceptions;
 /// </para>
 /// <para>
 /// Providers now distinguish 401/403 from transient 5xx and re-throw this exception so
-/// the HTTP layer can surface a 503 (or 401 if appropriate) rather than 200/empty.
+/// the HTTP layer can surface a 503 (or 401 if appropriate) rather than 200/empty. The
+/// graceful-degradation decorator re-throws this category rather than degrading it, so an
+/// IAM outage is never hidden behind an empty result.
 /// </para>
 /// </remarks>
-public sealed class IdentityProviderUnauthorizedException : Exception
+public sealed class IdentityProviderUnauthorizedException : IdentityProviderException
 {
     public IdentityProviderUnauthorizedException(string providerName, string operation, Exception? innerException = null)
-        : base($"Identity provider '{providerName}' rejected operation '{operation}': service-account credentials are missing or unauthorized.", innerException)
+        : base(
+            IdentityProviderFailureCategory.Unauthorized,
+            providerName,
+            operation,
+            $"Identity provider '{providerName}' rejected operation '{operation}': service-account credentials are missing or unauthorized.",
+            innerException)
     {
-        ProviderName = providerName;
-        Operation = operation;
     }
-
-    /// <summary>The provider that returned the 401/403 (e.g. <c>"keycloak"</c>).</summary>
-    public string ProviderName { get; }
-
-    /// <summary>The operation that failed (e.g. <c>"get_user"</c>).</summary>
-    public string Operation { get; }
 }
