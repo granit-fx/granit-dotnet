@@ -66,19 +66,26 @@ public sealed class MinimumResponseTimeGuardTests
         const int minMs = 30;
         const int maxMs = 60;
 
-        // Run several iterations — each draws a fresh random floor in [minMs, maxMs].
-        for (int i = 0; i < 5; i++)
+        // Prove the randomised floor stays within [minMs, maxMs] by asserting the chosen
+        // floor directly, not via wall-clock elapsed time: Task.Delay can overshoot
+        // arbitrarily on a loaded CI runner, so an *upper* time bound flakes (that was the
+        // original failure). Many draws exercise the RNG range with zero timing dependency.
+        for (int i = 0; i < 1_000; i++)
         {
-            long start = Stopwatch.GetTimestamp();
-            await using (var guard = MinimumResponseTimeGuard.Begin(minMs, maxMs, TestContext.Current.CancellationToken))
-            {
-                // No work.
-            }
-            TimeSpan elapsed = Stopwatch.GetElapsedTime(start);
+            // Not disposed: DisposeAsync is what applies the padding delay; here we only
+            // inspect the floor chosen at Begin().
+            var guard = MinimumResponseTimeGuard.Begin(minMs, maxMs, TestContext.Current.CancellationToken);
 
-            elapsed.TotalMilliseconds.ShouldBeGreaterThanOrEqualTo(minMs - 15);
-            // Upper bound: floor cannot exceed maxMs, plus generous scheduler slack.
-            elapsed.TotalMilliseconds.ShouldBeLessThan(maxMs + 150);
+            guard.FloorMs.ShouldBeInRange(minMs, maxMs);
         }
+
+        // Security-relevant: the padding delay must actually be applied on dispose so fast
+        // failure paths cannot be timed. A *lower* bound never overshoots, so it is robust.
+        long start = Stopwatch.GetTimestamp();
+        await using (MinimumResponseTimeGuard.Begin(minMs, maxMs, TestContext.Current.CancellationToken))
+        {
+            // No work — dispose must still pad to at least the chosen floor (≥ minMs).
+        }
+        Stopwatch.GetElapsedTime(start).TotalMilliseconds.ShouldBeGreaterThanOrEqualTo(minMs - 15);
     }
 }

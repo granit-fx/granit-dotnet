@@ -26,15 +26,20 @@ namespace Granit.Identity.Local.Endpoints.Internal;
 internal readonly struct MinimumResponseTimeGuard : IAsyncDisposable
 {
     private readonly long _startTimestamp;
-    private readonly int _floorMs;
     private readonly CancellationToken _cancellationToken;
 
     private MinimumResponseTimeGuard(long startTimestamp, int floorMs, CancellationToken cancellationToken)
     {
         _startTimestamp = startTimestamp;
-        _floorMs = floorMs;
+        FloorMs = floorMs;
         _cancellationToken = cancellationToken;
     }
+
+    /// <summary>
+    /// The per-request floor (ms) chosen at <see cref="Begin"/>. Test seam: lets the
+    /// randomised floor be asserted directly instead of via flaky wall-clock timing.
+    /// </summary>
+    internal int FloorMs { get; }
 
     /// <summary>
     /// Starts a new minimum-response-time guard. Pick a per-request floor
@@ -60,12 +65,12 @@ internal readonly struct MinimumResponseTimeGuard : IAsyncDisposable
 
     /// <summary>
     /// Pads the elapsed time to the per-request floor. No-op if the handler
-    /// already took at least <see cref="_floorMs"/> milliseconds.
+    /// already took at least <see cref="FloorMs"/> milliseconds.
     /// </summary>
     public async ValueTask DisposeAsync()
     {
         TimeSpan elapsed = Stopwatch.GetElapsedTime(_startTimestamp);
-        int remainingMs = _floorMs - (int)elapsed.TotalMilliseconds;
+        int remainingMs = FloorMs - (int)elapsed.TotalMilliseconds;
 
         if (remainingMs > 0)
         {
