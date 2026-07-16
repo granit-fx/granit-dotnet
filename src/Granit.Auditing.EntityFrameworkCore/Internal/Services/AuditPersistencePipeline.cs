@@ -118,7 +118,8 @@ internal sealed partial class AuditPersistencePipeline(
         entry.UserId,
         entry.Category,
         entry.EntityChanges.Count,
-        entry.TenantId);
+        entry.TenantId,
+        entry.EntityChanges.FirstOrDefault()?.EntityType);
 
     [LoggerMessage(Level = LogLevel.Debug,
         Message = "Audit entry persisted with {EntityChangeCount} entity changes ({Mode} mode)")]

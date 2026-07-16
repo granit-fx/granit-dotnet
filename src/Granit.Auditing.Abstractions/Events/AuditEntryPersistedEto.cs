@@ -20,10 +20,18 @@ namespace Granit.Auditing.Events;
 /// <param name="Category">The audit log category.</param>
 /// <param name="EntityChangeCount">Number of entity changes in the batch.</param>
 /// <param name="TenantId">Tenant identifier (null for global operations).</param>
+/// <param name="PrimaryEntityType">
+/// The <see cref="AuditEntityChange.EntityType"/> of the entry's first entity change, or
+/// <see langword="null"/> when the entry recorded no change. A lightweight discriminator so a
+/// subscriber can route on the kind of audited operation (e.g. a synthetic
+/// <c>"Authentication"</c> or <c>"Impersonation"</c> row) without loading the full entry — the
+/// entry remains the source of truth for the details.
+/// </param>
 public sealed record AuditEntryPersistedEto(
     Guid Id,
     DateTimeOffset Timestamp,
     string UserId,
     AuditCategory Category,
     int EntityChangeCount,
-    Guid? TenantId) : IIntegrationEvent;
+    Guid? TenantId,
+    string? PrimaryEntityType = null) : IIntegrationEvent;

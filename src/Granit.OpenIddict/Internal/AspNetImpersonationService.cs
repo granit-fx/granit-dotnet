@@ -1,9 +1,7 @@
 using System.Collections.Immutable;
 using System.Security.Claims;
-using Granit.Events;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
-using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Extensions;
 using Granit.Identity.Local.Services;
 using Granit.Timing;
@@ -23,7 +21,6 @@ namespace Granit.OpenIddict.Internal;
 internal sealed partial class AspNetImpersonationService(
     UserManager<LocalIdentity> userManager,
     IOpenIddictTokenManager tokenManager,
-    IDistributedEventBus eventBus,
     IdentityLocalMetrics metrics,
     IClock clock,
     ILogger<AspNetImpersonationService> logger) : IImpersonationService
@@ -107,15 +104,8 @@ internal sealed partial class AspNetImpersonationService(
         object refreshTokenEntry = await tokenManager.CreateAsync(refreshTokenDescriptor, cancellationToken).ConfigureAwait(false);
         string? refreshToken = await tokenManager.GetPayloadAsync(refreshTokenEntry, cancellationToken).ConfigureAwait(false);
 
-        // Publish integration event for transparency notification
-        await eventBus.PublishAsync(
-            new UserImpersonatedEto(
-                Guid.Parse(targetUserId),
-                Guid.Parse(impersonatorId),
-                targetUser.TenantId,
-                now),
-            cancellationToken).ConfigureAwait(false);
-
+        // The transparency notification derives from the durable audit entry the endpoint writes
+        // (AuditEntryPersistedEto → .Notifications handler), not an inline best-effort event here.
         metrics.RecordImpersonation(targetUser.TenantId?.ToString());
         Log.ImpersonationStarted(logger, impersonatorId, targetUserId);
 

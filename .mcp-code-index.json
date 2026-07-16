@@ -1538,6 +1538,7 @@
     {
       "name": "Granit.Identity.Local.Notifications",
       "deps": [
+        "Granit.Auditing.Abstractions",
         "Granit.Identity.Local",
         "Granit.Notifications.Abstractions",
         "Granit.Templating"
@@ -8403,7 +8404,7 @@
       "kind": "record",
       "project": "Granit.Auditing.Abstractions",
       "file": "src/Granit.Auditing.Abstractions/Events/AuditEntryPersistedEto.cs",
-      "line": 23,
+      "line": 30,
       "members": []
     },
     {
@@ -30997,6 +30998,15 @@
       ]
     },
     {
+      "name": "ImpersonationAuditMarker",
+      "fqn": "Granit.Identity.Local.Auditing.ImpersonationAuditMarker",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Auditing/ImpersonationAuditMarker.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "IdentityLocalMetrics",
       "fqn": "Granit.Identity.Local.Diagnostics.IdentityLocalMetrics",
       "kind": "class",
@@ -31730,15 +31740,6 @@
       "members": []
     },
     {
-      "name": "UserImpersonatedEto",
-      "fqn": "Granit.Identity.Local.Events.UserImpersonatedEto",
-      "kind": "record",
-      "project": "Granit.Identity.Local",
-      "file": "src/Granit.Identity.Local/Events/UserImpersonatedEto.cs",
-      "line": 16,
-      "members": []
-    },
-    {
       "name": "UserRegisteredEto",
       "fqn": "Granit.Identity.Local.Events.UserRegisteredEto",
       "kind": "record",
@@ -31921,7 +31922,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Notifications",
       "file": "src/Granit.Identity.Local.Notifications/GranitIdentityLocalNotificationsModule.cs",
-      "line": 20,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -31975,6 +31976,22 @@
           "name": "HandleAsync",
           "kind": "method",
           "signature": "HandleAsync(EmailConfirmationRequestedEto evt, IIdentityUserReader userReader, IOptions<IdentityNotificationOptions> options, INotificationPublisher publisher, ITenantUrlResolver? urlResolver = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ImpersonationAuditNotificationHandler",
+      "fqn": "Granit.Identity.Local.Notifications.Handlers.ImpersonationAuditNotificationHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/Handlers/ImpersonationAuditNotificationHandler.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(AuditEntryPersistedEto evt, IAuditingReader auditingReader, INotificationPublisher publisher, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -32039,22 +32056,6 @@
           "name": "HandleAsync",
           "kind": "method",
           "signature": "HandleAsync(TwoFactorEmailOtpRequestedEto evt, IIdentityUserReader userReader, INotificationPublisher publisher, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "UserImpersonatedHandler",
-      "fqn": "Granit.Identity.Local.Notifications.Handlers.UserImpersonatedHandler",
-      "kind": "class",
-      "project": "Granit.Identity.Local.Notifications",
-      "file": "src/Granit.Identity.Local.Notifications/Handlers/UserImpersonatedHandler.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(UserImpersonatedEto evt, IIdentityUserReader userReader, INotificationPublisher publisher, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -32983,7 +32984,7 @@
       "kind": "interface",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Services/IImpersonationService.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "ImpersonateAsync",
@@ -33175,7 +33176,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Services/IImpersonationService.cs",
-      "line": 56,
+      "line": 57,
       "members": []
     },
     {

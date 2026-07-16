@@ -1,3 +1,4 @@
+using Granit.Auditing;
 using Granit.Identity.Local.Notifications.Internal;
 using Granit.Modularity;
 using Granit.Notifications;
@@ -14,6 +15,7 @@ namespace Granit.Identity.Local.Notifications;
 /// account lockout, 2FA changes, impersonation) to users via <c>Granit.Notifications</c>.
 /// </summary>
 [DependsOn(
+    typeof(GranitAuditingAbstractionsModule),
     typeof(GranitIdentityLocalModule),
     typeof(GranitNotificationsAbstractionsModule),
     typeof(GranitTemplatingModule))]
