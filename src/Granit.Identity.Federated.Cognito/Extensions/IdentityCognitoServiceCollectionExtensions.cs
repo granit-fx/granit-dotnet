@@ -3,6 +3,7 @@ using Amazon.CognitoIdentityProvider;
 using Amazon.Runtime;
 using Granit.Diagnostics;
 using Granit.Identity.Extensions;
+using Granit.Identity.Federated.Cognito.HealthChecks;
 using Granit.Identity.Federated.Cognito.Internal;
 using Granit.Identity.Federated.Cognito.Options;
 using Granit.Identity.Federated.Cognito.Sync;
@@ -10,6 +11,7 @@ using Granit.Identity.Federated.Extensions;
 using Granit.Identity.Federated.Sync;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Identity.Federated.Cognito.Extensions;
@@ -83,5 +85,29 @@ public static class IdentityCognitoServiceCollectionExtensions
         services.AddTransient<IClientRoleSyncPolicy, CognitoClientRoleSyncPolicy>();
 
         return services;
+    }
+
+    /// <summary>
+    /// Adds an AWS Cognito connectivity health check tagged <c>"readiness"</c> and <c>"startup"</c>.
+    /// Verifies the configured user pool is reachable and the service account can read it.
+    /// </summary>
+    /// <param name="builder">The health checks builder.</param>
+    /// <param name="name">Check name. Defaults to <c>"cognito"</c>.</param>
+    /// <param name="failureStatus">Status on failure. Defaults to <see cref="HealthStatus.Unhealthy"/>.</param>
+    /// <param name="timeout">Check timeout. Defaults to 10 seconds.</param>
+    public static IHealthChecksBuilder AddGranitCognitoHealthCheck(
+        this IHealthChecksBuilder builder,
+        string name = "cognito",
+        HealthStatus? failureStatus = null,
+        TimeSpan? timeout = null)
+    {
+        builder.Services.AddSingleton<CognitoHealthCheck>();
+
+        return builder.Add(new HealthCheckRegistration(
+            name,
+            sp => sp.GetRequiredService<CognitoHealthCheck>(),
+            failureStatus,
+            ["readiness", "startup"],
+            timeout ?? TimeSpan.FromSeconds(10)));
     }
 }

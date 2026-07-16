@@ -14,19 +14,24 @@ namespace Granit.Identity.Endpoints.Internal;
 /// </remarks>
 internal sealed class UserCacheHealthCheck(IUserCacheStats cacheStats) : IHealthCheck
 {
+    // Bound the store round-trips so a hung cache store fails the probe fast instead of stalling it.
+    private static readonly TimeSpan HealthCheckTimeout = TimeSpan.FromSeconds(10);
+
     public async Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         try
         {
-            int total = await cacheStats.GetCountAsync(cancellationToken).ConfigureAwait(false);
+            int total = await cacheStats.GetCountAsync(cancellationToken)
+                .WaitAsync(HealthCheckTimeout, cancellationToken).ConfigureAwait(false);
 
             if (total == 0)
             {
                 return HealthCheckResult.Healthy("User cache is empty.");
             }
 
-            int stale = await cacheStats.GetStaleCountAsync(cancellationToken).ConfigureAwait(false);
+            int stale = await cacheStats.GetStaleCountAsync(cancellationToken)
+                .WaitAsync(HealthCheckTimeout, cancellationToken).ConfigureAwait(false);
 
             double staleRatio = (double)stale / total;
 
@@ -54,6 +59,10 @@ internal sealed class UserCacheHealthCheck(IUserCacheStats cacheStats) : IHealth
             return HealthCheckResult.Healthy(
                 $"User cache healthy: {total} entries, {stale} stale.",
                 data: data);
+        }
+        catch (TimeoutException)
+        {
+            return HealthCheckResult.Unhealthy("User cache store did not respond within the health-check timeout.");
         }
         catch (Exception ex)
         {

@@ -10,7 +10,6 @@ using Granit.Identity.Federated.Sync;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 
 namespace Granit.Identity.Federated.EntraId.Extensions;
 
@@ -103,13 +102,16 @@ public static class IdentityEntraIdServiceCollectionExtensions
         this IHealthChecksBuilder builder,
         string name = "entraid",
         HealthStatus? failureStatus = null,
-        TimeSpan? timeout = null) =>
-        builder.Add(new HealthCheckRegistration(
+        TimeSpan? timeout = null)
+    {
+        // Singleton + a default 10s registration timeout, mirroring AddGranitKeycloakHealthCheck.
+        builder.Services.AddSingleton<EntraIdHealthCheck>();
+
+        return builder.Add(new HealthCheckRegistration(
             name,
-            sp => new EntraIdHealthCheck(
-                sp.GetRequiredService<IHttpClientFactory>(),
-                sp.GetRequiredService<IOptions<EntraIdAdminOptions>>()),
+            sp => sp.GetRequiredService<EntraIdHealthCheck>(),
             failureStatus,
             ["readiness", "startup"],
-            timeout));
+            timeout ?? TimeSpan.FromSeconds(10)));
+    }
 }

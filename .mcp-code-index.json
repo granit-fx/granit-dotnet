@@ -29093,7 +29093,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Cognito",
       "file": "src/Granit.Identity.Federated.Cognito/Extensions/IdentityCognitoServiceCollectionExtensions.cs",
-      "line": 20,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitIdentityCognito",
@@ -29329,7 +29329,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntraId",
       "file": "src/Granit.Identity.Federated.EntraId/Extensions/IdentityEntraIdServiceCollectionExtensions.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitIdentityEntraId",
