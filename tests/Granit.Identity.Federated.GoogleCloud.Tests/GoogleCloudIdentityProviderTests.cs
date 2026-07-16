@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using FirebaseAdmin.Auth;
 using Granit.Events;
 using Granit.Identity.Events;
+using Granit.Identity.Federated.Exceptions;
 using Granit.Identity.Federated.GoogleCloud.Internal;
 using Granit.Identity.Federated.GoogleCloud.Options;
 using Granit.Identity.Models;
@@ -47,14 +48,15 @@ public sealed class GoogleCloudIdentityProviderTests
     }
 
     [Fact]
-    public async Task GetUserAsync_ReturnsNull_WhenExceptionThrown()
+    public async Task GetUserAsync_ThrowsTransient_WhenRemoteFaults()
     {
+        // A non-not-found transport fault now throws the typed transient fault so the
+        // GracefulIdentityProviderDecorator becomes the single degradation point.
         _transport.GetUserAsync("uid-1", Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("transport error"));
 
-        IIdentityUser? result = await _sut.GetUserAsync("uid-1", TestContext.Current.CancellationToken);
-
-        result.ShouldBeNull();
+        await Should.ThrowAsync<IdentityProviderTransientException>(
+            () => _sut.GetUserAsync("uid-1", TestContext.Current.CancellationToken));
     }
 
     // ── SetUserEnabledAsync ─────────────────────────────────────────────
@@ -158,14 +160,13 @@ public sealed class GoogleCloudIdentityProviderTests
     }
 
     [Fact]
-    public async Task GetUserRolesAsync_ReturnsEmpty_OnException()
+    public async Task GetUserRolesAsync_ThrowsTransient_WhenRemoteFaults()
     {
         _transport.GetUserAsync("uid-1", Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("error"));
 
-        IReadOnlyList<IdentityRole> roles = await _sut.GetUserRolesAsync("uid-1", TestContext.Current.CancellationToken);
-
-        roles.ShouldBeEmpty();
+        await Should.ThrowAsync<IdentityProviderTransientException>(
+            () => _sut.GetUserRolesAsync("uid-1", TestContext.Current.CancellationToken));
     }
 
     [Fact]

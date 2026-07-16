@@ -40,6 +40,34 @@ internal sealed partial class CognitoIdentityProvider(
     private static bool IsAuthorizationFailure(AmazonServiceException ex) =>
         ex.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden;
 
+    /// <summary>
+    /// Classifies a non-authorization Cognito fault into the taxonomy the graceful-degradation
+    /// decorator understands: AWS throttling (HTTP 429 or a <c>Throttl*</c>/<c>TooManyRequests</c>
+    /// error code) → <see cref="IdentityProviderThrottledException"/>; a missing resource
+    /// (<see cref="ResourceNotFoundException"/>/<see cref="UserNotFoundException"/> or HTTP 404) →
+    /// <see cref="IdentityProviderNotFoundException"/>; everything else (5xx, timeout, connection
+    /// reset) → <see cref="IdentityProviderTransientException"/>. Applied only to the decorated
+    /// <see cref="IIdentityProvider"/> read methods; the caller must re-throw genuine cancellation
+    /// before reaching here.
+    /// </summary>
+    private static Exception ClassifyReadFault(Exception ex, string operation) => ex switch
+    {
+        AmazonServiceException { StatusCode: HttpStatusCode.TooManyRequests } =>
+            new IdentityProviderThrottledException(ProviderName, operation, retryAfter: null, ex),
+        AmazonServiceException svc when IsThrottlingErrorCode(svc.ErrorCode) =>
+            new IdentityProviderThrottledException(ProviderName, operation, retryAfter: null, ex),
+        ResourceNotFoundException or UserNotFoundException =>
+            new IdentityProviderNotFoundException(ProviderName, operation, ex),
+        AmazonServiceException { StatusCode: HttpStatusCode.NotFound } =>
+            new IdentityProviderNotFoundException(ProviderName, operation, ex),
+        _ => new IdentityProviderTransientException(ProviderName, operation, ex),
+    };
+
+    private static bool IsThrottlingErrorCode(string? errorCode) =>
+        errorCode is not null
+        && (errorCode.Contains("Throttl", StringComparison.OrdinalIgnoreCase)
+            || errorCode.Contains("TooManyRequests", StringComparison.OrdinalIgnoreCase));
+
     private readonly CognitoAdminOptions _options = options.Value;
     private readonly CognitoClientRoleSyncOptions _clientRoleSyncOptions = clientRoleSyncOptions.Value;
 
@@ -95,10 +123,14 @@ internal sealed partial class CognitoIdentityProvider(
         {
             throw new IdentityProviderUnauthorizedException(ProviderName, "list_users", ex);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             LogListUsersFailed(ex);
-            return [];
+            throw ClassifyReadFault(ex, "list_users");
         }
     }
 
@@ -137,10 +169,14 @@ internal sealed partial class CognitoIdentityProvider(
         {
             throw new IdentityProviderUnauthorizedException(ProviderName, "get_user", ex);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             LogGetUserFailed(userId, ex);
-            return null;
+            throw ClassifyReadFault(ex, "get_user");
         }
     }
 
@@ -318,10 +354,14 @@ internal sealed partial class CognitoIdentityProvider(
 
             return response.Users.ConvertAll(ToIdentityUser);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             LogOperationFailed("GetRoleMembers", ex);
-            return [];
+            throw ClassifyReadFault(ex, "list_role_members");
         }
     }
 
@@ -369,10 +409,14 @@ internal sealed partial class CognitoIdentityProvider(
             return response.Groups.ConvertAll(g => new IdentityGroup(
                 g.GroupName, g.GroupName, null, []));
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             LogOperationFailed("GetGroups", ex);
-            return [];
+            throw ClassifyReadFault(ex, "list_groups");
         }
     }
 
@@ -400,10 +444,14 @@ internal sealed partial class CognitoIdentityProvider(
             return response.Groups.ConvertAll(g => new IdentityGroup(
                 g.GroupName, g.GroupName, null, []));
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             LogOperationFailed("GetUserGroups", ex);
-            return [];
+            throw ClassifyReadFault(ex, "list_user_groups");
         }
     }
 

@@ -5,6 +5,7 @@ using Granit.Events;
 using Granit.Identity.Events;
 using Granit.Identity.Federated.Cognito.Internal;
 using Granit.Identity.Federated.Cognito.Options;
+using Granit.Identity.Federated.Exceptions;
 using Granit.Identity.Models;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -60,15 +61,13 @@ public sealed class CognitoIdentityProviderTests
     }
 
     [Fact]
-    public async Task GetUsersAsync_OnException_ReturnsEmpty()
+    public async Task GetUsersAsync_OnException_ThrowsTransient()
     {
         _cognitoClient.ListUsersAsync(Arg.Any<ListUsersRequest>(), Arg.Any<CancellationToken>())
             .ThrowsAsync(new AmazonServiceException("timeout"));
 
-        IReadOnlyList<IIdentityUser> result = await _sut.GetUsersAsync(
-            cancellationToken: TestContext.Current.CancellationToken);
-
-        result.ShouldBeEmpty();
+        await Should.ThrowAsync<IdentityProviderTransientException>(() => _sut.GetUsersAsync(
+            cancellationToken: TestContext.Current.CancellationToken));
     }
 
     // ── GetUserAsync ───────────────────────────────────────────────────────

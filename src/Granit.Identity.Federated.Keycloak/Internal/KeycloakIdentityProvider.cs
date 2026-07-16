@@ -59,6 +59,24 @@ internal sealed partial class KeycloakIdentityProvider(
     private static bool IsAuthorizationFailure(HttpRequestException ex) =>
         ex.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden;
 
+    /// <summary>
+    /// Classifies a non-authorization admin-API fault into the taxonomy the graceful-degradation
+    /// decorator understands: HTTP 429 → <see cref="IdentityProviderThrottledException"/>, everything
+    /// else (5xx, timeout, connection reset) → <see cref="IdentityProviderTransientException"/>.
+    /// Applied only to the decorated <see cref="IIdentityProvider"/> read methods; the caller must
+    /// re-throw genuine cancellation before reaching here.
+    /// </summary>
+    private static Exception ClassifyReadFault(Exception ex, string operation) => ex switch
+    {
+        HttpRequestException { StatusCode: HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden } =>
+            new IdentityProviderUnauthorizedException(ProviderName, operation, ex),
+        HttpRequestException { StatusCode: HttpStatusCode.TooManyRequests } =>
+            new IdentityProviderThrottledException(ProviderName, operation, retryAfter: null, ex),
+        HttpRequestException { StatusCode: HttpStatusCode.NotFound } =>
+            new IdentityProviderNotFoundException(ProviderName, operation, ex),
+        _ => new IdentityProviderTransientException(ProviderName, operation, ex),
+    };
+
     /// <inheritdoc/>
     public async Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
         string? search = null,
@@ -86,12 +104,16 @@ internal sealed partial class KeycloakIdentityProvider(
             metrics.RecordOperationError(null, "list_users", ProviderName);
             throw new IdentityProviderUnauthorizedException(ProviderName, "list_users", ex);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             metrics.RecordOperationError(null, "list_users", ProviderName);
             LogKeycloakGetUsersFailed(ex);
-            return [];
+            throw ClassifyReadFault(ex, "list_users");
         }
     }
 
@@ -126,12 +148,22 @@ internal sealed partial class KeycloakIdentityProvider(
             metrics.RecordOperationError(null, GetUserOperation, ProviderName);
             throw new IdentityProviderUnauthorizedException(ProviderName, GetUserOperation, ex);
         }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            // A single-user GET returning 404 is a normal negative result, not a fault.
+            metrics.RecordOperationCompleted(null, GetUserOperation, ProviderName, "not_found");
+            return null;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             metrics.RecordOperationError(null, GetUserOperation, ProviderName);
             LogKeycloakGetUserFailed(ex, userId);
-            return null;
+            throw ClassifyReadFault(ex, GetUserOperation);
         }
     }
 
@@ -402,11 +434,15 @@ internal sealed partial class KeycloakIdentityProvider(
 
             return roles?.ConvertAll(r => new IdentityRole(r.Id, r.Name, r.Description)) ?? [];
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             LogKeycloakGetRolesFailed(ex);
-            return [];
+            throw ClassifyReadFault(ex, "list_roles");
         }
     }
 
@@ -431,11 +467,15 @@ internal sealed partial class KeycloakIdentityProvider(
 
             return users?.ConvertAll(ToIdentityUser) ?? [];
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             LogKeycloakGetRoleMembersFailed(ex, roleName);
-            return [];
+            throw ClassifyReadFault(ex, "list_role_members");
         }
     }
 
@@ -462,11 +502,15 @@ internal sealed partial class KeycloakIdentityProvider(
 
             return roles?.ConvertAll(r => new IdentityRole(r.Id, r.Name, r.Description)) ?? [];
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             LogKeycloakGetUserRolesFailed(ex, userId);
-            return [];
+            throw ClassifyReadFault(ex, "list_user_roles");
         }
     }
 
