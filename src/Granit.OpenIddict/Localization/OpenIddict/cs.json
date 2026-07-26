@@ -1,0 +1,15 @@
+{
+  "culture": "cs",
+  "texts": {
+    "OpenIddict.Columns.Tenant": "Tenant",
+    "OpenIddict.Columns.ClientId": "ID klienta",
+    "OpenIddict.Columns.DisplayName": "Zobrazovaný název",
+    "OpenIddict.Columns.ClientType": "Typ klienta",
+    "OpenIddict.Columns.ConsentType": "Typ souhlasu",
+    "OpenIddict.Columns.ApplicationType": "Typ aplikace",
+    "OpenIddict.Columns.ScopeName": "Název",
+    "OpenIddict.Columns.Description": "Popis",
+    "OpenIddict:Entity.Application": "Aplikace",
+    "OpenIddict:Entity.Scope": "Rozsah"
+  }
+}

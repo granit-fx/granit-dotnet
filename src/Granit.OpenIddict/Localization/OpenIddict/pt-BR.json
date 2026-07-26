@@ -1,0 +1,7 @@
+{
+  "culture": "pt-BR",
+  "texts": {
+    "OpenIddict.Columns.DisplayName": "Nome de exibição",
+    "OpenIddict:Entity.Scope": "Escopo"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "culture": "fr",
+  "texts": {
+    "OpenIddict.Columns.Tenant": "Locataire",
+    "OpenIddict.Columns.ClientId": "ID client",
+    "OpenIddict.Columns.DisplayName": "Nom d'affichage",
+    "OpenIddict.Columns.ClientType": "Type de client",
+    "OpenIddict.Columns.ConsentType": "Type de consentement",
+    "OpenIddict.Columns.ApplicationType": "Type d'application",
+    "OpenIddict.Columns.ScopeName": "Nom",
+    "OpenIddict.Columns.Description": "Description",
+    "OpenIddict:Entity.Application": "Application",
+    "OpenIddict:Entity.Scope": "Portée"
+  }
+}

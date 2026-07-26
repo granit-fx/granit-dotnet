@@ -13,6 +13,9 @@ public sealed class GranitOpenIddictApplicationQueryDefinition : QueryDefinition
     public override string Name => "Granit.OpenIddict.ApplicationQuery";
 
     /// <inheritdoc/>
+    public override Type? LocalizationResourceType => typeof(OpenIddictLocalizationResource);
+
+    /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<OpenIddictApplicationModel> builder)
     {
         builder

@@ -1,0 +1,15 @@
+{
+  "culture": "sv",
+  "texts": {
+    "OpenIddict.Columns.Tenant": "Tenant",
+    "OpenIddict.Columns.ClientId": "Klient-ID",
+    "OpenIddict.Columns.DisplayName": "Visningsnamn",
+    "OpenIddict.Columns.ClientType": "Klienttyp",
+    "OpenIddict.Columns.ConsentType": "Samtyckestyp",
+    "OpenIddict.Columns.ApplicationType": "Applikationstyp",
+    "OpenIddict.Columns.ScopeName": "Namn",
+    "OpenIddict.Columns.Description": "Beskrivning",
+    "OpenIddict:Entity.Application": "Applikation",
+    "OpenIddict:Entity.Scope": "Omfattning"
+  }
+}

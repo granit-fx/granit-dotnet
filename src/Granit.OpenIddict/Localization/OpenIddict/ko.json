@@ -1,0 +1,15 @@
+{
+  "culture": "ko",
+  "texts": {
+    "OpenIddict.Columns.Tenant": "Tenant",
+    "OpenIddict.Columns.ClientId": "클라이언트 ID",
+    "OpenIddict.Columns.DisplayName": "표시 이름",
+    "OpenIddict.Columns.ClientType": "클라이언트 유형",
+    "OpenIddict.Columns.ConsentType": "동의 유형",
+    "OpenIddict.Columns.ApplicationType": "애플리케이션 유형",
+    "OpenIddict.Columns.ScopeName": "이름",
+    "OpenIddict.Columns.Description": "설명",
+    "OpenIddict:Entity.Application": "애플리케이션",
+    "OpenIddict:Entity.Scope": "범위"
+  }
+}

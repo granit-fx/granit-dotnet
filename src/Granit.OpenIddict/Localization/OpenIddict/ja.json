@@ -1,0 +1,15 @@
+{
+  "culture": "ja",
+  "texts": {
+    "OpenIddict.Columns.Tenant": "Tenant",
+    "OpenIddict.Columns.ClientId": "クライアント ID",
+    "OpenIddict.Columns.DisplayName": "表示名",
+    "OpenIddict.Columns.ClientType": "クライアントの種類",
+    "OpenIddict.Columns.ConsentType": "同意の種類",
+    "OpenIddict.Columns.ApplicationType": "アプリケーションの種類",
+    "OpenIddict.Columns.ScopeName": "名前",
+    "OpenIddict.Columns.Description": "説明",
+    "OpenIddict:Entity.Application": "アプリケーション",
+    "OpenIddict:Entity.Scope": "スコープ"
+  }
+}

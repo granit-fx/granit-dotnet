@@ -1,0 +1,15 @@
+{
+  "culture": "tr",
+  "texts": {
+    "OpenIddict.Columns.Tenant": "Tenant",
+    "OpenIddict.Columns.ClientId": "İstemci kimliği",
+    "OpenIddict.Columns.DisplayName": "Görünen ad",
+    "OpenIddict.Columns.ClientType": "İstemci türü",
+    "OpenIddict.Columns.ConsentType": "Onay türü",
+    "OpenIddict.Columns.ApplicationType": "Uygulama türü",
+    "OpenIddict.Columns.ScopeName": "Ad",
+    "OpenIddict.Columns.Description": "Açıklama",
+    "OpenIddict:Entity.Application": "Uygulama",
+    "OpenIddict:Entity.Scope": "Kapsam"
+  }
+}

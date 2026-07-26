@@ -1,0 +1,15 @@
+{
+  "culture": "nl",
+  "texts": {
+    "OpenIddict.Columns.Tenant": "Tenant",
+    "OpenIddict.Columns.ClientId": "Client-ID",
+    "OpenIddict.Columns.DisplayName": "Weergavenaam",
+    "OpenIddict.Columns.ClientType": "Clienttype",
+    "OpenIddict.Columns.ConsentType": "Toestemmingstype",
+    "OpenIddict.Columns.ApplicationType": "Applicatietype",
+    "OpenIddict.Columns.ScopeName": "Naam",
+    "OpenIddict.Columns.Description": "Beschrijving",
+    "OpenIddict:Entity.Application": "Applicatie",
+    "OpenIddict:Entity.Scope": "Bereik"
+  }
+}
