@@ -2245,6 +2245,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.OpenIddict.Server.Mtls",
+      "deps": [
+        "Granit.OpenIddict.Server"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Persistence",
       "deps": [
         "Granit"
@@ -43985,6 +43992,44 @@
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/Handlers/OpenIddictUserSessionCreatedHandler.cs",
       "line": 42,
+      "members": [
+        {
+          "name": "Descriptor",
+          "kind": "property",
+          "signature": "OpenIddictServerHandlerDescriptor Descriptor",
+          "returnType": "OpenIddictServerHandlerDescriptor"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ProcessSignInContext context)",
+          "returnType": "ValueTask"
+        }
+      ]
+    },
+    {
+      "name": "GranitOpenIddictServerMtlsModule",
+      "fqn": "Granit.OpenIddict.Server.Mtls.GranitOpenIddictServerMtlsModule",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Server.Mtls",
+      "file": "src/Granit.OpenIddict.Server.Mtls/GranitOpenIddictServerMtlsModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "MtlsTokenBindingHandler",
+      "fqn": "Granit.OpenIddict.Server.Mtls.Handlers.MtlsTokenBindingHandler",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Server.Mtls",
+      "file": "src/Granit.OpenIddict.Server.Mtls/Handlers/MtlsTokenBindingHandler.cs",
+      "line": 35,
       "members": [
         {
           "name": "Descriptor",

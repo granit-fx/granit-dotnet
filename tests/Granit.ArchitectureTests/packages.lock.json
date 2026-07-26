@@ -3632,6 +3632,12 @@
           "Granit.OpenIddict.Server": "[0.1.0-dev, )"
         }
       },
+      "granit.openiddict.server.mtls": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.OpenIddict.Server": "[0.1.0-dev, )"
+        }
+      },
       "granit.persistence": {
         "type": "Project",
         "dependencies": {

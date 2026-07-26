@@ -173,6 +173,7 @@
     <Project Path="src/Granit.OpenIddict.EntityFrameworkCore/Granit.OpenIddict.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.OpenIddict.Server/Granit.OpenIddict.Server.csproj" />
     <Project Path="src/Granit.OpenIddict.Server.DPoP/Granit.OpenIddict.Server.DPoP.csproj" />
+    <Project Path="src/Granit.OpenIddict.Server.Mtls/Granit.OpenIddict.Server.Mtls.csproj" />
     <Project Path="src/Granit.OpenIddict/Granit.OpenIddict.csproj" />
     <Project Path="src/Granit.Vault.Aws/Granit.Vault.Aws.csproj" />
     <Project Path="src/Granit.Vault.Azure/Granit.Vault.Azure.csproj" />
@@ -561,6 +562,7 @@
     <Project Path="tests/Granit.OpenIddict.Endpoints.Tests/Granit.OpenIddict.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.EntityFrameworkCore.Tests/Granit.OpenIddict.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.Server.DPoP.Tests/Granit.OpenIddict.Server.DPoP.Tests.csproj" />
+    <Project Path="tests/Granit.OpenIddict.Server.Mtls.Tests/Granit.OpenIddict.Server.Mtls.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.Server.Tests/Granit.OpenIddict.Server.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.Tests.Integration/Granit.OpenIddict.Tests.Integration.csproj" />
     <Project Path="tests/Granit.OpenIddict.Tests/Granit.OpenIddict.Tests.csproj" />

@@ -255,6 +255,7 @@
       "src/Granit.OpenIddict.Endpoints/Granit.OpenIddict.Endpoints.csproj",
       "src/Granit.OpenIddict.EntityFrameworkCore/Granit.OpenIddict.EntityFrameworkCore.csproj",
       "src/Granit.OpenIddict.Server.DPoP/Granit.OpenIddict.Server.DPoP.csproj",
+      "src/Granit.OpenIddict.Server.Mtls/Granit.OpenIddict.Server.Mtls.csproj",
       "src/Granit.OpenIddict.Server/Granit.OpenIddict.Server.csproj",
       "src/Granit.OpenIddict/Granit.OpenIddict.csproj",
       "src/Granit.Persistence.EntityFrameworkCore.Hosting/Granit.Persistence.EntityFrameworkCore.Hosting.csproj",

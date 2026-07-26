@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.OpenIddict.Server.Mtls</PackageId>
+    <Description>Opt-in mutual-TLS (RFC 8705) sender-constraining for the Granit OpenIddict server. Reference this package to bind issued access tokens to the client's TLS certificate (cnf.x5t#S256) at the token endpoint and to satisfy FAPI 2.0 sender-constraining. The core Granit.OpenIddict.Server package carries no mTLS dependency, so DPoP-only or Bearer-only deployments do not pull it in.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.OpenIddict.Server.Mtls.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.OpenIddict.Server\Granit.OpenIddict.Server.csproj" />
+  </ItemGroup>
+
+</Project>
