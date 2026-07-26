@@ -3,6 +3,7 @@ using Granit.Authentication.OpenIddict.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Authentication.OpenIddict.Extensions;
 
@@ -23,6 +24,17 @@ public static class OpenIddictValidationHostApplicationBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
+        // Bind + validate the options so a bad section fails fast at startup (missing issuer, or a
+        // cleartext issuer on a non-loopback host).
+        builder.Services
+            .AddOptions<GranitOpenIddictValidationOptions>()
+            .BindConfiguration(GranitOpenIddictValidationOptions.SectionName)
+            .ValidateOnStart();
+        builder.Services
+            .AddSingleton<IValidateOptions<GranitOpenIddictValidationOptions>, GranitOpenIddictValidationOptionsValidator>();
+
+        // The OpenIddict validation builder configures at composition time, so read the same section
+        // once here for SetIssuer/AddAudiences; ValidateOnStart above still guards the runtime value.
         GranitOpenIddictValidationOptions validationOptions = new();
         builder.Configuration
             .GetSection(GranitOpenIddictValidationOptions.SectionName)
