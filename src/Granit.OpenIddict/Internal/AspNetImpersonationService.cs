@@ -1,9 +1,11 @@
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Security.Claims;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Extensions;
 using Granit.Identity.Local.Services;
+using Granit.Settings.Services;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -22,10 +24,13 @@ internal sealed partial class AspNetImpersonationService(
     UserManager<LocalIdentity> userManager,
     IOpenIddictTokenManager tokenManager,
     IdentityLocalMetrics metrics,
+    ISettingProvider settingProvider,
     IClock clock,
     ILogger<AspNetImpersonationService> logger) : IImpersonationService
 {
-    private static readonly TimeSpan ImpersonationTokenLifetime = TimeSpan.FromHours(1);
+    private static readonly TimeSpan DefaultImpersonationLifetime = TimeSpan.FromHours(1);
+    private static readonly TimeSpan DefaultAccessTokenLifetime = TimeSpan.FromHours(1);
+    private static readonly TimeSpan DefaultRefreshTokenLifetime = TimeSpan.FromDays(14);
 
     /// <inheritdoc/>
     public async Task<ImpersonationResult> ImpersonateAsync(
@@ -77,6 +82,12 @@ internal sealed partial class AspNetImpersonationService(
             claim.SetDestinations(GetImpersonationDestinations(claim));
         }
 
+        // Impersonation sessions are short-lived by design; both tokens share one configurable
+        // lifetime (per-tenant via Granit.Settings, default 1h).
+        TimeSpan lifetime = await ResolveLifetimeAsync(
+            OpenIddictSettingNames.ImpersonationSessionLifetime, DefaultImpersonationLifetime, cancellationToken)
+            .ConfigureAwait(false);
+
         // Create access token descriptor
         DateTimeOffset now = clock.Now;
         var accessTokenDescriptor = new OpenIddictTokenDescriptor
@@ -84,7 +95,7 @@ internal sealed partial class AspNetImpersonationService(
             Principal = principal,
             Subject = targetUser.Id.ToString(),
             CreationDate = now,
-            ExpirationDate = now + ImpersonationTokenLifetime,
+            ExpirationDate = now + lifetime,
             Type = OpenIddictConstants.TokenTypeHints.AccessToken,
         };
 
@@ -97,7 +108,7 @@ internal sealed partial class AspNetImpersonationService(
             Principal = principal,
             Subject = targetUser.Id.ToString(),
             CreationDate = now,
-            ExpirationDate = now + ImpersonationTokenLifetime,
+            ExpirationDate = now + lifetime,
             Type = OpenIddictConstants.TokenTypeHints.RefreshToken,
         };
 
@@ -112,7 +123,7 @@ internal sealed partial class AspNetImpersonationService(
         return new ImpersonationResult(
             accessToken ?? string.Empty,
             refreshToken ?? string.Empty,
-            (int)ImpersonationTokenLifetime.TotalSeconds);
+            (int)lifetime.TotalSeconds);
     }
 
     /// <inheritdoc/>
@@ -153,13 +164,22 @@ internal sealed partial class AspNetImpersonationService(
             claim.SetDestinations(GetStandardDestinations(claim));
         }
 
+        // Returning to the admin's own session restores a normal session governed by the standard
+        // per-tenant token lifetime settings (defaults 1h access / 14d refresh).
+        TimeSpan accessLifetime = await ResolveLifetimeAsync(
+            OpenIddictSettingNames.AccessTokenLifetime, DefaultAccessTokenLifetime, cancellationToken)
+            .ConfigureAwait(false);
+        TimeSpan refreshLifetime = await ResolveLifetimeAsync(
+            OpenIddictSettingNames.RefreshTokenLifetime, DefaultRefreshTokenLifetime, cancellationToken)
+            .ConfigureAwait(false);
+
         DateTimeOffset now = clock.Now;
         var accessTokenDescriptor = new OpenIddictTokenDescriptor
         {
             Principal = principal,
             Subject = adminUser.Id.ToString(),
             CreationDate = now,
-            ExpirationDate = now + TimeSpan.FromHours(1),
+            ExpirationDate = now + accessLifetime,
             Type = OpenIddictConstants.TokenTypeHints.AccessToken,
         };
 
@@ -171,7 +191,7 @@ internal sealed partial class AspNetImpersonationService(
             Principal = principal,
             Subject = adminUser.Id.ToString(),
             CreationDate = now,
-            ExpirationDate = now + TimeSpan.FromDays(14),
+            ExpirationDate = now + refreshLifetime,
             Type = OpenIddictConstants.TokenTypeHints.RefreshToken,
         };
 
@@ -183,7 +203,21 @@ internal sealed partial class AspNetImpersonationService(
         return new ImpersonationResult(
             accessToken ?? string.Empty,
             refreshToken ?? string.Empty,
-            3600);
+            (int)accessLifetime.TotalSeconds);
+    }
+
+    /// <summary>
+    /// Resolves a lifetime from a per-tenant <see cref="ISettingProvider"/> setting (a
+    /// <see cref="TimeSpan"/> string such as <c>"01:00:00"</c>), falling back to
+    /// <paramref name="fallback"/> when unset, unparseable, or non-positive.
+    /// </summary>
+    private async Task<TimeSpan> ResolveLifetimeAsync(
+        string settingName, TimeSpan fallback, CancellationToken cancellationToken)
+    {
+        string? value = await settingProvider.GetOrNullAsync(settingName, cancellationToken).ConfigureAwait(false);
+        return TimeSpan.TryParse(value, CultureInfo.InvariantCulture, out TimeSpan parsed) && parsed > TimeSpan.Zero
+            ? parsed
+            : fallback;
     }
 
     private static ImmutableArray<string> GetImpersonationDestinations(Claim claim)

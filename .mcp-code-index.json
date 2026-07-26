@@ -2177,6 +2177,7 @@
         "Granit.Identity.Local.AspNetIdentity",
         "Granit.OpenIddict.Abstractions",
         "Granit.QueryEngine.Abstractions",
+        "Granit.Settings",
         "Granit.Identity.Abstractions"
       ],
       "framework": "net10.0"
@@ -43623,7 +43624,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 47,
+      "line": 49,
       "members": [
         {
           "name": "ConfigureServices",

@@ -3,6 +3,7 @@ using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Internal;
+using Granit.Settings.Services;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -19,6 +20,7 @@ public sealed class AspNetImpersonationServiceTests
 
     private readonly UserManager<LocalIdentity> _userManager;
     private readonly IOpenIddictTokenManager _tokenManager = Substitute.For<IOpenIddictTokenManager>();
+    private readonly ISettingProvider _settingProvider = Substitute.For<ISettingProvider>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly AspNetImpersonationService _sut;
 
@@ -37,6 +39,7 @@ public sealed class AspNetImpersonationServiceTests
             _userManager,
             _tokenManager,
             metrics,
+            _settingProvider,
             _clock,
             NullLogger<AspNetImpersonationService>.Instance);
     }
@@ -101,6 +104,35 @@ public sealed class AspNetImpersonationServiceTests
             Arg.Is<OpenIddictTokenDescriptor>(d =>
                 d.Type == OpenIddictConstants.TokenTypeHints.RefreshToken &&
                 d.Subject == targetId),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ImpersonateAsync_HonoursConfiguredSessionLifetime()
+    {
+        LocalIdentity target = CreateUser();
+        string targetId = target.Id.ToString();
+
+        _userManager.FindByIdAsync(targetId).Returns(target);
+        _userManager.GetRolesAsync(target).Returns([]);
+        SetupTokenCreation();
+        _settingProvider
+            .GetOrNullAsync(OpenIddictSettingNames.ImpersonationSessionLifetime, Arg.Any<CancellationToken>())
+            .Returns("02:00:00");
+
+        ImpersonationResult result = await _sut.ImpersonateAsync(
+            targetId, Guid.NewGuid().ToString(), "Admin", TestContext.Current.CancellationToken);
+
+        result.ExpiresIn.ShouldBe(7200);
+        await _tokenManager.Received(1).CreateAsync(
+            Arg.Is<OpenIddictTokenDescriptor>(d =>
+                d.Type == OpenIddictConstants.TokenTypeHints.AccessToken &&
+                d.ExpirationDate == FixedNow + TimeSpan.FromHours(2)),
+            Arg.Any<CancellationToken>());
+        await _tokenManager.Received(1).CreateAsync(
+            Arg.Is<OpenIddictTokenDescriptor>(d =>
+                d.Type == OpenIddictConstants.TokenTypeHints.RefreshToken &&
+                d.ExpirationDate == FixedNow + TimeSpan.FromHours(2)),
             Arg.Any<CancellationToken>());
     }
 
@@ -244,6 +276,38 @@ public sealed class AspNetImpersonationServiceTests
                 d.Type == OpenIddictConstants.TokenTypeHints.RefreshToken &&
                 d.Subject == adminId &&
                 d.ExpirationDate == FixedNow + TimeSpan.FromDays(14)),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task BackToImpersonatorAsync_HonoursConfiguredLifetimes()
+    {
+        LocalIdentity admin = CreateUser();
+        string adminId = admin.Id.ToString();
+
+        _userManager.FindByIdAsync(adminId).Returns(admin);
+        _userManager.GetRolesAsync(admin).Returns([]);
+        SetupTokenCreation();
+        _settingProvider
+            .GetOrNullAsync(OpenIddictSettingNames.AccessTokenLifetime, Arg.Any<CancellationToken>())
+            .Returns("00:30:00");
+        _settingProvider
+            .GetOrNullAsync(OpenIddictSettingNames.RefreshTokenLifetime, Arg.Any<CancellationToken>())
+            .Returns("07.00:00:00");
+
+        ImpersonationResult result = await _sut.BackToImpersonatorAsync(
+            adminId, TestContext.Current.CancellationToken);
+
+        result.ExpiresIn.ShouldBe(1800);
+        await _tokenManager.Received(1).CreateAsync(
+            Arg.Is<OpenIddictTokenDescriptor>(d =>
+                d.Type == OpenIddictConstants.TokenTypeHints.AccessToken &&
+                d.ExpirationDate == FixedNow + TimeSpan.FromMinutes(30)),
+            Arg.Any<CancellationToken>());
+        await _tokenManager.Received(1).CreateAsync(
+            Arg.Is<OpenIddictTokenDescriptor>(d =>
+                d.Type == OpenIddictConstants.TokenTypeHints.RefreshToken &&
+                d.ExpirationDate == FixedNow + TimeSpan.FromDays(7)),
             Arg.Any<CancellationToken>());
     }
 

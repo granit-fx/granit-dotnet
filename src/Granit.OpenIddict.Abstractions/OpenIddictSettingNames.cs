@@ -22,6 +22,13 @@ public static class OpenIddictSettingNames
     public const string RefreshTokenLifetime = "OpenIddict.RefreshTokenLifetime";
 
     /// <summary>
+    /// Impersonation session lifetime (TimeSpan string), applied to both the access and refresh
+    /// token issued when an administrator starts impersonating a user. Kept short by design.
+    /// Default: <c>"01:00:00"</c> (1 hour).
+    /// </summary>
+    public const string ImpersonationSessionLifetime = "OpenIddict.ImpersonationSessionLifetime";
+
+    /// <summary>
     /// Authorization code lifetime (TimeSpan string). Default: <c>"00:05:00"</c> (5 minutes).
     /// </summary>
     public const string AuthCodeLifetime = "OpenIddict.AuthCodeLifetime";
