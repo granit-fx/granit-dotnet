@@ -7,6 +7,7 @@ using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Models;
 using Granit.OpenIddict.Permissions;
+using Granit.QueryEngine;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -20,6 +21,9 @@ namespace Granit.OpenIddict.Endpoints.Endpoints;
 
 internal static class AdminOidcEndpoints
 {
+    private const int DefaultPageSize = 25;
+    private const int MaxPageSize = 100;
+
     internal static RouteGroupBuilder MapAdminOidcEndpoints(this RouteGroupBuilder group)
     {
         // ──── Applications ────
@@ -28,9 +32,9 @@ internal static class AdminOidcEndpoints
         apps.MapGet("/", ListApplicationsAsync)
             .WithMetadata(new EntityEndpointMetadata(typeof(OpenIddictApplicationModel), EntityEndpointKind.List))
             .WithName("ListOidcApplications")
-            .WithSummary("Returns all OIDC applications.")
-            .WithDescription("Returns all registered OIDC client applications with their full configuration: client ID, display name, type, tenant, permissions, redirect URIs, consent type, and signing-key presence. Use this list to manage the registered clients in the admin panel.")
-            .Produces<IReadOnlyList<AdminOidcApplicationResponse>>()
+            .WithSummary("Returns a page of OIDC applications.")
+            .WithDescription("Returns a page of registered OIDC client applications with their full configuration: client ID, display name, type, tenant, permissions, redirect URIs, consent type, and signing-key presence. Paginated via the 'page' (1-based, default 1) and 'pageSize' (default 25, max 100) query parameters; the envelope carries the total count and a has-more flag.")
+            .Produces<PagedResult<AdminOidcApplicationResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Applications.Read);
 
         apps.MapGet("/{clientId}", GetApplicationAsync)
@@ -90,9 +94,9 @@ internal static class AdminOidcEndpoints
         scopes.MapGet("/", ListScopesAsync)
             .WithMetadata(new EntityEndpointMetadata(typeof(OpenIddictScopeModel), EntityEndpointKind.List))
             .WithName("ListOidcScopes")
-            .WithSummary("Returns all OIDC scopes.")
-            .WithDescription("Returns all registered OIDC scopes with their name, display name, and associated resources. Scopes define the claims and resources that tokens can grant access to. Use this endpoint to audit which scopes are available for client configuration.")
-            .Produces<IReadOnlyList<AdminOidcScopeResponse>>()
+            .WithSummary("Returns a page of OIDC scopes.")
+            .WithDescription("Returns a page of registered OIDC scopes with their name, display name, and associated resources. Scopes define the claims and resources that tokens can grant access to. Paginated via the 'page' (1-based, default 1) and 'pageSize' (default 25, max 100) query parameters; the envelope carries the total count and a has-more flag.")
+            .Produces<PagedResult<AdminOidcScopeResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Scopes.Read);
 
         scopes.MapPost("/", CreateScopeAsync)
@@ -140,9 +144,9 @@ internal static class AdminOidcEndpoints
 
         auths.MapGet("/", ListAuthorizationsAsync)
             .WithName("ListOidcAuthorizations")
-            .WithSummary("Returns OIDC authorizations.")
-            .WithDescription("Returns up to the first 100 OIDC authorizations. Each authorization represents a user's consent grant to an application, with its status (valid, revoked) and type (permanent, ad-hoc). Server-side filtering by user or client and pagination are not yet implemented.")
-            .Produces<IReadOnlyList<AdminOidcAuthorizationResponse>>()
+            .WithSummary("Returns a page of OIDC authorizations.")
+            .WithDescription("Returns a page of OIDC authorizations. Each authorization represents a user's consent grant to an application, with its status (valid, revoked) and type (permanent, ad-hoc). Paginated via the 'page' (1-based, default 1) and 'pageSize' (default 25, max 100) query parameters; the envelope carries the total count and a has-more flag. Server-side filtering by user or client is not yet implemented.")
+            .Produces<PagedResult<AdminOidcAuthorizationResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Authorizations.Read);
 
         auths.MapDelete("/{authorizationId:guid}", RevokeAuthorizationAsync)
@@ -185,13 +189,16 @@ internal static class AdminOidcEndpoints
         return TypedResults.Ok(ToResponse(descriptor, tenantId));
     }
 
-    private static async Task<Ok<IReadOnlyList<AdminOidcApplicationResponse>>> ListApplicationsAsync(
+    private static async Task<Ok<PagedResult<AdminOidcApplicationResponse>>> ListApplicationsAsync(
         [FromServices] IOpenIddictApplicationManager applicationManager,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
         CancellationToken cancellationToken)
     {
+        (int size, int offset) = ResolvePaging(page, pageSize);
         var results = new List<AdminOidcApplicationResponse>();
 
-        await foreach (object app in applicationManager.ListAsync(null, null, cancellationToken).ConfigureAwait(false))
+        await foreach (object app in applicationManager.ListAsync(size, offset, cancellationToken).ConfigureAwait(false))
         {
             var descriptor = new OpenIddictApplicationDescriptor();
             await applicationManager.PopulateAsync(descriptor, app, cancellationToken).ConfigureAwait(false);
@@ -199,7 +206,9 @@ internal static class AdminOidcEndpoints
             results.Add(ToResponse(descriptor, tenantId));
         }
 
-        return TypedResults.Ok<IReadOnlyList<AdminOidcApplicationResponse>>(results);
+        long total = await applicationManager.CountAsync(cancellationToken).ConfigureAwait(false);
+        return TypedResults.Ok(new PagedResult<AdminOidcApplicationResponse>(
+            results, (int)total, offset + results.Count < total));
     }
 
     private static async Task<Results<Created<AdminOidcApplicationResponse>, ProblemHttpResult>> CreateApplicationAsync(
@@ -443,13 +452,16 @@ internal static class AdminOidcEndpoints
 
     // ──── Scope handlers ────
 
-    private static async Task<Ok<IReadOnlyList<AdminOidcScopeResponse>>> ListScopesAsync(
+    private static async Task<Ok<PagedResult<AdminOidcScopeResponse>>> ListScopesAsync(
         [FromServices] IOpenIddictScopeManager scopeManager,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
         CancellationToken cancellationToken)
     {
+        (int size, int offset) = ResolvePaging(page, pageSize);
         var results = new List<AdminOidcScopeResponse>();
 
-        await foreach (object scope in scopeManager.ListAsync(null, null, cancellationToken).ConfigureAwait(false))
+        await foreach (object scope in scopeManager.ListAsync(size, offset, cancellationToken).ConfigureAwait(false))
         {
             var descriptor = new OpenIddictScopeDescriptor();
             await scopeManager.PopulateAsync(descriptor, scope, cancellationToken).ConfigureAwait(false);
@@ -457,7 +469,9 @@ internal static class AdminOidcEndpoints
             results.Add(ToScopeResponse(descriptor, tenantId));
         }
 
-        return TypedResults.Ok<IReadOnlyList<AdminOidcScopeResponse>>(results);
+        long total = await scopeManager.CountAsync(cancellationToken).ConfigureAwait(false);
+        return TypedResults.Ok(new PagedResult<AdminOidcScopeResponse>(
+            results, (int)total, offset + results.Count < total));
     }
 
     private static async Task<Results<Created<AdminOidcScopeResponse>, ProblemHttpResult>> CreateScopeAsync(
@@ -614,15 +628,18 @@ internal static class AdminOidcEndpoints
                 [.. descriptor.Scopes]));
     }
 
-    private static async Task<Ok<IReadOnlyList<AdminOidcAuthorizationResponse>>> ListAuthorizationsAsync(
+    private static async Task<Ok<PagedResult<AdminOidcAuthorizationResponse>>> ListAuthorizationsAsync(
         [FromServices] IOpenIddictAuthorizationManager authorizationManager,
         [FromServices] IOpenIddictApplicationManager applicationManager,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
         CancellationToken cancellationToken)
     {
+        (int size, int offset) = ResolvePaging(page, pageSize);
         var results = new List<AdminOidcAuthorizationResponse>();
         var clientIdCache = new Dictionary<string, string?>(StringComparer.Ordinal);
 
-        await foreach (object auth in authorizationManager.ListAsync(100, 0, cancellationToken).ConfigureAwait(false))
+        await foreach (object auth in authorizationManager.ListAsync(size, offset, cancellationToken).ConfigureAwait(false))
         {
             string? id = await authorizationManager.GetIdAsync(auth, cancellationToken).ConfigureAwait(false);
             var descriptor = new OpenIddictAuthorizationDescriptor();
@@ -645,7 +662,21 @@ internal static class AdminOidcEndpoints
                 [.. descriptor.Scopes]));
         }
 
-        return TypedResults.Ok<IReadOnlyList<AdminOidcAuthorizationResponse>>(results);
+        long total = await authorizationManager.CountAsync(cancellationToken).ConfigureAwait(false);
+        return TypedResults.Ok(new PagedResult<AdminOidcAuthorizationResponse>(
+            results, (int)total, offset + results.Count < total));
+    }
+
+    /// <summary>
+    /// Resolves 1-based <paramref name="page"/> / <paramref name="pageSize"/> query parameters into a
+    /// clamped page size (1–<see cref="MaxPageSize"/>, default <see cref="DefaultPageSize"/>) and a
+    /// zero-based row offset for the OpenIddict manager's <c>ListAsync(count, offset)</c>.
+    /// </summary>
+    private static (int Size, int Offset) ResolvePaging(int? page, int? pageSize)
+    {
+        int size = Math.Clamp(pageSize ?? DefaultPageSize, 1, MaxPageSize);
+        int pageNumber = Math.Max(page ?? 1, 1);
+        return (size, (pageNumber - 1) * size);
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> RevokeAuthorizationAsync(
