@@ -17,6 +17,8 @@ namespace Granit.OpenIddict.Endpoints.Dtos;
 /// <param name="ClientSide">The host/tenant policy enforced at sign-in, or <see langword="null"/> for no restriction.</param>
 /// <param name="DeviceKind">The device classification declared for this client, or <see langword="null"/> when not declared.</param>
 /// <param name="HasSigningKey">Whether a public signing key (JWK) is registered for <c>private_key_jwt</c> authentication.</param>
+/// <param name="GeneratedClientSecret">The server-minted client secret, present <em>only</em> on the create response when <c>GenerateClientSecret</c> was requested. Shown once and never stored in plaintext — the admin must capture it now. <see langword="null"/> on every other response.</param>
+#pragma warning disable GRSEC003 // GeneratedClientSecret is returned once to the admin, not stored
 public sealed record AdminOidcApplicationResponse(
     string? ClientId,
     string? DisplayName,
@@ -28,4 +30,6 @@ public sealed record AdminOidcApplicationResponse(
     string? ConsentType,
     MultiTenancySides? ClientSide,
     DeviceKind? DeviceKind,
-    bool HasSigningKey);
+    bool HasSigningKey,
+    string? GeneratedClientSecret = null);
+#pragma warning restore GRSEC003
