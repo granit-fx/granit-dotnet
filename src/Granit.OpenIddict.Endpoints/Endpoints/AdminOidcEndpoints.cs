@@ -7,6 +7,7 @@ using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Models;
 using Granit.OpenIddict.Permissions;
+using Granit.QueryEngine;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -20,6 +21,9 @@ namespace Granit.OpenIddict.Endpoints.Endpoints;
 
 internal static class AdminOidcEndpoints
 {
+    private const int DefaultPageSize = 25;
+    private const int MaxPageSize = 100;
+
     internal static RouteGroupBuilder MapAdminOidcEndpoints(this RouteGroupBuilder group)
     {
         // ──── Applications ────
@@ -28,9 +32,9 @@ internal static class AdminOidcEndpoints
         apps.MapGet("/", ListApplicationsAsync)
             .WithMetadata(new EntityEndpointMetadata(typeof(OpenIddictApplicationModel), EntityEndpointKind.List))
             .WithName("ListOidcApplications")
-            .WithSummary("Returns all OIDC applications.")
-            .WithDescription("Returns all registered OIDC client applications with their full configuration: client ID, display name, type, tenant, permissions, redirect URIs, consent type, and signing-key presence. Use this list to manage the registered clients in the admin panel.")
-            .Produces<IReadOnlyList<AdminOidcApplicationResponse>>()
+            .WithSummary("Returns a page of OIDC applications.")
+            .WithDescription("Returns a page of registered OIDC client applications with their full configuration: client ID, display name, type, tenant, permissions, redirect URIs, consent type, and signing-key presence. Paginated via the 'page' (1-based, default 1) and 'pageSize' (default 25, max 100) query parameters; the envelope carries the total count and a has-more flag.")
+            .Produces<PagedResult<AdminOidcApplicationResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Applications.Read);
 
         apps.MapGet("/{clientId}", GetApplicationAsync)
@@ -44,7 +48,7 @@ internal static class AdminOidcEndpoints
         apps.MapPost("/", CreateApplicationAsync)
             .WithName("CreateOidcApplication")
             .WithSummary("Creates a new OIDC application.")
-            .WithDescription("Registers a new OIDC client with the specified permissions, redirect URIs, and consent policy. Providing a client secret creates a confidential client (the secret is stored hashed); omitting it creates a public client. Returns 409 Conflict if a client with the same client ID already exists.")
+            .WithDescription("Registers a new OIDC client with the specified permissions, redirect URIs, and consent policy. Set generateClientSecret=true to have the server mint a cryptographically strong secret and return it once in the response's generatedClientSecret field (confidential client); alternatively provide clientSecret explicitly; omitting both creates a public client. Stored secrets are hashed. Returns 409 Conflict if a client with the same client ID already exists.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcApplicationResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
@@ -90,9 +94,9 @@ internal static class AdminOidcEndpoints
         scopes.MapGet("/", ListScopesAsync)
             .WithMetadata(new EntityEndpointMetadata(typeof(OpenIddictScopeModel), EntityEndpointKind.List))
             .WithName("ListOidcScopes")
-            .WithSummary("Returns all OIDC scopes.")
-            .WithDescription("Returns all registered OIDC scopes with their name, display name, and associated resources. Scopes define the claims and resources that tokens can grant access to. Use this endpoint to audit which scopes are available for client configuration.")
-            .Produces<IReadOnlyList<AdminOidcScopeResponse>>()
+            .WithSummary("Returns a page of OIDC scopes.")
+            .WithDescription("Returns a page of registered OIDC scopes with their name, display name, and associated resources. Scopes define the claims and resources that tokens can grant access to. Paginated via the 'page' (1-based, default 1) and 'pageSize' (default 25, max 100) query parameters; the envelope carries the total count and a has-more flag.")
+            .Produces<PagedResult<AdminOidcScopeResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Scopes.Read);
 
         scopes.MapPost("/", CreateScopeAsync)
@@ -140,9 +144,9 @@ internal static class AdminOidcEndpoints
 
         auths.MapGet("/", ListAuthorizationsAsync)
             .WithName("ListOidcAuthorizations")
-            .WithSummary("Returns OIDC authorizations.")
-            .WithDescription("Returns up to the first 100 OIDC authorizations. Each authorization represents a user's consent grant to an application, with its status (valid, revoked) and type (permanent, ad-hoc). Server-side filtering by user or client and pagination are not yet implemented.")
-            .Produces<IReadOnlyList<AdminOidcAuthorizationResponse>>()
+            .WithSummary("Returns a page of OIDC authorizations.")
+            .WithDescription("Returns a page of OIDC authorizations. Each authorization represents a user's consent grant to an application, with its status (valid, revoked) and type (permanent, ad-hoc). Paginated via the 'page' (1-based, default 1) and 'pageSize' (default 25, max 100) query parameters; the envelope carries the total count and a has-more flag. Optionally filter server-side by 'subject' (user id) and/or 'clientId'; an unknown clientId yields an empty page.")
+            .Produces<PagedResult<AdminOidcAuthorizationResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Authorizations.Read);
 
         auths.MapDelete("/{authorizationId:guid}", RevokeAuthorizationAsync)
@@ -185,13 +189,16 @@ internal static class AdminOidcEndpoints
         return TypedResults.Ok(ToResponse(descriptor, tenantId));
     }
 
-    private static async Task<Ok<IReadOnlyList<AdminOidcApplicationResponse>>> ListApplicationsAsync(
+    private static async Task<Ok<PagedResult<AdminOidcApplicationResponse>>> ListApplicationsAsync(
         [FromServices] IOpenIddictApplicationManager applicationManager,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
         CancellationToken cancellationToken)
     {
+        (int size, int offset) = ResolvePaging(page, pageSize);
         var results = new List<AdminOidcApplicationResponse>();
 
-        await foreach (object app in applicationManager.ListAsync(null, null, cancellationToken).ConfigureAwait(false))
+        await foreach (object app in applicationManager.ListAsync(size, offset, cancellationToken).ConfigureAwait(false))
         {
             var descriptor = new OpenIddictApplicationDescriptor();
             await applicationManager.PopulateAsync(descriptor, app, cancellationToken).ConfigureAwait(false);
@@ -199,7 +206,9 @@ internal static class AdminOidcEndpoints
             results.Add(ToResponse(descriptor, tenantId));
         }
 
-        return TypedResults.Ok<IReadOnlyList<AdminOidcApplicationResponse>>(results);
+        long total = await applicationManager.CountAsync(cancellationToken).ConfigureAwait(false);
+        return TypedResults.Ok(new PagedResult<AdminOidcApplicationResponse>(
+            results, (int)total, offset + results.Count < total));
     }
 
     private static async Task<Results<Created<AdminOidcApplicationResponse>, ProblemHttpResult>> CreateApplicationAsync(
@@ -232,7 +241,16 @@ internal static class AdminOidcEndpoints
             ConsentType = request.ConsentType ?? OpenIddictConstants.ConsentTypes.Implicit,
         };
 
-        if (!string.IsNullOrEmpty(request.ClientSecret))
+        // A server-minted secret (returned once below) is preferred over an admin-supplied one; the
+        // admin never has to invent secret material. Falls back to an explicit secret, else public.
+        string? generatedSecret = null;
+        if (request.GenerateClientSecret)
+        {
+            generatedSecret = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+            descriptor.ClientSecret = generatedSecret;
+            descriptor.ClientType = OpenIddictConstants.ClientTypes.Confidential;
+        }
+        else if (!string.IsNullOrEmpty(request.ClientSecret))
         {
             descriptor.ClientSecret = request.ClientSecret;
             descriptor.ClientType = OpenIddictConstants.ClientTypes.Confidential;
@@ -282,7 +300,7 @@ internal static class AdminOidcEndpoints
 
         return TypedResults.Created(
             $"/admin/oidc/applications/{request.ClientId}",
-            ToResponse(responseDescriptor, persistedTenantId));
+            ToResponse(responseDescriptor, persistedTenantId) with { GeneratedClientSecret = generatedSecret });
     }
 
     /// <summary>
@@ -443,13 +461,16 @@ internal static class AdminOidcEndpoints
 
     // ──── Scope handlers ────
 
-    private static async Task<Ok<IReadOnlyList<AdminOidcScopeResponse>>> ListScopesAsync(
+    private static async Task<Ok<PagedResult<AdminOidcScopeResponse>>> ListScopesAsync(
         [FromServices] IOpenIddictScopeManager scopeManager,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
         CancellationToken cancellationToken)
     {
+        (int size, int offset) = ResolvePaging(page, pageSize);
         var results = new List<AdminOidcScopeResponse>();
 
-        await foreach (object scope in scopeManager.ListAsync(null, null, cancellationToken).ConfigureAwait(false))
+        await foreach (object scope in scopeManager.ListAsync(size, offset, cancellationToken).ConfigureAwait(false))
         {
             var descriptor = new OpenIddictScopeDescriptor();
             await scopeManager.PopulateAsync(descriptor, scope, cancellationToken).ConfigureAwait(false);
@@ -457,7 +478,9 @@ internal static class AdminOidcEndpoints
             results.Add(ToScopeResponse(descriptor, tenantId));
         }
 
-        return TypedResults.Ok<IReadOnlyList<AdminOidcScopeResponse>>(results);
+        long total = await scopeManager.CountAsync(cancellationToken).ConfigureAwait(false);
+        return TypedResults.Ok(new PagedResult<AdminOidcScopeResponse>(
+            results, (int)total, offset + results.Count < total));
     }
 
     private static async Task<Results<Created<AdminOidcScopeResponse>, ProblemHttpResult>> CreateScopeAsync(
@@ -614,38 +637,105 @@ internal static class AdminOidcEndpoints
                 [.. descriptor.Scopes]));
     }
 
-    private static async Task<Ok<IReadOnlyList<AdminOidcAuthorizationResponse>>> ListAuthorizationsAsync(
+    private static async Task<Ok<PagedResult<AdminOidcAuthorizationResponse>>> ListAuthorizationsAsync(
         [FromServices] IOpenIddictAuthorizationManager authorizationManager,
         [FromServices] IOpenIddictApplicationManager applicationManager,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
+        [FromQuery] string? subject,
+        [FromQuery] string? clientId,
         CancellationToken cancellationToken)
     {
-        var results = new List<AdminOidcAuthorizationResponse>();
+        (int size, int offset) = ResolvePaging(page, pageSize);
         var clientIdCache = new Dictionary<string, string?>(StringComparer.Ordinal);
 
-        await foreach (object auth in authorizationManager.ListAsync(100, 0, cancellationToken).ConfigureAwait(false))
+        async Task<AdminOidcAuthorizationResponse> BuildAsync(object auth)
         {
             string? id = await authorizationManager.GetIdAsync(auth, cancellationToken).ConfigureAwait(false);
             var descriptor = new OpenIddictAuthorizationDescriptor();
             await authorizationManager.PopulateAsync(descriptor, auth, cancellationToken).ConfigureAwait(false);
 
-            string? clientId = null;
+            string? resolvedClientId = null;
             if (descriptor.ApplicationId is not null
-                && !clientIdCache.TryGetValue(descriptor.ApplicationId, out clientId))
+                && !clientIdCache.TryGetValue(descriptor.ApplicationId, out resolvedClientId))
             {
                 object? app = await applicationManager.FindByIdAsync(descriptor.ApplicationId, cancellationToken).ConfigureAwait(false);
-                clientId = app is not null
+                resolvedClientId = app is not null
                     ? await applicationManager.GetClientIdAsync(app, cancellationToken).ConfigureAwait(false)
                     : null;
-                clientIdCache[descriptor.ApplicationId] = clientId;
+                clientIdCache[descriptor.ApplicationId] = resolvedClientId;
             }
 
-            results.Add(new AdminOidcAuthorizationResponse(
+            return new AdminOidcAuthorizationResponse(
                 Guid.TryParse(id, out Guid parsedId) ? parsedId : Guid.Empty,
-                descriptor.Subject, clientId, descriptor.Status, descriptor.Type,
-                [.. descriptor.Scopes]));
+                descriptor.Subject, resolvedClientId, descriptor.Status, descriptor.Type,
+                [.. descriptor.Scopes]);
         }
 
-        return TypedResults.Ok<IReadOnlyList<AdminOidcAuthorizationResponse>>(results);
+        // A clientId filter is resolved to the internal application id — the manager filters
+        // authorizations by application id, not by the public client_id.
+        string? applicationId = null;
+        if (!string.IsNullOrEmpty(clientId))
+        {
+            object? app = await applicationManager.FindByClientIdAsync(clientId, cancellationToken).ConfigureAwait(false);
+            if (app is null)
+            {
+                return TypedResults.Ok(new PagedResult<AdminOidcAuthorizationResponse>([], 0, false));
+            }
+
+            applicationId = await applicationManager.GetIdAsync(app, cancellationToken).ConfigureAwait(false);
+        }
+
+        // Unfiltered: stream the requested page straight from the store (server-side pagination).
+        if (string.IsNullOrEmpty(subject) && applicationId is null)
+        {
+            var pageItems = new List<AdminOidcAuthorizationResponse>();
+            await foreach (object auth in authorizationManager.ListAsync(size, offset, cancellationToken).ConfigureAwait(false))
+            {
+                pageItems.Add(await BuildAsync(auth).ConfigureAwait(false));
+            }
+
+            long total = await authorizationManager.CountAsync(cancellationToken).ConfigureAwait(false);
+            return TypedResults.Ok(new PagedResult<AdminOidcAuthorizationResponse>(
+                pageItems, (int)total, offset + pageItems.Count < total));
+        }
+
+        // Filtered: the manager's Find* overloads are unpaginated, so materialise the (bounded
+        // per subject/client) match set and page it in memory.
+        IAsyncEnumerable<object> matches = (subject, applicationId) switch
+        {
+            (not null, not null) => authorizationManager.FindAsync(
+                subject, applicationId, status: null, type: null, scopes: null, cancellationToken),
+            (not null, null) => authorizationManager.FindBySubjectAsync(subject, cancellationToken),
+            _ => authorizationManager.FindByApplicationIdAsync(applicationId!, cancellationToken),
+        };
+
+        var allMatches = new List<object>();
+        await foreach (object auth in matches.ConfigureAwait(false))
+        {
+            allMatches.Add(auth);
+        }
+
+        var results = new List<AdminOidcAuthorizationResponse>();
+        foreach (object auth in allMatches.Skip(offset).Take(size))
+        {
+            results.Add(await BuildAsync(auth).ConfigureAwait(false));
+        }
+
+        return TypedResults.Ok(new PagedResult<AdminOidcAuthorizationResponse>(
+            results, allMatches.Count, offset + results.Count < allMatches.Count));
+    }
+
+    /// <summary>
+    /// Resolves 1-based <paramref name="page"/> / <paramref name="pageSize"/> query parameters into a
+    /// clamped page size (1–<see cref="MaxPageSize"/>, default <see cref="DefaultPageSize"/>) and a
+    /// zero-based row offset for the OpenIddict manager's <c>ListAsync(count, offset)</c>.
+    /// </summary>
+    private static (int Size, int Offset) ResolvePaging(int? page, int? pageSize)
+    {
+        int size = Math.Clamp(pageSize ?? DefaultPageSize, 1, MaxPageSize);
+        int pageNumber = Math.Max(page ?? 1, 1);
+        return (size, (pageNumber - 1) * size);
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> RevokeAuthorizationAsync(

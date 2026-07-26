@@ -43215,7 +43215,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcApplicationResponse.cs",
-      "line": 20,
+      "line": 22,
       "members": []
     },
     {
@@ -43233,7 +43233,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcCreateApplicationRequest.cs",
-      "line": 22,
+      "line": 23,
       "members": []
     },
     {
