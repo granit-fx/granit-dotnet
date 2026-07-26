@@ -18,7 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.Auditing\Granit.Auditing.csproj" />
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
-    <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
     <ProjectReference Include="..\Granit.Http.Idempotency.Abstractions\Granit.Http.Idempotency.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\Granit.OpenIddict\Granit.OpenIddict.csproj" />

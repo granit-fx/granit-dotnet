@@ -1,6 +1,5 @@
 using Granit.Auditing;
 using Granit.Authorization;
-using Granit.Caching;
 using Granit.Http.ApiDocumentation;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
@@ -31,7 +30,6 @@ namespace Granit.OpenIddict.Endpoints;
 [DependsOn(
     typeof(GranitAuditingModule),
     typeof(GranitAuthorizationModule),
-    typeof(GranitCachingModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitOpenIddictModule),
     typeof(GranitOpenIddictServerModule),

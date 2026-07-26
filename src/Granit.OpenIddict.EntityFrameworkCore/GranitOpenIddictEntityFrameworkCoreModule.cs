@@ -1,5 +1,4 @@
 using Granit.DataExchange;
-using Granit.Encryption;
 using Granit.Identity.Local;
 using Granit.Identity.Local.EntityFrameworkCore;
 using Granit.Modularity;
@@ -23,7 +22,6 @@ namespace Granit.OpenIddict.EntityFrameworkCore;
 /// </remarks>
 [DependsOn(
     typeof(GranitDataExchangeModule),
-    typeof(GranitEncryptionModule),
     typeof(GranitIdentityLocalEntityFrameworkCoreModule),
     typeof(GranitIdentityLocalModule),
     typeof(GranitMultiTenancyModule),

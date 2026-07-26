@@ -2169,7 +2169,6 @@
     {
       "name": "Granit.OpenIddict",
       "deps": [
-        "Granit.Caching",
         "Granit.DataExchange.Abstractions",
         "Granit.Encryption",
         "Granit.Entities.Abstractions",
@@ -2204,7 +2203,6 @@
       "deps": [
         "Granit.Auditing",
         "Granit.Authorization",
-        "Granit.Caching",
         "Granit.Http.Idempotency.Abstractions",
         "Granit.Http.ApiDocumentation",
         "Granit.OpenIddict",
@@ -2219,7 +2217,6 @@
       "name": "Granit.OpenIddict.EntityFrameworkCore",
       "deps": [
         "Granit.DataExchange",
-        "Granit.Encryption",
         "Granit.Identity.Local",
         "Granit.Identity.Local.EntityFrameworkCore",
         "Granit.MultiTenancy",
@@ -43268,7 +43265,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/GranitOpenIddictEndpointsModule.cs",
-      "line": 41,
+      "line": 39,
       "members": [
         {
           "name": "ConfigureServices",
@@ -43489,7 +43486,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/GranitOpenIddictEntityFrameworkCoreModule.cs",
-      "line": 32,
+      "line": 30,
       "members": [
         {
           "name": "ConfigureServices",
@@ -43610,7 +43607,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 49,
+      "line": 47,
       "members": [
         {
           "name": "ConfigureServices",

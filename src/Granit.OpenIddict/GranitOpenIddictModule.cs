@@ -1,4 +1,3 @@
-using Granit.Caching;
 using Granit.DataExchange;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
@@ -36,7 +35,6 @@ namespace Granit.OpenIddict;
 /// and Identity cookie configuration (neutral names, env-aware __Host- prefix).
 /// </summary>
 [DependsOn(
-    typeof(GranitCachingModule),
     typeof(GranitDataExchangeAbstractionsModule),
     typeof(GranitEncryptionModule),
     typeof(GranitEntitiesAbstractionsModule),
