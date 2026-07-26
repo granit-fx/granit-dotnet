@@ -829,6 +829,7 @@
           "Granit.Identity.Local.AspNetIdentity": "[0.1.0-dev, )",
           "Granit.OpenIddict.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Settings": "[0.1.0-dev, )",
           "OpenIddict": "[7.*, )"
         }
       },

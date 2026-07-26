@@ -1,8 +1,8 @@
 using Granit.Imaging.MagickNet.Extensions;
 using Granit.TextExtraction.Ocr.Tesseract.Extensions;
 using ImageMagick;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -75,17 +75,19 @@ public sealed class LiveTesseractRecognizerTests
         // /opt/granit-ocr-libs; local opt-in is described in the package README.
         string? libDir = Environment.GetEnvironmentVariable("GRANIT_TESSERACT_LIB_DIR");
 
-        ServiceCollection services = [];
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-        services.AddLogging();
-        // ImagingMetrics (pulled in by AddGranitImagingMagickNet) ctor-injects IMeterFactory,
-        // which the generic host registers automatically but a bare ServiceCollection does not.
-        services.AddMetrics();
+        // AddGranitImagingMagickNet binds options from configuration and targets
+        // IHostApplicationBuilder (since #3077), so drive registration through a minimal
+        // host builder rather than a bare ServiceCollection. The builder registers
+        // IConfiguration; logging + metrics are added explicitly (ImagingMetrics
+        // ctor-injects IMeterFactory, which a bare ServiceCollection would not provide).
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+        builder.Services.AddLogging();
+        builder.Services.AddMetrics();
         // TesseractOcrExtractor depends on IImageProcessor for its pre-decode pixel-bomb guard
         // (the host must register an imaging provider — see the module docs). Magick.NET is the
         // reference provider and is already used below to render the test fixtures.
-        services.AddGranitImagingMagickNet();
-        services.AddTesseractOcrExtractor(o =>
+        builder.AddGranitImagingMagickNet();
+        builder.Services.AddTesseractOcrExtractor(o =>
         {
             o.DataPath = TessdataPath;
             o.Language = "eng";
@@ -94,7 +96,7 @@ public sealed class LiveTesseractRecognizerTests
                 o.LibrarySearchPath = libDir;
             }
         });
-        return services.BuildServiceProvider();
+        return builder.Services.BuildServiceProvider();
     }
 
     private static byte[] RenderPngWithText(string text)
