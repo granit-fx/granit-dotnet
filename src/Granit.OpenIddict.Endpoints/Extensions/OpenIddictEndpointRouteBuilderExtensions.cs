@@ -4,6 +4,8 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Granit.OpenIddict.Endpoints.Extensions;
 
@@ -29,7 +31,10 @@ public static class OpenIddictEndpointRouteBuilderExtensions
         this IEndpointRouteBuilder endpoints,
         Action<OpenIddictEndpointsOptions>? configure = null)
     {
-        OpenIddictEndpointsOptions options = new();
+        // Seed from configuration (bound in GranitOpenIddictEndpointsModule), then apply any
+        // imperative override so a host can use appsettings, the delegate, or both.
+        OpenIddictEndpointsOptions options =
+            endpoints.ServiceProvider.GetService<IOptions<OpenIddictEndpointsOptions>>()?.Value ?? new();
         configure?.Invoke(options);
 
         // ──── Admin OIDC management (/api/admin) ────
@@ -73,7 +78,8 @@ public static class OpenIddictEndpointRouteBuilderExtensions
         this IEndpointRouteBuilder endpoints,
         Action<OpenIddictServerEndpointsOptions>? configure = null)
     {
-        OpenIddictServerEndpointsOptions options = new();
+        OpenIddictServerEndpointsOptions options =
+            endpoints.ServiceProvider.GetService<IOptions<OpenIddictServerEndpointsOptions>>()?.Value ?? new();
         configure?.Invoke(options);
 
         endpoints.MapConnectAuthorizationEndpoints(options);

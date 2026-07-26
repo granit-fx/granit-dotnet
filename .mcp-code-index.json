@@ -43252,7 +43252,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Extensions/OpenIddictEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "MapGranitOpenIddict",
@@ -43268,7 +43268,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/GranitOpenIddictEndpointsModule.cs",
-      "line": 39,
+      "line": 41,
       "members": [
         {
           "name": "ConfigureServices",

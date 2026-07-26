@@ -5,12 +5,14 @@ using Granit.Http.ApiDocumentation;
 using Granit.Localization.Extensions;
 using Granit.Modularity;
 using Granit.OpenIddict.Endpoints.Internal;
+using Granit.OpenIddict.Endpoints.Options;
 using Granit.OpenIddict.Endpoints.Workspaces;
 using Granit.OpenIddict.Server;
 using Granit.QueryEngine;
 using Granit.Validation;
 using Granit.Workspaces;
 using Granit.Workspaces.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.OpenIddict.Endpoints;
 
@@ -43,5 +45,16 @@ public sealed class GranitOpenIddictEndpointsModule : GranitModule
     {
         context.Services.AddLocalizationResource<OpenIddictEndpointsLocalizationResource>();
         context.Services.AddFeatureProvider<OpenIddictFeatureProvider>();
+
+        // Bind the endpoint options from configuration so appsettings keys are honoured at request
+        // time. The MapGranitOpenIddict* delegates seed from these before applying any imperative
+        // overrides; ValidateOnStart surfaces a bad section at boot.
+        context.Services.AddOptions<OpenIddictEndpointsOptions>()
+            .BindConfiguration(OpenIddictEndpointsOptions.SectionName)
+            .ValidateOnStart();
+
+        context.Services.AddOptions<OpenIddictServerEndpointsOptions>()
+            .BindConfiguration(OpenIddictServerEndpointsOptions.SectionName)
+            .ValidateOnStart();
     }
 }
