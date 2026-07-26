@@ -1,0 +1,15 @@
+{
+  "culture": "hi",
+  "texts": {
+    "OpenIddict.Columns.Tenant": "Tenant",
+    "OpenIddict.Columns.ClientId": "क्लाइंट आईडी",
+    "OpenIddict.Columns.DisplayName": "प्रदर्शन नाम",
+    "OpenIddict.Columns.ClientType": "क्लाइंट प्रकार",
+    "OpenIddict.Columns.ConsentType": "सहमति प्रकार",
+    "OpenIddict.Columns.ApplicationType": "एप्लिकेशन प्रकार",
+    "OpenIddict.Columns.ScopeName": "नाम",
+    "OpenIddict.Columns.Description": "विवरण",
+    "OpenIddict:Entity.Application": "एप्लिकेशन",
+    "OpenIddict:Entity.Scope": "दायरा"
+  }
+}

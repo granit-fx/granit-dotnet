@@ -43662,6 +43662,15 @@
       "members": []
     },
     {
+      "name": "OpenIddictLocalizationResource",
+      "fqn": "Granit.OpenIddict.OpenIddictLocalizationResource",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/OpenIddictLocalizationResource.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "OpenIddictSettingNames",
       "fqn": "Granit.OpenIddict.OpenIddictSettingNames",
       "kind": "class",
@@ -43846,6 +43855,12 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(OpenIddictLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },
@@ -43862,6 +43877,12 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(OpenIddictLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },

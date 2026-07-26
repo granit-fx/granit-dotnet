@@ -33,4 +33,8 @@
     <ProjectReference Include="..\Granit.Identity.Abstractions\Granit.Identity.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" />
+  </ItemGroup>
+
 </Project>

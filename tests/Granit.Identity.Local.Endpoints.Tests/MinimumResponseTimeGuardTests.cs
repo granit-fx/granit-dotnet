@@ -48,16 +48,18 @@ public sealed class MinimumResponseTimeGuardTests
         const int floorMs = 20;
         const int handlerWorkMs = 120;
 
-        long start = Stopwatch.GetTimestamp();
-        await using (var guard = MinimumResponseTimeGuard.Begin(floorMs, floorMs, TestContext.Current.CancellationToken))
-        {
-            await Task.Delay(handlerWorkMs, TestContext.Current.CancellationToken);
-        }
-        TimeSpan elapsed = Stopwatch.GetElapsedTime(start);
+        var guard = MinimumResponseTimeGuard.Begin(floorMs, floorMs, TestContext.Current.CancellationToken);
+        await Task.Delay(handlerWorkMs, TestContext.Current.CancellationToken);
 
-        // The guard must not add extra padding once the floor is already reached.
-        // Generous upper bound to keep the test robust on slow CI runners.
-        elapsed.TotalMilliseconds.ShouldBeLessThan(handlerWorkMs + 80);
+        // Time ONLY the dispose, not the total: the handler's Task.Delay can overshoot arbitrarily on
+        // a loaded CI runner (that overshoot flaked the previous total-elapsed upper bound, see
+        // Floor_picked_within_inclusive_range). Once the floor is already exceeded, dispose must add
+        // no padding, so its own duration stays near zero regardless of how long the handler ran.
+        long disposeStart = Stopwatch.GetTimestamp();
+        await guard.DisposeAsync();
+        TimeSpan disposeElapsed = Stopwatch.GetElapsedTime(disposeStart);
+
+        disposeElapsed.TotalMilliseconds.ShouldBeLessThan(floorMs + 60);
     }
 
     [Fact]

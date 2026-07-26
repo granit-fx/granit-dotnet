@@ -13,6 +13,9 @@ public sealed class GranitOpenIddictScopeQueryDefinition : QueryDefinition<OpenI
     public override string Name => "Granit.OpenIddict.ScopeQuery";
 
     /// <inheritdoc/>
+    public override Type? LocalizationResourceType => typeof(OpenIddictLocalizationResource);
+
+    /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<OpenIddictScopeModel> builder)
     {
         builder

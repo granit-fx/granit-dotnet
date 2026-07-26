@@ -1,0 +1,15 @@
+{
+  "culture": "zh",
+  "texts": {
+    "OpenIddict.Columns.Tenant": "Tenant",
+    "OpenIddict.Columns.ClientId": "客户端 ID",
+    "OpenIddict.Columns.DisplayName": "显示名称",
+    "OpenIddict.Columns.ClientType": "客户端类型",
+    "OpenIddict.Columns.ConsentType": "同意类型",
+    "OpenIddict.Columns.ApplicationType": "应用程序类型",
+    "OpenIddict.Columns.ScopeName": "名称",
+    "OpenIddict.Columns.Description": "描述",
+    "OpenIddict:Entity.Application": "应用程序",
+    "OpenIddict:Entity.Scope": "范围"
+  }
+}

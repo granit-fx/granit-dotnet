@@ -1,0 +1,15 @@
+{
+  "culture": "de",
+  "texts": {
+    "OpenIddict.Columns.Tenant": "Mandant",
+    "OpenIddict.Columns.ClientId": "Client-ID",
+    "OpenIddict.Columns.DisplayName": "Anzeigename",
+    "OpenIddict.Columns.ClientType": "Client-Typ",
+    "OpenIddict.Columns.ConsentType": "Einwilligungstyp",
+    "OpenIddict.Columns.ApplicationType": "Anwendungstyp",
+    "OpenIddict.Columns.ScopeName": "Name",
+    "OpenIddict.Columns.Description": "Beschreibung",
+    "OpenIddict:Entity.Application": "Anwendung",
+    "OpenIddict:Entity.Scope": "Geltungsbereich"
+  }
+}

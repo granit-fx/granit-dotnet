@@ -1,0 +1,15 @@
+{
+  "culture": "es",
+  "texts": {
+    "OpenIddict.Columns.Tenant": "Inquilino",
+    "OpenIddict.Columns.ClientId": "ID de cliente",
+    "OpenIddict.Columns.DisplayName": "Nombre para mostrar",
+    "OpenIddict.Columns.ClientType": "Tipo de cliente",
+    "OpenIddict.Columns.ConsentType": "Tipo de consentimiento",
+    "OpenIddict.Columns.ApplicationType": "Tipo de aplicación",
+    "OpenIddict.Columns.ScopeName": "Nombre",
+    "OpenIddict.Columns.Description": "Descripción",
+    "OpenIddict:Entity.Application": "Aplicación",
+    "OpenIddict:Entity.Scope": "Ámbito"
+  }
+}
