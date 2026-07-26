@@ -68,7 +68,10 @@ public sealed class GranitOpenIddictModule : GranitModule
 
         context.Services
             .AddOptions<GranitKeyRotationOptions>()
-            .BindConfiguration(GranitKeyRotationOptions.SectionName);
+            .BindConfiguration(GranitKeyRotationOptions.SectionName)
+            .ValidateOnStart();
+        context.Services.AddSingleton<IValidateOptions<GranitKeyRotationOptions>,
+            GranitKeyRotationOptionsValidator>();
 
         // FAPI 2.0 profile → PS256 signing algorithm (unless an explicit non-default was set).
         context.Services.AddSingleton<IPostConfigureOptions<GranitKeyRotationOptions>,
