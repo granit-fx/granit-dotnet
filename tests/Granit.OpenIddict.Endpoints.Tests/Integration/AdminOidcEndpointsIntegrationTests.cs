@@ -4,6 +4,7 @@ using Granit.Identity;
 using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.EntityFrameworkCore.Entities;
 using Granit.OpenIddict.Extensions;
+using Granit.QueryEngine;
 using NSubstitute;
 using OpenIddict.Abstractions;
 using Shouldly;
@@ -33,11 +34,11 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        List<AdminOidcApplicationResponse>? result = await response.Content
-            .ReadFromJsonAsync<List<AdminOidcApplicationResponse>>(TestContext.Current.CancellationToken);
+        PagedResult<AdminOidcApplicationResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<AdminOidcApplicationResponse>>(TestContext.Current.CancellationToken);
 
-        result.ShouldNotBeNull();
-        result.ShouldBeEmpty();
+        page.ShouldNotBeNull();
+        page.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -48,6 +49,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
 
         _server.ApplicationManager.ListAsync(Arg.Any<int?>(), Arg.Any<int?>(), Arg.Any<CancellationToken>())
             .Returns(ToAsyncEnumerable<object>(app1, app2));
+        _server.ApplicationManager.CountAsync(Arg.Any<CancellationToken>()).Returns(2L);
 
 #pragma warning disable CA2012 // NSubstitute mock setup intentionally doesn't await ValueTask
         _server.ApplicationManager
@@ -78,16 +80,18 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        List<AdminOidcApplicationResponse>? result = await response.Content
-            .ReadFromJsonAsync<List<AdminOidcApplicationResponse>>(TestContext.Current.CancellationToken);
+        PagedResult<AdminOidcApplicationResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<AdminOidcApplicationResponse>>(TestContext.Current.CancellationToken);
 
-        result.ShouldNotBeNull();
+        page.ShouldNotBeNull();
+        page.TotalCount.ShouldBe(2);
+        page.HasMore.ShouldBeFalse();
+        IReadOnlyList<AdminOidcApplicationResponse> result = page.Items;
         result.Count.ShouldBe(2);
 
-        // The list must not silently cap: no count/offset is passed to the manager, so every
-        // registered application is returned.
+        // Default paging: the first page of 25 rows is requested from offset 0.
         _ = _server.ApplicationManager.Received(1)
-            .ListAsync(null, null, Arg.Any<CancellationToken>());
+            .ListAsync(25, 0, Arg.Any<CancellationToken>());
 
         result[0].ClientId.ShouldBe("client-1");
         result[0].DisplayName.ShouldBe("App One");
@@ -297,6 +301,51 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
                     d.ClientSecret == "my-secret" &&
                     d.ClientType == OpenIddictConstants.ClientTypes.Confidential),
                 Arg.Any<CancellationToken>());
+
+        // An admin-supplied secret is never echoed back — only server-minted secrets are returned.
+        AdminOidcApplicationResponse? body = await response.Content
+            .ReadFromJsonAsync<AdminOidcApplicationResponse>(TestContext.Current.CancellationToken);
+        body.ShouldNotBeNull();
+        body.GeneratedClientSecret.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task CreateApplication_GenerateClientSecret_MintsSecretAndReturnsItOnce()
+    {
+        GranitOpenIddictApplication createdApp = new() { TenantId = null };
+
+        _server.ApplicationManager.CreateAsync(
+            Arg.Any<OpenIddictApplicationDescriptor>(),
+            Arg.Any<CancellationToken>())
+            .Returns(createdApp);
+        _server.ApplicationManager.GetClientIdAsync(createdApp, Arg.Any<CancellationToken>())
+            .Returns("gen-client");
+        _server.ApplicationManager.GetDisplayNameAsync(createdApp, Arg.Any<CancellationToken>())
+            .Returns("Gen App");
+        _server.ApplicationManager.GetApplicationTypeAsync(createdApp, Arg.Any<CancellationToken>())
+            .Returns("web");
+
+        // GenerateClientSecret = true; no explicit ClientSecret provided.
+        AdminOidcCreateApplicationRequest request = new(
+            "gen-client", "Gen App", Type: "web", GenerateClientSecret: true);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PostAsJsonAsync("/admin/oidc/applications", request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        AdminOidcApplicationResponse? result = await response.Content
+            .ReadFromJsonAsync<AdminOidcApplicationResponse>(TestContext.Current.CancellationToken);
+        result.ShouldNotBeNull();
+        result.GeneratedClientSecret.ShouldNotBeNullOrWhiteSpace();
+
+        // The confidential client is created with the same server-minted secret that was returned once.
+        await _server.ApplicationManager.Received(1)
+            .CreateAsync(
+                Arg.Is<OpenIddictApplicationDescriptor>(d =>
+                    d.ClientSecret == result.GeneratedClientSecret &&
+                    d.ClientType == OpenIddictConstants.ClientTypes.Confidential),
+                Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -440,11 +489,11 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        List<AdminOidcScopeResponse>? result = await response.Content
-            .ReadFromJsonAsync<List<AdminOidcScopeResponse>>(TestContext.Current.CancellationToken);
+        PagedResult<AdminOidcScopeResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<AdminOidcScopeResponse>>(TestContext.Current.CancellationToken);
 
-        result.ShouldNotBeNull();
-        result.ShouldBeEmpty();
+        page.ShouldNotBeNull();
+        page.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -455,6 +504,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
 
         _server.ScopeManager.ListAsync(Arg.Any<int?>(), Arg.Any<int?>(), Arg.Any<CancellationToken>())
             .Returns(ToAsyncEnumerable<object>(scope1, scope2));
+        _server.ScopeManager.CountAsync(Arg.Any<CancellationToken>()).Returns(2L);
 
 #pragma warning disable CA2012
         _server.ScopeManager
@@ -482,10 +532,12 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        List<AdminOidcScopeResponse>? result = await response.Content
-            .ReadFromJsonAsync<List<AdminOidcScopeResponse>>(TestContext.Current.CancellationToken);
+        PagedResult<AdminOidcScopeResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<AdminOidcScopeResponse>>(TestContext.Current.CancellationToken);
 
-        result.ShouldNotBeNull();
+        page.ShouldNotBeNull();
+        page.TotalCount.ShouldBe(2);
+        IReadOnlyList<AdminOidcScopeResponse> result = page.Items;
         result.Count.ShouldBe(2);
 
         result[0].Name.ShouldBe("openid");
@@ -642,11 +694,11 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        List<AdminOidcAuthorizationResponse>? result = await response.Content
-            .ReadFromJsonAsync<List<AdminOidcAuthorizationResponse>>(TestContext.Current.CancellationToken);
+        PagedResult<AdminOidcAuthorizationResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<AdminOidcAuthorizationResponse>>(TestContext.Current.CancellationToken);
 
-        result.ShouldNotBeNull();
-        result.ShouldBeEmpty();
+        page.ShouldNotBeNull();
+        page.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -656,8 +708,9 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         object auth1 = new();
         object app1 = new();
 
-        _server.AuthorizationManager.ListAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+        _server.AuthorizationManager.ListAsync(Arg.Any<int?>(), Arg.Any<int?>(), Arg.Any<CancellationToken>())
             .Returns(ToAsyncEnumerable<object>(auth1));
+        _server.AuthorizationManager.CountAsync(Arg.Any<CancellationToken>()).Returns(1L);
 
         _server.AuthorizationManager.GetIdAsync(auth1, Arg.Any<CancellationToken>())
             .Returns(authId.ToString());
@@ -688,10 +741,12 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        List<AdminOidcAuthorizationResponse>? result = await response.Content
-            .ReadFromJsonAsync<List<AdminOidcAuthorizationResponse>>(TestContext.Current.CancellationToken);
+        PagedResult<AdminOidcAuthorizationResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<AdminOidcAuthorizationResponse>>(TestContext.Current.CancellationToken);
 
-        result.ShouldNotBeNull();
+        page.ShouldNotBeNull();
+        page.TotalCount.ShouldBe(1);
+        IReadOnlyList<AdminOidcAuthorizationResponse> result = page.Items;
         result.Count.ShouldBe(1);
         result[0].Id.ShouldBe(authId);
         result[0].Subject.ShouldBe("user-123");
@@ -699,6 +754,115 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         result[0].Status.ShouldBe("valid");
         result[0].Type.ShouldBe("permanent");
         result[0].Scopes.ShouldBe(["openid", "profile"], ignoreOrder: true);
+    }
+
+    [Fact]
+    public async Task ListAuthorizations_FilterBySubject_UsesFindBySubject()
+    {
+        object auth1 = new();
+        object app1 = new();
+
+        _server.AuthorizationManager.FindBySubjectAsync("user-123", Arg.Any<CancellationToken>())
+            .Returns(ToAsyncEnumerable<object>(auth1));
+        _server.AuthorizationManager.GetIdAsync(auth1, Arg.Any<CancellationToken>())
+            .Returns(Guid.NewGuid().ToString());
+#pragma warning disable CA2012
+        _server.AuthorizationManager
+            .PopulateAsync(Arg.Any<OpenIddictAuthorizationDescriptor>(), auth1, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictAuthorizationDescriptor d = ci.ArgAt<OpenIddictAuthorizationDescriptor>(0);
+                d.Subject = "user-123";
+                d.Status = "valid";
+                d.Type = "permanent";
+                d.ApplicationId = "app-internal-id";
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+        _server.ApplicationManager.FindByIdAsync("app-internal-id", Arg.Any<CancellationToken>())
+            .Returns(app1);
+        _server.ApplicationManager.GetClientIdAsync(app1, Arg.Any<CancellationToken>())
+            .Returns("my-client");
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .GetAsync("/admin/oidc/authorizations?subject=user-123", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        PagedResult<AdminOidcAuthorizationResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<AdminOidcAuthorizationResponse>>(TestContext.Current.CancellationToken);
+
+        page.ShouldNotBeNull();
+        page.TotalCount.ShouldBe(1);
+        page.Items[0].Subject.ShouldBe("user-123");
+
+        // The filtered path uses FindBySubjectAsync, never the unfiltered ListAsync.
+        _ = _server.AuthorizationManager.Received(1).FindBySubjectAsync("user-123", Arg.Any<CancellationToken>());
+        _ = _server.AuthorizationManager.DidNotReceive()
+            .ListAsync(Arg.Any<int?>(), Arg.Any<int?>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ListAuthorizations_FilterByClientId_ResolvesToApplicationId()
+    {
+        object auth1 = new();
+        object app1 = new();
+
+        _server.ApplicationManager.FindByClientIdAsync("my-client", Arg.Any<CancellationToken>())
+            .Returns(app1);
+        _server.ApplicationManager.GetIdAsync(app1, Arg.Any<CancellationToken>())
+            .Returns("app-internal-id");
+        _server.AuthorizationManager.FindByApplicationIdAsync("app-internal-id", Arg.Any<CancellationToken>())
+            .Returns(ToAsyncEnumerable<object>(auth1));
+        _server.AuthorizationManager.GetIdAsync(auth1, Arg.Any<CancellationToken>())
+            .Returns(Guid.NewGuid().ToString());
+#pragma warning disable CA2012
+        _server.AuthorizationManager
+            .PopulateAsync(Arg.Any<OpenIddictAuthorizationDescriptor>(), auth1, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictAuthorizationDescriptor d = ci.ArgAt<OpenIddictAuthorizationDescriptor>(0);
+                d.Subject = "user-9";
+                d.Status = "valid";
+                d.Type = "permanent";
+                d.ApplicationId = "app-internal-id";
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+        _server.ApplicationManager.FindByIdAsync("app-internal-id", Arg.Any<CancellationToken>())
+            .Returns(app1);
+        _server.ApplicationManager.GetClientIdAsync(app1, Arg.Any<CancellationToken>())
+            .Returns("my-client");
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .GetAsync("/admin/oidc/authorizations?clientId=my-client", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        PagedResult<AdminOidcAuthorizationResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<AdminOidcAuthorizationResponse>>(TestContext.Current.CancellationToken);
+
+        page.ShouldNotBeNull();
+        page.TotalCount.ShouldBe(1);
+        page.Items[0].ClientId.ShouldBe("my-client");
+        _ = _server.AuthorizationManager.Received(1)
+            .FindByApplicationIdAsync("app-internal-id", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ListAuthorizations_FilterByUnknownClientId_ReturnsEmpty()
+    {
+        _server.ApplicationManager.FindByClientIdAsync("ghost", Arg.Any<CancellationToken>())
+            .Returns((object?)null);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .GetAsync("/admin/oidc/authorizations?clientId=ghost", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        PagedResult<AdminOidcAuthorizationResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<AdminOidcAuthorizationResponse>>(TestContext.Current.CancellationToken);
+
+        page.ShouldNotBeNull();
+        page.TotalCount.ShouldBe(0);
+        page.Items.ShouldBeEmpty();
     }
 
     [Fact]
