@@ -43449,6 +43449,22 @@
       ]
     },
     {
+      "name": "OpenIddictHealthChecksBuilderExtensions",
+      "fqn": "Granit.OpenIddict.EntityFrameworkCore.Extensions.OpenIddictHealthChecksBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.OpenIddict.EntityFrameworkCore",
+      "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictHealthChecksBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitOpenIddictHealthCheck",
+          "kind": "method",
+          "signature": "AddGranitOpenIddictHealthCheck(this IHealthChecksBuilder builder, string name = \"openiddict-signing-keys\", HealthStatus? failureStatus = null, TimeSpan? timeout = null)",
+          "returnType": "IHealthChecksBuilder"
+        }
+      ]
+    },
+    {
       "name": "OpenIddictModelBuilderExtensions",
       "fqn": "Granit.OpenIddict.EntityFrameworkCore.Extensions.OpenIddictModelBuilderExtensions",
       "kind": "class",
