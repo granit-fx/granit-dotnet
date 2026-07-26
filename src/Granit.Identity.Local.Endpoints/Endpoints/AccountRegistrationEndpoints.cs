@@ -2,16 +2,17 @@ using System.Diagnostics;
 using Granit.Events;
 using Granit.Http.Idempotency;
 using Granit.Identity.Local.Diagnostics;
+using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Events;
-using Granit.Identity.Local.Exceptions;
 using Granit.Identity.Local.Services;
-using Granit.Identity.Models;
 using Granit.Settings.Services;
+using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
@@ -64,10 +65,11 @@ internal static class AccountRegistrationEndpoints
         AccountRegisterRequest request,
         HttpContext httpContext,
         [FromServices] ISettingProvider settingProvider,
-        [FromServices] IIdentityProvider identityProvider,
+        [FromServices] UserManager<LocalIdentity> userManager,
         [FromServices] IEmailConfirmationService emailConfirmation,
         [FromServices] IDistributedEventBus eventBus,
         [FromServices] IdentityLocalMetrics metrics,
+        [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
         using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
@@ -85,37 +87,34 @@ internal static class AccountRegistrationEndpoints
                 statusCode: StatusCodes.Status403Forbidden);
         }
 
-        try
+        LocalIdentity newUser = new()
         {
-            IIdentityUser user = await identityProvider.CreateUserAsync(
-                new IdentityUserCreate(
-                    request.Email,
-                    request.Email,
-                    request.FirstName,
-                    request.LastName,
-                    true,
-                    request.Password),
-                cancellationToken).ConfigureAwait(false);
+            UserName = request.Email,
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
 
-            await emailConfirmation.SendConfirmationEmailAsync(
-                user.UserId, request.Email, cancellationToken).ConfigureAwait(false);
+            // Stamp the registration-event intent in the same commit that inserts the user, so the
+            // reconciler can recover the UserRegisteredEto if the inline publish below is lost to a
+            // crash (the identity DbContext is not enrolled in the Wolverine outbox). This closes the
+            // gap that the provider-agnostic CreateUserAsync path (shared with admin-create, which
+            // must NOT emit the event) could not.
+            RegistrationEventPendingSince = clock.Now,
+        };
 
-            await eventBus.PublishAsync(
-                new UserRegisteredEto(Guid.Parse(user.UserId), null),
-                cancellationToken).ConfigureAwait(false);
+        IdentityResult createResult = await userManager
+            .CreateAsync(newUser, request.Password).ConfigureAwait(false);
 
-            metrics.RecordRegistration(null);
-        }
-        catch (IdentityOperationException ex) when (ex.IsConflict)
+        if (!createResult.Succeeded)
         {
-            // Silently succeed — return 202 to prevent email enumeration. Classified on the
-            // stable DuplicateUserName/DuplicateEmail error codes, not the localized message,
-            // so a host wiring a translated IdentityErrorDescriber cannot regress this path.
-            // The existing user could be notified via a "someone tried to register
-            // with your email" notification if desired (app-level concern).
-        }
-        catch (IdentityOperationException)
-        {
+            // Duplicate username/email → silently succeed (202) to prevent email enumeration.
+            // Classified on the stable Duplicate* error codes, not the localized message, so a host
+            // wiring a translated IdentityErrorDescriber cannot regress this path.
+            if (createResult.Errors.Any(e => e.Code.Contains("Duplicate", StringComparison.OrdinalIgnoreCase)))
+            {
+                return TypedResults.Accepted((string?)null);
+            }
+
             return ProblemFactory.Localized(
                 httpContext,
                 "Granit:Identity:Account:RegistrationRejected",
@@ -123,7 +122,20 @@ internal static class AccountRegistrationEndpoints
                 StatusCodes.Status422UnprocessableEntity);
         }
 
-        // Always return 202 regardless of outcome (anti-enumeration)
+        await emailConfirmation.SendConfirmationEmailAsync(
+            newUser.Id.ToString(), request.Email, cancellationToken).ConfigureAwait(false);
+
+        // Fast path: publish inline, then clear the pending marker so the reconciler skips it. A crash
+        // before the clear leaves the marker set and the sweep re-publishes (at-least-once); consumers
+        // of UserRegisteredEto are idempotent.
+        await eventBus.PublishAsync(
+            new UserRegisteredEto(newUser.Id, newUser.TenantId), cancellationToken).ConfigureAwait(false);
+
+        newUser.RegistrationEventPendingSince = null;
+        await userManager.UpdateAsync(newUser).ConfigureAwait(false);
+
+        metrics.RecordRegistration(newUser.TenantId?.ToString());
+
         return TypedResults.Accepted((string?)null);
     }
 

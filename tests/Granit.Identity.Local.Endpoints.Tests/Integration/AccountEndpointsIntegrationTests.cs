@@ -29,14 +29,16 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     // -------------------------------------------------------------------------
 
     [Fact]
-    public async Task Register_ValidRequest_Returns202()
+    public async Task Register_ValidRequest_Returns202_AndStampsThenClearsPendingMarker()
     {
-        IIdentityUser fakeUser = Substitute.For<IIdentityUser>();
-        fakeUser.UserId.Returns(AccountEndpointsTestServer.TestUserIdString);
-
-        _server.IdentityProvider
-            .CreateUserAsync(Arg.Any<Granit.Identity.Models.IdentityUserCreate>(), Arg.Any<CancellationToken>())
-            .Returns(fakeUser);
+        // Capture the marker at creation time — the handler clears it after the inline publish, so
+        // asserting on the (same, mutated) instance afterwards would give a false negative.
+        DateTimeOffset? markerAtCreate = null;
+        _server.UserManager
+            .CreateAsync(
+                Arg.Do<LocalIdentity>(u => markerAtCreate = u.RegistrationEventPendingSince),
+                Arg.Any<string>())
+            .Returns(Microsoft.AspNetCore.Identity.IdentityResult.Success);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
             "/account/register",
@@ -45,27 +47,38 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
 
         response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
 
+        // Durable intent stamped in the creation commit, then published and cleared.
+        markerAtCreate.ShouldNotBeNull();
+        await _server.UserManager.Received(1).CreateAsync(
+            Arg.Is<LocalIdentity>(u => u.Email == "new@example.com"), "StrongP@ss1!");
         await _server.EmailConfirmation.Received(1).SendConfirmationEmailAsync(
-            AccountEndpointsTestServer.TestUserIdString,
-            "new@example.com",
-            Arg.Any<CancellationToken>());
+            Arg.Any<string>(), "new@example.com", Arg.Any<CancellationToken>());
+        await _server.EventBus.Received(1).PublishAsync(
+            Arg.Any<UserRegisteredEto>(), Arg.Any<CancellationToken>());
+        await _server.UserManager.Received(1).UpdateAsync(
+            Arg.Is<LocalIdentity>(u => u.RegistrationEventPendingSince == null));
     }
 
     [Fact]
-    public async Task Register_EmailAlreadyTaken_StillReturns202()
+    public async Task Register_EmailAlreadyTaken_StillReturns202_AndDoesNotPublish()
     {
-        _server.IdentityProvider
-            .CreateUserAsync(Arg.Any<Granit.Identity.Models.IdentityUserCreate>(), Arg.Any<CancellationToken>())
-            .ThrowsAsync(new IdentityOperationException("User creation",
-                [new IdentityOperationError("DuplicateEmail", IdentityOperationErrorKind.DuplicateEmail, "Email already in use.")]));
+        _server.UserManager
+            .CreateAsync(Arg.Any<LocalIdentity>(), Arg.Any<string>())
+            .Returns(Microsoft.AspNetCore.Identity.IdentityResult.Failed(new Microsoft.AspNetCore.Identity.IdentityError
+            {
+                Code = "DuplicateEmail",
+                Description = "Email already in use.",
+            }));
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
             "/account/register",
             new AccountRegisterRequest("taken@example.com", "StrongP@ss1!", null, null),
             TestContext.Current.CancellationToken);
 
-        // Anti-enumeration: always 202 even if email is taken
+        // Anti-enumeration: always 202 even if email is taken, and no registration event is emitted.
         response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
+        await _server.EventBus.DidNotReceive().PublishAsync(
+            Arg.Any<UserRegisteredEto>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -84,15 +97,19 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Register_WeakPassword_Returns422()
+    public async Task Register_CreationRejected_Returns422()
     {
-        _server.IdentityProvider
-            .CreateUserAsync(Arg.Any<Granit.Identity.Models.IdentityUserCreate>(), Arg.Any<CancellationToken>())
-            .ThrowsAsync(new InvalidOperationException("Password too weak"));
+        _server.UserManager
+            .CreateAsync(Arg.Any<LocalIdentity>(), Arg.Any<string>())
+            .Returns(Microsoft.AspNetCore.Identity.IdentityResult.Failed(new Microsoft.AspNetCore.Identity.IdentityError
+            {
+                Code = "PasswordTooShort",
+                Description = "Password is too short.",
+            }));
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
             "/account/register",
-            new AccountRegisterRequest("user@example.com", "weak", null, null),
+            new AccountRegisterRequest("user@example.com", "StrongP@ss1!", null, null),
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
