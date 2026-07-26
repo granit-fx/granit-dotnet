@@ -301,6 +301,51 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
                     d.ClientSecret == "my-secret" &&
                     d.ClientType == OpenIddictConstants.ClientTypes.Confidential),
                 Arg.Any<CancellationToken>());
+
+        // An admin-supplied secret is never echoed back — only server-minted secrets are returned.
+        AdminOidcApplicationResponse? body = await response.Content
+            .ReadFromJsonAsync<AdminOidcApplicationResponse>(TestContext.Current.CancellationToken);
+        body.ShouldNotBeNull();
+        body.GeneratedClientSecret.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task CreateApplication_GenerateClientSecret_MintsSecretAndReturnsItOnce()
+    {
+        GranitOpenIddictApplication createdApp = new() { TenantId = null };
+
+        _server.ApplicationManager.CreateAsync(
+            Arg.Any<OpenIddictApplicationDescriptor>(),
+            Arg.Any<CancellationToken>())
+            .Returns(createdApp);
+        _server.ApplicationManager.GetClientIdAsync(createdApp, Arg.Any<CancellationToken>())
+            .Returns("gen-client");
+        _server.ApplicationManager.GetDisplayNameAsync(createdApp, Arg.Any<CancellationToken>())
+            .Returns("Gen App");
+        _server.ApplicationManager.GetApplicationTypeAsync(createdApp, Arg.Any<CancellationToken>())
+            .Returns("web");
+
+        // GenerateClientSecret = true; no explicit ClientSecret provided.
+        AdminOidcCreateApplicationRequest request = new(
+            "gen-client", "Gen App", Type: "web", GenerateClientSecret: true);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .PostAsJsonAsync("/admin/oidc/applications", request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        AdminOidcApplicationResponse? result = await response.Content
+            .ReadFromJsonAsync<AdminOidcApplicationResponse>(TestContext.Current.CancellationToken);
+        result.ShouldNotBeNull();
+        result.GeneratedClientSecret.ShouldNotBeNullOrWhiteSpace();
+
+        // The confidential client is created with the same server-minted secret that was returned once.
+        await _server.ApplicationManager.Received(1)
+            .CreateAsync(
+                Arg.Is<OpenIddictApplicationDescriptor>(d =>
+                    d.ClientSecret == result.GeneratedClientSecret &&
+                    d.ClientType == OpenIddictConstants.ClientTypes.Confidential),
+                Arg.Any<CancellationToken>());
     }
 
     [Fact]

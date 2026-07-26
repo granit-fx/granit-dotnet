@@ -8,7 +8,7 @@ namespace Granit.OpenIddict.Endpoints.Dtos;
 /// </summary>
 /// <param name="ClientId">The client identifier (unique).</param>
 /// <param name="DisplayName">A human-readable display name.</param>
-/// <param name="ClientSecret">The client secret (null for public clients). Omit or set to null for public clients.</param>
+/// <param name="ClientSecret">The client secret (null for public clients). Omit or set to null for public clients. Ignored when <paramref name="GenerateClientSecret"/> is <see langword="true"/>.</param>
 /// <param name="Type">The application type (<c>web</c>, <c>native</c>). Default: <c>web</c>.</param>
 /// <param name="Permissions">OpenIddict permissions to grant (e.g. <c>ept:token</c>, <c>gt:authorization_code</c>). Null or omitted defaults to no permissions.</param>
 /// <param name="RedirectUris">Allowed redirect URIs. Null or omitted defaults to none.</param>
@@ -18,6 +18,7 @@ namespace Granit.OpenIddict.Endpoints.Dtos;
 /// <param name="ClientSide">Host/tenant policy enforced at sign-in. Null means no restriction.</param>
 /// <param name="DeviceKind">Device classification for the devices that authenticate through this client (e.g. <c>MobileApp</c>, <c>Tv</c>). Null or omitted means not declared (the session adapters fall back to a redirect-URI/grant heuristic).</param>
 /// <param name="TenantId">Owning tenant. Omit (or <see langword="null"/>) to create a global application, or to inherit the caller's active tenant when the admin API is invoked under a tenant scope. A host administrator (no active tenant) may set this explicitly to provision an application for a specific tenant; a tenant-scoped administrator may only target their own tenant (a mismatch is rejected with 403).</param>
+/// <param name="GenerateClientSecret">When <see langword="true"/>, the server mints a cryptographically strong client secret for a confidential client and returns it once in <c>GeneratedClientSecret</c> on the create response — the admin never has to invent one. Takes precedence over <paramref name="ClientSecret"/>. Default: <see langword="false"/> (public client, or the explicitly-provided secret).</param>
 #pragma warning disable GRSEC003 // ClientSecret is a DTO parameter, not a stored secret
 public sealed record AdminOidcCreateApplicationRequest(
     string ClientId,
@@ -31,5 +32,6 @@ public sealed record AdminOidcCreateApplicationRequest(
     string? SigningKeyJwk = null,
     MultiTenancySides? ClientSide = null,
     DeviceKind? DeviceKind = null,
-    Guid? TenantId = null);
+    Guid? TenantId = null,
+    bool GenerateClientSecret = false);
 #pragma warning restore GRSEC003

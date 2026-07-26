@@ -48,7 +48,7 @@ internal static class AdminOidcEndpoints
         apps.MapPost("/", CreateApplicationAsync)
             .WithName("CreateOidcApplication")
             .WithSummary("Creates a new OIDC application.")
-            .WithDescription("Registers a new OIDC client with the specified permissions, redirect URIs, and consent policy. Providing a client secret creates a confidential client (the secret is stored hashed); omitting it creates a public client. Returns 409 Conflict if a client with the same client ID already exists.")
+            .WithDescription("Registers a new OIDC client with the specified permissions, redirect URIs, and consent policy. Set generateClientSecret=true to have the server mint a cryptographically strong secret and return it once in the response's generatedClientSecret field (confidential client); alternatively provide clientSecret explicitly; omitting both creates a public client. Stored secrets are hashed. Returns 409 Conflict if a client with the same client ID already exists.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcApplicationResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity)
@@ -241,7 +241,16 @@ internal static class AdminOidcEndpoints
             ConsentType = request.ConsentType ?? OpenIddictConstants.ConsentTypes.Implicit,
         };
 
-        if (!string.IsNullOrEmpty(request.ClientSecret))
+        // A server-minted secret (returned once below) is preferred over an admin-supplied one; the
+        // admin never has to invent secret material. Falls back to an explicit secret, else public.
+        string? generatedSecret = null;
+        if (request.GenerateClientSecret)
+        {
+            generatedSecret = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+            descriptor.ClientSecret = generatedSecret;
+            descriptor.ClientType = OpenIddictConstants.ClientTypes.Confidential;
+        }
+        else if (!string.IsNullOrEmpty(request.ClientSecret))
         {
             descriptor.ClientSecret = request.ClientSecret;
             descriptor.ClientType = OpenIddictConstants.ClientTypes.Confidential;
@@ -291,7 +300,7 @@ internal static class AdminOidcEndpoints
 
         return TypedResults.Created(
             $"/admin/oidc/applications/{request.ClientId}",
-            ToResponse(responseDescriptor, persistedTenantId));
+            ToResponse(responseDescriptor, persistedTenantId) with { GeneratedClientSecret = generatedSecret });
     }
 
     /// <summary>
