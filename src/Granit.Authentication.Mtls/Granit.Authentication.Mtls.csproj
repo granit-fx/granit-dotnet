@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Authentication.Mtls</PackageId>
+    <Description>Server-side mutual-TLS certificate-bound access token validation (RFC 8705) for ASP.NET Core JWT Bearer authentication. IdP-agnostic — works with OpenIddict, Keycloak, Entra ID, Auth0, or any OIDC provider. Verifies that the presented client certificate matches the token's cnf.x5t#S256 confirmation claim.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Authentication.Mtls.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Diagnostics\Granit.Diagnostics.csproj" />
+  </ItemGroup>
+
+</Project>

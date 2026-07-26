@@ -464,6 +464,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Authentication.Mtls",
+      "deps": [
+        "Granit.Diagnostics"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Authentication.OpenIddict",
       "deps": [
         "Granit.Authentication",
@@ -10896,6 +10903,47 @@
           "returnType": "BackChannelLogoutOptions BackChannelLogout { get; set; } ="
         }
       ]
+    },
+    {
+      "name": "MtlsJwtBearerExtensions",
+      "fqn": "Granit.Authentication.Mtls.Extensions.MtlsJwtBearerExtensions",
+      "kind": "class",
+      "project": "Granit.Authentication.Mtls",
+      "file": "src/Granit.Authentication.Mtls/Extensions/MtlsJwtBearerExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitMtlsValidation",
+          "kind": "method",
+          "signature": "AddGranitMtlsValidation(this IServiceCollection services, Action<MtlsValidationOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuthenticationMtlsModule",
+      "fqn": "Granit.Authentication.Mtls.GranitAuthenticationMtlsModule",
+      "kind": "class",
+      "project": "Granit.Authentication.Mtls",
+      "file": "src/Granit.Authentication.Mtls/GranitAuthenticationMtlsModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "MtlsValidationOptions",
+      "fqn": "Granit.Authentication.Mtls.Options.MtlsValidationOptions",
+      "kind": "class",
+      "project": "Granit.Authentication.Mtls",
+      "file": "src/Granit.Authentication.Mtls/Options/MtlsValidationOptions.cs",
+      "line": 6,
+      "members": []
     },
     {
       "name": "OpenIddictRoleClaimNormalizationServiceCollectionExtensions",

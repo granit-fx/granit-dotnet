@@ -84,6 +84,7 @@
     <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer.EntraId\Granit.Authentication.JwtBearer.EntraId.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer.GoogleCloud\Granit.Authentication.JwtBearer.GoogleCloud.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer.Keycloak\Granit.Authentication.JwtBearer.Keycloak.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Authentication.Mtls\Granit.Authentication.Mtls.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.OpenIddict\Granit.Authentication.OpenIddict.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authorization\Granit.Authorization.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authorization.AI\Granit.Authorization.AI.csproj" />

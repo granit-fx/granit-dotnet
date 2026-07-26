@@ -337,6 +337,7 @@
         "tests/Granit.Authentication.JwtBearer.GoogleCloud.Tests",
         "tests/Granit.Authentication.JwtBearer.Keycloak.Tests",
         "tests/Granit.Authentication.JwtBearer.Tests",
+        "tests/Granit.Authentication.Mtls.Tests",
         "tests/Granit.Authentication.OpenIddict.Tests",
         "tests/Granit.Authentication.Tests",
         "tests/Granit.Authorization.AI.Tests",

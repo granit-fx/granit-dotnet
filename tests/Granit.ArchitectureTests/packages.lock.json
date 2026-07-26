@@ -1945,6 +1945,13 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[10.*, )"
         }
       },
+      "granit.authentication.mtls": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Diagnostics": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "[10.*, )"
+        }
+      },
       "granit.authentication.openiddict": {
         "type": "Project",
         "dependencies": {
