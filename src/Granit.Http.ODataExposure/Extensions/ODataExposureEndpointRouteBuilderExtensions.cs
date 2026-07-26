@@ -706,6 +706,12 @@ public static class ODataExposureEndpointRouteBuilderExtensions
 
         ApplyMaxTopAppliedHeader(httpContext, descriptor, metrics, tenantTag, feedKindTag);
 
+        // #1392 silent-clamp contract: an over-cap $top is pinned down to MaxTop BEFORE
+        // validation so options.Validate() — which enforces the model-bound MaxTop set via
+        // SetMaxTop and would otherwise return 400 — accepts it. ApplyTo applies the same cap;
+        // the OData-MaxTop-Applied header was already emitted above from the original value.
+        options = ClampTopToCap(options, httpContext, descriptor.MaxTop);
+
         // #3004 — the user's $filter is translated into the engine's strict predicate tree
         // instead of being composed as arbitrary LINQ by ApplyTo. Untranslatable constructs
         // return 400 here; field-level violations return 400 from BuildFilteredQuery below.
@@ -1084,6 +1090,45 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// to observability tooling. Also bumps the rejected-query counter for
     /// the same reason.
     /// </summary>
+    /// <summary>
+    /// Pins an over-cap user <c>$top</c> down to the EntitySet's
+    /// <see cref="ODataEntitySetDescriptor.MaxTop"/> by rewriting the request query string and
+    /// re-parsing the options. Preserves the historical silent-clamp contract (#1392): a
+    /// <c>$top</c> above the cap is served capped, not rejected — the downstream
+    /// <c>options.Validate</c> enforces the model-bound MaxTop and would otherwise return 400.
+    /// No-op when <c>$top</c> is absent or already within the cap.
+    /// </summary>
+    private static ODataQueryOptions<TEntity> ClampTopToCap<TEntity>(
+        ODataQueryOptions<TEntity> options,
+        HttpContext httpContext,
+        int maxTop)
+        where TEntity : class
+    {
+        if (options.Top is not { Value: int requested } || requested <= maxTop)
+        {
+            return options;
+        }
+
+        List<KeyValuePair<string, string?>> query = [];
+        foreach ((string key, StringValues values) in httpContext.Request.Query)
+        {
+            if (string.Equals(key, "$top", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            foreach (string? value in values)
+            {
+                query.Add(new(key, value));
+            }
+        }
+
+        query.Add(new("$top", maxTop.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+        httpContext.Request.QueryString = QueryString.Create(query);
+
+        return new ODataQueryOptions<TEntity>(options.Context, httpContext.Request);
+    }
+
     private static void ApplyMaxTopAppliedHeader(
         HttpContext httpContext,
         ODataEntitySetDescriptor descriptor,
