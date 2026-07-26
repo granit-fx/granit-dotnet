@@ -523,8 +523,8 @@
       "Google.Cloud.Kms.V1": {
         "type": "CentralTransitive",
         "requested": "[3.*, )",
-        "resolved": "3.25.0",
-        "contentHash": "tlRxgVAJHBx3pfhKytbpdlEASePFJTeU1oS3ZR/9VtXLgSysaVPFHgo+OKEkz21X47sxCVqXlK1flx+xfofqXw==",
+        "resolved": "3.26.0",
+        "contentHash": "BNB5zX9XaesF8o0wiiE53JwRk0XCJeigiDW2IEHpzfPhq82CS5VN07pBV+idUwv+e4qEDv90/itVvkjFYPNe0A==",
         "dependencies": {
           "Google.Api.Gax.Grpc": "[4.13.1, 5.0.0)",
           "Google.Cloud.Iam.V1": "[3.5.0, 4.0.0)",

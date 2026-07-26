@@ -17,16 +17,16 @@
       "Sep": {
         "type": "Direct",
         "requested": "[0.*, )",
-        "resolved": "0.15.0",
-        "contentHash": "x4euJeBMZaHwPx4vqYu2MUo5uefllW3CkSu0X/pdX0bn6sHTl3af2lDC+p5MuQLMfCHi7bOpt/rwdmcY42zbPg==",
+        "resolved": "0.15.1",
+        "contentHash": "pDvXfInElAC/EhoDDo3DZGl2/UlUuH3sGwyfdg+uuWlXJWf3RY1MpUhkPLE8BYXV0iPAS+Lg7G0Lhxb5R6imVw==",
         "dependencies": {
-          "csFastFloat": "4.1.5"
+          "csFastFloat": "4.1.6"
         }
       },
       "csFastFloat": {
         "type": "Transitive",
-        "resolved": "4.1.5",
-        "contentHash": "TugPHQzrbr2iruO8lshMekUXoFIyBOZQLqNCwQF6BHv4FE6mBeMa41pj5cXW6FKlk9uHypIAAy4UmTFivWFjPA=="
+        "resolved": "4.1.6",
+        "contentHash": "ktLZtwatP5eTJc5bTWXa4xhLS7npzyIQKEkMEAE5zGHdx3WL8RNDEZWM7xT3Hkb8VkFoDfsHGWKdNRyueHb1QA=="
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",

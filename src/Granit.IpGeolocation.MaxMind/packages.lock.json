@@ -5,11 +5,11 @@
       "MaxMind.GeoIP2": {
         "type": "Direct",
         "requested": "[6.*, )",
-        "resolved": "6.0.0",
-        "contentHash": "DeyQ4h/y8TNwphZKLcJZHTmPesdBXhTlKGEUj2RFgeJqPTPSNgTykypQokdq3DE4vcNJFyMOgunvYbOC7jLG2A==",
+        "resolved": "6.1.0",
+        "contentHash": "IBy7B0mhzZfLvCZd2znr8+nquNUL8K973MVorQEQowvlX/BHFCVHK6BoMhdIT6ZpDIc8ETMl4ZyixS/6iBQ26A==",
         "dependencies": {
           "MaxMind.Db": "5.1.0",
-          "Microsoft.Extensions.Options": "10.0.8"
+          "Microsoft.Extensions.Options": "10.0.9"
         }
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {

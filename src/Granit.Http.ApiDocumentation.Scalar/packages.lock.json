@@ -17,8 +17,8 @@
       "Scalar.AspNetCore": {
         "type": "Direct",
         "requested": "[2.*, )",
-        "resolved": "2.16.12",
-        "contentHash": "XUNn40HQ2r9G9XdNfLu8tXI4e4JNaA15ZZt3GDx4CcZPwANJRtuZSMUPMpvEB/czIdMiCdTG+GeEzxVzzLdwdg=="
+        "resolved": "2.16.16",
+        "contentHash": "Ax0e0bIh+Upf92k1+pTBUom3e/kbpu20qsrDYmmS1NM721Eq2xF8c789x6IbiNrvW8WwySRzPv/icYYhb6idSg=="
       },
       "Asp.Versioning.Abstractions": {
         "type": "Transitive",

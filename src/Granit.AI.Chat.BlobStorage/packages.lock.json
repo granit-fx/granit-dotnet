@@ -280,10 +280,10 @@
       "Microsoft.Extensions.AI": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.8.0",
-        "contentHash": "QfthL8e2X/Z6jRs4YyVS2+HTApJvhz725l35HYZ9cfwlEuQnpzY89NJoGNmpuNZn4LIvvQOQeZIbu3jggBXgUg==",
+        "resolved": "10.8.1",
+        "contentHash": "fWi4S6zS2W9kJfhfFZPps99o/hS82tjQC0DKFaoVn+kBvZ3zgdBxwphbXd5jMN/ONs86uolNbuYAfCmgjyulvw==",
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.8.0",
+          "Microsoft.Extensions.AI.Abstractions": "10.8.1",
           "Microsoft.Extensions.Caching.Abstractions": "10.0.10",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.10",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.10",
@@ -293,8 +293,8 @@
       "Microsoft.Extensions.AI.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.8.0",
-        "contentHash": "1tJZ5sAYrEq1YjNg8GrZSL1tVodsWRfrgybGsZo5DQsWQgLZ+dSR5uFowIS6vb/9zxGBPl7xpYq53QMjNObO9w=="
+        "resolved": "10.8.1",
+        "contentHash": "dgFfXqIdC1up7q0emi58np/iJFZskNKSgs7rT3G94c0K5L18FH0Vjf9JMgCdlxPaNBuG4AJSCYESJd5WenY8Nw=="
       },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "CentralTransitive",

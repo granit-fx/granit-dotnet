@@ -8,7 +8,14 @@ Only **direct dependencies** are listed here. Transitive dependencies are
 covered by their own license notices, restored from NuGet by the consumer
 (Granit packages do not redistribute their binaries).
 
-Last updated: 2026-07-12 (added Google.Apis.Auth 1.75.0, Apache-2.0 — OAuth 2.0
+Last updated: 2026-07-26 (global NuGet version refresh via `dotnet restore --force-evaluate`;
+78 packages bumped within their existing major ranges — notable: WolverineFx 6.16 → 6.22,
+OpenIddict 7.5 → 7.6, Microsoft.IdentityModel 8.16 → 8.19 (transitive), Anthropic 12.32 → 12.39,
+Microsoft.Extensions.AI 10.7 → 10.8, WireMock.Net 2.11 → 2.13, Testcontainers 4.12 → 4.13,
+Scalar.AspNetCore 2.16.6 → 2.16.16, AWSSDK refresh; also reconciled prior notices drift where the
+Microsoft.\* 10.0.x direct entries had fallen behind the lock at 10.0.10. No packages added or
+removed; license summary unchanged).
+Prior: 2026-07-12 (added Google.Apis.Auth 1.75.0, Apache-2.0 — OAuth 2.0
 service-account token minting for FCM HTTP v1 in `Granit.Notifications.GoogleFcm`;
 corrected the stale FirebaseAdmin consumer reference to `Granit.Identity.Federated.GoogleCloud`).
 Prior: 2026-07-04 (added Roslynator.Analyzers 4.15.0, Apache-2.0 — dev-time
@@ -34,8 +41,8 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| AngleSharp | 1.5.1 | Copyright (c) 2013-2025 AngleSharp Contributors |
-| Anthropic | 12.32.0 | Copyright 2026 Anthropic |
+| AngleSharp | 1.5.2 | Copyright (c) 2013-2025 AngleSharp Contributors |
+| Anthropic | 12.39.0 | Copyright 2026 Anthropic |
 | Asp.Versioning.Mvc | 10.0.0 | (c) .NET Foundation |
 | Asp.Versioning.Mvc.ApiExplorer | 10.0.0 | (c) .NET Foundation |
 | AspNet.Security.OAuth.Apple | 10.0.0 | (c) .NET Foundation |
@@ -47,71 +54,71 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 | Azure.Security.KeyVault.Keys | 4.10.0 | (c) Microsoft Corporation |
 | Azure.Security.KeyVault.Secrets | 4.11.0 | (c) Microsoft Corporation |
 | Azure.Storage.Blobs | 12.29.1 | (c) Microsoft Corporation |
-| ClosedXML | 0.105.0 | ClosedXML Contributors |
+| ClosedXML | 0.105.1 | ClosedXML Contributors |
 | Cronos | 0.13.0 | Copyright (c) 2016-2025 Hangfire OU |
 | DocumentFormat.OpenXml | 3.5.1 | Copyright (c) Microsoft Corporation |
 | Lib.Net.Http.WebPush | 3.3.1 | Copyright (c) Tomasz Pęczek |
 | MailKit | 4.17.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
 | MessagePack | 2.5.302 | Copyright (c) 2017 Yoshifumi Kawai and contributors |
-| Microsoft.AspNetCore.Authentication.Facebook | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.Authentication.Google | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.Authentication.JwtBearer | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.Authentication.MicrosoftAccount | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.Authentication.OpenIdConnect | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.Identity.EntityFrameworkCore | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.OpenApi | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.OutputCaching.StackExchangeRedis | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.SignalR.StackExchangeRedis | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.Facebook | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.Google | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.JwtBearer | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.MicrosoftAccount | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.OpenIdConnect | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Identity.EntityFrameworkCore | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.OpenApi | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.OutputCaching.StackExchangeRedis | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.SignalR.StackExchangeRedis | 10.0.10 | (c) Microsoft Corporation |
 | Microsoft.Azure.NotificationHubs | 4.2.0 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.BannedApiAnalyzers | 3.3.4 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.Relational | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.SqlServer | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.AI | 10.7.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.AI.Abstractions | 10.7.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.AI.OpenAI | 10.7.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.ApiDescription.Server | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Caching.Abstractions | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Caching.Hybrid | 10.7.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Caching.Memory | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Caching.StackExchangeRedis | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Configuration.Binder | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.DependencyInjection.Abstractions | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Diagnostics.HealthChecks | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Diagnostics.Testing | 10.7.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.FileSystemGlobbing | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Hosting.Abstractions | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Http | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Http.Resilience | 10.7.0 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Localization | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Localization.Abstractions | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Logging.Abstractions | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Options | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.Options.ConfigurationExtensions | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.VectorData.Abstractions | 10.7.0 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore.Relational | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore.SqlServer | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.AI | 10.8.1 | (c) Microsoft Corporation |
+| Microsoft.Extensions.AI.Abstractions | 10.8.1 | (c) Microsoft Corporation |
+| Microsoft.Extensions.AI.OpenAI | 10.8.1 | (c) Microsoft Corporation |
+| Microsoft.Extensions.ApiDescription.Server | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Caching.Abstractions | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Caching.Hybrid | 10.8.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Caching.Memory | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Caching.StackExchangeRedis | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Configuration.Binder | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.DependencyInjection.Abstractions | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Diagnostics.HealthChecks | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Diagnostics.Testing | 10.8.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.FileSystemGlobbing | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Hosting.Abstractions | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Http | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Http.Resilience | 10.8.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Localization | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Localization.Abstractions | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Logging.Abstractions | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Options | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Options.ConfigurationExtensions | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.VectorData.Abstractions | 10.8.0 | (c) Microsoft Corporation |
 | Microsoft.IO.RecyclableMemoryStream | 3.0.1 | (c) Microsoft Corporation |
 | Microsoft.Playwright | 1.61.0 | (c) Microsoft Corporation |
 | MimeKit | 4.17.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
 | Mjml.Net | 4.11.0 | Copyright (c) Sebastian Stehle |
-| OllamaSharp | 5.4.25 | Copyright (c) 2023-2026 Awalon |
+| OllamaSharp | 5.4.30 | Copyright (c) 2023-2026 Awalon |
 | PdfPig | 0.1.15 | Copyright (c) Eliot Jones |
 | PDFtoImage | 5.2.1 | Copyright (c) David Sungaila |
 | Pgvector.EntityFrameworkCore | 0.3.0 | Copyright (c) Andrew Kane |
-| PuppeteerSharp | 25.2.1 | PuppeteerSharp Contributors |
-| Scalar.AspNetCore | 2.16.6 | Scalar Contributors |
-| Sep | 0.15.0 | Copyright (c) 2023 nietras |
+| PuppeteerSharp | 25.3.4 | PuppeteerSharp Contributors |
+| Scalar.AspNetCore | 2.16.16 | Scalar Contributors |
+| Sep | 0.15.1 | Copyright (c) 2023 nietras |
 | SmartFormat | 3.6.1 | Copyright 2011-2025 SmartFormat Project |
 | StackExchange.Redis | 2.13.17 | Copyright 2014-2026 Stack Exchange, Inc. |
-| Sylvan.Data.Excel | 0.5.6 | Copyright (c) Mark Pflug |
-| System.Composition.AttributedModel | 9.0.17 | (c) Microsoft Corporation |
-| System.Text.Json | 9.0.17 | (c) Microsoft Corporation |
-| WolverineFx | 6.16.0 | JasperFx Contributors |
-| WolverineFx.EntityFrameworkCore | 6.16.0 | JasperFx Contributors |
-| WolverineFx.FluentValidation | 6.16.0 | JasperFx Contributors |
-| WolverineFx.Postgresql | 6.16.0 | JasperFx Contributors |
-| WolverineFx.RuntimeCompilation | 6.16.0 | JasperFx Contributors |
-| WolverineFx.SqlServer | 6.16.0 | JasperFx Contributors |
+| Sylvan.Data.Excel | 0.5.7 | Copyright (c) Mark Pflug |
+| System.Composition.AttributedModel | 9.0.18 | (c) Microsoft Corporation |
+| System.Text.Json | 9.0.18 | (c) Microsoft Corporation |
+| WolverineFx | 6.22.0 | JasperFx Contributors |
+| WolverineFx.EntityFrameworkCore | 6.22.0 | JasperFx Contributors |
+| WolverineFx.FluentValidation | 6.22.0 | JasperFx Contributors |
+| WolverineFx.Postgresql | 6.22.0 | JasperFx Contributors |
+| WolverineFx.RuntimeCompilation | 6.22.0 | JasperFx Contributors |
+| WolverineFx.SqlServer | 6.22.0 | JasperFx Contributors |
 | Yarp.ReverseProxy | 2.3.0 | (c) Microsoft Corporation |
 | ZiggyCreatures.FusionCache | 2.6.0 | Copyright (c) Jody Donetti |
 | ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis | 2.6.0 | Copyright (c) Jody Donetti |
@@ -122,33 +129,33 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| AWSSDK.CognitoIdentityProvider | 4.0.100 | Amazon Web Services, Inc. |
-| AWSSDK.KeyManagementService | 4.0.100 | Amazon Web Services, Inc. |
-| AWSSDK.S3 | 4.0.100 | Amazon Web Services, Inc. |
-| AWSSDK.SecretsManager | 4.0.100 | Amazon Web Services, Inc. |
-| AWSSDK.SimpleEmailV2 | 4.0.100 | Amazon Web Services, Inc. |
-| AWSSDK.SimpleNotificationService | 4.0.100 | Amazon Web Services, Inc. |
+| AWSSDK.CognitoIdentityProvider | 4.0.103 | Amazon Web Services, Inc. |
+| AWSSDK.KeyManagementService | 4.0.100.6 | Amazon Web Services, Inc. |
+| AWSSDK.S3 | 4.0.101.4 | Amazon Web Services, Inc. |
+| AWSSDK.SecretsManager | 4.0.100.6 | Amazon Web Services, Inc. |
+| AWSSDK.SimpleEmailV2 | 4.0.102 | Amazon Web Services, Inc. |
+| AWSSDK.SimpleNotificationService | 4.0.100.6 | Amazon Web Services, Inc. |
 | DnsClient | 1.8.0 | Copyright (c) Michael Conrad (MichaCo) |
 | Elastic.Clients.Elasticsearch | 9.4.2 | Copyright Elasticsearch B.V. |
 | Fido2 | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | Fido2.AspNet | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | Fido2.Models | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
-| FirebaseAdmin | 3.5.0 | Copyright (c) 2018 Google Inc. |
+| FirebaseAdmin | 3.6.0 | Copyright (c) 2018 Google Inc. |
 | FluentValidation | 12.1.1 | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
 | FluentValidation.DependencyInjectionExtensions | 12.1.1 | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
 | Google.Apis.Auth | 1.75.0 | Copyright (c) Google LLC |
-| Google.Cloud.Kms.V1 | 3.24.0 | Copyright (c) Google LLC |
-| Google.Cloud.SecretManager.V1 | 2.7.0 | Copyright (c) Google LLC |
+| Google.Cloud.Kms.V1 | 3.26.0 | Copyright (c) Google LLC |
+| Google.Cloud.SecretManager.V1 | 2.8.0 | Copyright (c) Google LLC |
 | Google.Cloud.Storage.V1 | 4.15.0 | Copyright (c) Google LLC |
-| Magick.NET-Q8-AnyCPU | 14.14.0 | Copyright 2013-2026 Dirk Lemstra |
-| MaxMind.GeoIP2 | 6.0.0 | Copyright (c) MaxMind, Inc. |
-| ModelContextProtocol | 1.4.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
-| ModelContextProtocol.AspNetCore | 1.4.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
-| OpenIddict | 7.5.0 | Copyright (c) Kévin Chalet |
-| OpenIddict.EntityFrameworkCore | 7.5.0 | Copyright (c) Kévin Chalet |
-| OpenIddict.Server.AspNetCore | 7.5.0 | Copyright (c) Kévin Chalet |
-| OpenIddict.Validation.AspNetCore | 7.5.0 | Copyright (c) Kévin Chalet |
-| OpenIddict.Validation.SystemNetHttp | 7.5.0 | Copyright (c) Kévin Chalet |
+| Magick.NET-Q8-AnyCPU | 14.15.0 | Copyright 2013-2026 Dirk Lemstra |
+| MaxMind.GeoIP2 | 6.1.0 | Copyright (c) MaxMind, Inc. |
+| ModelContextProtocol | 1.4.1 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
+| ModelContextProtocol.AspNetCore | 1.4.1 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
+| OpenIddict | 7.6.0 | Copyright (c) Kévin Chalet |
+| OpenIddict.EntityFrameworkCore | 7.6.0 | Copyright (c) Kévin Chalet |
+| OpenIddict.Server.AspNetCore | 7.6.0 | Copyright (c) Kévin Chalet |
+| OpenIddict.Validation.AspNetCore | 7.6.0 | Copyright (c) Kévin Chalet |
+| OpenIddict.Validation.SystemNetHttp | 7.6.0 | Copyright (c) Kévin Chalet |
 | OpenTelemetry | 1.16.0 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Api | 1.16.0 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Exporter.OpenTelemetryProtocol | 1.16.0 | Copyright The OpenTelemetry Authors |
@@ -189,7 +196,7 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| Npgsql.EntityFrameworkCore.PostgreSQL | 10.0.2 | Copyright 2025 The Npgsql Development Team |
+| Npgsql.EntityFrameworkCore.PostgreSQL | 10.0.3 | Copyright 2025 The Npgsql Development Team |
 | Npgsql.OpenTelemetry | 10.0.3 | Copyright 2025 The Npgsql Development Team |
 
 ---
@@ -203,19 +210,19 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 | Bogus | 35.6.5 | Copyright (c) 2015 Brian Chavez |
 | coverlet.collector | 10.0.1 | (c) 2018 Toni Solarin-Sodara |
 | JunitXml.TestLogger | 7.1.0 | JunitXml.TestLogger Contributors |
-| Microsoft.AspNetCore.Mvc.Testing | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Mvc.Testing | 10.0.10 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.Analyzers | 5.3.0 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.CSharp | 5.3.0 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.CSharp.Workspaces | 5.3.0 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.InMemory | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.Sqlite | 10.0.9 | (c) Microsoft Corporation |
-| Microsoft.Extensions.TimeProvider.Testing | 10.7.0 | (c) Microsoft Corporation |
-| Microsoft.NET.Test.Sdk | 18.7.0 | (c) Microsoft Corporation |
-| Testcontainers.Elasticsearch | 4.12.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
-| Testcontainers.Keycloak | 4.12.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
+| Microsoft.EntityFrameworkCore.InMemory | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore.Sqlite | 10.0.10 | (c) Microsoft Corporation |
+| Microsoft.Extensions.TimeProvider.Testing | 10.8.0 | (c) Microsoft Corporation |
+| Microsoft.NET.Test.Sdk | 18.8.1 | (c) Microsoft Corporation |
+| Testcontainers.Elasticsearch | 4.13.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
+| Testcontainers.Keycloak | 4.13.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
 | Testcontainers.MsSql | 4.12.0 | Copyright (c) 2019-2026 Andre Hofmeister and other authors |
-| Testcontainers.PostgreSql | 4.12.0 | Copyright (c) 2019-2025 Andre Hofmeister |
-| Testcontainers.Redis | 4.12.0 | Copyright (c) 2019-2025 Andre Hofmeister |
+| Testcontainers.PostgreSql | 4.13.0 | Copyright (c) 2019-2025 Andre Hofmeister |
+| Testcontainers.Redis | 4.13.0 | Copyright (c) 2019-2025 Andre Hofmeister |
 
 ### Apache-2.0 (tests)
 
@@ -225,7 +232,7 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 | SQLitePCLRaw.core | 3.0.3 | Copyright (c) SourceGear, LLC (Eric Sink) |
 | TngTech.ArchUnitNET | 0.13.3 | Copyright (c) 2019-2025 TNG Technology Consulting GmbH |
 | TngTech.ArchUnitNET.xUnit | 0.13.3 | Copyright (c) 2019-2025 TNG Technology Consulting GmbH |
-| WireMock.Net | 2.11.0 | Copyright (c) WireMock.Net Contributors |
+| WireMock.Net | 2.13.0 | Copyright (c) WireMock.Net Contributors |
 | xunit.v3 | 3.2.2 | Copyright (C) .NET Foundation |
 | xunit.runner.visualstudio | 3.1.5 | Copyright (C) .NET Foundation |
 

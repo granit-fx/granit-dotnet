@@ -5,8 +5,8 @@
       "Anthropic": {
         "type": "Direct",
         "requested": "[12.*, )",
-        "resolved": "12.35.1",
-        "contentHash": "Ulh+9p0e2+20LCaYKbz44h7rKI3DBzJ10RrQYlfiODpbALmaABgdRbrniOjRspt9VGCBCW7f6jzt7dAZP3XdgA==",
+        "resolved": "12.39.0",
+        "contentHash": "vm3zmtYzCgeHmI/2QCCv8x7/dSavaQ24OqSvtoO0JSu0ZRyBYRRZJsUVbOP+/YJl4+P1I7HefGqOEOStw4T7Ew==",
         "dependencies": {
           "Microsoft.Extensions.AI.Abstractions": "10.5.1"
         }
@@ -281,8 +281,8 @@
       "Microsoft.Extensions.AI.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.8.0",
-        "contentHash": "1tJZ5sAYrEq1YjNg8GrZSL1tVodsWRfrgybGsZo5DQsWQgLZ+dSR5uFowIS6vb/9zxGBPl7xpYq53QMjNObO9w=="
+        "resolved": "10.8.1",
+        "contentHash": "dgFfXqIdC1up7q0emi58np/iJFZskNKSgs7rT3G94c0K5L18FH0Vjf9JMgCdlxPaNBuG4AJSCYESJd5WenY8Nw=="
       },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "CentralTransitive",
