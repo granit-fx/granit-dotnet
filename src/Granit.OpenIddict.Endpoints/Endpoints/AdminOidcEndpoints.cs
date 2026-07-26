@@ -145,7 +145,7 @@ internal static class AdminOidcEndpoints
         auths.MapGet("/", ListAuthorizationsAsync)
             .WithName("ListOidcAuthorizations")
             .WithSummary("Returns a page of OIDC authorizations.")
-            .WithDescription("Returns a page of OIDC authorizations. Each authorization represents a user's consent grant to an application, with its status (valid, revoked) and type (permanent, ad-hoc). Paginated via the 'page' (1-based, default 1) and 'pageSize' (default 25, max 100) query parameters; the envelope carries the total count and a has-more flag. Server-side filtering by user or client is not yet implemented.")
+            .WithDescription("Returns a page of OIDC authorizations. Each authorization represents a user's consent grant to an application, with its status (valid, revoked) and type (permanent, ad-hoc). Paginated via the 'page' (1-based, default 1) and 'pageSize' (default 25, max 100) query parameters; the envelope carries the total count and a has-more flag. Optionally filter server-side by 'subject' (user id) and/or 'clientId'; an unknown clientId yields an empty page.")
             .Produces<PagedResult<AdminOidcAuthorizationResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Authorizations.Read);
 
@@ -633,38 +633,88 @@ internal static class AdminOidcEndpoints
         [FromServices] IOpenIddictApplicationManager applicationManager,
         [FromQuery] int? page,
         [FromQuery] int? pageSize,
+        [FromQuery] string? subject,
+        [FromQuery] string? clientId,
         CancellationToken cancellationToken)
     {
         (int size, int offset) = ResolvePaging(page, pageSize);
-        var results = new List<AdminOidcAuthorizationResponse>();
         var clientIdCache = new Dictionary<string, string?>(StringComparer.Ordinal);
 
-        await foreach (object auth in authorizationManager.ListAsync(size, offset, cancellationToken).ConfigureAwait(false))
+        async Task<AdminOidcAuthorizationResponse> BuildAsync(object auth)
         {
             string? id = await authorizationManager.GetIdAsync(auth, cancellationToken).ConfigureAwait(false);
             var descriptor = new OpenIddictAuthorizationDescriptor();
             await authorizationManager.PopulateAsync(descriptor, auth, cancellationToken).ConfigureAwait(false);
 
-            string? clientId = null;
+            string? resolvedClientId = null;
             if (descriptor.ApplicationId is not null
-                && !clientIdCache.TryGetValue(descriptor.ApplicationId, out clientId))
+                && !clientIdCache.TryGetValue(descriptor.ApplicationId, out resolvedClientId))
             {
                 object? app = await applicationManager.FindByIdAsync(descriptor.ApplicationId, cancellationToken).ConfigureAwait(false);
-                clientId = app is not null
+                resolvedClientId = app is not null
                     ? await applicationManager.GetClientIdAsync(app, cancellationToken).ConfigureAwait(false)
                     : null;
-                clientIdCache[descriptor.ApplicationId] = clientId;
+                clientIdCache[descriptor.ApplicationId] = resolvedClientId;
             }
 
-            results.Add(new AdminOidcAuthorizationResponse(
+            return new AdminOidcAuthorizationResponse(
                 Guid.TryParse(id, out Guid parsedId) ? parsedId : Guid.Empty,
-                descriptor.Subject, clientId, descriptor.Status, descriptor.Type,
-                [.. descriptor.Scopes]));
+                descriptor.Subject, resolvedClientId, descriptor.Status, descriptor.Type,
+                [.. descriptor.Scopes]);
         }
 
-        long total = await authorizationManager.CountAsync(cancellationToken).ConfigureAwait(false);
+        // A clientId filter is resolved to the internal application id — the manager filters
+        // authorizations by application id, not by the public client_id.
+        string? applicationId = null;
+        if (!string.IsNullOrEmpty(clientId))
+        {
+            object? app = await applicationManager.FindByClientIdAsync(clientId, cancellationToken).ConfigureAwait(false);
+            if (app is null)
+            {
+                return TypedResults.Ok(new PagedResult<AdminOidcAuthorizationResponse>([], 0, false));
+            }
+
+            applicationId = await applicationManager.GetIdAsync(app, cancellationToken).ConfigureAwait(false);
+        }
+
+        // Unfiltered: stream the requested page straight from the store (server-side pagination).
+        if (string.IsNullOrEmpty(subject) && applicationId is null)
+        {
+            var pageItems = new List<AdminOidcAuthorizationResponse>();
+            await foreach (object auth in authorizationManager.ListAsync(size, offset, cancellationToken).ConfigureAwait(false))
+            {
+                pageItems.Add(await BuildAsync(auth).ConfigureAwait(false));
+            }
+
+            long total = await authorizationManager.CountAsync(cancellationToken).ConfigureAwait(false);
+            return TypedResults.Ok(new PagedResult<AdminOidcAuthorizationResponse>(
+                pageItems, (int)total, offset + pageItems.Count < total));
+        }
+
+        // Filtered: the manager's Find* overloads are unpaginated, so materialise the (bounded
+        // per subject/client) match set and page it in memory.
+        IAsyncEnumerable<object> matches = (subject, applicationId) switch
+        {
+            (not null, not null) => authorizationManager.FindAsync(
+                subject, applicationId, status: null, type: null, scopes: null, cancellationToken),
+            (not null, null) => authorizationManager.FindBySubjectAsync(subject, cancellationToken),
+            _ => authorizationManager.FindByApplicationIdAsync(applicationId!, cancellationToken),
+        };
+
+        var allMatches = new List<object>();
+        await foreach (object auth in matches.ConfigureAwait(false))
+        {
+            allMatches.Add(auth);
+        }
+
+        var results = new List<AdminOidcAuthorizationResponse>();
+        foreach (object auth in allMatches.Skip(offset).Take(size))
+        {
+            results.Add(await BuildAsync(auth).ConfigureAwait(false));
+        }
+
         return TypedResults.Ok(new PagedResult<AdminOidcAuthorizationResponse>(
-            results, (int)total, offset + results.Count < total));
+            results, allMatches.Count, offset + results.Count < allMatches.Count));
     }
 
     /// <summary>

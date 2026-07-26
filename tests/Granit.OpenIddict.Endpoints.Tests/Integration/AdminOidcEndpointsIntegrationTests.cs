@@ -712,6 +712,115 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task ListAuthorizations_FilterBySubject_UsesFindBySubject()
+    {
+        object auth1 = new();
+        object app1 = new();
+
+        _server.AuthorizationManager.FindBySubjectAsync("user-123", Arg.Any<CancellationToken>())
+            .Returns(ToAsyncEnumerable<object>(auth1));
+        _server.AuthorizationManager.GetIdAsync(auth1, Arg.Any<CancellationToken>())
+            .Returns(Guid.NewGuid().ToString());
+#pragma warning disable CA2012
+        _server.AuthorizationManager
+            .PopulateAsync(Arg.Any<OpenIddictAuthorizationDescriptor>(), auth1, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictAuthorizationDescriptor d = ci.ArgAt<OpenIddictAuthorizationDescriptor>(0);
+                d.Subject = "user-123";
+                d.Status = "valid";
+                d.Type = "permanent";
+                d.ApplicationId = "app-internal-id";
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+        _server.ApplicationManager.FindByIdAsync("app-internal-id", Arg.Any<CancellationToken>())
+            .Returns(app1);
+        _server.ApplicationManager.GetClientIdAsync(app1, Arg.Any<CancellationToken>())
+            .Returns("my-client");
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .GetAsync("/admin/oidc/authorizations?subject=user-123", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        PagedResult<AdminOidcAuthorizationResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<AdminOidcAuthorizationResponse>>(TestContext.Current.CancellationToken);
+
+        page.ShouldNotBeNull();
+        page.TotalCount.ShouldBe(1);
+        page.Items[0].Subject.ShouldBe("user-123");
+
+        // The filtered path uses FindBySubjectAsync, never the unfiltered ListAsync.
+        _ = _server.AuthorizationManager.Received(1).FindBySubjectAsync("user-123", Arg.Any<CancellationToken>());
+        _ = _server.AuthorizationManager.DidNotReceive()
+            .ListAsync(Arg.Any<int?>(), Arg.Any<int?>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ListAuthorizations_FilterByClientId_ResolvesToApplicationId()
+    {
+        object auth1 = new();
+        object app1 = new();
+
+        _server.ApplicationManager.FindByClientIdAsync("my-client", Arg.Any<CancellationToken>())
+            .Returns(app1);
+        _server.ApplicationManager.GetIdAsync(app1, Arg.Any<CancellationToken>())
+            .Returns("app-internal-id");
+        _server.AuthorizationManager.FindByApplicationIdAsync("app-internal-id", Arg.Any<CancellationToken>())
+            .Returns(ToAsyncEnumerable<object>(auth1));
+        _server.AuthorizationManager.GetIdAsync(auth1, Arg.Any<CancellationToken>())
+            .Returns(Guid.NewGuid().ToString());
+#pragma warning disable CA2012
+        _server.AuthorizationManager
+            .PopulateAsync(Arg.Any<OpenIddictAuthorizationDescriptor>(), auth1, Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                OpenIddictAuthorizationDescriptor d = ci.ArgAt<OpenIddictAuthorizationDescriptor>(0);
+                d.Subject = "user-9";
+                d.Status = "valid";
+                d.Type = "permanent";
+                d.ApplicationId = "app-internal-id";
+                return new ValueTask();
+            });
+#pragma warning restore CA2012
+        _server.ApplicationManager.FindByIdAsync("app-internal-id", Arg.Any<CancellationToken>())
+            .Returns(app1);
+        _server.ApplicationManager.GetClientIdAsync(app1, Arg.Any<CancellationToken>())
+            .Returns("my-client");
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .GetAsync("/admin/oidc/authorizations?clientId=my-client", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        PagedResult<AdminOidcAuthorizationResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<AdminOidcAuthorizationResponse>>(TestContext.Current.CancellationToken);
+
+        page.ShouldNotBeNull();
+        page.TotalCount.ShouldBe(1);
+        page.Items[0].ClientId.ShouldBe("my-client");
+        _ = _server.AuthorizationManager.Received(1)
+            .FindByApplicationIdAsync("app-internal-id", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ListAuthorizations_FilterByUnknownClientId_ReturnsEmpty()
+    {
+        _server.ApplicationManager.FindByClientIdAsync("ghost", Arg.Any<CancellationToken>())
+            .Returns((object?)null);
+
+        HttpResponseMessage response = await _server.AuthenticatedClient
+            .GetAsync("/admin/oidc/authorizations?clientId=ghost", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        PagedResult<AdminOidcAuthorizationResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedResult<AdminOidcAuthorizationResponse>>(TestContext.Current.CancellationToken);
+
+        page.ShouldNotBeNull();
+        page.TotalCount.ShouldBe(0);
+        page.Items.ShouldBeEmpty();
+    }
+
+    [Fact]
     public async Task ListAuthorizations_Anonymous_Returns401()
     {
         HttpResponseMessage response = await _server.AnonymousClient
