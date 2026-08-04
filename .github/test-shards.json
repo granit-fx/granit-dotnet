@@ -418,6 +418,7 @@
         "tests/Granit.BackgroundJobs.Tests.Integration",
         "tests/Granit.Caching.Tests.Integration",
         "tests/Granit.Hostnames.EntityFrameworkCore.Tests.Integration",
+        "tests/Granit.Testing.Persistence.Tests.Integration",
         "tests/Granit.Http.Idempotency.StackExchangeRedis.Tests.Integration",
         "tests/Granit.Http.ODataExposure.Tests.Integration",
         "tests/Granit.Identity.Federated.Cognito.Tests.Integration",

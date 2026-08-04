@@ -234,6 +234,7 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 | TngTech.ArchUnitNET.xUnit | 0.13.3 | Copyright (c) 2019-2025 TNG Technology Consulting GmbH |
 | WireMock.Net | 2.13.0 | Copyright (c) WireMock.Net Contributors |
 | xunit.v3 | 3.2.2 | Copyright (C) .NET Foundation |
+| xunit.v3.extensibility.core | 3.2.2 | Copyright (C) .NET Foundation |
 | xunit.runner.visualstudio | 3.1.5 | Copyright (C) .NET Foundation |
 
 ### BSD-3-Clause (tests)

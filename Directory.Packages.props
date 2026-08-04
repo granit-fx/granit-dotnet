@@ -262,6 +262,7 @@
     <PackageVersion Include="WireMock.Net" Version="2.*" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.*" />
     <PackageVersion Include="xunit.v3" Version="3.2.*" />
+    <PackageVersion Include="xunit.v3.extensibility.core" Version="3.2.*" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.*" />
     <PackageVersion Include="NSubstitute" Version="5.*" />
     <PackageVersion Include="Shouldly" Version="4.*" />

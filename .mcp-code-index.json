@@ -2722,6 +2722,16 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Testing.Persistence",
+      "deps": [
+        "Granit.Guids",
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Persistence.EntityFrameworkCore.Migrations",
+        "Granit.Testing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.TextExtraction",
       "deps": [
         "Granit"
@@ -54724,6 +54734,224 @@
           "kind": "method",
           "signature": "AssertConforms(IIdentityProviderCapabilities capabilities, Type providerType)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ConformanceDbContext",
+      "fqn": "Granit.Testing.Persistence.ConformanceDbContext",
+      "kind": "class",
+      "project": "Granit.Testing.Persistence",
+      "file": "src/Granit.Testing.Persistence/ConformanceDbContext.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Orders",
+          "kind": "property",
+          "signature": "DbSet<ConformanceOrder> Orders",
+          "returnType": "DbSet<ConformanceOrder>"
+        },
+        {
+          "name": "Toggles",
+          "kind": "property",
+          "signature": "DbSet<ConformanceToggle> Toggles",
+          "returnType": "DbSet<ConformanceToggle>"
+        }
+      ]
+    },
+    {
+      "name": "ConformanceHarness",
+      "fqn": "Granit.Testing.Persistence.ConformanceHarness",
+      "kind": "class",
+      "project": "Granit.Testing.Persistence",
+      "file": "src/Granit.Testing.Persistence/ConformanceHarness.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConformanceHarness",
+          "kind": "method",
+          "signature": "ConformanceHarness(ServiceProvider provider, AsyncServiceScope scope, FakeCurrentTenant currentTenant, FakeCurrentUser currentUser, FakeClock clock, IDataFilter dataFilter)",
+          "returnType": "FakeCurrentTenant CurrentTenant { get; } public FakeCurrentUser CurrentUser { get; } public FakeClock Clock { get; } public IDataFilter DataFilter { get; } private"
+        },
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(IRelationalConformanceFixture fixture, CancellationToken ct = default)",
+          "returnType": "Task<ConformanceHarness>"
+        }
+      ]
+    },
+    {
+      "name": "ConformanceOrder",
+      "fqn": "Granit.Testing.Persistence.Domain.ConformanceOrder",
+      "kind": "class",
+      "project": "Granit.Testing.Persistence",
+      "file": "src/Granit.Testing.Persistence/Domain/ConformanceOrder.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Status",
+          "kind": "property",
+          "signature": "ConformanceOrderStatus Status",
+          "returnType": "ConformanceOrderStatus"
+        }
+      ]
+    },
+    {
+      "name": "ConformanceOrderStatus",
+      "fqn": "Granit.Testing.Persistence.Domain.ConformanceOrderStatus",
+      "kind": "enum",
+      "project": "Granit.Testing.Persistence",
+      "file": "src/Granit.Testing.Persistence/Domain/ConformanceOrderStatus.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "ConformanceToggle",
+      "fqn": "Granit.Testing.Persistence.Domain.ConformanceToggle",
+      "kind": "class",
+      "project": "Granit.Testing.Persistence",
+      "file": "src/Granit.Testing.Persistence/Domain/ConformanceToggle.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Activated",
+          "kind": "property",
+          "signature": "bool Activated",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ConformanceModelBuilderExtensions",
+      "fqn": "Granit.Testing.Persistence.Extensions.ConformanceModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Testing.Persistence",
+      "file": "src/Granit.Testing.Persistence/Extensions/ConformanceModelBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureConformanceModule",
+          "kind": "method",
+          "signature": "ConfigureConformanceModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitTestingPersistenceModule",
+      "fqn": "Granit.Testing.Persistence.GranitTestingPersistenceModule",
+      "kind": "class",
+      "project": "Granit.Testing.Persistence",
+      "file": "src/Granit.Testing.Persistence/GranitTestingPersistenceModule.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "IRelationalConformanceFixture",
+      "fqn": "Granit.Testing.Persistence.IRelationalConformanceFixture",
+      "kind": "interface",
+      "project": "Granit.Testing.Persistence",
+      "file": "src/Granit.Testing.Persistence/IRelationalConformanceFixture.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "UseProvider",
+          "kind": "method",
+          "signature": "UseProvider(DbContextOptionsBuilder builder)",
+          "returnType": "string ProviderName { get; } void"
+        },
+        {
+          "name": "CreateMigrationLock",
+          "kind": "method",
+          "signature": "CreateMigrationLock()",
+          "returnType": "IGranitMigrationLock"
+        }
+      ]
+    },
+    {
+      "name": "EnumPersistenceConformanceSuite",
+      "fqn": "Granit.Testing.Persistence.Suites.EnumPersistenceConformanceSuite",
+      "kind": "class",
+      "project": "Granit.Testing.Persistence",
+      "file": "src/Granit.Testing.Persistence/Suites/EnumPersistenceConformanceSuite.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Enum_is_stored_as_its_PascalCase_name",
+          "kind": "method",
+          "signature": "Enum_is_stored_as_its_PascalCase_name()",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "InterceptorPipelineConformanceSuite",
+      "fqn": "Granit.Testing.Persistence.Suites.InterceptorPipelineConformanceSuite",
+      "kind": "class",
+      "project": "Granit.Testing.Persistence",
+      "file": "src/Granit.Testing.Persistence/Suites/InterceptorPipelineConformanceSuite.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Insert_stamps_audit_fields_id_tenant_and_concurrency_stamp",
+          "kind": "method",
+          "signature": "Insert_stamps_audit_fields_id_tenant_and_concurrency_stamp()",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "MigrationLockConformanceSuite",
+      "fqn": "Granit.Testing.Persistence.Suites.MigrationLockConformanceSuite",
+      "kind": "class",
+      "project": "Granit.Testing.Persistence",
+      "file": "src/Granit.Testing.Persistence/Suites/MigrationLockConformanceSuite.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Two_contenders_on_one_resource_only_one_acquires",
+          "kind": "method",
+          "signature": "Two_contenders_on_one_resource_only_one_acquires()",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "QueryFilterSqlConformanceSuite",
+      "fqn": "Granit.Testing.Persistence.Suites.QueryFilterSqlConformanceSuite",
+      "kind": "class",
+      "project": "Granit.Testing.Persistence",
+      "file": "src/Granit.Testing.Persistence/Suites/QueryFilterSqlConformanceSuite.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Soft_deleted_row_survives_physically_but_is_filtered",
+          "kind": "method",
+          "signature": "Soft_deleted_row_survives_physically_but_is_filtered()",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "TenantIsolationConformanceSuite",
+      "fqn": "Granit.Testing.Persistence.Suites.TenantIsolationConformanceSuite",
+      "kind": "class",
+      "project": "Granit.Testing.Persistence",
+      "file": "src/Granit.Testing.Persistence/Suites/TenantIsolationConformanceSuite.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Rows_of_tenant_A_are_invisible_to_tenant_B",
+          "kind": "method",
+          "signature": "Rows_of_tenant_A_are_invisible_to_tenant_B()",
+          "returnType": "Task"
         }
       ]
     },

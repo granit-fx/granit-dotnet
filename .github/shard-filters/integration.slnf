@@ -72,6 +72,7 @@
       "src/Granit.OpenIddict/Granit.OpenIddict.csproj",
       "src/Granit.Persistence.EntityFrameworkCore.Hosting/Granit.Persistence.EntityFrameworkCore.Hosting.csproj",
       "src/Granit.Persistence.EntityFrameworkCore.Migrations/Granit.Persistence.EntityFrameworkCore.Migrations.csproj",
+      "src/Granit.Persistence.EntityFrameworkCore.Postgres/Granit.Persistence.EntityFrameworkCore.Postgres.csproj",
       "src/Granit.Persistence.EntityFrameworkCore/Granit.Persistence.EntityFrameworkCore.csproj",
       "src/Granit.Persistence/Granit.Persistence.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",
@@ -80,6 +81,7 @@
       "src/Granit.QueryEngine.EntityFrameworkCore/Granit.QueryEngine.EntityFrameworkCore.csproj",
       "src/Granit.RateLimiting/Granit.RateLimiting.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",
+      "src/Granit.Testing.Persistence/Granit.Testing.Persistence.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.TextExtraction.Ocr.Tesseract/Granit.TextExtraction.Ocr.Tesseract.csproj",
       "src/Granit.TextExtraction/Granit.TextExtraction.csproj",
@@ -108,6 +110,7 @@
       "tests/Granit.Indexing.EntityFrameworkCore.Tests.Integration/Granit.Indexing.EntityFrameworkCore.Tests.Integration.csproj",
       "tests/Granit.OpenIddict.Tests.Integration/Granit.OpenIddict.Tests.Integration.csproj",
       "tests/Granit.QueryEngine.Endpoints.Tests.Integration/Granit.QueryEngine.Endpoints.Tests.Integration.csproj",
+      "tests/Granit.Testing.Persistence.Tests.Integration/Granit.Testing.Persistence.Tests.Integration.csproj",
       "tests/Granit.TextExtraction.Ocr.Tesseract.Tests.Integration/Granit.TextExtraction.Ocr.Tesseract.Tests.Integration.csproj",
       "tests/Granit.Wolverine.Postgresql.Tests.Integration/Granit.Wolverine.Postgresql.Tests.Integration.csproj",
       "tests/Granit.Wolverine.SqlServer.Tests.Integration/Granit.Wolverine.SqlServer.Tests.Integration.csproj"
