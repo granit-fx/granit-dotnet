@@ -9,6 +9,7 @@
 using Granit.Guids;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Messages;
+using Granit.Persistence.EntityFrameworkCore.Migrations.Options;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,7 +61,8 @@ public sealed class MigrationBatchExecutorTests : IDisposable
 
     private MigrationBatchExecutor BuildExecutor(
         IMigrationCycleRegistry registry,
-        IServiceProvider serviceProvider) =>
+        IServiceProvider serviceProvider,
+        TimeSpan? batchTimeout = null) =>
         new(
             registry,
             serviceProvider,
@@ -68,6 +70,10 @@ public sealed class MigrationBatchExecutorTests : IDisposable
             _isolator,
             _clock,
             new SimpleGuidGenerator(),
+            Microsoft.Extensions.Options.Options.Create(new MigrationStartupOptions
+            {
+                BatchExecutionTimeout = batchTimeout ?? TimeSpan.FromMinutes(5),
+            }),
             NullLogger<MigrationBatchExecutor>.Instance);
 
     // -------------------------------------------------------------------------
@@ -331,6 +337,66 @@ public sealed class MigrationBatchExecutorTests : IDisposable
         MigrationProgress? progress = await _progressContext.MigrationProgresses
             .FirstOrDefaultAsync(p => p.CycleId == cycleId, TestContext.Current.CancellationToken);
         progress.ShouldBeNull();
+    }
+
+    // -------------------------------------------------------------------------
+    // Batch execution timeout
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task ExecuteBatchAsync_DelegateNeverReturns_TimesOutAndMarksFailed()
+    {
+        const string cycleId = "hanging-batch";
+        StubDbContext stubContext = CreateStubContext();
+        IMigrationCycleRegistry registry = RegistryWith(
+            cycleId, typeof(StubDbContext),
+            async (_, _, cancellationToken) =>
+            {
+                // Simulates a batch delegate that never returns on its own.
+                await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+                return new MigrationBatchResult(0, null);
+            });
+        MigrationBatchExecutor executor = BuildExecutor(
+            registry, ProviderWith(stubContext), batchTimeout: TimeSpan.FromMilliseconds(100));
+
+        Func<Task> act = () => executor.ExecuteBatchAsync(
+            new RunMigrationBatchCommand(cycleId, Guid.Empty, null, 100),
+            TestContext.Current.CancellationToken);
+
+        await Should.ThrowAsync<TimeoutException>(act);
+
+        MigrationProgress? progress = await _progressContext.MigrationProgresses
+            .FirstOrDefaultAsync(p => p.CycleId == cycleId, TestContext.Current.CancellationToken);
+        progress.ShouldNotBeNull();
+        progress!.Status.ShouldBe(MigrationStatus.Failed);
+        progress.Error.ShouldNotBeNull();
+        progress.Error!.ShouldContain("timed out");
+    }
+
+    [Fact]
+    public async Task ExecuteBatchAsync_ExternalCancellation_IsNotConvertedToTimeout()
+    {
+        const string cycleId = "external-cancel";
+        StubDbContext stubContext = CreateStubContext();
+        using CancellationTokenSource cts = new();
+        await cts.CancelAsync();
+
+        IMigrationCycleRegistry registry = RegistryWith(
+            cycleId, typeof(StubDbContext),
+            (_, _, cancellationToken) =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                return Task.FromResult(new MigrationBatchResult(0, null));
+            });
+        MigrationBatchExecutor executor = BuildExecutor(
+            registry, ProviderWith(stubContext), batchTimeout: TimeSpan.FromMilliseconds(100));
+
+        Func<Task> act = () => executor.ExecuteBatchAsync(
+            new RunMigrationBatchCommand(cycleId, Guid.Empty, null, 100),
+            cts.Token);
+
+        // External cancellation propagates as OCE — never remapped to TimeoutException.
+        await Should.ThrowAsync<OperationCanceledException>(act);
     }
 
     // -------------------------------------------------------------------------

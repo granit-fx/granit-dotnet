@@ -1,5 +1,6 @@
 using Granit.Persistence.EntityFrameworkCore.Hosting.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
+using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;

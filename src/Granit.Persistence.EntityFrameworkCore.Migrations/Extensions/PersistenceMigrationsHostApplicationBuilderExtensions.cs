@@ -87,6 +87,11 @@ public static class PersistenceMigrationsHostApplicationBuilderExtensions
         // Bridge ITenantEnumerator → IDataSeedTenantProvider for DataSeeder tenant iteration.
         builder.Services.TryAddSingleton<IDataSeedTenantProvider, TenantEnumeratorDataSeedTenantProvider>();
 
+        // Fallback lock for MigrationStartupService when the Hosting package is not used.
+        // Provider packages (AddGranitPostgres / AddGranitSqlServer) register the real
+        // distributed lock with AddSingleton (replace), which wins regardless of order.
+        builder.Services.TryAddSingleton<IGranitMigrationLock, NullMigrationLock>();
+
         // Migration batch executor. The first command per cycle is dispatched via ICommandSender
         // (Granit.Wolverine or another provider); RunMigrationBatchHandler cascades subsequent
         // batches as Wolverine return-value messages.

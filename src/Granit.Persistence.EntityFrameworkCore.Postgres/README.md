@@ -10,7 +10,10 @@ PostgreSQL-specific persistence extensions for Granit applications.
 ## Quick start
 
 ```csharp
-// In Program.cs or host module — call before AddGranitMigrateSupport()
+// In Program.cs or host module — order relative to AddGranitMigrateSupport() does not
+// matter for the migration lock (the real lock always replaces the NullMigrationLock
+// fallback). Only tenant-per-schema setups still need AddGranitPostgres() before
+// AddTenantPerSchemaDbContext() so the schema activator is not overridden by a no-op.
 builder.AddGranitPostgres();
 builder.AddGranitMigrateSupport();
 ```

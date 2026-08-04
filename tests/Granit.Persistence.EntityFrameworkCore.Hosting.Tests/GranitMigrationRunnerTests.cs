@@ -3,6 +3,7 @@ using Granit.Modularity;
 using Granit.Persistence.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Internal;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
+using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;

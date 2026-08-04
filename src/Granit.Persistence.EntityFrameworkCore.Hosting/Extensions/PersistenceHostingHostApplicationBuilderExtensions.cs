@@ -1,5 +1,6 @@
 using Granit.Persistence.EntityFrameworkCore.Hosting.Internal;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
+using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -31,6 +32,10 @@ public static class PersistenceHostingHostApplicationBuilderExtensions
         configure?.Invoke(options);
 
         builder.Services.AddSingleton(options);
+
+        // Fallback lock only: provider packages (AddGranitPostgres / AddGranitSqlServer)
+        // register their distributed lock with AddSingleton (replace), so the real lock
+        // wins regardless of whether the provider is registered before or after this call.
         builder.Services.TryAddSingleton<IGranitMigrationLock, NullMigrationLock>();
         builder.Services.TryAddSingleton<IGranitMigrationRunner, GranitMigrationRunner>();
         builder.Services.TryAddSingleton<ITenantProvisioner, AutoTenantProvisioner>();

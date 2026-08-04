@@ -29,6 +29,13 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 /// <see cref="Guid.Empty"/>.
 /// </para>
 /// <para>
+/// The whole resume pass runs under the <see cref="IGranitMigrationLock"/> (resource
+/// <c>"GranitMigrationStartup"</c>): with N replicas starting concurrently, exactly one
+/// dispatches the resume commands — the others skip. Without this, every replica would
+/// dispatch the same commands from the same stored cursor, processing the same rows
+/// N times concurrently.
+/// </para>
+/// <para>
 /// Exceptions are caught and logged at <c>Error</c> level without blocking application startup.
 /// </para>
 /// </remarks>
@@ -36,6 +43,7 @@ internal sealed partial class MigrationStartupService(
     IDbContextFactory<MigrationProgressDbContext> progressFactory,
     ITenantEnumerator tenantEnumerator,
     IServiceScopeFactory scopeFactory,
+    IGranitMigrationLock migrationLock,
     IOptions<MigrationStartupOptions> options,
     ILogger<MigrationStartupService> logger) : IHostedService
 {
@@ -57,6 +65,21 @@ internal sealed partial class MigrationStartupService(
 
     private async Task ResumeAsync(CancellationToken cancellationToken)
     {
+        // Distributed lock: exactly one replica resumes pending cycles. The lock covers
+        // command DISPATCH only (batch execution itself is guarded per-batch by the
+        // executor's Completed check + the message pipeline) — but duplicated dispatch is
+        // precisely the multi-replica hazard: N replicas building commands from the same
+        // stored cursor.
+        await using IAsyncDisposable? lockHandle = await migrationLock
+            .TryAcquireAsync("GranitMigrationStartup", cancellationToken)
+            .ConfigureAwait(false);
+
+        if (lockHandle is null)
+        {
+            LogResumeSkipped();
+            return;
+        }
+
         // The data_migration_progress table is created by EF Core migrations
         // (via ConfigureMigrationsModule in the host DbContext).
         await using MigrationProgressDbContext db = await progressFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
@@ -131,6 +154,10 @@ internal sealed partial class MigrationStartupService(
 
         return commands;
     }
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Migration cycle resume skipped — another instance holds the migration lock.")]
+    private partial void LogResumeSkipped();
 
     [LoggerMessage(Level = LogLevel.Information,
         Message = "No pending or in-progress migration cycles found at startup.")]

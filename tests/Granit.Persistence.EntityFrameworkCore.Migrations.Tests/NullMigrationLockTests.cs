@@ -1,10 +1,9 @@
-using Granit.Persistence.EntityFrameworkCore.Hosting.Internal;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Persistence.EntityFrameworkCore.Hosting.Tests;
+namespace Granit.Persistence.EntityFrameworkCore.Migrations.Tests;
 
-public class NullMigrationLockTests
+public sealed class NullMigrationLockTests
 {
     [Fact]
     public async Task TryAcquireAsync_should_always_return_non_null_handle()

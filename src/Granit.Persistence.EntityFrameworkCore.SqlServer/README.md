@@ -10,7 +10,8 @@ SQL Server-specific persistence extensions for Granit applications.
 ## Quick start
 
 ```csharp
-// In Program.cs or host module — call before AddGranitMigrateSupport()
+// In Program.cs or host module — order relative to AddGranitMigrateSupport() does not
+// matter: the real lock always replaces the NullMigrationLock fallback.
 builder.AddGranitSqlServer();
 builder.AddGranitMigrateSupport();
 ```

@@ -79,7 +79,8 @@ public sealed class MigrationStartupServiceTests
         IDbContextFactory<MigrationProgressDbContext> factory,
         ITenantEnumerator tenantEnumerator,
         ICommandSender commandSender,
-        int defaultBatchSize = 200)
+        int defaultBatchSize = 200,
+        IGranitMigrationLock? migrationLock = null)
     {
         // MigrationStartupService is Singleton and creates a scope per dispatch to resolve
         // the Scoped ICommandSender. Wrap the mocked sender in a real IServiceScopeFactory
@@ -93,6 +94,7 @@ public sealed class MigrationStartupServiceTests
             factory,
             tenantEnumerator,
             scopeFactory,
+            migrationLock ?? new NullMigrationLock(),
             Microsoft.Extensions.Options.Options.Create(new MigrationStartupOptions { DefaultBatchSize = defaultBatchSize }),
             NullLogger<MigrationStartupService>.Instance);
     }
@@ -273,6 +275,57 @@ public sealed class MigrationStartupServiceTests
         RunMigrationBatchCommand commandB = commands.Single(c => c.TenantId == tenantB);
         commandB.CycleId.ShouldBe("schema-cycle");
         commandB.Cursor.ShouldBeNull();
+    }
+
+    // -------------------------------------------------------------------------
+    // Distributed lock — only one replica resumes
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task StartAsync_LockNotAcquired_DoesNotDispatch()
+    {
+        ICommandSender commandSender = Substitute.For<ICommandSender>();
+        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
+        enumerator.GetActiveTenantIdsAsync(Arg.Any<CancellationToken>())
+            .Returns(ToAsyncEnumerable());
+
+        // Another instance holds the lock: TryAcquireAsync returns null.
+        IGranitMigrationLock blockingLock = Substitute.For<IGranitMigrationLock>();
+        blockingLock.TryAcquireAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((IAsyncDisposable?)null);
+
+        MigrationProgress[] rows =
+        [
+            new() { Id = Guid.NewGuid(), CycleId = "cycle-a", Status = MigrationStatus.Pending, TenantId = null },
+        ];
+
+        MigrationStartupService sut = BuildService(
+            CreateFactory(rows), enumerator, commandSender, migrationLock: blockingLock);
+
+        await sut.StartAsync(TestContext.Current.CancellationToken);
+
+        commandSender.ReceivedCalls().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task StartAsync_AcquiresStartupLockResource()
+    {
+        ICommandSender commandSender = Substitute.For<ICommandSender>();
+        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
+        enumerator.GetActiveTenantIdsAsync(Arg.Any<CancellationToken>())
+            .Returns(ToAsyncEnumerable());
+
+        IGranitMigrationLock migrationLock = Substitute.For<IGranitMigrationLock>();
+        migrationLock.TryAcquireAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((IAsyncDisposable?)null);
+
+        MigrationStartupService sut = BuildService(
+            CreateFactory(), enumerator, commandSender, migrationLock: migrationLock);
+
+        await sut.StartAsync(TestContext.Current.CancellationToken);
+
+        await migrationLock.Received(1).TryAcquireAsync(
+            "GranitMigrationStartup", Arg.Any<CancellationToken>());
     }
 
     // -------------------------------------------------------------------------

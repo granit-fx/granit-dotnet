@@ -16,6 +16,7 @@
     <PackageReference Include="Bogus" />
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.Testing" />
     <!-- Boots a real Wolverine host to assert RunMigrationBatchHandler's cascade is woven
          into the generated handler chain (outbox-enrolled path). v6 split Roslyn runtime
          codegen out of core WolverineFx into WolverineFx.RuntimeCompilation; this bespoke

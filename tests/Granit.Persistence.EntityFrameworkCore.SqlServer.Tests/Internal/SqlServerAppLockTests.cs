@@ -1,4 +1,6 @@
+using System.Data.Common;
 using Granit.Persistence.EntityFrameworkCore.SqlServer.Internal;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
@@ -49,5 +51,29 @@ public sealed class SqlServerAppLockTests
             "my-specific-resource", TestContext.Current.CancellationToken);
 
         handle.ShouldNotBeNull(); // NoOp returned, not null
+    }
+
+    [Fact]
+    public async Task TryAcquireAsync_FactoryRegistered_ReachesFactoryBranch()
+    {
+        // The registration AddGranitSqlServer() performs — without it, TryGetFactory fails
+        // and the lock silently degrades to a no-op handle.
+        DbProviderFactories.RegisterFactory("Microsoft.Data.SqlClient", SqlClientFactory.Instance);
+
+        IConfiguration configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:DefaultConnection"] = "not-a-valid-connection-string",
+            })
+            .Build();
+        SqlServerAppLock sut = new(
+            configuration,
+            NullLogger<SqlServerAppLock>.Instance);
+
+        // The malformed connection string throws when assigned to the factory-created
+        // connection — deterministic proof the lock passed the NoOp guards and reached
+        // the sp_getapplock path, instead of silently returning a no-op handle.
+        await Should.ThrowAsync<ArgumentException>(
+            () => sut.TryAcquireAsync("resource", TestContext.Current.CancellationToken));
     }
 }

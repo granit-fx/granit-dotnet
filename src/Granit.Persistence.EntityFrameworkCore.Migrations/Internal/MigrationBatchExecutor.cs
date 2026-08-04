@@ -1,9 +1,11 @@
 using Granit.Guids;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Messages;
+using Granit.Persistence.EntityFrameworkCore.Migrations.Options;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 
@@ -17,6 +19,7 @@ internal sealed partial class MigrationBatchExecutor(
     ITenantDbIsolator isolator,
     IClock clock,
     IGuidGenerator guidGenerator,
+    IOptions<MigrationStartupOptions> options,
     ILogger<MigrationBatchExecutor> logger) : IMigrationBatchExecutor
 {
     /// <summary>
@@ -54,9 +57,25 @@ internal sealed partial class MigrationBatchExecutor(
         MigrationBatchContext batchContext = new(command.Cursor, command.BatchSize, command.TenantId);
         MigrationBatchResult result;
 
+        // Bound the user-supplied batch delegate with BatchExecutionTimeout so a delegate
+        // that never returns fails the batch instead of hanging the message handler forever.
+        TimeSpan timeout = options.Value.BatchExecutionTimeout;
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutCts.CancelAfter(timeout);
+
         try
         {
-            result = await registration.Migration(tenantContext, batchContext, cancellationToken).ConfigureAwait(false);
+            result = await registration.Migration(tenantContext, batchContext, timeoutCts.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+        {
+            progress.Status = MigrationStatus.Failed;
+            progress.Error = $"Batch execution timed out after {timeout}.";
+            await SaveProgressAsync(command.CycleId, tenantId, cancellationToken).ConfigureAwait(false);
+
+            LogBatchTimedOut(command.CycleId, tenantId, timeout);
+            throw new TimeoutException(
+                $"Migration batch for cycle '{command.CycleId}' timed out after {timeout}.");
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
@@ -149,4 +168,7 @@ internal sealed partial class MigrationBatchExecutor(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to persist migration progress for cycle '{CycleId}', tenant {TenantId}. Progress tracking may be stale.")]
     private partial void LogProgressPersistenceFailed(Exception exception, string cycleId, Guid? tenantId);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Migration batch for cycle '{CycleId}', tenant {TenantId} timed out after {Timeout}. Cycle marked Failed.")]
+    private partial void LogBatchTimedOut(string cycleId, Guid? tenantId, TimeSpan timeout);
 }

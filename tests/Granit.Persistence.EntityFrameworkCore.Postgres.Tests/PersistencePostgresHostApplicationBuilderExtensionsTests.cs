@@ -1,8 +1,9 @@
 using System.Data.Common;
-using Granit.Persistence.EntityFrameworkCore.Hosting;
+using Granit.Persistence.EntityFrameworkCore.Hosting.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Postgres.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Postgres.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
@@ -68,14 +69,28 @@ public sealed class PersistencePostgresHostApplicationBuilderExtensionsTests
     }
 
     [Fact]
-    public void AddGranitPostgres_TryAdd_DoesNotOverridePreRegistered()
+    public void AddGranitPostgres_AfterMigrateSupport_RealLockWins()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Services.AddSingleton(NSubstitute.Substitute.For<IGranitMigrationLock>());
+        builder.Services.AddLogging();
 
+        builder.AddGranitMigrateSupport();
         builder.AddGranitPostgres();
 
-        builder.Services.Count(d => d.ServiceType == typeof(IGranitMigrationLock))
-            .ShouldBe(1, "TryAddSingleton must not override pre-registered lock");
+        using ServiceProvider provider = builder.Services.BuildServiceProvider();
+        provider.GetRequiredService<IGranitMigrationLock>().ShouldBeOfType<NpgsqlAdvisoryMigrationLock>();
+    }
+
+    [Fact]
+    public void AddGranitPostgres_BeforeMigrateSupport_RealLockWins()
+    {
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+        builder.Services.AddLogging();
+
+        builder.AddGranitPostgres();
+        builder.AddGranitMigrateSupport();
+
+        using ServiceProvider provider = builder.Services.BuildServiceProvider();
+        provider.GetRequiredService<IGranitMigrationLock>().ShouldBeOfType<NpgsqlAdvisoryMigrationLock>();
     }
 }

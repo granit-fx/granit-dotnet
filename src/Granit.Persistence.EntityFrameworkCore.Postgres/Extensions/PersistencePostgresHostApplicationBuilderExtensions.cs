@@ -1,8 +1,8 @@
 using System.Data.Common;
-using Granit.Persistence.EntityFrameworkCore.Hosting;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Postgres.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
@@ -23,9 +23,11 @@ public static class PersistencePostgresHostApplicationBuilderExtensions
     /// </list>
     /// </summary>
     /// <remarks>
-    /// Call this before <c>AddGranitMigrateSupport()</c> and before any
-    /// <c>AddTenantPerSchemaDbContext</c> call so that <c>TryAdd</c> registrations
-    /// are not overridden by no-op fallbacks.
+    /// The migration lock uses <c>AddSingleton</c> (replace), so it wins over the
+    /// <c>NullMigrationLock</c> fallback regardless of registration order. The schema
+    /// activator and tenant isolator remain <c>TryAdd</c> — call this before any
+    /// <c>AddTenantPerSchemaDbContext</c> call so those are not overridden by
+    /// no-op fallbacks.
     /// </remarks>
     /// <param name="builder">The host application builder.</param>
     /// <returns>The builder for chaining.</returns>
@@ -36,7 +38,9 @@ public static class PersistencePostgresHostApplicationBuilderExtensions
         // resolve it via DbProviderFactories.TryGetFactory("Npgsql", ...).
         DbProviderFactories.RegisterFactory("Npgsql", NpgsqlFactory.Instance);
 
-        builder.Services.TryAddSingleton<IGranitMigrationLock, NpgsqlAdvisoryMigrationLock>();
+        // AddSingleton (replace): the real distributed lock must win over the
+        // NullMigrationLock fallback whatever the registration order.
+        builder.Services.AddSingleton<IGranitMigrationLock, NpgsqlAdvisoryMigrationLock>();
         builder.Services.TryAddSingleton<ITenantSchemaActivator, NpgsqlTenantSchemaActivator>();
         builder.Services.TryAddSingleton<ITenantDbIsolator, NpgsqlTenantDbIsolator>();
         return builder;

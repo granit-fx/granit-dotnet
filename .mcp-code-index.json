@@ -44783,7 +44783,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/Extensions/PersistenceHostingHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitMigrateSupport",
@@ -44838,22 +44838,6 @@
           "kind": "method",
           "signature": "MigrateAsync(CancellationToken cancellationToken = default)",
           "returnType": "string Name { get; } Task"
-        }
-      ]
-    },
-    {
-      "name": "IGranitMigrationLock",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.Hosting.IGranitMigrationLock",
-      "kind": "interface",
-      "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
-      "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/IGranitMigrationLock.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "TryAcquireAsync",
-          "kind": "method",
-          "signature": "TryAcquireAsync(string resource, CancellationToken cancellationToken)",
-          "returnType": "Task<IAsyncDisposable?>"
         }
       ]
     },
@@ -45210,7 +45194,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/GranitPersistenceEntityFrameworkCoreMigrationsModule.cs",
-      "line": 29,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
@@ -45233,6 +45217,22 @@
           "kind": "method",
           "signature": "HandleAsync(RunMigrationBatchCommand command, IMigrationBatchExecutor executor, CancellationToken cancellationToken)",
           "returnType": "Task<RunMigrationBatchCommand?>"
+        }
+      ]
+    },
+    {
+      "name": "IGranitMigrationLock",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.IGranitMigrationLock",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/IGranitMigrationLock.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "TryAcquireAsync",
+          "kind": "method",
+          "signature": "TryAcquireAsync(string resource, CancellationToken cancellationToken)",
+          "returnType": "Task<IAsyncDisposable?>"
         }
       ]
     },
@@ -45397,6 +45397,22 @@
       "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/MigrationStatus.cs",
       "line": 6,
       "members": []
+    },
+    {
+      "name": "NullMigrationLock",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.NullMigrationLock",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/NullMigrationLock.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "TryAcquireAsync",
+          "kind": "method",
+          "signature": "TryAcquireAsync(string resource, CancellationToken cancellationToken)",
+          "returnType": "Task<IAsyncDisposable?>"
+        }
+      ]
     },
     {
       "name": "MigrationStartupOptions",
@@ -45700,7 +45716,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.SqlServer",
       "file": "src/Granit.Persistence.EntityFrameworkCore.SqlServer/Extensions/PersistenceSqlServerHostApplicationBuilderExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitSqlServer",

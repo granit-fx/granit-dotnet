@@ -1,5 +1,5 @@
 using System.Data.Common;
-using Granit.Persistence.EntityFrameworkCore.Hosting;
+using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
