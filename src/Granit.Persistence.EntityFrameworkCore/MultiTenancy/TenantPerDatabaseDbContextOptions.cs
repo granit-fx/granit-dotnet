@@ -4,7 +4,7 @@ namespace Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 
 /// <summary>
 /// Carries the provider configuration delegate for <see cref="TenantPerDatabaseDbContextFactory{TContext}"/>.
-/// Registered in DI by <c>AddTenantPerDatabaseDbContext&lt;TContext&gt;()</c>.
+/// Registered in DI by <c>AddGranitTenantPerDatabaseDbContext&lt;TContext&gt;()</c>.
 /// </summary>
 internal sealed class TenantPerDatabaseDbContextOptions<TContext>
     where TContext : DbContext

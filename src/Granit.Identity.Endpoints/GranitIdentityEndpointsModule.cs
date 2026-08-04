@@ -30,9 +30,9 @@ namespace Granit.Identity.Endpoints;
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitHttpApiDocumentationModule),
+    typeof(GranitIdentityAbstractionsModule),
     typeof(GranitIdentityModule),
     typeof(GranitIpGeolocationModule),
-    typeof(GranitIdentityAbstractionsModule),
     typeof(GranitValidationModule),
     typeof(GranitWorkspacesAbstractionsModule))]
 public sealed class GranitIdentityEndpointsModule : GranitModule

@@ -20,7 +20,9 @@ namespace Granit.Persistence.EntityFrameworkCore.Postgres;
 /// Must be declared before <c>GranitPersistenceEntityFrameworkCoreHostingModule</c> in the dependency graph so
 /// <c>TryAdd</c> registrations win over the no-op fallbacks.
 /// </remarks>
-[DependsOn(typeof(GranitPersistenceEntityFrameworkCoreHostingModule))]
+[DependsOn(
+    typeof(GranitObservabilityModule),
+    typeof(GranitPersistenceEntityFrameworkCoreHostingModule))]
 public sealed class GranitPersistenceEntityFrameworkCorePostgresModule : GranitModule
 {
     /// <inheritdoc/>

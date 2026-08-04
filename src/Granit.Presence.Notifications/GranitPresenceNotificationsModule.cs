@@ -11,8 +11,8 @@ namespace Granit.Presence.Notifications;
 /// suppressed for users in <c>DoNotDisturb</c> or <c>Offline</c>.
 /// </summary>
 [DependsOn(
-    typeof(GranitPresenceModule),
-    typeof(GranitNotificationsAbstractionsModule))]
+    typeof(GranitNotificationsAbstractionsModule),
+    typeof(GranitPresenceModule))]
 public sealed class GranitPresenceNotificationsModule : GranitModule
 {
     /// <inheritdoc />

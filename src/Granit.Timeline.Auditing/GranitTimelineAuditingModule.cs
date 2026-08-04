@@ -15,8 +15,8 @@ namespace Granit.Timeline.Auditing;
 /// by the audit log.
 /// </remarks>
 [DependsOn(
-    typeof(GranitTimelineModule),
-    typeof(GranitAuditingModule))]
+    typeof(GranitAuditingModule),
+    typeof(GranitTimelineModule))]
 public sealed class GranitTimelineAuditingModule : GranitModule
 {
     /// <inheritdoc/>

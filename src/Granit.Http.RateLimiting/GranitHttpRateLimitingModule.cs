@@ -16,8 +16,8 @@ namespace Granit.Http.RateLimiting;
 /// (see <see cref="RateLimitEndpointExtensions"/>).
 /// </remarks>
 [DependsOn(
-    typeof(GranitRateLimitingModule),
-    typeof(GranitHttpExceptionHandlingModule))]
+    typeof(GranitHttpExceptionHandlingModule),
+    typeof(GranitRateLimitingModule))]
 public sealed class GranitHttpRateLimitingModule : GranitModule
 {
     /// <inheritdoc/>

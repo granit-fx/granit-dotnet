@@ -12,6 +12,6 @@ namespace Granit.Presence.EntityFrameworkCore;
 /// <c>AddGranitPresenceEntityFrameworkCore(opts =&gt; opts.UseNpgsql(connectionString))</c>.
 /// </remarks>
 [DependsOn(
-    typeof(GranitPresenceModule),
-    typeof(GranitPersistenceEntityFrameworkCoreModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule),
+    typeof(GranitPresenceModule))]
 public sealed class GranitPresenceEntityFrameworkCoreModule : GranitModule;

@@ -95,7 +95,7 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
     {
         // Register the per-tenant factory and DbContext as Scoped via Granit.Persistence.
         // TryAdd semantics preserve any existing registration (e.g., overrides from integration tests).
-        builder.Services.AddTenantPerDatabaseDbContext<TContext>(
+        builder.Services.AddGranitTenantPerDatabaseDbContext<TContext>(
             static (opts, connectionString) => opts.UseNpgsql(connectionString));
 
         return AddGranitWolverineWithPostgresqlCore(builder, configure);

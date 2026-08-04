@@ -156,18 +156,13 @@ public abstract class EfStoreBase<TEntity, TContext>
         [CallerLineNumber] int callerLine = 0)
     {
         string entity = typeof(TEntity).Name;
-        _metrics?.RecordCrossTenantQuery(entity, "explicit");
-        LogExplicitCrossTenantQuery(entity, callerMember, callerFile, callerLine);
+        string? tenantId = _currentTenant is { IsAvailable: true } tenant ? tenant.Id?.ToString() : null;
+        _metrics?.RecordCrossTenantQuery(entity, "explicit", tenantId);
+        EfStoreBaseLog.ExplicitCrossTenantQuery(_logger, entity, callerMember, callerFile, callerLine);
         return s_isMultiTenantEntity
             ? db.Set<TEntity>().IgnoreQueryFilters([GranitFilterNames.MultiTenant])
             : db.Set<TEntity>();
     }
-
-    private void LogExplicitCrossTenantQuery(
-        string entity, string callerMember, string callerFile, int callerLine) =>
-        _logger.LogInformation(
-            "Explicit cross-tenant query on {Entity} from {CallerMember} ({CallerFile}:{CallerLine}).",
-            entity, callerMember, callerFile, callerLine);
 
     // ── Read helpers ────────────────────────────────────────────────────
     //

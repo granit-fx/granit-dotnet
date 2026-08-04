@@ -29,7 +29,7 @@ namespace Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 /// The default is <c>PostgresqlTenantSchemaActivator</c>, registered via
 /// <see cref="Extensions.PersistenceTenantExtensions"/> with <c>TryAddSingleton</c>.
 /// To use a different provider, register your <see cref="ITenantSchemaActivator"/>
-/// before calling <c>AddTenantPerSchemaDbContext</c>.
+/// before calling <c>AddGranitTenantPerSchemaDbContext</c>.
 /// </para>
 /// <para>
 /// <strong>Connection pool safety (critical)</strong> — implementations MUST execute the

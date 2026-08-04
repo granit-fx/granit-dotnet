@@ -25,8 +25,8 @@ namespace Granit.Templating.Endpoints;
 /// Permission definition providers are auto-discovered by <c>GranitAuthorizationModule</c>.
 /// </remarks>
 [DependsOn(
-    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitAuthorizationModule),
+    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitQueryEngineEndpointsModule),
     typeof(GranitTemplatingModule),
     typeof(GranitValidationModule),

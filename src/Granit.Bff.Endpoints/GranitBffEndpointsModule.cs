@@ -28,8 +28,8 @@ namespace Granit.Bff.Endpoints;
     typeof(GranitCachingModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitHttpCookiesModule),
-    typeof(GranitIpGeolocationModule),
     typeof(GranitIdentityAbstractionsModule),
+    typeof(GranitIpGeolocationModule),
     typeof(GranitValidationModule))]
 public sealed class GranitBffEndpointsModule : GranitModule
 {

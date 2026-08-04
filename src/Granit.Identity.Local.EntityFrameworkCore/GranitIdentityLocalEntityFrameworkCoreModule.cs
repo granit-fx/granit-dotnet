@@ -29,8 +29,8 @@ public sealed class GranitIdentityLocalEntityFrameworkCoreModule : GranitModule
         context.Services.TryAddScoped<ILocalIdentityGroupStore, IdentityLocalGroupStore>();
 
         // LocalIdentity implements IHasMetadata — apps can extend user properties by calling
-        // AddMetadataMappings<LocalIdentity> in their own module. AddMetadataInfrastructure registers
+        // AddGranitMetadataMappings<LocalIdentity> in their own module. AddGranitMetadataInfrastructure registers
         // MetadataSyncInterceptor as IGranitAutoInterceptor so UseGranitInterceptors picks it up.
-        context.Services.AddMetadataInfrastructure();
+        context.Services.AddGranitMetadataInfrastructure();
     }
 }

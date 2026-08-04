@@ -15,8 +15,8 @@ namespace Granit.Workflow.Scheduling;
 /// <c>ScheduledActionStatusMiddleware</c> from that provider automatically wraps this handler.
 /// </remarks>
 [DependsOn(
-    typeof(GranitWorkflowModule),
-    typeof(GranitSchedulingModule))]
+    typeof(GranitSchedulingModule),
+    typeof(GranitWorkflowModule))]
 public sealed class GranitWorkflowSchedulingModule : GranitModule
 {
     /// <inheritdoc/>

@@ -32,12 +32,21 @@ public static class GranitDbDefaults
     /// Database schema for host-level modules (identity, audit, tenants, background
     /// jobs, features, settings, BFF sessions…). When set, host module
     /// <c>*DbProperties</c> use this instead of <see cref="DbSchema"/>.
-    /// Configurable via <c>TenantIsolation:HostSchema</c> in <c>appsettings.json</c>.
+    /// Configurable via <c>MultiTenancy:TenantIsolation:HostSchema</c> in <c>appsettings.json</c>
+    /// (see <see cref="MultiTenancy.TenantIsolationOptions"/>).
     /// </summary>
     public static string? HostDbSchema { get; set; }
 
     /// <summary>
-    /// Sets <see cref="HostDbSchema"/> from <c>TenantIsolation:HostSchema</c> in
+    /// Configuration key for <see cref="HostDbSchema"/> — derived from
+    /// <see cref="MultiTenancy.TenantIsolationOptions.SectionName"/> so an options-section
+    /// rename cannot silently detach this static from its configuration source.
+    /// </summary>
+    internal static readonly string HostSchemaConfigurationKey =
+        $"{MultiTenancy.TenantIsolationOptions.SectionName}:{nameof(MultiTenancy.TenantIsolationOptions.HostSchema)}";
+
+    /// <summary>
+    /// Sets <see cref="HostDbSchema"/> from <c>MultiTenancy:TenantIsolation:HostSchema</c> in
     /// configuration if not already set. Idempotent — first call wins.
     /// </summary>
     /// <remarks>
@@ -49,15 +58,7 @@ public static class GranitDbDefaults
     /// <param name="configuration">The application configuration.</param>
     public static void EnsureFromConfiguration(Microsoft.Extensions.Configuration.IConfiguration configuration)
     {
-        if (HostDbSchema is not null)
-        {
-            System.Diagnostics.Trace.TraceInformation("[GranitDbDefaults] EnsureFromConfiguration SKIPPED — already '{0}'", HostDbSchema);
-            return;
-        }
-
-        string? hostSchema = configuration["MultiTenancy:TenantIsolation:HostSchema"];
-        System.Diagnostics.Trace.TraceInformation("[GranitDbDefaults] EnsureFromConfiguration read '{0}' from config", hostSchema ?? "(null)");
-        if (hostSchema is not null)
+        if (HostDbSchema is null && configuration[HostSchemaConfigurationKey] is { } hostSchema)
         {
             HostDbSchema = hostSchema;
         }

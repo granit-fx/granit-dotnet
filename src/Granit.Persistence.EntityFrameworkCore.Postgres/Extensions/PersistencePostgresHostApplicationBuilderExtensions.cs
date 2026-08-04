@@ -26,7 +26,7 @@ public static class PersistencePostgresHostApplicationBuilderExtensions
     /// The migration lock uses <c>AddSingleton</c> (replace), so it wins over the
     /// <c>NullMigrationLock</c> fallback regardless of registration order. The schema
     /// activator and tenant isolator remain <c>TryAdd</c> — call this before any
-    /// <c>AddTenantPerSchemaDbContext</c> call so those are not overridden by
+    /// <c>AddGranitTenantPerSchemaDbContext</c> call so those are not overridden by
     /// no-op fallbacks.
     /// </remarks>
     /// <param name="builder">The host application builder.</param>

@@ -95,7 +95,7 @@ internal sealed partial class MigrationStartupService(
         }
 
         List<Guid> tenantIds = [];
-        await foreach (Guid tenantId in tenantEnumerator.GetActiveTenantIdsAsync(cancellationToken))
+        await foreach (Guid tenantId in tenantEnumerator.GetActiveTenantIdsAsync(cancellationToken).ConfigureAwait(false))
         {
             tenantIds.Add(tenantId);
         }

@@ -13,7 +13,7 @@ namespace Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 /// Reads <see cref="ICurrentTenant.Id"/> and delegates connection string resolution to
 /// <see cref="ITenantConnectionStringProvider"/>. The database provider (Npgsql, SQL Server…)
 /// is configured by the <c>Action&lt;DbContextOptionsBuilder, string&gt;</c> delegate
-/// registered at startup via <c>AddTenantPerDatabaseDbContext&lt;TContext&gt;()</c>.
+/// registered at startup via <c>AddGranitTenantPerDatabaseDbContext&lt;TContext&gt;()</c>.
 /// </para>
 /// <para>
 /// Throws <see cref="InvalidOperationException"/> when no tenant is active.

@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Granit.Persistence.EntityFrameworkCore.Hosting.Tests;
 
-public class GranitMigrateOptionsTests
+public sealed class GranitMigrateOptionsTests
 {
     [Fact]
     public void Defaults_should_be_production_safe()

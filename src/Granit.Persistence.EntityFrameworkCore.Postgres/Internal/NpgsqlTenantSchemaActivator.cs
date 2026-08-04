@@ -11,7 +11,7 @@ namespace Granit.Persistence.EntityFrameworkCore.Postgres.Internal;
 /// <remarks>
 /// <para>
 /// Registered by <c>AddGranitPostgres()</c>. Call that method before
-/// <c>AddTenantPerSchemaDbContext</c> to ensure this implementation is used.
+/// <c>AddGranitTenantPerSchemaDbContext</c> to ensure this implementation is used.
 /// </para>
 /// <para>
 /// Safety is ensured by two layers:

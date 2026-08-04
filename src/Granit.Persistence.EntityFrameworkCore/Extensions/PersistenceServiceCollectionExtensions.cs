@@ -59,22 +59,27 @@ public static class PersistenceServiceCollectionExtensions
         // tenant-context loss on an IQueryableSource<T> can never leak every tenant's rows.
         services.TryAddScoped<ITenantQueryScope, TenantQueryScope>();
 
-        services.AddScoped<AuditedEntityInterceptor>();
-        services.AddScoped<VersioningInterceptor>();
-        services.AddScoped<ConcurrencyStampInterceptor>();
-        services.AddScoped<SoftDeleteInterceptor>();
-        services.AddScoped<DomainEventDispatcherInterceptor>();
-        services.AddScoped<EntityLifecycleEventInterceptor>();
+        // TryAdd throughout: AddGranitPersistence is a public entry point that may run more
+        // than once (module + explicit host call) — a second call must not duplicate the
+        // interceptors, and consumers keep the ability to pre-register overrides.
+        services.TryAddScoped<AuditedEntityInterceptor>();
+        services.TryAddScoped<VersioningInterceptor>();
+        services.TryAddScoped<ConcurrencyStampInterceptor>();
+        services.TryAddScoped<SoftDeleteInterceptor>();
+        services.TryAddScoped<DomainEventDispatcherInterceptor>();
+        services.TryAddScoped<EntityLifecycleEventInterceptor>();
         services.TryAddSingleton<IDomainEventDispatcher, NullDomainEventDispatcher>();
         services.TryAddSingleton<IIntegrationEventDispatcher, NullIntegrationEventDispatcher>();
-        services.AddSingleton<IDataFilter, DataFilter>();
+        services.TryAddSingleton<IDataFilter, DataFilter>();
 
         // Register the EF Core exception mapper only when Granit.Http.ExceptionHandling
         // has been configured (IExceptionStatusCodeMapper already in the container).
-        // This avoids a hard dependency on ExceptionHandling for consumers that don't use it.
+        // TryAddEnumerable keys on the implementation type, so repeated calls stay
+        // idempotent while other mapper implementations remain registrable.
         if (services.Any(d => d.ServiceType == typeof(IExceptionStatusCodeMapper)))
         {
-            services.AddSingleton<IExceptionStatusCodeMapper, EfCoreExceptionStatusCodeMapper>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<
+                IExceptionStatusCodeMapper, EfCoreExceptionStatusCodeMapper>());
         }
 
         return services;

@@ -12,15 +12,15 @@ public sealed class PersistenceTenantExtensionsTests
     private sealed class TestDbContext(DbContextOptions<TestDbContext> options) : DbContext(options);
 
     // -------------------------------------------------------------------------
-    // AddTenantPerDatabaseDbContext
+    // AddGranitTenantPerDatabaseDbContext
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void AddTenantPerDatabaseDbContext_RegistersFactory_Scoped()
+    public void AddGranitTenantPerDatabaseDbContext_RegistersFactory_Scoped()
     {
         ServiceCollection services = new();
 
-        services.AddTenantPerDatabaseDbContext<TestDbContext>((opts, cs) =>
+        services.AddGranitTenantPerDatabaseDbContext<TestDbContext>((opts, cs) =>
             opts.UseInMemoryDatabase(cs));
 
         services.ShouldContain(d =>
@@ -29,11 +29,11 @@ public sealed class PersistenceTenantExtensionsTests
     }
 
     [Fact]
-    public void AddTenantPerDatabaseDbContext_RegistersContext_Scoped()
+    public void AddGranitTenantPerDatabaseDbContext_RegistersContext_Scoped()
     {
         ServiceCollection services = new();
 
-        services.AddTenantPerDatabaseDbContext<TestDbContext>((opts, cs) =>
+        services.AddGranitTenantPerDatabaseDbContext<TestDbContext>((opts, cs) =>
             opts.UseInMemoryDatabase(cs));
 
         services.ShouldContain(d =>
@@ -42,12 +42,12 @@ public sealed class PersistenceTenantExtensionsTests
     }
 
     [Fact]
-    public void AddTenantPerDatabaseDbContext_TryAdd_DoesNotOverridePreRegistered()
+    public void AddGranitTenantPerDatabaseDbContext_TryAdd_DoesNotOverridePreRegistered()
     {
         ServiceCollection services = new();
         services.AddScoped<IDbContextFactory<TestDbContext>>(
             _ => null!); // pre-register
-        services.AddTenantPerDatabaseDbContext<TestDbContext>((opts, cs) =>
+        services.AddGranitTenantPerDatabaseDbContext<TestDbContext>((opts, cs) =>
             opts.UseInMemoryDatabase(cs));
 
         services.Count(d => d.ServiceType == typeof(IDbContextFactory<TestDbContext>))
@@ -55,26 +55,26 @@ public sealed class PersistenceTenantExtensionsTests
     }
 
     [Fact]
-    public void AddTenantPerDatabaseDbContext_ReturnsServiceCollection_ForChaining()
+    public void AddGranitTenantPerDatabaseDbContext_ReturnsServiceCollection_ForChaining()
     {
         ServiceCollection services = new();
 
-        IServiceCollection result = services.AddTenantPerDatabaseDbContext<TestDbContext>(
+        IServiceCollection result = services.AddGranitTenantPerDatabaseDbContext<TestDbContext>(
             (opts, cs) => opts.UseInMemoryDatabase(cs));
 
         result.ShouldBeSameAs(services);
     }
 
     // -------------------------------------------------------------------------
-    // AddTenantPerSchemaDbContext
+    // AddGranitTenantPerSchemaDbContext
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void AddTenantPerSchemaDbContext_RegistersFactory_Scoped()
+    public void AddGranitTenantPerSchemaDbContext_RegistersFactory_Scoped()
     {
         ServiceCollection services = new();
 
-        services.AddTenantPerSchemaDbContext<TestDbContext>(opts =>
+        services.AddGranitTenantPerSchemaDbContext<TestDbContext>(opts =>
             opts.UseInMemoryDatabase("shared-db"));
 
         services.ShouldContain(d =>
@@ -83,11 +83,11 @@ public sealed class PersistenceTenantExtensionsTests
     }
 
     [Fact]
-    public void AddTenantPerSchemaDbContext_RegistersDefaultSchemaProvider()
+    public void AddGranitTenantPerSchemaDbContext_RegistersDefaultSchemaProvider()
     {
         ServiceCollection services = new();
 
-        services.AddTenantPerSchemaDbContext<TestDbContext>(opts =>
+        services.AddGranitTenantPerSchemaDbContext<TestDbContext>(opts =>
             opts.UseInMemoryDatabase("shared-db"));
 
         services.ShouldContain(d =>
@@ -96,11 +96,11 @@ public sealed class PersistenceTenantExtensionsTests
     }
 
     [Fact]
-    public void AddTenantPerSchemaDbContext_WithSchemaOptions_RegistersOptions()
+    public void AddGranitTenantPerSchemaDbContext_WithSchemaOptions_RegistersOptions()
     {
         ServiceCollection services = new();
 
-        services.AddTenantPerSchemaDbContext<TestDbContext>(
+        services.AddGranitTenantPerSchemaDbContext<TestDbContext>(
             opts => opts.UseInMemoryDatabase("shared-db"),
             schema => schema.Prefix = "t_");
 
@@ -108,25 +108,25 @@ public sealed class PersistenceTenantExtensionsTests
     }
 
     [Fact]
-    public void AddTenantPerSchemaDbContext_DoesNotRegisterDefaultSchemaActivator()
+    public void AddGranitTenantPerSchemaDbContext_DoesNotRegisterDefaultSchemaActivator()
     {
         // No default ITenantSchemaActivator since Granit.Persistence.EntityFrameworkCore.Postgres was
         // decoupled from the generic persistence package. Callers must invoke
         // AddGranitPostgres() (or register their own implementation) before this call.
         ServiceCollection services = new();
 
-        services.AddTenantPerSchemaDbContext<TestDbContext>(opts =>
+        services.AddGranitTenantPerSchemaDbContext<TestDbContext>(opts =>
             opts.UseInMemoryDatabase("shared-db"));
 
         services.ShouldNotContain(d => d.ServiceType == typeof(ITenantSchemaActivator));
     }
 
     [Fact]
-    public void AddTenantPerSchemaDbContext_ReturnsServiceCollection_ForChaining()
+    public void AddGranitTenantPerSchemaDbContext_ReturnsServiceCollection_ForChaining()
     {
         ServiceCollection services = new();
 
-        IServiceCollection result = services.AddTenantPerSchemaDbContext<TestDbContext>(
+        IServiceCollection result = services.AddGranitTenantPerSchemaDbContext<TestDbContext>(
             opts => opts.UseInMemoryDatabase("shared-db"));
 
         result.ShouldBeSameAs(services);

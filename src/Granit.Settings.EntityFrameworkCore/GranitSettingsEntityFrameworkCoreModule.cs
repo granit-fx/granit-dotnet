@@ -15,6 +15,6 @@ namespace Granit.Settings.EntityFrameworkCore;
 /// </code>
 /// </remarks>
 [DependsOn(
-    typeof(GranitSettingsModule),
-    typeof(GranitPersistenceEntityFrameworkCoreModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule),
+    typeof(GranitSettingsModule))]
 public sealed class GranitSettingsEntityFrameworkCoreModule : GranitModule;

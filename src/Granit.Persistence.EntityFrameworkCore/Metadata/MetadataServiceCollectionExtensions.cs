@@ -18,7 +18,7 @@ public static class MetadataServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddMetadataInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddGranitMetadataInfrastructure(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -41,7 +41,7 @@ public static class MetadataServiceCollectionExtensions
     /// <param name="services">The service collection.</param>
     /// <param name="configure">Action to configure the property mappings.</param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddMetadataMappings<TEntity>(
+    public static IServiceCollection AddGranitMetadataMappings<TEntity>(
         this IServiceCollection services,
         Action<MetadataMappingOptions<TEntity>> configure)
         where TEntity : class, IHasMetadata
@@ -49,7 +49,7 @@ public static class MetadataServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configure);
 
-        services.AddMetadataInfrastructure();
+        services.AddGranitMetadataInfrastructure();
 
         var options = new MetadataMappingOptions<TEntity>();
         configure(options);
@@ -76,7 +76,7 @@ public static class MetadataServiceCollectionExtensions
     /// Function that extracts <see cref="MetadataMapping"/> instances from the options.
     /// </param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddMetadataMappingsFromOptions<TEntity, TOptions>(
+    public static IServiceCollection AddGranitMetadataMappingsFromOptions<TEntity, TOptions>(
         this IServiceCollection services,
         Func<TOptions, List<MetadataMapping>> extractor)
         where TEntity : class, IHasMetadata
@@ -85,7 +85,7 @@ public static class MetadataServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(extractor);
 
-        services.AddMetadataInfrastructure();
+        services.AddGranitMetadataInfrastructure();
 
         services.AddSingleton<IConfigureMetadataRegistry>(sp =>
         {

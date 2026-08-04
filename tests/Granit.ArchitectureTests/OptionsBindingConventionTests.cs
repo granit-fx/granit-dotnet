@@ -60,7 +60,6 @@ public sealed partial class OptionsBindingConventionTests
         ["SmtpOptions"] = "#3010 — pre-existing unbound section 'Notifications:Smtp'",
         ["SseRedisBackplaneOptions"] = "#3010 — pre-existing unbound section 'Notifications:Sse:StackExchangeRedis'",
         ["TemplatingEndpointsOptions"] = "#3010 — pre-existing unbound section 'Templating:Endpoints'",
-        ["TenantSchemaOptions"] = "#3010 — pre-existing unbound section 'MultiTenancy:TenantSchema'",
         ["TimelineEndpointsOptions"] = "#3010 — pre-existing unbound section 'Timeline:Endpoints'",
         ["TokenManagementOptions"] = "#3010 — pre-existing unbound section 'Oidc:TokenManagement'",
         ["TwilioOptions"] = "#3010 — pre-existing unbound section 'Notifications:Twilio'",

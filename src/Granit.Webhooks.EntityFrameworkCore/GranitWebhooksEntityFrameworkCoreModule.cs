@@ -12,6 +12,6 @@ namespace Granit.Webhooks.EntityFrameworkCore;
 /// <c>AddGranitWebhooksEntityFrameworkCore(opts => opts.UseNpgsql(connectionString))</c>.
 /// </remarks>
 [DependsOn(
-    typeof(GranitWebhooksModule),
-    typeof(GranitPersistenceEntityFrameworkCoreModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule),
+    typeof(GranitWebhooksModule))]
 public sealed class GranitWebhooksEntityFrameworkCoreModule : GranitModule;

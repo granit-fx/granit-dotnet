@@ -14,4 +14,7 @@ public sealed class TenantIsolationOptionsTests
         options.Strategy.ShouldBe(TenantIsolationStrategy.SharedDatabase);
     }
 
+    [Fact]
+    public void SectionName_HasExpectedValue() =>
+        TenantIsolationOptions.SectionName.ShouldBe("MultiTenancy:TenantIsolation");
 }

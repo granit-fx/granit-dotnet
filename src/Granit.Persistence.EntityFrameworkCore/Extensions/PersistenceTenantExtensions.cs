@@ -37,7 +37,7 @@ public static class PersistenceTenantExtensions
     /// custom factory without being overridden.
     /// </para>
     /// </remarks>
-    public static IServiceCollection AddTenantPerDatabaseDbContext<TContext>(
+    public static IServiceCollection AddGranitTenantPerDatabaseDbContext<TContext>(
         this IServiceCollection services,
         Action<DbContextOptionsBuilder<TContext>, string> configureOptions)
         where TContext : DbContext
@@ -91,13 +91,14 @@ public static class PersistenceTenantExtensions
     /// <see cref="ITenantSchemaActivator"/> for a different database provider.
     /// </para>
     /// </remarks>
-    public static IServiceCollection AddTenantPerSchemaDbContext<TContext>(
+    public static IServiceCollection AddGranitTenantPerSchemaDbContext<TContext>(
         this IServiceCollection services,
         Action<DbContextOptionsBuilder<TContext>> configureOptions,
         Action<TenantSchemaOptions>? configureTenantSchema = null)
         where TContext : DbContext
     {
         services.AddOptions<TenantSchemaOptions>()
+            .BindConfiguration(TenantSchemaOptions.SectionName)
             .Configure(configureTenantSchema ?? (_ => { }))
             .ValidateDataAnnotations()
             .ValidateOnStart();
@@ -175,6 +176,7 @@ public static class PersistenceTenantExtensions
         // factory delegate for the active strategy (see TenantIsolationFactoryRegistrationValidator).
         services.AddOptions<TenantIsolationOptions>()
             .BindConfiguration(TenantIsolationOptions.SectionName)
+            .ValidateDataAnnotations()
             .Validate(
                 opts => Enum.IsDefined(opts.Strategy),
                 "MultiTenancy:TenantIsolation:Strategy is not a valid TenantIsolationStrategy value. " +
@@ -227,6 +229,7 @@ public static class PersistenceTenantExtensions
         if (configureSchemaPerTenant is not null)
         {
             services.AddOptions<TenantSchemaOptions>()
+                .BindConfiguration(TenantSchemaOptions.SectionName)
                 .Configure(configureTenantSchema ?? (_ => { }))
                 .ValidateDataAnnotations()
                 .ValidateOnStart();

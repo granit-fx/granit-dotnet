@@ -35,10 +35,12 @@ public sealed class PersistenceMetrics
             "granit.persistence.cross_tenant_query",
             description:
                 "Number of EfStoreBase queries that bypassed the multi-tenant filter. "
-                + "Tagged with `entity` (CLR name) and `origin` (`host_endpoint` = served "
+                + "Tagged with `entity` (CLR name), `origin` (`host_endpoint` = served "
                 + "via a route marked .AllowHostAccess(); `explicit` = caller used "
                 + "QueryAcrossTenants(); `implicit_unsignaled` = bypass without host-access "
-                + "signal — alert-worthy, may indicate a tenant-context leak in flight).");
+                + "signal — alert-worthy, may indicate a tenant-context leak in flight) and "
+                + "`tenant_id` (the active tenant at the call site, `global` when no tenant "
+                + "context was available — always the case for the implicit origins).");
     }
 
     public void RecordEntitiesPurged(string? tenantId, int count) =>
@@ -59,10 +61,17 @@ public sealed class PersistenceMetrics
     /// <c>"implicit_unsignaled"</c> when the bypass occurred without any host-access
     /// signal — this is the alert-worthy origin that may indicate a tenant-context leak.
     /// </param>
-    public void RecordCrossTenantQuery(string entityName, string origin) =>
+    /// <param name="tenantId">
+    /// The active tenant at the call site, or <c>null</c> when no tenant context is
+    /// available (coalesced to <c>"global"</c>). The host/implicit origins fire precisely
+    /// because the tenant is absent, so they always report <c>"global"</c>; the
+    /// <c>explicit</c> origin reports the tenant whose scope issued the cross-tenant read.
+    /// </param>
+    public void RecordCrossTenantQuery(string entityName, string origin, string? tenantId = null) =>
         _crossTenantQueries.Add(1, new TagList
         {
             { TagEntity, entityName },
             { TagOrigin, origin },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 }
