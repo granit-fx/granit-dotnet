@@ -10910,7 +10910,7 @@
       "kind": "class",
       "project": "Granit.Authentication.Mtls",
       "file": "src/Granit.Authentication.Mtls/Extensions/MtlsJwtBearerExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitMtlsValidation",

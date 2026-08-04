@@ -4,6 +4,7 @@ using Granit.Authentication.Mtls.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Authentication.Mtls.Extensions;
 
@@ -25,9 +26,14 @@ public static class MtlsJwtBearerExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        OptionsBuilder<MtlsValidationOptions> options = services
+            .AddOptions<MtlsValidationOptions>()
+            .BindConfiguration(MtlsValidationOptions.SectionName);
+
+        // Registered after the configuration binding so an explicit delegate wins over appsettings.
         if (configure is not null)
         {
-            services.Configure(configure);
+            options.Configure(configure);
         }
 
         services.TryAddSingleton<MtlsValidationMetrics>();

@@ -26,5 +26,5 @@ dotnet add package Granit.OpenIddict.Server.DPoP
 }
 ```
 
-`WithFapi2Profile()` sets `SenderConstraining = DPoP` automatically. A future
-`Granit.OpenIddict.Server.Mtls` package will provide the `Mtls` mode (RFC 8705).
+`WithFapi2Profile()` sets `SenderConstraining = DPoP` automatically. The `Mtls` mode (RFC 8705) is
+provided by `Granit.OpenIddict.Server.Mtls`.
