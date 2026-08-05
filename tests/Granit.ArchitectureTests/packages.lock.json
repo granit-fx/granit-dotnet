@@ -4044,7 +4044,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Templating": "[0.1.0-dev, )",
-          "Mjml.Net": "[4.*, )"
+          "Mjml.Net": "[4.11.0, )"
         }
       },
       "granit.templating.scriban": {
@@ -5104,9 +5104,9 @@
       },
       "Mjml.Net": {
         "type": "CentralTransitive",
-        "requested": "[4.*, )",
-        "resolved": "4.14.0",
-        "contentHash": "eMafQratNn6b6fp16ocTPCC3NzrdCAy1pj7n/eQMxF9iS5n8AKCRoAWl2kPZ3YOhBvRU1hDdTK2ouQM2o4rfeg==",
+        "requested": "[4.11.0, )",
+        "resolved": "4.11.0",
+        "contentHash": "DCKiojf/UOZ48d7Z6vD9gfXOlT81NMZqqpraDUQJZ1Ykcop/D8BmPhCYY6vWYI8rZbDd4Vepy0bb1EmoSvbEGA==",
         "dependencies": {
           "HtmlPerformanceKit": "1.0.0"
         }
