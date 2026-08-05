@@ -102,27 +102,21 @@ public static class ModelBuilderExtensions
     ///     GranitDesignTime.DataFilter);
     /// </code>
     /// </example>
+    /// <remarks>
+    /// LEGACY PATH — used only by contexts that do not inherit <see cref="GranitDbContext"/>
+    /// (which owns every pass itself since the #3159 flip: this-bound named filters,
+    /// finalizing conventions for the scalar passes, and the value-object trio). Known
+    /// limitation on this path (#3174): the proxy-captured bypass flags are constant-folded
+    /// into the cached plan, so flow-scoped <c>IDataFilter.Disable&lt;T&gt;()</c> has no
+    /// effect — per-query <c>IgnoreQueryFilters</c> works. The path is slated for removal in
+    /// overhaul Phase 3 (#3147) when GranitDbContext becomes mandatory.
+    /// </remarks>
     public static ModelBuilder ApplyGranitConventions(
         this ModelBuilder modelBuilder,
         ICurrentTenant? currentTenant = null,
-        IDataFilter? dataFilter = null) =>
-        modelBuilder.ApplyGranitConventionsCore(currentTenant, dataFilter, registerConventionFilters: true);
-
-    /// <summary>
-    /// Core overload. <paramref name="registerConventionFilters"/> is <c>false</c> when called
-    /// from <see cref="GranitDbContext"/>, which registers every named filter itself with
-    /// <c>this</c>-bound bypass flags: the proxy-captured flags below are constant-folded into
-    /// the cached query plan, making <c>IDataFilter.Disable&lt;T&gt;()</c> a silent no-op on
-    /// relational providers (#3174). The legacy proxy path remains for contexts that call the
-    /// public overload directly — per-query bypass (<c>IgnoreQueryFilters</c>) works there;
-    /// flow-scoped disable does not.
-    /// </summary>
-    internal static ModelBuilder ApplyGranitConventionsCore(
-        this ModelBuilder modelBuilder,
-        ICurrentTenant? currentTenant,
-        IDataFilter? dataFilter,
-        bool registerConventionFilters)
+        IDataFilter? dataFilter = null)
     {
+        const bool registerConventionFilters = true;
         // FilterProxy wraps IDataFilter? and exposes simple boolean properties. KNOWN
         // LIMITATION (#3174): EF Core constant-folds property access on a non-DbContext
         // captured constant at plan compilation — the bypass never becomes a query

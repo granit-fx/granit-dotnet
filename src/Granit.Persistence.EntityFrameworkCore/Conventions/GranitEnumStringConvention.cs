@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Granit.Persistence.EntityFrameworkCore.Conventions;
 
 /// <summary>
-/// Native form of the enum-as-string pass of <c>ApplyGranitConventionsCore</c> (#3158):
+/// Native form of the legacy enum-as-string pass (#3158):
 /// every enum property persists as its PascalCase name in a varchar sized to the longest
 /// value (min 20). Explicit <c>HasConversion</c>/<c>[PersistAsInt]</c>/<c>[Flags]</c>
 /// opt-outs match the legacy pass; explicit configuration wins via configuration sources.

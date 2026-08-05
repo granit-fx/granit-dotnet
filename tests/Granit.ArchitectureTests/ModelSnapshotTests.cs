@@ -20,7 +20,6 @@ namespace Granit.ArchitectureTests;
 /// GRANIT_MODEL_SNAPSHOTS=regen dotnet test tests/Granit.ArchitectureTests --filter ModelSnapshot
 /// </code>
 /// </summary>
-[Collection(ModelSnapshotSerialGroup.Name)]
 public sealed class ModelSnapshotTests
 {
     private const string RegenEnvVar = "GRANIT_MODEL_SNAPSHOTS";

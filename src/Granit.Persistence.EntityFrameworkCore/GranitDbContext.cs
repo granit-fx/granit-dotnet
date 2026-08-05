@@ -194,21 +194,15 @@ public abstract class GranitDbContext : DbContext
             }
         }
 
-        // 3) Non-filter conventions. `currentTenant: null` skips the IMultiTenant block;
-        //    `registerConventionFilters: false` skips the proxy-based named filters — this
-        //    class owns ALL filters, with parameterised bypass flags (steps 2 / 2-bis).
-        //    Runs LAST so the SVO cleanup is the final pass over the model surface.
-        //    Native-conventions mode (#3158, test-gated): the scalar passes run as
-        //    IModelFinalizingConventions (see OnGranitConfigureConventionsCore) and only
-        //    the value-object trio still executes here.
-        if (GranitNativeConventions.Enabled)
-        {
-            modelBuilder.ApplyGranitValueObjectPasses();
-        }
-        else
-        {
-            modelBuilder.ApplyGranitConventionsCore(currentTenant: null, DataFilter, registerConventionFilters: false);
-        }
+        // 3) Value-object trio (QueryableValueObject mappings, phantom removal, SVO/JSON
+        //    converters) — the only pass still imperative after the native-conventions flip
+        //    (#3159): its discovery-time carve-outs (OwnsOne / [QueryableValueObject]) migrate
+        //    in the Phase 3 cleanup under the golden-model gate. Every scalar convention
+        //    (enum-as-string, concurrency stamp, merge tombstone, ownership indexes,
+        //    translation config) runs as an IModelFinalizingConvention registered by
+        //    ConfigureConventions. Runs LAST so the SVO cleanup is the final pass over the
+        //    model surface.
+        modelBuilder.ApplyGranitValueObjectPasses();
 
         // 4) External, opt-in model extensions registered in DI by separate packages — applied LAST so they
         //    get the final say (after conventions). Lets e.g. a PostGIS package add a generated geography
@@ -256,24 +250,22 @@ public abstract class GranitDbContext : DbContext
 
     /// <inheritdoc />
     /// <remarks>
-    /// Sealed for the same ordering reasons as <see cref="OnModelCreating"/>. In
-    /// native-conventions mode (#3158, test-gated) the scalar Granit passes (enum-as-string,
-    /// concurrency stamp, merge tombstone, ownership indexes, translation config) run as
-    /// <c>IModelFinalizingConvention</c>s. Derived contexts extend via
-    /// <see cref="OnGranitConfigureConventions"/>.
+    /// Sealed for the same ordering reasons as <see cref="OnModelCreating"/>. The scalar
+    /// Granit passes (enum-as-string, concurrency stamp, merge tombstone, ownership indexes,
+    /// translation config) run as <c>IModelFinalizingConvention</c>s — the native engine is
+    /// the only path since the #3159 flip; bit-identity with the legacy pipeline is locked
+    /// by the golden-model baselines in <c>Granit.ArchitectureTests/ModelSnapshots</c>.
+    /// Derived contexts extend via <see cref="OnGranitConfigureConventions"/>.
     /// </remarks>
     protected sealed override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         base.ConfigureConventions(configurationBuilder);
 
-        if (GranitNativeConventions.Enabled)
-        {
-            configurationBuilder.Conventions.Add(_ => new GranitEnumStringConvention());
-            configurationBuilder.Conventions.Add(_ => new GranitConcurrencyStampConvention());
-            configurationBuilder.Conventions.Add(_ => new GranitMergeTombstoneConvention());
-            configurationBuilder.Conventions.Add(_ => new GranitOwnershipIndexConvention());
-            configurationBuilder.Conventions.Add(_ => new GranitTranslationConvention());
-        }
+        configurationBuilder.Conventions.Add(_ => new GranitEnumStringConvention());
+        configurationBuilder.Conventions.Add(_ => new GranitConcurrencyStampConvention());
+        configurationBuilder.Conventions.Add(_ => new GranitMergeTombstoneConvention());
+        configurationBuilder.Conventions.Add(_ => new GranitOwnershipIndexConvention());
+        configurationBuilder.Conventions.Add(_ => new GranitTranslationConvention());
 
         OnGranitConfigureConventions(configurationBuilder);
     }
