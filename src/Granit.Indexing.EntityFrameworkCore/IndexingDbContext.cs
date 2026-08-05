@@ -2,7 +2,6 @@ using Granit.DataFiltering;
 using Granit.Indexing.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Indexing.EntityFrameworkCore;
@@ -60,8 +59,6 @@ public sealed class IndexingDbContext : GranitDbContext
             DefaultDictionary,
             EmbeddingDimensions,
             isPostgres);
-
-        modelBuilder.ApplyGranitConventions(currentTenant: null, dataFilter: null);
     }
 }
 

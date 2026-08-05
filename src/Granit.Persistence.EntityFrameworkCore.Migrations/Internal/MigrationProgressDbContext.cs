@@ -12,6 +12,13 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 /// and Granit interceptors. Registered via <c>AddDbContextFactory</c> (not <c>AddGranitDbContext</c>)
 /// so progress commits are independent from the tenant data transaction.
 /// </remarks>
+// Deliberately a plain DbContext, NOT GranitDbContext (Phase 3 exemption, #3161): this is
+// tenant-AGNOSTIC system infrastructure — MigrationProgress.TenantId is an orchestration
+// column, not IMultiTenant (the runner must enumerate progress across every tenant), no
+// entity uses the convention interfaces, and the factory is registered Singleton (a
+// GranitDbContext ctor requires the scoped ICurrentTenant). No ApplyGranitConventions call
+// → no legacy-filter surface. Enum columns are configured explicitly in
+// MigrationProgressConfiguration.
 internal sealed class MigrationProgressDbContext(DbContextOptions<MigrationProgressDbContext> options)
     : DbContext(options)
 {

@@ -35045,7 +35045,7 @@
       "kind": "class",
       "project": "Granit.Indexing.EntityFrameworkCore",
       "file": "src/Granit.Indexing.EntityFrameworkCore/IndexingDbContext.cs",
-      "line": 34,
+      "line": 33,
       "members": []
     },
     {
@@ -35054,7 +35054,7 @@
       "kind": "record",
       "project": "Granit.Indexing.EntityFrameworkCore",
       "file": "src/Granit.Indexing.EntityFrameworkCore/IndexingDbContext.cs",
-      "line": 74,
+      "line": 71,
       "members": []
     },
     {
@@ -46524,7 +46524,7 @@
       "kind": "class",
       "project": "Granit.Presence.EntityFrameworkCore",
       "file": "src/Granit.Presence.EntityFrameworkCore/Extensions/PresenceModelBuilderExtensions.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "ConfigurePresenceModule",

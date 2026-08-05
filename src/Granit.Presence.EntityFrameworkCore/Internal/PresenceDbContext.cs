@@ -1,7 +1,6 @@
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Presence.Domain;
 using Granit.Presence.EntityFrameworkCore.Configurations;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +29,6 @@ internal sealed class PresenceDbContext(
     protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
-        modelBuilder.ApplyGranitConventions();
         modelBuilder.ApplyConfiguration(new UserPresenceConfiguration());
     }
 }

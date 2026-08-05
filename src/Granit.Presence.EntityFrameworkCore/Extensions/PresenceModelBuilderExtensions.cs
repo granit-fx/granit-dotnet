@@ -1,4 +1,3 @@
-using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Presence.EntityFrameworkCore.Configurations;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +17,6 @@ public static class PresenceModelBuilderExtensions
     public static ModelBuilder ConfigurePresenceModule(this ModelBuilder modelBuilder)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
-        modelBuilder.ApplyGranitConventions();
         modelBuilder.ApplyConfiguration(new UserPresenceConfiguration());
         return modelBuilder;
     }
