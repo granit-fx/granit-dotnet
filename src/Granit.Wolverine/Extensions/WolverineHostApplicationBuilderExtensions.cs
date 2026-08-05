@@ -9,7 +9,6 @@ using Granit.Wolverine.Diagnostics;
 using Granit.Wolverine.Internal;
 using Granit.Wolverine.Middleware;
 using Granit.Wolverine.Options;
-using JasperFx.CodeGeneration.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -165,14 +164,13 @@ public static class WolverineHostApplicationBuilderExtensions
             // forces fail-fast.
             opts.CodeGeneration.TypeLoadMode = messagingOptions.CodeGenerationMode;
 
-            // Service-location policy: NotAllowed aborts `codegen write` when a dependency
-            // can't be inlined. Every concrete type reachable from a handler chain must be
-            // PUBLIC, not merely registered without a lambda: for a consumer's Static build the
-            // generated sources compile into the *host* assembly, which no framework
-            // InternalsVisibleTo grant can name — internal concretes therefore always degrade
-            // to service location there and abort the build (public-in-Internal-namespace is
-            // the accepted shape, e.g. WolverineCurrentUserService, WolverineLocalEventBus).
-            opts.ServiceLocationPolicy = ServiceLocationPolicy.NotAllowed;
+            // Service-location policy. Default AllowedButWarn: a consumer's Static build
+            // compiles the generated sources into the *host* assembly, which no framework
+            // InternalsVisibleTo grant can name — framework-internal concretes reachable from
+            // handler chains then require service location, and NotAllowed would abort
+            // `codegen write` for every consumer. First-party hosts whose whole handler graph
+            // can be inlined opt back into fail-fast via "Wolverine:ServiceLocationPolicy".
+            opts.ServiceLocationPolicy = messagingOptions.ServiceLocationPolicy;
 
             // IDomainEvent — force local routing, never forward to external transports.
             // IIntegrationEvent routing is configured by the provider package.

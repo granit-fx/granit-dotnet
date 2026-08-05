@@ -17,7 +17,7 @@ namespace Granit.Events.Wolverine.Internal;
 /// resolving <see cref="ILocalEventHandler{TEvent}"/> from DI and calling sequentially,
 /// matching <c>InProcessLocalEventBus</c> behavior.
 /// </remarks>
-public sealed partial class WolverineLocalEventBus(
+internal sealed partial class WolverineLocalEventBus(
     IMessageBus bus,
     IServiceProvider serviceProvider,
     WolverineHostReadiness readiness,

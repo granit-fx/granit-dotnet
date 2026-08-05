@@ -1,4 +1,5 @@
 using JasperFx.CodeGeneration;
+using JasperFx.CodeGeneration.Model;
 
 namespace Granit.Wolverine.Options;
 
@@ -52,4 +53,24 @@ public sealed class WolverineMessagingOptions
     /// </para>
     /// </remarks>
     public TypeLoadMode CodeGenerationMode { get; set; } = TypeLoadMode.Dynamic;
+
+    /// <summary>
+    /// Wolverine service-location policy for generated handler code. Default
+    /// <see cref="ServiceLocationPolicy.AllowedButWarn"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Consumer hosts compile Static codegen output (<c>codegen write</c>) into their own
+    /// assembly, which no framework <c>InternalsVisibleTo</c> grant can name — framework-internal
+    /// concretes reachable from handler chains (local event bus, activity stores, …) then
+    /// require service location, and <see cref="ServiceLocationPolicy.NotAllowed"/> would abort
+    /// the codegen build. The permissive default keeps the production codegen recipe buildable
+    /// everywhere; each service location is still surfaced as a warning.
+    /// </para>
+    /// <para>
+    /// Bind <c>"Wolverine:ServiceLocationPolicy": "NotAllowed"</c> to fail fast instead —
+    /// appropriate for first-party hosts whose whole handler graph can be inlined.
+    /// </para>
+    /// </remarks>
+    public ServiceLocationPolicy ServiceLocationPolicy { get; set; } = ServiceLocationPolicy.AllowedButWarn;
 }

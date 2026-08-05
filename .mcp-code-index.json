@@ -22929,24 +22929,6 @@
       ]
     },
     {
-      "name": "WolverineHostReadiness",
-      "fqn": "Granit.Events.Wolverine.Internal.WolverineHostReadiness",
-      "kind": "class",
-      "project": "Granit.Events.Wolverine",
-      "file": "src/Granit.Events.Wolverine/Internal/WolverineHostReadiness.cs",
-      "line": 17,
-      "members": []
-    },
-    {
-      "name": "WolverineLocalEventBus",
-      "fqn": "Granit.Events.Wolverine.Internal.WolverineLocalEventBus",
-      "kind": "class",
-      "project": "Granit.Events.Wolverine",
-      "file": "src/Granit.Events.Wolverine/Internal/WolverineLocalEventBus.cs",
-      "line": 20,
-      "members": []
-    },
-    {
       "name": "BusinessException",
       "fqn": "Granit.Exceptions.BusinessException",
       "kind": "class",
@@ -44936,7 +44918,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/Options/GranitMigrateOptions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "CliFlag",
@@ -44949,6 +44931,12 @@
           "kind": "property",
           "signature": "string ConnectionStringName",
           "returnType": "string"
+        },
+        {
+          "name": "IsDistributedLockRequired",
+          "kind": "method",
+          "signature": "IsDistributedLockRequired(IHostEnvironment? environment)",
+          "returnType": "bool? RequireDistributedLock { get; set; } public bool"
         },
         {
           "name": "SeedAfterMigration",
@@ -45492,7 +45480,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/NullMigrationLock.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "TryAcquireAsync",
@@ -60705,7 +60693,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Extensions/WolverineHostApplicationBuilderExtensions.cs",
-      "line": 28,
+      "line": 27,
       "members": [
         {
           "name": "AddGranitWolverine",
@@ -60764,88 +60752,6 @@
       ]
     },
     {
-      "name": "WolverineCurrentUserService",
-      "fqn": "Granit.Wolverine.Internal.WolverineCurrentUserService",
-      "kind": "class",
-      "project": "Granit.Wolverine",
-      "file": "src/Granit.Wolverine/Internal/WolverineCurrentUserService.cs",
-      "line": 32,
-      "members": [
-        {
-          "name": "Change",
-          "kind": "method",
-          "signature": "Change(string? userId, ActorKind actorKind = ActorKind.User, Guid? apiKeyId = null)",
-          "returnType": "IDisposable"
-        },
-        {
-          "name": "UserId",
-          "kind": "property",
-          "signature": "string? UserId",
-          "returnType": "string?"
-        },
-        {
-          "name": "IsAuthenticated",
-          "kind": "property",
-          "signature": "bool IsAuthenticated",
-          "returnType": "bool"
-        },
-        {
-          "name": "UserName",
-          "kind": "property",
-          "signature": "string? UserName",
-          "returnType": "string?"
-        },
-        {
-          "name": "Email",
-          "kind": "property",
-          "signature": "string? Email",
-          "returnType": "string?"
-        },
-        {
-          "name": "FirstName",
-          "kind": "property",
-          "signature": "string? FirstName",
-          "returnType": "string?"
-        },
-        {
-          "name": "LastName",
-          "kind": "property",
-          "signature": "string? LastName",
-          "returnType": "string?"
-        },
-        {
-          "name": "GetRoles",
-          "kind": "method",
-          "signature": "GetRoles()",
-          "returnType": "IReadOnlyList<string>"
-        },
-        {
-          "name": "IsInRole",
-          "kind": "method",
-          "signature": "IsInRole(string role)",
-          "returnType": "bool"
-        },
-        {
-          "name": "ActorKind",
-          "kind": "property",
-          "signature": "ActorKind ActorKind",
-          "returnType": "ActorKind"
-        },
-        {
-          "name": "IsMachine",
-          "kind": "property",
-          "signature": "bool IsMachine",
-          "returnType": "bool"
-        },
-        {
-          "name": "ApiKeyId",
-          "kind": "property",
-          "signature": "Guid? ApiKeyId",
-          "returnType": "Guid?"
-        }
-      ]
-    },
-    {
       "name": "OutgoingContextMiddleware",
       "fqn": "Granit.Wolverine.Middleware.OutgoingContextMiddleware",
       "kind": "class",
@@ -60867,7 +60773,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Options/WolverineMessagingOptions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "FromSeconds",
@@ -60886,6 +60792,12 @@
           "kind": "property",
           "signature": "TypeLoadMode CodeGenerationMode",
           "returnType": "TypeLoadMode"
+        },
+        {
+          "name": "ServiceLocationPolicy",
+          "kind": "property",
+          "signature": "ServiceLocationPolicy ServiceLocationPolicy",
+          "returnType": "ServiceLocationPolicy"
         }
       ]
     },
