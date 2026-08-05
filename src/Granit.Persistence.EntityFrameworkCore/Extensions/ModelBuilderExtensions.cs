@@ -116,7 +116,6 @@ public static class ModelBuilderExtensions
         ICurrentTenant? currentTenant = null,
         IDataFilter? dataFilter = null)
     {
-        const bool registerConventionFilters = true;
         // FilterProxy wraps IDataFilter? and exposes simple boolean properties. KNOWN
         // LIMITATION (#3174): EF Core constant-folds property access on a non-DbContext
         // captured constant at plan compilation — the bypass never becomes a query
@@ -135,8 +134,7 @@ public static class ModelBuilderExtensions
             bool hasPublishable = typeof(IPublishable).IsAssignableFrom(clrType);
             bool hasMergeTombstone = typeof(IHasMergeTombstone).IsAssignableFrom(clrType);
 
-            if (!registerConventionFilters
-                || (!hasSoftDelete && !hasActive && !hasProcessingRestriction && !hasMultiTenant && !hasPublishable && !hasMergeTombstone))
+            if (!hasSoftDelete && !hasActive && !hasProcessingRestriction && !hasMultiTenant && !hasPublishable && !hasMergeTombstone)
             {
                 continue;
             }
@@ -204,7 +202,7 @@ public static class ModelBuilderExtensions
             typeof(ModelBuilderExtensions)
                 .GetMethod(nameof(ConfigureTranslation), BindingFlags.Static | BindingFlags.NonPublic)! // NOSONAR S3011 - intentional: generic EF Core convention pattern requires reflection
                 .MakeGenericMethod(clrType, parentType)
-                .Invoke(null, [modelBuilder, proxy, registerConventionFilters]);
+                .Invoke(null, [modelBuilder, proxy]);
         }
 
         // --- Value object conventions ---
@@ -697,10 +695,9 @@ public static class ModelBuilderExtensions
     // Also mirrors the parent's ISoftDeletable / IActive query filters onto the translation so
     // that EF Core's filter consistency check (required principal end with a global query filter)
     // is satisfied. Without these mirrors, EF Core warns that querying translations directly may
-    // return rows whose parent would be filtered out. `registerFilterMirrors` is false on the
-    // GranitDbContext path, which registers this-bound mirrors itself (#3174).
+    // return rows whose parent would be filtered out.
     private static void ConfigureTranslation<TTranslation, TParent>(
-        ModelBuilder modelBuilder, FilterProxy proxy, bool registerFilterMirrors)
+        ModelBuilder modelBuilder, FilterProxy proxy)
         where TTranslation : class, ITranslation<TParent>
         where TParent : Entity
     {
@@ -726,11 +723,6 @@ public static class ModelBuilderExtensions
         // matching filters on both ends of a required relationship when the principal end has
         // a global query filter. The filters navigate through the Parent reference so that
         // direct DbSet<TTranslation> queries apply the same visibility rules as the parent.
-        if (!registerFilterMirrors)
-        {
-            return;
-        }
-
         ParameterExpression param = Expression.Parameter(typeof(TTranslation), "t");
         MemberExpression parentProp = Expression.Property(param, nameof(ITranslation<TParent>.Parent));
         // Guard against a null navigation in the SQL expression tree (required FK in practice,
