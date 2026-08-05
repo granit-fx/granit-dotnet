@@ -28,7 +28,7 @@ public sealed class GranitDesignTimeTests
 
         entityType.GetDeclaredQueryFilters()
             .Any(f => f.Key == GranitFilterNames.MultiTenant)
-            .ShouldBeFalse("the IMultiTenant filter is gated on a non-null ICurrentTenant");
+            .ShouldBeFalse("plain DbContexts never get the tenant filter — GranitDbContext registers it");
     }
 
     [Fact]
@@ -71,14 +71,13 @@ internal sealed class NullStubsParityDbContext(DbContextOptions<NullStubsParityD
     public DbSet<ParityTenantEntity> Tenants => Set<ParityTenantEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
-        modelBuilder.ApplyGranitConventions(currentTenant: null, dataFilter: null);
+        modelBuilder.ApplyGranitConventions();
 }
 
+// The design-time factory pattern since #3162: a GranitDbContext derivative constructed with
+// the framework stubs — the tenant filter comes from the base class, never from a legacy call.
 internal sealed class DesignTimeStubsParityDbContext(DbContextOptions<DesignTimeStubsParityDbContext> options)
-    : DbContext(options)
+    : GranitDbContext(options, GranitDesignTime.CurrentTenant, GranitDesignTime.DataFilter)
 {
     public DbSet<ParityTenantEntity> Tenants => Set<ParityTenantEntity>();
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder) =>
-        modelBuilder.ApplyGranitConventions(GranitDesignTime.CurrentTenant, GranitDesignTime.DataFilter);
 }

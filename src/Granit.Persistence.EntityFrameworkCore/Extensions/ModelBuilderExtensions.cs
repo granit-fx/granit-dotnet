@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Granit.DataFiltering;
 using Granit.Domain;
-using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -78,11 +77,6 @@ public static class ModelBuilderExtensions
     /// </list>
     /// </summary>
     /// <param name="modelBuilder">The EF Core ModelBuilder.</param>
-    /// <param name="currentTenant">
-    /// Current tenant service. If <c>null</c>, the multi-tenant filter is not applied.
-    /// Pass the instance injected in the DbContext constructor for correct lazy evaluation
-    /// (re-evaluated on each query via AsyncLocal).
-    /// </param>
     /// <param name="dataFilter">
     /// Data filter service for service-level bypass (all queries in the current async flow).
     /// If <c>null</c>, all filters are always applied.
@@ -90,11 +84,10 @@ public static class ModelBuilderExtensions
     /// For single-query bypass, use <c>query.IgnoreQueryFilters([GranitFilterNames.SoftDelete])</c> instead.
     /// </param>
     /// <example>
-    /// At runtime, both services come from DI. From an
-    /// <see cref="Microsoft.EntityFrameworkCore.Design.IDesignTimeDbContextFactory{TContext}"/>
-    /// — where there is no container — pass the framework-provided stubs so that the model
-    /// snapshot encodes the same named query filters as the runtime model and EF Core 10 does
-    /// not raise <c>PendingModelChangesWarning</c>:
+    /// From an <see cref="Microsoft.EntityFrameworkCore.Design.IDesignTimeDbContextFactory{TContext}"/>
+    /// — where there is no container — pass the framework-provided stubs to the
+    /// <see cref="GranitDbContext"/> constructor so the model snapshot encodes the same named
+    /// query filters as the runtime model (no <c>PendingModelChangesWarning</c>):
     /// <code>
     /// return new MyDbContext(
     ///     options,
@@ -111,9 +104,8 @@ public static class ModelBuilderExtensions
     /// effect — per-query <c>IgnoreQueryFilters</c> works. The path is slated for removal in
     /// overhaul Phase 3 (#3147) when GranitDbContext becomes mandatory.
     /// </remarks>
-    public static ModelBuilder ApplyGranitConventions(
+    internal static ModelBuilder ApplyGranitConventions(
         this ModelBuilder modelBuilder,
-        ICurrentTenant? currentTenant = null,
         IDataFilter? dataFilter = null)
     {
         // FilterProxy wraps IDataFilter? and exposes simple boolean properties. KNOWN
@@ -129,19 +121,17 @@ public static class ModelBuilderExtensions
             bool hasSoftDelete = typeof(ISoftDeletable).IsAssignableFrom(clrType);
             bool hasActive = typeof(IActive).IsAssignableFrom(clrType);
             bool hasProcessingRestriction = typeof(IProcessingRestrictable).IsAssignableFrom(clrType);
-            bool hasMultiTenant = typeof(IMultiTenant).IsAssignableFrom(clrType)
-                && currentTenant is not null;
             bool hasPublishable = typeof(IPublishable).IsAssignableFrom(clrType);
             bool hasMergeTombstone = typeof(IHasMergeTombstone).IsAssignableFrom(clrType);
 
-            if (!hasSoftDelete && !hasActive && !hasProcessingRestriction && !hasMultiTenant && !hasPublishable && !hasMergeTombstone)
+            if (!hasSoftDelete && !hasActive && !hasProcessingRestriction && !hasPublishable && !hasMergeTombstone)
             {
                 continue;
             }
 
             SetEntityFilterMethod // NOSONAR S3011 - intentional: generic EF Core filter pattern requires reflection
                 .MakeGenericMethod(clrType)
-                .Invoke(null, [modelBuilder, currentTenant, proxy]);
+                .Invoke(null, [modelBuilder, proxy]);
         }
 
         // --- Concurrency token conventions ---
@@ -760,7 +750,6 @@ public static class ModelBuilderExtensions
     //   filter = bypass || real
     private static void SetEntityFilter<TEntity>(
         ModelBuilder modelBuilder,
-        ICurrentTenant? currentTenant,
         FilterProxy proxy)
         where TEntity : class
     {
@@ -794,17 +783,6 @@ public static class ModelBuilderExtensions
                 Expression.Property(param, nameof(IProcessingRestrictable.IsProcessingRestricted)));
             builder.HasQueryFilter(GranitFilterNames.ProcessingRestrictable,
                 Expression.Lambda<Func<TEntity, bool>>(Expression.OrElse(bypass, notRestricted), param));
-        }
-
-        if (typeof(IMultiTenant).IsAssignableFrom(typeof(TEntity)) && currentTenant is not null)
-        {
-            Expression bypass = Expression.Not(
-                Expression.Property(Expression.Constant(proxy), nameof(FilterProxy.MultiTenantEnabled)));
-            Expression tenantMatch = Expression.Equal(
-                Expression.Property(param, nameof(IMultiTenant.TenantId)),
-                Expression.Property(Expression.Constant(currentTenant), nameof(ICurrentTenant.Id)));
-            builder.HasQueryFilter(GranitFilterNames.MultiTenant,
-                Expression.Lambda<Func<TEntity, bool>>(Expression.OrElse(bypass, tenantMatch), param));
         }
 
         if (typeof(IPublishable).IsAssignableFrom(typeof(TEntity)))
@@ -870,7 +848,6 @@ public static class ModelBuilderExtensions
         public bool SoftDeleteEnabled => _dataFilter?.IsEnabled<ISoftDeletable>() ?? true;
         public bool ActiveEnabled => _dataFilter?.IsEnabled<IActive>() ?? true;
         public bool ProcessingRestrictableEnabled => _dataFilter?.IsEnabled<IProcessingRestrictable>() ?? true;
-        public bool MultiTenantEnabled => _dataFilter?.IsEnabled<IMultiTenant>() ?? true;
         public bool PublishableEnabled => _dataFilter?.IsEnabled<IPublishable>() ?? true;
         public bool MergeTombstoneEnabled => _dataFilter?.IsEnabled<IHasMergeTombstone>() ?? true;
     }

@@ -44612,15 +44612,8 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/ModelBuilderExtensions.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "ApplyGranitConventions",
-          "kind": "method",
-          "signature": "ApplyGranitConventions(this ModelBuilder modelBuilder, ICurrentTenant? currentTenant = null, IDataFilter? dataFilter = null)",
-          "returnType": "ModelBuilder"
-        }
-      ]
+      "line": 15,
+      "members": []
     },
     {
       "name": "PersistenceDbContextServiceCollectionExtensions",

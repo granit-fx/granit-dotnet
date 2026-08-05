@@ -9,10 +9,13 @@ namespace Granit.ArchitectureTests.Abstractions.Rules;
 public static partial class IsolatedDbContextRules
 {
     /// <summary>
-    /// Every file with a <c>protected override void OnModelCreating</c> override must call
-    /// <c>ApplyGranitConventions</c>.
+    /// Module contexts must not override <c>OnModelCreating</c>: since the granit-dotnet
+    /// #3159/#3162 overhaul, <c>GranitDbContext</c> owns the whole model pipeline (sealed
+    /// <c>OnModelCreating</c>) and module contexts override <c>OnGranitModelCreating</c>.
+    /// A raw override means the context escaped the base class — and it can no longer call
+    /// the now-internal <c>ApplyGranitConventions</c>, silently losing every Granit convention.
     /// </summary>
-    public static void OnModelCreatingShouldCallApplyGranitConventions(string srcDir, string repoRoot)
+    public static void ModuleContextsShouldNotOverrideOnModelCreating(string srcDir, string repoRoot)
     {
         List<string> violations = [];
 
@@ -21,12 +24,7 @@ public static partial class IsolatedDbContextRules
             foreach (string csFile in Directory.GetFiles(efProject, "*.cs", SearchOption.AllDirectories))
             {
                 string content = File.ReadAllText(csFile);
-                if (!OnModelCreatingOverride().IsMatch(content))
-                {
-                    continue;
-                }
-
-                if (!content.Contains("ApplyGranitConventions", StringComparison.Ordinal))
+                if (OnModelCreatingOverride().IsMatch(content))
                 {
                     violations.Add(Path.GetRelativePath(repoRoot, csFile));
                 }
@@ -34,18 +32,19 @@ public static partial class IsolatedDbContextRules
         }
 
         violations.ShouldBeEmpty(
-            "Every DbContext.OnModelCreating must call modelBuilder.ApplyGranitConventions(). " +
+            "Module contexts must derive GranitDbContext and override OnGranitModelCreating — " +
+            "a raw OnModelCreating override bypasses every Granit convention. " +
             $"Violators: {string.Join(", ", violations)}");
     }
 
     /// <summary>
-    /// Every concrete DbContext in <c>*.EntityFrameworkCore</c> packages must either inherit
-    /// from <c>GranitDbContext</c> (preferred) or carry an inline parameterised filter.
+    /// Every concrete DbContext in <c>*.EntityFrameworkCore</c> packages must inherit
+    /// <c>GranitDbContext</c> — the single conventions path since granit-dotnet #3162.
     /// </summary>
     /// <param name="srcDir">Path to the <c>src/</c> directory.</param>
     /// <param name="repoRoot">Repository root for relative-path display.</param>
     /// <param name="exemptedFileNames">File names explicitly exempt (e.g. framework-internal contexts).</param>
-    public static void DbContextClassesShouldUseGranitDbContextOrInlineFilter(
+    public static void DbContextClassesShouldDeriveFromGranitDbContext(
         string srcDir,
         string repoRoot,
         IReadOnlySet<string>? exemptedFileNames = null)
@@ -71,10 +70,7 @@ public static partial class IsolatedDbContextRules
                     continue;
                 }
 
-                bool inheritsGranitDbContext = content.Contains(": GranitDbContext", StringComparison.Ordinal);
-                bool implementsInlineFilter = content.Contains("ConfigureMultiTenantFilter", StringComparison.Ordinal);
-
-                if (!inheritsGranitDbContext && !implementsInlineFilter)
+                if (!content.Contains(": GranitDbContext", StringComparison.Ordinal))
                 {
                     violations.Add(Path.GetRelativePath(repoRoot, csFile));
                 }
@@ -82,8 +78,8 @@ public static partial class IsolatedDbContextRules
         }
 
         violations.ShouldBeEmpty(
-            "Every concrete *DbContext.cs must inherit GranitDbContext or replicate its " +
-            "parameterised IMultiTenant filter inline. " +
+            "Every concrete *DbContext.cs must inherit GranitDbContext — it owns the tenant " +
+            "filter, the named convention filters, and the native convention engine. " +
             $"Violators: {string.Join(", ", violations)}");
     }
 
