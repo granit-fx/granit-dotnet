@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <!-- Exclude from dotnet test in CI unit-test job (requires SQL Server Testcontainer). -->
+    <IsTestProject Condition="'$(SkipIntegrationTests)' == 'true'">false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Testcontainers.MsSql" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.Testing.Persistence\Granit.Testing.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore.SqlServer\Granit.Persistence.EntityFrameworkCore.SqlServer.csproj" />
+  </ItemGroup>
+
+</Project>

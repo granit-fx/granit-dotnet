@@ -259,14 +259,6 @@
           "xunit.v3.runner.inproc.console": "[3.2.2]"
         }
       },
-      "xunit.v3.extensibility.core": {
-        "type": "Transitive",
-        "resolved": "3.2.2",
-        "contentHash": "srY8z/oMPvh/t8axtO2DwrHajhFMH7tnqKildvYrVQIfICi8fOn3yIBWkVPAcrKmHMwvXRJ/XsQM3VMR6DOYfQ==",
-        "dependencies": {
-          "xunit.v3.common": "[3.2.2]"
-        }
-      },
       "xunit.v3.mtp-v1": {
         "type": "Transitive",
         "resolved": "3.2.2",
@@ -564,6 +556,15 @@
         "requested": "[0.5.*, )",
         "resolved": "0.5.7",
         "contentHash": "3Rv5cxSyk6O3xzuSdYja1IxL+39AzJMeF4u0qzsKnxPvYMTHJ6L3AQ0HbTfhOIVOcu64pbwkW2cm/FbQ+QXc+Q=="
+      },
+      "xunit.v3.extensibility.core": {
+        "type": "CentralTransitive",
+        "requested": "[3.2.*, )",
+        "resolved": "3.2.2",
+        "contentHash": "srY8z/oMPvh/t8axtO2DwrHajhFMH7tnqKildvYrVQIfICi8fOn3yIBWkVPAcrKmHMwvXRJ/XsQM3VMR6DOYfQ==",
+        "dependencies": {
+          "xunit.v3.common": "[3.2.2]"
+        }
       },
       "ZiggyCreatures.FusionCache": {
         "type": "CentralTransitive",

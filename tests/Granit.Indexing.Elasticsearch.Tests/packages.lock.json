@@ -231,14 +231,6 @@
           "xunit.v3.runner.inproc.console": "[3.2.2]"
         }
       },
-      "xunit.v3.extensibility.core": {
-        "type": "Transitive",
-        "resolved": "3.2.2",
-        "contentHash": "srY8z/oMPvh/t8axtO2DwrHajhFMH7tnqKildvYrVQIfICi8fOn3yIBWkVPAcrKmHMwvXRJ/XsQM3VMR6DOYfQ==",
-        "dependencies": {
-          "xunit.v3.common": "[3.2.2]"
-        }
-      },
       "xunit.v3.mtp-v1": {
         "type": "Transitive",
         "resolved": "3.2.2",
@@ -420,8 +412,8 @@
       "Elastic.Clients.Elasticsearch": {
         "type": "CentralTransitive",
         "requested": "[9.*, )",
-        "resolved": "9.4.2",
-        "contentHash": "sMzOK9HgGqlSBjmX2ad88vDLQ0ySWXi4bYGe9T6xHVmhz41ikRYZ8G0VgkOYmRGgVwpkvupGDFztF+6KyPiYEw==",
+        "resolved": "9.5.0",
+        "contentHash": "i2Kqz6ha0fwpxrMVyxd+8qJaW9eBQnQ8slQvbNPmAbSYzDgXx0h/26nwA2a6WubTcE6Fdxpnc2t7CvD8gCsRIA==",
         "dependencies": {
           "Elastic.Esql": "0.11.0",
           "Elastic.Transport": "0.17.1"
@@ -430,8 +422,8 @@
       "Microsoft.Extensions.AI.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.8.1",
-        "contentHash": "dgFfXqIdC1up7q0emi58np/iJFZskNKSgs7rT3G94c0K5L18FH0Vjf9JMgCdlxPaNBuG4AJSCYESJd5WenY8Nw=="
+        "resolved": "10.8.3",
+        "contentHash": "K0B05oApxmviWalNHPMBBcRC7erKiDATz3ENNR/jqTR9JwIwLRefgDhj2jCRwL1aca99pXUe0qyQC73/xIuZig=="
       },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "CentralTransitive",
@@ -514,6 +506,15 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.10",
           "Microsoft.Extensions.Options": "10.0.10",
           "Microsoft.Extensions.Primitives": "10.0.10"
+        }
+      },
+      "xunit.v3.extensibility.core": {
+        "type": "CentralTransitive",
+        "requested": "[3.2.*, )",
+        "resolved": "3.2.2",
+        "contentHash": "srY8z/oMPvh/t8axtO2DwrHajhFMH7tnqKildvYrVQIfICi8fOn3yIBWkVPAcrKmHMwvXRJ/XsQM3VMR6DOYfQ==",
+        "dependencies": {
+          "xunit.v3.common": "[3.2.2]"
         }
       },
       "ZiggyCreatures.FusionCache": {

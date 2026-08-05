@@ -102,12 +102,14 @@ public abstract class TenantIsolationConformanceSuite(IRelationalConformanceFixt
 
         await using ConformanceDbContext db = await harness.CreateContextAsync();
 
-        // ToQueryString prefixes the SQL with `-- @param='value'` declaration comments; the
-        // assertion targets the statement body only (a parameter VALUE in the debug header is
+        // ToQueryString prefixes the SQL with parameter declarations — `-- @param='value'`
+        // comments on PostgreSQL, `DECLARE @param type = 'value';` statements on SQL Server.
+        // The assertion targets the statement body only (a parameter VALUE in the preamble is
         // fine — a literal in the WHERE clause is the leak).
         string sql = string.Join('\n', db.Orders.ToQueryString()
             .Split('\n')
-            .Where(line => !line.StartsWith("--", StringComparison.Ordinal)));
+            .Where(line => !line.StartsWith("--", StringComparison.Ordinal)
+                && !line.StartsWith("DECLARE ", StringComparison.OrdinalIgnoreCase)));
 
         // The tenant value must reach SQL as a re-bound parameter (@ef_filter__*). An inlined
         // literal means the first request's tenant is frozen into the cached plan — the exact

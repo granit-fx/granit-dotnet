@@ -64,8 +64,8 @@
       },
       "JasperFx": {
         "type": "Transitive",
-        "resolved": "2.34.0",
-        "contentHash": "Gz4X/TqINK1PRua8xDJL9kjVRiaO6Am9/HF/QW6ukQm37VwNo+48eEs1Gp08Ytsqbxm4l8ExjXDZgSqf961nNQ==",
+        "resolved": "2.39.5",
+        "contentHash": "eQ12XJ52Jn6dsv81ZhQV5xlkv2WkZ1RX2gTfKs6ZHGDN43HWkXmOPsSRyg3u1362JKygmUoAhKYBPIA+xafdvg==",
         "dependencies": {
           "FastExpressionCompiler": "5.4.1",
           "ImTools": "4.0.0",
@@ -80,16 +80,16 @@
       },
       "JasperFx.Events": {
         "type": "Transitive",
-        "resolved": "2.34.0",
-        "contentHash": "zhoYyoMK76o9JFuaOJI1J+MuOFsEKnsk8BAjXBhAYGt9i8mwYaw8WuKJAjqqmO6UormfrNlQcrKaHdyhrwoBBw==",
+        "resolved": "2.39.5",
+        "contentHash": "5paUYfqY5EqAZi5zUNyUFd4h0o7s1s6JyAwWZkk4IwH/xtfI15wjboZvg4nQbDVVj8D0YfRNEGh+1903NkV3Mw==",
         "dependencies": {
-          "JasperFx": "2.34.0"
+          "JasperFx": "2.39.5"
         }
       },
       "JasperFx.SourceGenerator": {
         "type": "Transitive",
-        "resolved": "2.34.0",
-        "contentHash": "vnMSAinr6gB3NAQQRimsEQKSXDWicenEs2kSBLyxpjYDwnyi4MmcrONdH0yXqsnQkRtkx2jg009gMxli6taoSw=="
+        "resolved": "2.39.5",
+        "contentHash": "/rhOqmr0+a7MyhtDshu5FJmjrRioGOwwss3xzNOTIKvJIRGGYeKzZDLtr8aH4xVUTg4OTs5lpUqvKlYG984jFA=="
       },
       "Microsoft.Bcl.TimeProvider": {
         "type": "Transitive",
@@ -622,12 +622,12 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.22.0",
-        "contentHash": "h8slzaCBXXz2sW+zQXs3bSuxbqLRZTvZGst0m0itpSP0+TRI7QwRyt3hx8vEpH37gi/qWNOefrJVjkZRP23P/Q==",
+        "resolved": "6.24.6",
+        "contentHash": "yoqNP5csLygJA1DHe0Jhbs2O8W7CgNmuaSMISOioVpcCG0/Ca1TWY4X3UCRrfxklJOllqn04KmBMmELWZQpPTw==",
         "dependencies": {
-          "JasperFx": "2.34.0",
-          "JasperFx.Events": "2.34.0",
-          "JasperFx.SourceGenerator": "2.34.0",
+          "JasperFx": "2.39.5",
+          "JasperFx.Events": "2.39.5",
+          "JasperFx.SourceGenerator": "2.39.5",
           "Microsoft.Extensions.Caching.Memory": "10.0.0",
           "Microsoft.Extensions.Configuration": "10.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "10.0.0",

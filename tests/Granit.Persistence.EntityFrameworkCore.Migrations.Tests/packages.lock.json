@@ -86,12 +86,12 @@
       "WolverineFx": {
         "type": "Direct",
         "requested": "[6.*, )",
-        "resolved": "6.24.5",
-        "contentHash": "62AIhoUcf6PacYyHwzh0f9z+Rrm55ef+OA7WxzozauOTSBh8DtinxIk3DdrVt95e94CgCcgPAA3eNexUcDmNCQ==",
+        "resolved": "6.24.6",
+        "contentHash": "yoqNP5csLygJA1DHe0Jhbs2O8W7CgNmuaSMISOioVpcCG0/Ca1TWY4X3UCRrfxklJOllqn04KmBMmELWZQpPTw==",
         "dependencies": {
-          "JasperFx": "2.37.0",
-          "JasperFx.Events": "2.37.0",
-          "JasperFx.SourceGenerator": "2.37.0",
+          "JasperFx": "2.39.5",
+          "JasperFx.Events": "2.39.5",
+          "JasperFx.SourceGenerator": "2.39.5",
           "Microsoft.Extensions.Caching.Memory": "10.0.0",
           "Microsoft.Extensions.Configuration": "10.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "10.0.0",
@@ -107,11 +107,11 @@
       "WolverineFx.RuntimeCompilation": {
         "type": "Direct",
         "requested": "[6.*, )",
-        "resolved": "6.24.5",
-        "contentHash": "E6MmOboTAfuyUel4yPNJ8J6oyob0Arsia0JyDTk2/y9Y9gTkKkbohi3Nll2e4IWt4iHerWM2wwbUEOaHLtVAkQ==",
+        "resolved": "6.24.6",
+        "contentHash": "3m4pglGvvEgXtNrFEkNyGLGH+4ZQInrt7tz8k2c6X2M5aeMul64zCBGswq+KSXYT1JWyVETliSnnST4SSwo5Gg==",
         "dependencies": {
           "JasperFx.RuntimeCompiler": "5.0.0",
-          "WolverineFx": "6.24.5"
+          "WolverineFx": "6.24.6"
         }
       },
       "xunit.runner.visualstudio": {
@@ -168,8 +168,8 @@
       },
       "JasperFx": {
         "type": "Transitive",
-        "resolved": "2.37.0",
-        "contentHash": "ruclAZLxWdm5njtCp9l4EVTsYPOzQu50iaCRfC/pl/ZhF7jfBGH1J7lZYC8EiAW2UYoDFd//B+Xh8wUrEaLtoA==",
+        "resolved": "2.39.5",
+        "contentHash": "eQ12XJ52Jn6dsv81ZhQV5xlkv2WkZ1RX2gTfKs6ZHGDN43HWkXmOPsSRyg3u1362JKygmUoAhKYBPIA+xafdvg==",
         "dependencies": {
           "FastExpressionCompiler": "5.4.1",
           "ImTools": "4.0.0",
@@ -184,10 +184,10 @@
       },
       "JasperFx.Events": {
         "type": "Transitive",
-        "resolved": "2.37.0",
-        "contentHash": "DHThtg0wDQ+qmnUp4INm/uZPL6b2ONp1Vd1+KuGiZDTyfJ1kTtNsHgnNqqh5bkmLbNMej6c1HD/P+LBPloB7Ug==",
+        "resolved": "2.39.5",
+        "contentHash": "5paUYfqY5EqAZi5zUNyUFd4h0o7s1s6JyAwWZkk4IwH/xtfI15wjboZvg4nQbDVVj8D0YfRNEGh+1903NkV3Mw==",
         "dependencies": {
-          "JasperFx": "2.37.0"
+          "JasperFx": "2.39.5"
         }
       },
       "JasperFx.RuntimeCompiler": {
@@ -204,8 +204,8 @@
       },
       "JasperFx.SourceGenerator": {
         "type": "Transitive",
-        "resolved": "2.37.0",
-        "contentHash": "LYjI7ywQV1kmBpKd7guy3XBIJB5Zy9IO1ZFCJ7gbFkaWRP+4XsZwoddokDwK8QZhma3fOjWBv4goGXDkyhs9Xw=="
+        "resolved": "2.39.5",
+        "contentHash": "/rhOqmr0+a7MyhtDshu5FJmjrRioGOwwss3xzNOTIKvJIRGGYeKzZDLtr8aH4xVUTg4OTs5lpUqvKlYG984jFA=="
       },
       "Microsoft.ApplicationInsights": {
         "type": "Transitive",
@@ -732,14 +732,6 @@
           "xunit.v3.runner.inproc.console": "[3.2.2]"
         }
       },
-      "xunit.v3.extensibility.core": {
-        "type": "Transitive",
-        "resolved": "3.2.2",
-        "contentHash": "srY8z/oMPvh/t8axtO2DwrHajhFMH7tnqKildvYrVQIfICi8fOn3yIBWkVPAcrKmHMwvXRJ/XsQM3VMR6DOYfQ==",
-        "dependencies": {
-          "xunit.v3.common": "[3.2.2]"
-        }
-      },
       "xunit.v3.mtp-v1": {
         "type": "Transitive",
         "resolved": "3.2.2",
@@ -1006,6 +998,15 @@
         "requested": "[9.*, )",
         "resolved": "9.0.0",
         "contentHash": "iri00l/zIX9g4lHMY+Nz0qV1n40+jFYAmgsaiNn16xvt2RDwlqByNG4wgblagnDYxm3YSQQ0jLlC/7Xlk9CzyA=="
+      },
+      "xunit.v3.extensibility.core": {
+        "type": "CentralTransitive",
+        "requested": "[3.2.*, )",
+        "resolved": "3.2.2",
+        "contentHash": "srY8z/oMPvh/t8axtO2DwrHajhFMH7tnqKildvYrVQIfICi8fOn3yIBWkVPAcrKmHMwvXRJ/XsQM3VMR6DOYfQ==",
+        "dependencies": {
+          "xunit.v3.common": "[3.2.2]"
+        }
       }
     }
   }

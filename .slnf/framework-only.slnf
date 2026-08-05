@@ -425,6 +425,7 @@
       "tests/Granit.Persistence.EntityFrameworkCore.Hosting.Tests/Granit.Persistence.EntityFrameworkCore.Hosting.Tests.csproj",
       "tests/Granit.Persistence.EntityFrameworkCore.Migrations.Tests/Granit.Persistence.EntityFrameworkCore.Migrations.Tests.csproj",
       "tests/Granit.Persistence.EntityFrameworkCore.Postgres.Tests/Granit.Persistence.EntityFrameworkCore.Postgres.Tests.csproj",
+      "tests/Granit.Persistence.EntityFrameworkCore.SqlServer.Tests.Integration/Granit.Persistence.EntityFrameworkCore.SqlServer.Tests.Integration.csproj",
       "tests/Granit.Persistence.EntityFrameworkCore.SqlServer.Tests/Granit.Persistence.EntityFrameworkCore.SqlServer.Tests.csproj",
       "tests/Granit.Persistence.EntityFrameworkCore.Tests/Granit.Persistence.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Persistence.Tests/Granit.Persistence.Tests.csproj",

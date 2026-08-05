@@ -660,6 +660,7 @@
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Migrations.Tests/Granit.Persistence.EntityFrameworkCore.Migrations.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Postgres.Tests/Granit.Persistence.EntityFrameworkCore.Postgres.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.SqlServer.Tests/Granit.Persistence.EntityFrameworkCore.SqlServer.Tests.csproj" />
+    <Project Path="tests/Granit.Persistence.EntityFrameworkCore.SqlServer.Tests.Integration/Granit.Persistence.EntityFrameworkCore.SqlServer.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Tests/Granit.Persistence.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Tests/Granit.Persistence.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.BackgroundJobs.Tests/Granit.Webhooks.BackgroundJobs.Tests.csproj" />

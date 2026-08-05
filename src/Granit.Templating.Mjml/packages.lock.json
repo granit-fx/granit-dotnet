@@ -11,11 +11,11 @@
       "Mjml.Net": {
         "type": "Direct",
         "requested": "[4.*, )",
-        "resolved": "4.11.0",
-        "contentHash": "DCKiojf/UOZ48d7Z6vD9gfXOlT81NMZqqpraDUQJZ1Ykcop/D8BmPhCYY6vWYI8rZbDd4Vepy0bb1EmoSvbEGA==",
+        "resolved": "4.14.0",
+        "contentHash": "eMafQratNn6b6fp16ocTPCC3NzrdCAy1pj7n/eQMxF9iS5n8AKCRoAWl2kPZ3YOhBvRU1hDdTK2ouQM2o4rfeg==",
         "dependencies": {
           "HtmlPerformanceKit": "1.0.0",
-          "Microsoft.Extensions.ObjectPool": "9.0.0"
+          "Microsoft.Extensions.ObjectPool": "10.0.10"
         }
       },
       "Roslynator.Analyzers": {
@@ -31,8 +31,8 @@
       },
       "Microsoft.Extensions.ObjectPool": {
         "type": "Transitive",
-        "resolved": "9.0.0",
-        "contentHash": "UbsU/gYe4nv1DeqMXIVzDfNNek7Sk2kKuAOXL/Y+sLcAR0HwFUqzg1EPiU88jeHNe0g81aPvvHbvHarQr3r9IA=="
+        "resolved": "10.0.10",
+        "contentHash": "Tx0R6PY9MNSh0mDKSxbpHLuuec93IxF1cel+1ithQnMNr/vbfLSSHOQHGHIppAJCGfPcEo/wO1Ylj+QpXtzo3A=="
       },
       "Microsoft.Extensions.Primitives": {
         "type": "Transitive",
