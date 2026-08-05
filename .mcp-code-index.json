@@ -44680,7 +44680,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/GranitDbContext.cs",
-      "line": 48,
+      "line": 49,
       "members": [
         {
           "name": "IsMultiTenantFilterEnabled",

@@ -239,6 +239,20 @@ public static class ModelBuilderExtensions
         return modelBuilder;
     }
 
+    /// <summary>
+    /// Value-object trio only (QueryableValueObject mappings, phantom removal, SVO/JSON
+    /// converters) — the passes not yet nativized as EF Core conventions. Called by
+    /// <see cref="GranitDbContext"/> in native-conventions mode (#3158) while the other
+    /// passes run as <c>IModelFinalizingConvention</c>s; disappears with the flip (#3159).
+    /// </summary>
+    internal static ModelBuilder ApplyGranitValueObjectPasses(this ModelBuilder modelBuilder)
+    {
+        ApplyQueryableValueObjectMappings(modelBuilder);
+        RemoveValueObjectEntityTypes(modelBuilder);
+        ApplySingleValueObjectConverters(modelBuilder);
+        return modelBuilder;
+    }
+
     // Adds an automatic composite index on (TenantId, OwnerId) for IOwnable + IMultiTenant
     // entities, or on (OwnerId) alone otherwise. Uses the Fluent API
     // modelBuilder.Entity(...).HasIndex(...) rather than the low-level

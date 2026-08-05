@@ -3,6 +3,7 @@ using System.Reflection;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore.Conventions;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -193,13 +194,21 @@ public abstract class GranitDbContext : DbContext
             }
         }
 
-        // 3) Non-filter conventions: concurrency + merge tombstone columns + ownership
-        //    indexes + translation FKs + enum-as-string + SVO entity removal & converters.
-        //    `currentTenant: null` skips the IMultiTenant block; `registerConventionFilters:
-        //    false` skips the proxy-based named filters — this class owns ALL filters,
-        //    with parameterised bypass flags (steps 2 / 2-bis). Runs LAST so the SVO
-        //    cleanup is the final pass over the model surface.
-        modelBuilder.ApplyGranitConventionsCore(currentTenant: null, DataFilter, registerConventionFilters: false);
+        // 3) Non-filter conventions. `currentTenant: null` skips the IMultiTenant block;
+        //    `registerConventionFilters: false` skips the proxy-based named filters — this
+        //    class owns ALL filters, with parameterised bypass flags (steps 2 / 2-bis).
+        //    Runs LAST so the SVO cleanup is the final pass over the model surface.
+        //    Native-conventions mode (#3158, test-gated): the scalar passes run as
+        //    IModelFinalizingConventions (see OnGranitConfigureConventionsCore) and only
+        //    the value-object trio still executes here.
+        if (GranitNativeConventions.Enabled)
+        {
+            modelBuilder.ApplyGranitValueObjectPasses();
+        }
+        else
+        {
+            modelBuilder.ApplyGranitConventionsCore(currentTenant: null, DataFilter, registerConventionFilters: false);
+        }
 
         // 4) External, opt-in model extensions registered in DI by separate packages — applied LAST so they
         //    get the final say (after conventions). Lets e.g. a PostGIS package add a generated geography
@@ -241,6 +250,39 @@ public abstract class GranitDbContext : DbContext
     /// conventions on either side.
     /// </summary>
     protected virtual void OnGranitModelCreating(ModelBuilder modelBuilder)
+    {
+        // No-op by default.
+    }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Sealed for the same ordering reasons as <see cref="OnModelCreating"/>. In
+    /// native-conventions mode (#3158, test-gated) the scalar Granit passes (enum-as-string,
+    /// concurrency stamp, merge tombstone, ownership indexes, translation config) run as
+    /// <c>IModelFinalizingConvention</c>s. Derived contexts extend via
+    /// <see cref="OnGranitConfigureConventions"/>.
+    /// </remarks>
+    protected sealed override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+
+        if (GranitNativeConventions.Enabled)
+        {
+            configurationBuilder.Conventions.Add(_ => new GranitEnumStringConvention());
+            configurationBuilder.Conventions.Add(_ => new GranitConcurrencyStampConvention());
+            configurationBuilder.Conventions.Add(_ => new GranitMergeTombstoneConvention());
+            configurationBuilder.Conventions.Add(_ => new GranitOwnershipIndexConvention());
+            configurationBuilder.Conventions.Add(_ => new GranitTranslationConvention());
+        }
+
+        OnGranitConfigureConventions(configurationBuilder);
+    }
+
+    /// <summary>
+    /// Override point for derived classes that need additional model-configuration
+    /// conventions; the Granit set is always registered first.
+    /// </summary>
+    protected virtual void OnGranitConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         // No-op by default.
     }

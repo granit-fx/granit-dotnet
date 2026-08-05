@@ -20,6 +20,7 @@ namespace Granit.ArchitectureTests;
 /// GRANIT_MODEL_SNAPSHOTS=regen dotnet test tests/Granit.ArchitectureTests --filter ModelSnapshot
 /// </code>
 /// </summary>
+[Collection(ModelSnapshotSerialGroup.Name)]
 public sealed class ModelSnapshotTests
 {
     private const string RegenEnvVar = "GRANIT_MODEL_SNAPSHOTS";
@@ -121,9 +122,9 @@ public sealed class ModelSnapshotTests
 
     // ── Harness ─────────────────────────────────────────────────────────
 
-    private static string BuildSnapshot(Type contextType)
+    internal static string BuildSnapshot(Type contextType, bool freshInternalServices = false)
     {
-        using DbContext context = CreateContext(contextType);
+        using DbContext context = CreateContext(contextType, freshInternalServices);
 
         // ToDebugString prints only the query-filter collection TYPE, not the expressions —
         // and the named filters are half the convention surface Phase 2 must keep identical.
@@ -148,13 +149,21 @@ public sealed class ModelSnapshotTests
         return Normalize(snapshot.ToString());
     }
 
-    private static DbContext CreateContext(Type contextType)
+    private static DbContext CreateContext(Type contextType, bool freshInternalServices = false)
     {
         var optionsBuilder = (DbContextOptionsBuilder)Activator.CreateInstance(
             typeof(DbContextOptionsBuilder<>).MakeGenericType(contextType))!;
         optionsBuilder
             .UseNpgsql("Host=snapshot;Database=snapshot;Username=snapshot;Password=snapshot")
             .ConfigureWarnings(w => w.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning));
+
+        if (freshInternalServices)
+        {
+            // Parity dual-builds flip a process-global switch between two builds of the SAME
+            // context type: a shared internal service provider would serve the first build's
+            // cached model to the second. A fresh provider isolates each build.
+            optionsBuilder.EnableServiceProviderCaching(false);
+        }
 
         ConstructorInfo constructor = contextType
             .GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
@@ -232,7 +241,7 @@ public sealed class ModelSnapshotTests
         public string? Decrypt(string cipherText) => cipherText;
     }
 
-    private static IEnumerable<Type> EnumerateContextTypes() =>
+    internal static IEnumerable<Type> EnumerateContextTypes() =>
         Directory.EnumerateFiles(AppContext.BaseDirectory, "Granit.*.dll")
             .Select(Path.GetFileNameWithoutExtension)
             .Order(StringComparer.Ordinal)
