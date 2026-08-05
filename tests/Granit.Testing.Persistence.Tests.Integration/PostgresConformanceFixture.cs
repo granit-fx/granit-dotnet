@@ -20,6 +20,12 @@ public sealed class PostgresConformanceFixture : IRelationalConformanceFixture, 
     /// <inheritdoc/>
     public string ProviderName => "PostgreSQL";
 
+    /// <summary>
+    /// Raw connection string — used by provider-specific tests that need direct SQL access
+    /// (e.g. simulating a legacy-version lock holder in the key-transition tests).
+    /// </summary>
+    public string ConnectionString => _container.GetConnectionString();
+
     /// <inheritdoc/>
     public void UseProvider(DbContextOptionsBuilder builder) =>
         builder.UseNpgsql(_container.GetConnectionString());

@@ -9,8 +9,10 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations;
 /// <c>AddGranitMigrateSupport()</c>. Provider packages (<c>AddGranitPostgres()</c>,
 /// <c>AddGranitSqlServer()</c>) replace it with a real distributed lock regardless of
 /// registration order. When this implementation is resolved outside the Development
-/// environment, <c>GranitPersistenceEntityFrameworkCoreMigrationsModule</c> logs a Warning:
-/// concurrent replicas would migrate unguarded.
+/// environment, <c>GranitPersistenceEntityFrameworkCoreMigrationsModule</c> logs a Warning
+/// at startup, and the migration runner <b>refuses to run</b> (exit code 1) unless
+/// <c>Persistence:Migrate:RequireDistributedLock</c> is explicitly <c>false</c> —
+/// concurrent replicas would otherwise migrate unguarded.
 /// </remarks>
 public sealed class NullMigrationLock : IGranitMigrationLock
 {

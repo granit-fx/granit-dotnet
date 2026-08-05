@@ -44936,7 +44936,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/Options/GranitMigrateOptions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "CliFlag",
@@ -44949,6 +44949,12 @@
           "kind": "property",
           "signature": "string ConnectionStringName",
           "returnType": "string"
+        },
+        {
+          "name": "IsDistributedLockRequired",
+          "kind": "method",
+          "signature": "IsDistributedLockRequired(IHostEnvironment? environment)",
+          "returnType": "bool? RequireDistributedLock { get; set; } public bool"
         },
         {
           "name": "SeedAfterMigration",
@@ -45492,7 +45498,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/NullMigrationLock.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "TryAcquireAsync",

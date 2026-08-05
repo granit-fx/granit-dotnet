@@ -373,6 +373,50 @@ public sealed class GranitMigrationRunnerTests
     }
 
     // -------------------------------------------------------------------------
+    // Fail-closed — NullMigrationLock refuses to run when a lock is required
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task RunAsync_ReturnsOne_WhenNullMigrationLockAndLockRequired()
+    {
+        // Default outside Development (no environment info = production assumption):
+        // running with the no-op fallback lock would let N replicas migrate concurrently.
+        GranitMigrationRunner runner = CreateRunner(
+            BuildApplicationWithModules(new NonMigratableModule()),
+            BuildScopeFactory(),
+            new NullMigrationLock());
+
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.ResumeBatches, TestContext.Current.CancellationToken);
+
+        exitCode.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task RunAsync_ProceedsWithNullMigrationLock_WhenExplicitlyNotRequired()
+    {
+        IMigrationBatchResumer resumer = Substitute.For<IMigrationBatchResumer>();
+        resumer.ResumeAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(0));
+
+        GranitMigrationRunner runner = CreateRunner(
+            BuildApplicationWithModules(new NonMigratableModule()),
+            BuildScopeFactory(),
+            new NullMigrationLock(),
+            new GranitMigrateOptions
+            {
+                RequireDistributedLock = false,
+                Timeout = TimeSpan.FromSeconds(30),
+            },
+            batchResumer: resumer);
+
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.ResumeBatches, TestContext.Current.CancellationToken);
+
+        exitCode.ShouldBe(0);
+        await resumer.Received(1).ResumeAsync(Arg.Any<CancellationToken>());
+    }
+
+    // -------------------------------------------------------------------------
     // Discovery — generic + non-generic IMigratableModule paths
     // -------------------------------------------------------------------------
 
