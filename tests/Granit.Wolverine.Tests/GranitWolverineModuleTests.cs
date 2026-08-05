@@ -171,14 +171,26 @@ public sealed class GranitWolverineModuleTests
     }
 
     [Fact]
-    public void AddGranitWolverine_SetsServiceLocationPolicy_NotAllowed()
+    public void AddGranitWolverine_DefaultsServiceLocationPolicy_AllowedButWarn()
     {
-        // ServiceLocationPolicy.NotAllowed aborts `codegen write` when a chain dependency can't
-        // be inlined. The three previously-problematic registrations are now codegen-clean:
-        // ICurrentUserService + IWolverineUserContextSetter use direct AddScoped<IFoo, TConcrete>
-        // (no lambda factory), and the internal INotificationPublisher impls are reachable via
-        // InternalsVisibleTo "WolverineHandlers" — so NotAllowed is restored for fail-fast codegen.
+        // Consumer Static builds compile generated sources into the host assembly, which no
+        // framework InternalsVisibleTo grant can name — internal concretes reachable from
+        // handler chains then require service location, and a NotAllowed default would abort
+        // `codegen write` for every consumer. Permissive default; strict is opt-in below.
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+        builder.AddGranitWolverine();
+
+        ResolveWolverineOptions(builder).ServiceLocationPolicy
+            .ShouldBe(ServiceLocationPolicy.AllowedButWarn);
+    }
+
+    [Fact]
+    public void AddGranitWolverine_ServiceLocationPolicy_IsConfigurable()
+    {
+        // First-party hosts whose whole handler graph can be inlined opt back into
+        // fail-fast codegen via "Wolverine:ServiceLocationPolicy".
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+        builder.Configuration["Wolverine:ServiceLocationPolicy"] = "NotAllowed";
         builder.AddGranitWolverine();
 
         ResolveWolverineOptions(builder).ServiceLocationPolicy
