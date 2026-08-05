@@ -1,6 +1,6 @@
 using Granit.Domain;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Testing.EntityFrameworkCore.Extensions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -120,18 +120,17 @@ public sealed class DbContextOptionsBuilderTestExtensionsTests : IAsyncLifetime
         }
     }
 
+    // GranitDbContext owns the parameterised multi-tenant filter — the single supported
+    // path since ApplyGranitConventions was internalized (#3162). A null tenant maps to
+    // NullTenantContext (IsAvailable = false → CurrentTenantId null).
     private sealed class MultiTenantTestDbContext(
         DbContextOptions<MultiTenantTestDbContext> options,
-        ICurrentTenant? currentTenant) : DbContext(options)
+        ICurrentTenant? currentTenant)
+        : GranitDbContext(options, currentTenant ?? new NullTenantContext())
     {
-        private readonly ICurrentTenant? _currentTenant = currentTenant;
-
         public DbSet<TenantItem> Items => Set<TenantItem>();
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<TenantItem>().Property(e => e.Id).ValueGeneratedNever();
-            modelBuilder.ApplyGranitConventions(_currentTenant, dataFilter: null);
-        }
+        protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
+            => modelBuilder.Entity<TenantItem>().Property(e => e.Id).ValueGeneratedNever();
     }
 }

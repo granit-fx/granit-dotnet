@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Granit.Domain;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine.EntityFrameworkCore.Internal;
 using Granit.QueryEngine.Filtering;
 using Microsoft.Data.Sqlite;
@@ -82,9 +83,11 @@ public sealed class QueryableValueObjectJsonStorageTests : IDisposable
         public Slug? Slug { get; set; }
     }
 
-    private sealed class PageCtx(DbContextOptions<PageCtx> options) : DbContext(options)
+    // GranitDbContext applies the Granit conventions (the [QueryableValueObject] JSON
+    // mapping included) — the single supported path since #3162.
+    private sealed class PageCtx(DbContextOptions<PageCtx> options)
+        : GranitDbContext(options, new NullTenantContext())
     {
         public DbSet<Page> Pages => Set<Page>();
-        protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.ApplyGranitConventions();
     }
 }

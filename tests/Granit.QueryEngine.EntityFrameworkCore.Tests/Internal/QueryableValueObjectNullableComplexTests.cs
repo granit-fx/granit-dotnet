@@ -1,5 +1,6 @@
 using Granit.Domain;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine.EntityFrameworkCore.Internal;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -68,9 +69,11 @@ public sealed class QueryableValueObjectNullableComplexTests : IDisposable
         public MaybeSlug? Maybe { get; set; }
     }
 
-    private sealed class Ctx(DbContextOptions<Ctx> options) : DbContext(options)
+    // GranitDbContext applies the Granit conventions ([QueryableValueObject] complex
+    // mapping included) — the single supported path since #3162.
+    private sealed class Ctx(DbContextOptions<Ctx> options)
+        : GranitDbContext(options, new NullTenantContext())
     {
         public DbSet<Thing> Things => Set<Thing>();
-        protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.ApplyGranitConventions();
     }
 }

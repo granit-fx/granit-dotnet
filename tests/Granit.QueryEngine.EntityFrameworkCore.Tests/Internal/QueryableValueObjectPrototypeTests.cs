@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Granit.Domain;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine.EntityFrameworkCore.Internal;
 using Granit.QueryEngine.Filtering;
 using Microsoft.Data.Sqlite;
@@ -120,13 +121,11 @@ public sealed class QueryableValueObjectPrototypeTests : IDisposable
         public Slug Slug { get; set; } = null!;
     }
 
-    private sealed class SiteCtx(DbContextOptions<SiteCtx> options) : DbContext(options)
+    // The [QueryableValueObject] attribute alone drives the ComplexProperty mapping (inner
+    // Value as the "Slug" column) — GranitDbContext's conventions do it, no manual config.
+    private sealed class SiteCtx(DbContextOptions<SiteCtx> options)
+        : GranitDbContext(options, new NullTenantContext())
     {
         public DbSet<Site> Sites => Set<Site>();
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-            // The [QueryableValueObject] attribute alone drives the ComplexProperty mapping
-            // (inner Value as the "Slug" column) — ApplyGranitConventions does it, no manual config.
-            => modelBuilder.ApplyGranitConventions();
     }
 }

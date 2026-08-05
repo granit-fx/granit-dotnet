@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Granit.Domain;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine.EntityFrameworkCore.Internal;
 using Granit.QueryEngine.Filtering;
 using Microsoft.Data.Sqlite;
@@ -89,10 +90,11 @@ public sealed class ValueObjectColumnTranslationTests : IDisposable
         public Slug Slug { get; set; } = null!;
     }
 
-    private sealed class VoCtx(DbContextOptions<VoCtx> options) : DbContext(options)
+    // GranitDbContext applies the Granit conventions (SVO converters included) — the
+    // single supported path since ApplyGranitConventions was internalized (#3162).
+    private sealed class VoCtx(DbContextOptions<VoCtx> options)
+        : GranitDbContext(options, new NullTenantContext())
     {
         public DbSet<VoProbe> Probes => Set<VoProbe>();
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-            => modelBuilder.ApplyGranitConventions();
     }
 }
