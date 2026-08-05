@@ -1,4 +1,5 @@
 using System.Data.Common;
+using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
 using Granit.Persistence.EntityFrameworkCore.SqlServer.Internal;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -10,13 +11,16 @@ namespace Granit.Persistence.EntityFrameworkCore.SqlServer.Tests.Internal;
 
 public sealed class SqlServerAppLockTests
 {
+    private static SqlServerAppLock CreateLock(
+        IConfiguration configuration, GranitMigrateOptions? options = null) =>
+        new(configuration,
+            Microsoft.Extensions.Options.Options.Create(options ?? new GranitMigrateOptions()),
+            NullLogger<SqlServerAppLock>.Instance);
+
     [Fact]
     public async Task TryAcquireAsync_NoConnectionString_ReturnsNoOpHandle()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-        SqlServerAppLock sut = new(
-            configuration,
-            NullLogger<SqlServerAppLock>.Instance);
+        SqlServerAppLock sut = CreateLock(new ConfigurationBuilder().Build());
 
         IAsyncDisposable? handle = await sut.TryAcquireAsync(
             "test-resource", TestContext.Current.CancellationToken);
@@ -27,10 +31,7 @@ public sealed class SqlServerAppLockTests
     [Fact]
     public async Task TryAcquireAsync_NoConnectionString_HandleDisposeAsync_DoesNotThrow()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-        SqlServerAppLock sut = new(
-            configuration,
-            NullLogger<SqlServerAppLock>.Instance);
+        SqlServerAppLock sut = CreateLock(new ConfigurationBuilder().Build());
 
         IAsyncDisposable? handle = await sut.TryAcquireAsync(
             "resource", TestContext.Current.CancellationToken);
@@ -41,10 +42,7 @@ public sealed class SqlServerAppLockTests
     [Fact]
     public async Task TryAcquireAsync_ResourceName_IsPassedThrough()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-        SqlServerAppLock sut = new(
-            configuration,
-            NullLogger<SqlServerAppLock>.Instance);
+        SqlServerAppLock sut = CreateLock(new ConfigurationBuilder().Build());
 
         // Returns NoOp immediately without needing a real connection
         IAsyncDisposable? handle = await sut.TryAcquireAsync(
@@ -66,13 +64,32 @@ public sealed class SqlServerAppLockTests
                 ["ConnectionStrings:DefaultConnection"] = "not-a-valid-connection-string",
             })
             .Build();
-        SqlServerAppLock sut = new(
-            configuration,
-            NullLogger<SqlServerAppLock>.Instance);
+        SqlServerAppLock sut = CreateLock(configuration);
 
         // The malformed connection string throws when assigned to the factory-created
         // connection — deterministic proof the lock passed the NoOp guards and reached
         // the sp_getapplock path, instead of silently returning a no-op handle.
+        await Should.ThrowAsync<ArgumentException>(
+            () => sut.TryAcquireAsync("resource", TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task TryAcquireAsync_ReadsTheConfiguredConnectionStringName()
+    {
+        DbProviderFactories.RegisterFactory("Microsoft.Data.SqlClient", SqlClientFactory.Instance);
+
+        // Only the custom name is configured — the lock must reach the connection branch
+        // through it (malformed string throws), proving the configured name is honored.
+        IConfiguration configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:MigrationsDb"] = "not-a-valid-connection-string",
+            })
+            .Build();
+
+        SqlServerAppLock sut = CreateLock(
+            configuration, new GranitMigrateOptions { ConnectionStringName = "MigrationsDb" });
+
         await Should.ThrowAsync<ArgumentException>(
             () => sut.TryAcquireAsync("resource", TestContext.Current.CancellationToken));
     }

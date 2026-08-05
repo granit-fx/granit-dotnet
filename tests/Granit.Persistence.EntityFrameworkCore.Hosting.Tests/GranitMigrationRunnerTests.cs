@@ -36,7 +36,8 @@ public sealed class GranitMigrationRunnerTests
 
         GranitMigrationRunner runner = CreateRunner(application, scopeFactory, migrationLock);
 
-        int exitCode = await runner.RunAsync(TestContext.Current.CancellationToken);
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.Full, TestContext.Current.CancellationToken);
 
         exitCode.ShouldBe(0);
         // Lock is not acquired when there is nothing to migrate.
@@ -64,7 +65,8 @@ public sealed class GranitMigrationRunnerTests
 
         GranitMigrationRunner runner = CreateRunner(application, scopeFactory, migrationLock);
 
-        int exitCode = await runner.RunAsync(TestContext.Current.CancellationToken);
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.Full, TestContext.Current.CancellationToken);
 
         exitCode.ShouldBe(0);
         await migrator.DidNotReceive().MigrateAsync(Arg.Any<CancellationToken>());
@@ -85,7 +87,8 @@ public sealed class GranitMigrationRunnerTests
         GranitMigrationRunner runner = CreateRunner(
             application, scopeFactory, StubLockAcquiringAlways());
 
-        int exitCode = await runner.RunAsync(TestContext.Current.CancellationToken);
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.Full, TestContext.Current.CancellationToken);
 
         // With no migratable modules, RunAsync returns 0 before reaching the external migrator
         // loop — this guards against regressions that move the migrator pass above the
@@ -127,7 +130,8 @@ public sealed class GranitMigrationRunnerTests
                 Timeout = TimeSpan.FromSeconds(30),
             });
 
-        int exitCode = await runner.RunAsync(TestContext.Current.CancellationToken);
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.Full, TestContext.Current.CancellationToken);
 
         // InMemory migration raises and counts as failure; exit code 1.
         exitCode.ShouldBe(1);
@@ -153,7 +157,8 @@ public sealed class GranitMigrationRunnerTests
             StubLockAcquiringAlways(),
             new GranitMigrateOptions { SeedAfterMigration = false });
 
-        int exitCode = await runner.RunAsync(TestContext.Current.CancellationToken);
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.Full, TestContext.Current.CancellationToken);
 
         exitCode.ShouldBe(0);
         await seeder.DidNotReceive().SeedHostAsync(Arg.Any<DataSeedContext>(), Arg.Any<CancellationToken>());
@@ -181,7 +186,8 @@ public sealed class GranitMigrationRunnerTests
                 Timeout = TimeSpan.FromSeconds(30),
             });
 
-        int exitCode = await runner.RunAsync(TestContext.Current.CancellationToken);
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.Full, TestContext.Current.CancellationToken);
 
         // InMemory provider doesn't support migrations → exception classified as failure,
         // exit code 1.
@@ -213,7 +219,8 @@ public sealed class GranitMigrationRunnerTests
                 SeedAfterMigration = false,
             });
 
-        int exitCode = await runner.RunAsync(TestContext.Current.CancellationToken);
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.Full, TestContext.Current.CancellationToken);
 
         exitCode.ShouldBe(1);
     }
@@ -246,7 +253,123 @@ public sealed class GranitMigrationRunnerTests
             new GranitMigrateOptions { Timeout = TimeSpan.FromMinutes(5) });
 
         await Should.ThrowAsync<OperationCanceledException>(
-            () => runner.RunAsync(externalCts.Token));
+            () => runner.RunAsync(MigrationRunMode.Full, externalCts.Token));
+    }
+
+    // -------------------------------------------------------------------------
+    // ResumeBatches mode — the startup resume path shares the runner's envelope
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task RunAsync_ResumeBatches_InvokesResumer_UnderTheSharedLockResource()
+    {
+        IGranitMigrationLock migrationLock = StubLockAcquiringAlways();
+        IMigrationBatchResumer resumer = Substitute.For<IMigrationBatchResumer>();
+        resumer.ResumeAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(3));
+
+        GranitMigrationRunner runner = CreateRunner(
+            BuildApplicationWithModules(new NonMigratableModule()),
+            BuildScopeFactory(),
+            migrationLock,
+            batchResumer: resumer);
+
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.ResumeBatches, TestContext.Current.CancellationToken);
+
+        exitCode.ShouldBe(0);
+        await resumer.Received(1).ResumeAsync(Arg.Any<CancellationToken>());
+        // Same resource as Full mode — one lock for every migration path, so a full run
+        // and a startup resume can never overlap across replicas.
+        await migrationLock.Received(1).TryAcquireAsync(
+            "GranitMigration", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RunAsync_ResumeBatches_SkipsResumer_WhenLockNotAcquired()
+    {
+        IGranitMigrationLock blockingLock = Substitute.For<IGranitMigrationLock>();
+        blockingLock.TryAcquireAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IAsyncDisposable?>(null));
+
+        IMigrationBatchResumer resumer = Substitute.For<IMigrationBatchResumer>();
+
+        GranitMigrationRunner runner = CreateRunner(
+            BuildApplicationWithModules(new NonMigratableModule()),
+            BuildScopeFactory(),
+            blockingLock,
+            batchResumer: resumer);
+
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.ResumeBatches, TestContext.Current.CancellationToken);
+
+        exitCode.ShouldBe(0);
+        await resumer.DidNotReceive().ResumeAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RunAsync_ResumeBatches_ReturnsZero_WhenNoResumerRegistered()
+    {
+        // AddGranitPersistenceMigrations() not called: no data-migration infrastructure,
+        // nothing to resume — informational, not an error.
+        GranitMigrationRunner runner = CreateRunner(
+            BuildApplicationWithModules(new NonMigratableModule()),
+            BuildScopeFactory(),
+            StubLockAcquiringAlways());
+
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.ResumeBatches, TestContext.Current.CancellationToken);
+
+        exitCode.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task RunAsync_ResumeBatches_ReturnsOne_WhenResumerThrows()
+    {
+        IMigrationBatchResumer resumer = Substitute.For<IMigrationBatchResumer>();
+        resumer.ResumeAsync(Arg.Any<CancellationToken>())
+            .Returns<Task<int>>(_ => throw new InvalidOperationException("dispatch failed"));
+
+        GranitMigrationRunner runner = CreateRunner(
+            BuildApplicationWithModules(new NonMigratableModule()),
+            BuildScopeFactory(),
+            StubLockAcquiringAlways(),
+            batchResumer: resumer);
+
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.ResumeBatches, TestContext.Current.CancellationToken);
+
+        // Same exit-code contract as Full mode: unhandled failures surface as 1.
+        exitCode.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task RunAsync_ResumeBatches_DoesNotRunSeedersOrExternalMigrators()
+    {
+        IDataSeeder seeder = Substitute.For<IDataSeeder>();
+        IExternalStoreMigrator migrator = Substitute.For<IExternalStoreMigrator>();
+        IMigrationBatchResumer resumer = Substitute.For<IMigrationBatchResumer>();
+        resumer.ResumeAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(0));
+
+        IServiceScopeFactory scopeFactory = BuildScopeFactory(services =>
+        {
+            services.AddSingleton(seeder);
+            services.AddSingleton(migrator);
+        });
+
+        GranitMigrationRunner runner = CreateRunner(
+            BuildApplicationWithModules(new GenericMigratableModule<UnusedDbContext>()),
+            scopeFactory,
+            StubLockAcquiringAlways(),
+            new GranitMigrateOptions { SeedAfterMigration = true, Timeout = TimeSpan.FromSeconds(30) },
+            batchResumer: resumer);
+
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.ResumeBatches, TestContext.Current.CancellationToken);
+
+        exitCode.ShouldBe(0);
+        await migrator.DidNotReceive().MigrateAsync(Arg.Any<CancellationToken>());
+        await seeder.DidNotReceive().SeedHostAsync(Arg.Any<DataSeedContext>(), Arg.Any<CancellationToken>());
+        await seeder.DidNotReceive().SeedTenantsAsync(Arg.Any<DataSeedContext>(), Arg.Any<CancellationToken>());
     }
 
     // -------------------------------------------------------------------------
@@ -275,7 +398,8 @@ public sealed class GranitMigrationRunnerTests
                 Timeout = TimeSpan.FromSeconds(30),
             });
 
-        int exitCode = await runner.RunAsync(TestContext.Current.CancellationToken);
+        int exitCode = await runner.RunAsync(
+            MigrationRunMode.Full, TestContext.Current.CancellationToken);
 
         // The runner discovered the module, attempted migration on UnusedDbContext, and
         // received the InMemory "migrations not supported" failure — exit code 1 confirms
@@ -291,18 +415,20 @@ public sealed class GranitMigrationRunnerTests
         GranitApplication application,
         IServiceScopeFactory scopeFactory,
         IGranitMigrationLock migrationLock,
-        GranitMigrateOptions? options = null) =>
+        GranitMigrateOptions? options = null,
+        IMigrationBatchResumer? batchResumer = null) =>
         new(application,
             scopeFactory,
             migrationLock,
-            options ?? new GranitMigrateOptions
+            Microsoft.Extensions.Options.Options.Create(options ?? new GranitMigrateOptions
             {
                 MaxRetries = 1,
                 RetryDelay = TimeSpan.Zero,
                 SeedAfterMigration = false,
                 Timeout = TimeSpan.FromSeconds(30),
-            },
-            NullLogger<GranitMigrationRunner>.Instance);
+            }),
+            NullLogger<GranitMigrationRunner>.Instance,
+            batchResumer);
 
     private static IGranitMigrationLock StubLockAcquiringAlways()
     {

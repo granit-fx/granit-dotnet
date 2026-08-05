@@ -1,7 +1,9 @@
 using System.Data.Common;
+using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Persistence.EntityFrameworkCore.Postgres.Internal;
 
@@ -25,16 +27,18 @@ namespace Granit.Persistence.EntityFrameworkCore.Postgres.Internal;
 /// </remarks>
 internal sealed partial class NpgsqlAdvisoryMigrationLock(
     IConfiguration configuration,
+    IOptions<GranitMigrateOptions> options,
     ILogger<NpgsqlAdvisoryMigrationLock> logger) : IGranitMigrationLock
 {
     public async Task<IAsyncDisposable?> TryAcquireAsync(
         string resource, CancellationToken cancellationToken)
     {
-        string? connectionString = configuration.GetConnectionString("DefaultConnection");
+        string connectionStringName = options.Value.ConnectionStringName;
+        string? connectionString = configuration.GetConnectionString(connectionStringName);
 
         if (string.IsNullOrEmpty(connectionString))
         {
-            LogNoConnectionString();
+            LogNoConnectionString(connectionStringName);
             return NoOpHandle.Instance;
         }
 
@@ -70,8 +74,8 @@ internal sealed partial class NpgsqlAdvisoryMigrationLock(
     }
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "No DefaultConnection configured. Skipping distributed migration lock.")]
-    private partial void LogNoConnectionString();
+        Message = "No '{ConnectionStringName}' connection string configured. Skipping distributed migration lock.")]
+    private partial void LogNoConnectionString(string connectionStringName);
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Npgsql DbProviderFactory not registered. Skipping distributed migration lock.")]

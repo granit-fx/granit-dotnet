@@ -44840,7 +44840,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/Extensions/PersistenceHostingHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitMigrateSupport",
@@ -44856,7 +44856,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/Extensions/PersistenceHostingWebApplicationExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "HasGranitMigrateFlag",
@@ -44872,7 +44872,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/GranitPersistenceEntityFrameworkCoreHostingModule.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
@@ -44888,7 +44888,7 @@
       "kind": "interface",
       "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/IExternalStoreMigrator.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "MigrateAsync",
@@ -44899,28 +44899,12 @@
       ]
     },
     {
-      "name": "IGranitMigrationRunner",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.Hosting.IGranitMigrationRunner",
-      "kind": "interface",
-      "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
-      "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/IGranitMigrationRunner.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "RunAsync",
-          "kind": "method",
-          "signature": "RunAsync(CancellationToken cancellationToken = default)",
-          "returnType": "Task<int>"
-        }
-      ]
-    },
-    {
       "name": "IMigratableModule",
       "fqn": "Granit.Persistence.EntityFrameworkCore.Hosting.IMigratableModule",
       "kind": "interface",
       "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/IMigratableModule.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "typeof",
@@ -44952,12 +44936,18 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/Options/GranitMigrateOptions.cs",
-      "line": 6,
+      "line": 10,
       "members": [
         {
           "name": "CliFlag",
           "kind": "property",
           "signature": "string CliFlag",
+          "returnType": "string"
+        },
+        {
+          "name": "ConnectionStringName",
+          "kind": "property",
+          "signature": "string ConnectionStringName",
           "returnType": "string"
         },
         {
@@ -45294,6 +45284,22 @@
       ]
     },
     {
+      "name": "IGranitMigrationRunner",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.IGranitMigrationRunner",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/IGranitMigrationRunner.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "RunAsync",
+          "kind": "method",
+          "signature": "RunAsync(MigrationRunMode mode = MigrationRunMode.Full, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
       "name": "IMigrationBatchExecutor",
       "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.IMigrationBatchExecutor",
       "kind": "interface",
@@ -45306,6 +45312,22 @@
           "kind": "method",
           "signature": "ExecuteBatchAsync(RunMigrationBatchCommand command, CancellationToken cancellationToken = default)",
           "returnType": "Task<RunMigrationBatchCommand?>"
+        }
+      ]
+    },
+    {
+      "name": "IMigrationBatchResumer",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.IMigrationBatchResumer",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/IMigrationBatchResumer.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ResumeAsync",
+          "kind": "method",
+          "signature": "ResumeAsync(CancellationToken cancellationToken)",
+          "returnType": "Task<int>"
         }
       ]
     },
@@ -45444,6 +45466,15 @@
       "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/MigrationPhase.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "MigrationRunMode",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.MigrationRunMode",
+      "kind": "enum",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/MigrationRunMode.cs",
+      "line": 8,
       "members": []
     },
     {

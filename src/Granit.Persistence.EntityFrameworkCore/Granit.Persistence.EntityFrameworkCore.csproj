@@ -8,6 +8,9 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Persistence.EntityFrameworkCore.Tests" />
+    <!-- Postgres.Tests locks the legacy ApplyGranitConventions ↔ jsonb finalization interplay
+         (granit-website SeoDbContext regression) — internal since #3162. -->
+    <InternalsVisibleTo Include="Granit.Persistence.EntityFrameworkCore.Postgres.Tests" />
     <InternalsVisibleTo Include="Granit.Wolverine.Postgresql.Tests.Integration" />
     <InternalsVisibleTo Include="Granit.Wolverine.SqlServer.Tests.Integration" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />

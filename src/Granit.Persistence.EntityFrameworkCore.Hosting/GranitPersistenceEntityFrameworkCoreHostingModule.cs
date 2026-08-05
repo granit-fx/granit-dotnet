@@ -2,6 +2,7 @@ using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Persistence.EntityFrameworkCore.Hosting;
 
@@ -25,10 +26,10 @@ public sealed partial class GranitPersistenceEntityFrameworkCoreHostingModule : 
     /// <inheritdoc/>
     public override Task OnApplicationInitializationAsync(ApplicationInitializationContext context)
     {
-        var options = context.ServiceProvider.GetService(typeof(GranitMigrateOptions))
-            as GranitMigrateOptions;
+        var optionsAccessor = context.ServiceProvider
+            .GetService(typeof(IOptions<GranitMigrateOptions>)) as IOptions<GranitMigrateOptions>;
 
-        if (options?.SeedOnStartup == true)
+        if (optionsAccessor?.Value.SeedOnStartup == true)
         {
             var logger = (ILogger<GranitPersistenceEntityFrameworkCoreHostingModule>)
                 context.ServiceProvider.GetService(typeof(ILogger<GranitPersistenceEntityFrameworkCoreHostingModule>))!;

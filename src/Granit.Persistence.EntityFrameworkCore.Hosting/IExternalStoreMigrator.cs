@@ -1,3 +1,5 @@
+using Granit.Persistence.EntityFrameworkCore.Migrations;
+
 namespace Granit.Persistence.EntityFrameworkCore.Hosting;
 
 /// <summary>

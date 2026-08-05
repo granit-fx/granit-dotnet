@@ -1,5 +1,5 @@
 using Granit.Persistence.EntityFrameworkCore.Hosting.Extensions;
-using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
+using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -21,8 +21,10 @@ public sealed class PersistenceHostingWebApplicationExtensionsTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public async Task HasGranitMigrateFlag_ReturnsFalse_WhenOptionsNotRegistered()
+    public async Task HasGranitMigrateFlag_ReturnsFalse_WhenMigrateSupportNotAdded()
     {
+        // No IGranitMigrationRunner registered (AddGranitMigrateSupport never called):
+        // the probe must return false regardless of process arguments.
         await using WebApplication app = WebApplication.CreateBuilder().Build();
 
         app.HasGranitMigrateFlag().ShouldBeFalse();
@@ -32,13 +34,14 @@ public sealed class PersistenceHostingWebApplicationExtensionsTests
     public async Task HasGranitMigrateFlag_ReturnsFalse_WhenCliFlagIsNotInProcessArgs()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Services.AddSingleton(new GranitMigrateOptions
-        {
-            // A flag value that is virtually guaranteed not to appear in the test runner's
-            // argv. The probe scans Environment.GetCommandLineArgs(), so this asserts the
-            // "options registered + flag absent" branch.
-            CliFlag = "--granit-flag-absent-from-test-runner-args-zzz",
-        });
+        // A flag value that is virtually guaranteed not to appear in the test runner's
+        // argv. The probe scans Environment.GetCommandLineArgs(), so this asserts the
+        // "support registered + flag absent" branch. The runner is a substitute because
+        // the probe resolves it as its presence signal — the real one needs the full
+        // Granit application graph this test host doesn't build.
+        builder.Services.AddSingleton(Substitute.For<IGranitMigrationRunner>());
+        builder.Services.Configure<Granit.Persistence.EntityFrameworkCore.Hosting.Options.GranitMigrateOptions>(
+            opts => opts.CliFlag = "--granit-flag-absent-from-test-runner-args-zzz");
         await using WebApplication app = builder.Build();
 
         app.HasGranitMigrateFlag().ShouldBeFalse();
@@ -53,7 +56,9 @@ public sealed class PersistenceHostingWebApplicationExtensionsTests
         string processArgZero = Environment.GetCommandLineArgs()[0];
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Services.AddSingleton(new GranitMigrateOptions { CliFlag = processArgZero });
+        builder.Services.AddSingleton(Substitute.For<IGranitMigrationRunner>());
+        builder.Services.Configure<Granit.Persistence.EntityFrameworkCore.Hosting.Options.GranitMigrateOptions>(
+            opts => opts.CliFlag = processArgZero);
         await using WebApplication app = builder.Build();
 
         app.HasGranitMigrateFlag().ShouldBeTrue();
@@ -67,7 +72,8 @@ public sealed class PersistenceHostingWebApplicationExtensionsTests
     public async Task RunGranitMigrationsAsync_ReturnsRunnerExitCode_OnSuccess()
     {
         IGranitMigrationRunner runner = Substitute.For<IGranitMigrationRunner>();
-        runner.RunAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(0));
+        runner.RunAsync(Arg.Any<MigrationRunMode>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(0));
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Services.AddSingleton(runner);
@@ -76,14 +82,16 @@ public sealed class PersistenceHostingWebApplicationExtensionsTests
         int exitCode = await app.RunGranitMigrationsAsync();
 
         exitCode.ShouldBe(0);
-        await runner.Received(1).RunAsync(Arg.Any<CancellationToken>());
+        // The WebApplication entry point is the --migrate CLI path — always the Full pipeline.
+        await runner.Received(1).RunAsync(MigrationRunMode.Full, Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task RunGranitMigrationsAsync_PropagatesNonZeroExitCode()
     {
         IGranitMigrationRunner runner = Substitute.For<IGranitMigrationRunner>();
-        runner.RunAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(2));
+        runner.RunAsync(Arg.Any<MigrationRunMode>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(2));
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Services.AddSingleton(runner);
@@ -98,7 +106,7 @@ public sealed class PersistenceHostingWebApplicationExtensionsTests
     public async Task RunGranitMigrationsAsync_Returns1_WhenRunnerThrowsUnhandledException()
     {
         IGranitMigrationRunner runner = Substitute.For<IGranitMigrationRunner>();
-        runner.RunAsync(Arg.Any<CancellationToken>())
+        runner.RunAsync(Arg.Any<MigrationRunMode>(), Arg.Any<CancellationToken>())
             .Throws(new InvalidOperationException("kaboom"));
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -116,7 +124,7 @@ public sealed class PersistenceHostingWebApplicationExtensionsTests
     public async Task RunGranitMigrationsAsync_RethrowsOperationCanceledException()
     {
         IGranitMigrationRunner runner = Substitute.For<IGranitMigrationRunner>();
-        runner.RunAsync(Arg.Any<CancellationToken>())
+        runner.RunAsync(Arg.Any<MigrationRunMode>(), Arg.Any<CancellationToken>())
             .Throws(new OperationCanceledException("external cancel"));
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
