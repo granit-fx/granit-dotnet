@@ -2,9 +2,9 @@
 // Tests - TenantPerDatabaseDbContextFactory<TContext>
 // =============================================================================
 // Verifies tenant routing, missing-tenant guard, provider call correctness,
-// and async isolation between concurrent tenant contexts.
-// No real database connection required: DbContextOptions are built but the
-// connection is never opened (only happens on query execution, not construction).
+// async isolation between concurrent tenant contexts, and PHYSICAL data
+// isolation between per-tenant databases (SQLite named in-memory databases —
+// the InMemory provider proved nothing about isolation).
 // =============================================================================
 
 using Granit.MultiTenancy;
@@ -22,15 +22,24 @@ namespace Granit.Persistence.EntityFrameworkCore.Tests.MultiTenancy;
 // by TenantPerDatabaseDbContextFactory<T>'s Activator.CreateInstance path.
 // ---------------------------------------------------------------------------
 internal sealed class StubPerTenantDbContext(DbContextOptions<StubPerTenantDbContext> options)
-    : DbContext(options);
+    : DbContext(options)
+{
+    public DbSet<StubTenantRow> Rows => Set<StubTenantRow>();
+}
+
+internal sealed class StubTenantRow
+{
+    public Guid Id { get; set; }
+    public string Label { get; set; } = string.Empty;
+}
 
 public sealed class TenantPerDatabaseDbContextFactoryTests
 {
     private static readonly Guid TenantA = Guid.NewGuid();
     private static readonly Guid TenantB = Guid.NewGuid();
 
-    private const string ConnA = "Host=host-a;Database=db_a;Username=usr;Password=pwd";
-    private const string ConnB = "Host=host-b;Database=db_b;Username=usr;Password=pwd";
+    private const string ConnA = "Data Source=file:tenant_a?mode=memory&cache=shared";
+    private const string ConnB = "Data Source=file:tenant_b?mode=memory&cache=shared";
 
     // -----------------------------------------------------------------------
     // Helper — builds a factory with fully controlled dependencies.
@@ -54,7 +63,7 @@ public sealed class TenantPerDatabaseDbContextFactoryTests
 
         TenantPerDatabaseDbContextOptions<StubPerTenantDbContext> options = new()
         {
-            Configure = static (opts, cs) => opts.UseInMemoryDatabase(cs),
+            Configure = static (opts, cs) => opts.UseSqlite(cs),
         };
 
         return (new TenantPerDatabaseDbContextFactory<StubPerTenantDbContext>(
@@ -198,7 +207,7 @@ public sealed class TenantPerDatabaseDbContextFactoryTests
             Configure = (opts, cs) =>
             {
                 capturedConnections.Add(cs);
-                opts.UseInMemoryDatabase(cs);
+                opts.UseSqlite(cs);
             },
         };
 
@@ -215,5 +224,50 @@ public sealed class TenantPerDatabaseDbContextFactoryTests
         capturedConnections.ShouldContain(ConnA);
         capturedConnections.ShouldContain(ConnB);
         capturedConnections.Distinct().Count().ShouldBe(capturedConnections.Count);
+    }
+
+    // -----------------------------------------------------------------------
+    // Physical isolation — tenant A's rows never appear in tenant B's database
+    // -----------------------------------------------------------------------
+
+    [Fact]
+    public async Task CreateDbContextAsync_TenantData_IsPhysicallyIsolatedPerDatabase()
+    {
+        // Keep-alive connections pin the two named in-memory databases for the
+        // duration of the test (cache=shared makes them addressable by name).
+        await using Microsoft.Data.Sqlite.SqliteConnection keepAliveA = new(ConnA);
+        await using Microsoft.Data.Sqlite.SqliteConnection keepAliveB = new(ConnB);
+        await keepAliveA.OpenAsync(TestContext.Current.CancellationToken);
+        await keepAliveB.OpenAsync(TestContext.Current.CancellationToken);
+
+        string label = $"iso-{Guid.NewGuid():N}";
+
+        TenantPerDatabaseDbContextFactory<StubPerTenantDbContext> factoryA =
+            BuildFactory(TenantA, ConnA);
+        await using (StubPerTenantDbContext ctxA =
+            await factoryA.CreateDbContextAsync(TestContext.Current.CancellationToken))
+        {
+            await ctxA.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
+            ctxA.Rows.Add(new StubTenantRow { Id = Guid.NewGuid(), Label = label });
+            await ctxA.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+
+        TenantPerDatabaseDbContextFactory<StubPerTenantDbContext> factoryB =
+            BuildFactory(TenantB, ConnB);
+        await using (StubPerTenantDbContext ctxB =
+            await factoryB.CreateDbContextAsync(TestContext.Current.CancellationToken))
+        {
+            await ctxB.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
+            (await ctxB.Rows.CountAsync(r => r.Label == label, TestContext.Current.CancellationToken))
+                .ShouldBe(0, "tenant B's database must not contain tenant A's rows");
+        }
+
+        // Sanity: the row does exist in tenant A's database.
+        TenantPerDatabaseDbContextFactory<StubPerTenantDbContext> factoryA2 =
+            BuildFactory(TenantA, ConnA);
+        await using StubPerTenantDbContext ctxA2 =
+            await factoryA2.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        (await ctxA2.Rows.CountAsync(r => r.Label == label, TestContext.Current.CancellationToken))
+            .ShouldBe(1);
     }
 }

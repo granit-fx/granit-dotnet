@@ -1,8 +1,10 @@
 // =============================================================================
 // Tests - TenantPerSchemaDbContextFactory<TContext>
 // =============================================================================
-// Vérifie le guard tenant manquant et la construction correcte du DbContext.
-// Aucune connexion PostgreSQL réelle n'est requise.
+// Verifies the missing-tenant guard, DbContext construction, and that opening
+// a real (SQLite) connection triggers schema activation with the resolved
+// schema name via TenantSchemaConnectionInterceptor — the behavior the former
+// InMemory setup could not exercise (no connection ever opened).
 // =============================================================================
 
 using Granit.MultiTenancy;
@@ -16,7 +18,15 @@ using Xunit;
 namespace Granit.Persistence.EntityFrameworkCore.Tests.MultiTenancy;
 
 internal sealed class StubSchemaDbContext(DbContextOptions<StubSchemaDbContext> options)
-    : DbContext(options);
+    : DbContext(options)
+{
+    public DbSet<StubSchemaRow> Rows => Set<StubSchemaRow>();
+}
+
+internal sealed class StubSchemaRow
+{
+    public Guid Id { get; set; }
+}
 
 public sealed class TenantPerSchemaDbContextFactoryTests
 {
@@ -30,8 +40,9 @@ public sealed class TenantPerSchemaDbContextFactoryTests
         return tenant;
     }
 
-    private static TenantPerSchemaDbContextFactory<StubSchemaDbContext> BuildFactory(
-        ICurrentTenant currentTenant)
+    private static (TenantPerSchemaDbContextFactory<StubSchemaDbContext> factory,
+                    ITenantSchemaActivator activator)
+        BuildFactoryWithActivator(ICurrentTenant currentTenant)
     {
         ITenantSchemaProvider schemaProvider = Substitute.For<ITenantSchemaProvider>();
 #pragma warning disable CA2012 // NSubstitute setup pattern — ValueTask not consumed directly
@@ -46,12 +57,15 @@ public sealed class TenantPerSchemaDbContextFactoryTests
 
         TenantPerSchemaDbContextOptions<StubSchemaDbContext> opts = new()
         {
-            Configure = static builder => builder.UseInMemoryDatabase("schema_test"),
+            Configure = static builder => builder.UseSqlite("Data Source=:memory:"),
         };
 
-        return new TenantPerSchemaDbContextFactory<StubSchemaDbContext>(
-            currentTenant, schemaProvider, schemaActivator, sp, opts);
+        return (new TenantPerSchemaDbContextFactory<StubSchemaDbContext>(
+            currentTenant, schemaProvider, schemaActivator, sp, opts), schemaActivator);
     }
+
+    private static TenantPerSchemaDbContextFactory<StubSchemaDbContext> BuildFactory(
+        ICurrentTenant currentTenant) => BuildFactoryWithActivator(currentTenant).factory;
 
     // -----------------------------------------------------------------------
     // Happy path
@@ -105,5 +119,25 @@ public sealed class TenantPerSchemaDbContextFactoryTests
         Action act = () => factory.CreateDbContext();
 
         Should.Throw<InvalidOperationException>(act).Message.ShouldContain("No active tenant context");
+    }
+
+    // -----------------------------------------------------------------------
+    // Schema activation — opening a real connection activates the tenant schema
+    // -----------------------------------------------------------------------
+
+    [Fact]
+    public async Task OpeningConnection_ActivatesResolvedTenantSchema()
+    {
+        (TenantPerSchemaDbContextFactory<StubSchemaDbContext> factory,
+         ITenantSchemaActivator activator) = BuildFactoryWithActivator(MakeTenant(TenantA));
+
+        await using StubSchemaDbContext ctx =
+            await factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        await ctx.Database.OpenConnectionAsync(TestContext.Current.CancellationToken);
+
+        await activator.Received(1).ActivateSchemaAsync(
+            Arg.Any<System.Data.Common.DbConnection>(),
+            "tenant_stub",
+            Arg.Any<CancellationToken>());
     }
 }

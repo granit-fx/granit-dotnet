@@ -1,19 +1,21 @@
 // =============================================================================
 // Tests - SoftDeleteInterceptor
 // =============================================================================
-// Verifies that physical deletion is converted to logical deletion
-// for ISoftDeletable entities (GDPR compliance).
-//
-// Approach: the interceptor is registered in the DbContext and
-// SaveChangesAsync is called directly. IClock is mocked for exact assertions.
+// Verifies that physical deletion is converted to logical deletion for
+// ISoftDeletable entities (GDPR compliance) — on SQLite (relational), with the
+// real named soft-delete filter from ApplyGranitConventions, so both the
+// UPDATE-instead-of-DELETE conversion and the filter's SQL behavior are proven
+// (the InMemory provider fakes both).
 // =============================================================================
 
 using Granit.Domain;
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Granit.Timing;
 using Granit.Users;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
@@ -21,15 +23,18 @@ using Xunit;
 
 namespace Granit.Persistence.EntityFrameworkCore.Tests;
 
-public sealed class SoftDeleteInterceptorTests
+public sealed class SoftDeleteInterceptorTests : IDisposable
 {
     private static readonly DateTimeOffset FixedNow = new(2026, 6, 15, 10, 30, 0, TimeSpan.Zero);
 
+    private readonly SqliteConnection _connection = new("Data Source=:memory:");
     private readonly ICurrentUserService _currentUserService;
     private readonly IClock _clock;
 
     public SoftDeleteInterceptorTests()
     {
+        _connection.Open();
+
         _currentUserService = Substitute.For<ICurrentUserService>();
         _currentUserService.UserId.Returns("user-test-123");
 
@@ -37,61 +42,97 @@ public sealed class SoftDeleteInterceptorTests
         _clock.Now.Returns(FixedNow);
     }
 
+    public void Dispose() => _connection.Dispose();
+
     [Fact]
     public async Task SaveChangesAsync_OnDelete_ConvertToSoftDelete()
     {
-        // Arrange
         await using TestDbContext context = CreateContext();
-        var entity = new TestSoftDeletableEntity
-        {
-            Id = Guid.NewGuid(),
-            Name = "ToDelete",
-            CreatedAt = FixedNow.AddDays(-1),
-            CreatedBy = "user-test-123"
-        };
-        context.Entities.Add(entity);
+        TestSoftDeletableEntity entity = AddEntity(context, "ToDelete");
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        // Delete the entity
         context.Entities.Remove(entity);
-
-        // Act
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        // Assert — the entity is soft-deleted (not physically removed)
         entity.IsDeleted.ShouldBeTrue();
         entity.DeletedAt.ShouldBe(FixedNow);
         entity.DeletedBy.ShouldBe("user-test-123");
+    }
 
-        // Verify the entity still exists in the database (not physically deleted)
-        int count = await context.Entities.IgnoreQueryFilters().CountAsync(TestContext.Current.CancellationToken);
-        count.ShouldBe(1);
+    [Fact]
+    public async Task SaveChangesAsync_OnDelete_RowPhysicallySurvives()
+    {
+        await using TestDbContext context = CreateContext();
+        TestSoftDeletableEntity entity = AddEntity(context, "Survivor");
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        context.Entities.Remove(entity);
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Raw count outside EF filters: the DELETE became an UPDATE, the row is still there.
+        int rawCount = await context.Database
+            .SqlQuery<int>($"SELECT COUNT(*) AS \"Value\" FROM \"Entities\"")
+            .SingleAsync(TestContext.Current.CancellationToken);
+        rawCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task NamedSoftDeleteFilter_ExcludesSoftDeletedRows_FromStandardQueries()
+    {
+        await using TestDbContext context = CreateContext();
+        TestSoftDeletableEntity entity = AddEntity(context, "Filtered");
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        context.Entities.Remove(entity);
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        (await context.Entities.CountAsync(TestContext.Current.CancellationToken))
+            .ShouldBe(0, "the named soft-delete filter must hide the tombstone");
+    }
+
+    [Fact]
+    public async Task NamedSoftDeleteFilter_PerQueryBypass_RevealsTombstone()
+    {
+        await using TestDbContext context = CreateContext();
+        TestSoftDeletableEntity entity = AddEntity(context, "Tombstone");
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        context.Entities.Remove(entity);
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        TestSoftDeletableEntity tombstone = await context.Entities
+            .IgnoreQueryFilters([GranitFilterNames.SoftDelete])
+            .SingleAsync(TestContext.Current.CancellationToken);
+        tombstone.IsDeleted.ShouldBeTrue();
+        tombstone.DeletedAt.ShouldBe(FixedNow);
+        tombstone.DeletedBy.ShouldBe("user-test-123");
     }
 
     [Fact]
     public async Task SaveChangesAsync_OnModify_DoesNotTriggerSoftDelete()
     {
-        // Arrange
         await using TestDbContext context = CreateContext();
-        var entity = new TestSoftDeletableEntity
-        {
-            Id = Guid.NewGuid(),
-            Name = "Original",
-            CreatedAt = FixedNow.AddDays(-1),
-            CreatedBy = "user-test-123"
-        };
-        context.Entities.Add(entity);
+        TestSoftDeletableEntity entity = AddEntity(context, "Original");
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        // Modify the entity (not delete)
         entity.Name = "Modified";
-
-        // Act
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        // Assert — no soft delete
         entity.IsDeleted.ShouldBeFalse();
         entity.DeletedAt.ShouldBeNull();
+    }
+
+    private static TestSoftDeletableEntity AddEntity(TestDbContext context, string name)
+    {
+        TestSoftDeletableEntity entity = new()
+        {
+            Id = Guid.NewGuid(),
+            Name = name,
+            CreatedAt = FixedNow.AddDays(-1),
+            CreatedBy = "user-test-123",
+        };
+        context.Entities.Add(entity);
+        return entity;
     }
 
     private TestDbContext CreateContext()
@@ -102,10 +143,12 @@ public sealed class SoftDeleteInterceptorTests
         var auditInterceptor = new AuditedEntityInterceptor(_currentUserService, _clock, guidGenerator, currentTenant);
         var softDeleteInterceptor = new SoftDeleteInterceptor(_currentUserService, _clock);
         DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .UseSqlite(_connection)
             .AddInterceptors(auditInterceptor, softDeleteInterceptor)
             .Options;
-        return new TestDbContext(options);
+        TestDbContext context = new(options);
+        context.Database.EnsureCreated();
+        return context;
     }
 
     private sealed class TestSoftDeletableEntity : AuditedEntity, ISoftDeletable
@@ -120,6 +163,12 @@ public sealed class SoftDeleteInterceptorTests
     {
         public DbSet<TestSoftDeletableEntity> Entities => Set<TestSoftDeletableEntity>();
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.Entity<TestSoftDeletableEntity>().Property(e => e.Id).ValueGeneratedNever();
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<TestSoftDeletableEntity>().Property(e => e.Id).ValueGeneratedNever();
+
+            // Real named filters (soft-delete included) — the behavior under test.
+            modelBuilder.ApplyGranitConventions();
+        }
     }
 }
