@@ -35,13 +35,14 @@ namespace Granit.Persistence.EntityFrameworkCore;
 /// parameter (<c>@ef_filter__CurrentTenantId</c>) re-bound on every command.
 /// </para>
 /// <para>
-/// <b>Compatibility.</b> The non-tenant filters (soft-delete, active, processing restriction,
-/// publishable, merge tombstone) are still wired by
-/// <see cref="ModelBuilderExtensions.ApplyGranitConventions"/> — those bypass values depend
-/// on per-DbContext singletons and are unaffected by the per-request constant-folding issue.
-/// Derived contexts should call <c>modelBuilder.ApplyGranitConventions(currentTenant: null, dataFilter)</c>
-/// from their <see cref="OnGranitModelCreating"/> override (or let the default
-/// <see cref="OnModelCreating"/> here do it).
+/// <b>All named filters are context-bound.</b> The convention filters (soft-delete, active,
+/// processing restriction, publishable, merge tombstone) and the translation mirrors are
+/// registered here with bypass flags read via <c>this</c> — NOT by
+/// <see cref="ModelBuilderExtensions.ApplyGranitConventions"/>, whose proxy-captured flags
+/// are constant-folded into the cached query plan and made
+/// <c>IDataFilter.Disable&lt;T&gt;()</c> a silent no-op on relational providers (#3174).
+/// The base class calls <c>ApplyGranitConventions</c> with the filter pass disabled;
+/// derived contexts override <see cref="OnGranitModelCreating"/> and never call it themselves.
 /// </para>
 /// </remarks>
 public abstract class GranitDbContext : DbContext
@@ -50,6 +51,16 @@ public abstract class GranitDbContext : DbContext
         typeof(GranitDbContext).GetMethod(
             nameof(ConfigureMultiTenantFilter),
             BindingFlags.Instance | BindingFlags.NonPublic)!; // NOSONAR S3011 - intentional: ConfigureMultiTenantFilter must stay private to keep its `this`-binding (load-bearing for EF Core parameter extraction); reflection is the only way to invoke a generic instance method per-entity-type.
+
+    private static readonly MethodInfo ConfigureConventionFiltersMethod =
+        typeof(GranitDbContext).GetMethod(
+            nameof(ConfigureConventionFilters),
+            BindingFlags.Instance | BindingFlags.NonPublic)!; // NOSONAR S3011 - same `this`-binding requirement as ConfigureMultiTenantFilter (#3174).
+
+    private static readonly MethodInfo ConfigureTranslationFiltersMethod =
+        typeof(GranitDbContext).GetMethod(
+            nameof(ConfigureTranslationFilters),
+            BindingFlags.Instance | BindingFlags.NonPublic)!; // NOSONAR S3011 - same `this`-binding requirement as ConfigureMultiTenantFilter (#3174).
 
     /// <summary>
     /// The tenant context for this scope, captured at construction time.
@@ -74,6 +85,33 @@ public abstract class GranitDbContext : DbContext
     /// </summary>
     public virtual bool IsMultiTenantFilterEnabled
         => DataFilter?.IsEnabled<IMultiTenant>() ?? true;
+
+    // The five convention-filter bypass flags below are instance members for the same
+    // load-bearing reason as IsMultiTenantFilterEnabled: EF Core only re-evaluates filter
+    // values per query (@ef_filter__* parameters) when they are read from a member of the
+    // current DbContext. Reading them from any other captured object gets constant-folded
+    // into the cached query plan — which made IDataFilter.Disable<T>() a silent no-op on
+    // relational providers for every FilterProxy-backed filter (#3174).
+
+    /// <summary><c>true</c> when the <see cref="ISoftDeletable"/> filter is active.</summary>
+    public virtual bool IsSoftDeleteFilterEnabled
+        => DataFilter?.IsEnabled<ISoftDeletable>() ?? true;
+
+    /// <summary><c>true</c> when the <see cref="IActive"/> filter is active.</summary>
+    public virtual bool IsActiveFilterEnabled
+        => DataFilter?.IsEnabled<IActive>() ?? true;
+
+    /// <summary><c>true</c> when the <see cref="IProcessingRestrictable"/> filter is active.</summary>
+    public virtual bool IsProcessingRestrictionFilterEnabled
+        => DataFilter?.IsEnabled<IProcessingRestrictable>() ?? true;
+
+    /// <summary><c>true</c> when the <see cref="IPublishable"/> filter is active.</summary>
+    public virtual bool IsPublishableFilterEnabled
+        => DataFilter?.IsEnabled<IPublishable>() ?? true;
+
+    /// <summary><c>true</c> when the <see cref="IHasMergeTombstone"/> filter is active.</summary>
+    public virtual bool IsMergeTombstoneFilterEnabled
+        => DataFilter?.IsEnabled<IHasMergeTombstone>() ?? true;
 
     /// <summary>
     /// Builds a <see cref="GranitDbContext"/>. Derived classes forward their DI-injected
@@ -122,13 +160,46 @@ public abstract class GranitDbContext : DbContext
                 .Invoke(this, [modelBuilder]);
         }
 
-        // 3) Non-tenant filters (soft-delete, active, processing restriction,
-        //    publishable, merge tombstone) + concurrency + merge tombstone columns
-        //    + translation FKs + SVO entity removal & converters. `currentTenant: null`
-        //    skips the IMultiTenant block in this overload — this class owns that
-        //    filter separately, with parameterised SQL. Runs LAST so the SVO cleanup
-        //    is the final pass over the model surface.
-        modelBuilder.ApplyGranitConventions(currentTenant: null, DataFilter);
+        // 2-bis) Convention filters (soft-delete, active, processing restriction,
+        //    publishable, merge tombstone) + translation mirrors, built inside members
+        //    of THIS DbContext so the bypass flags are re-bound per query
+        //    (@ef_filter__*). The proxy-based registration in ApplyGranitConventions
+        //    is constant-folded into the cached plan and made IDataFilter.Disable<T>()
+        //    a silent no-op on relational providers (#3174) — step 3 skips it.
+        //    Runs BEFORE step 3 because Entity<TEntity>() re-fires navigation
+        //    discovery, and the SVO cleanup at the end of step 3 must stay the final
+        //    pass over the model surface.
+        foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes()
+            .Where(et => ConventionFilterInterfaces.Any(i => i.IsAssignableFrom(et.ClrType)))
+            .ToList())
+        {
+            ConfigureConventionFiltersMethod
+                .MakeGenericMethod(entityType.ClrType)
+                .Invoke(this, [modelBuilder]);
+        }
+
+        foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes().ToList())
+        {
+            Type? translationInterface = entityType.ClrType
+                .GetInterfaces()
+                .FirstOrDefault(i => i.IsGenericType
+                    && i.GetGenericTypeDefinition() == typeof(ITranslation<>));
+
+            if (translationInterface is not null)
+            {
+                ConfigureTranslationFiltersMethod
+                    .MakeGenericMethod(entityType.ClrType, translationInterface.GetGenericArguments()[0])
+                    .Invoke(this, [modelBuilder]);
+            }
+        }
+
+        // 3) Non-filter conventions: concurrency + merge tombstone columns + ownership
+        //    indexes + translation FKs + enum-as-string + SVO entity removal & converters.
+        //    `currentTenant: null` skips the IMultiTenant block; `registerConventionFilters:
+        //    false` skips the proxy-based named filters — this class owns ALL filters,
+        //    with parameterised bypass flags (steps 2 / 2-bis). Runs LAST so the SVO
+        //    cleanup is the final pass over the model surface.
+        modelBuilder.ApplyGranitConventionsCore(currentTenant: null, DataFilter, registerConventionFilters: false);
 
         // 4) External, opt-in model extensions registered in DI by separate packages — applied LAST so they
         //    get the final say (after conventions). Lets e.g. a PostGIS package add a generated geography
@@ -204,5 +275,91 @@ public abstract class GranitDbContext : DbContext
 
         modelBuilder.Entity<TEntity>()
             .HasQueryFilter(GranitFilterNames.MultiTenant, filter);
+    }
+
+    private static readonly Type[] ConventionFilterInterfaces =
+    [
+        typeof(ISoftDeletable),
+        typeof(IActive),
+        typeof(IProcessingRestrictable),
+        typeof(IPublishable),
+        typeof(IHasMergeTombstone),
+    ];
+
+    /// <summary>
+    /// Registers the named convention filters for <typeparamref name="TEntity"/> with
+    /// bypass flags read via <c>this</c> — the sole shape EF Core re-binds per query
+    /// (<c>@ef_filter__*</c>). Same registration names as the legacy proxy path, so
+    /// per-query bypass (<c>IgnoreQueryFilters([GranitFilterNames.X])</c>) is unchanged.
+    /// </summary>
+    private void ConfigureConventionFilters<TEntity>(ModelBuilder modelBuilder)
+        where TEntity : class
+    {
+        Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TEntity> builder =
+            modelBuilder.Entity<TEntity>();
+
+        if (typeof(ISoftDeletable).IsAssignableFrom(typeof(TEntity)))
+        {
+            builder.HasQueryFilter(GranitFilterNames.SoftDelete,
+                e => !IsSoftDeleteFilterEnabled
+                    || !EF.Property<bool>(e, nameof(ISoftDeletable.IsDeleted)));
+        }
+
+        if (typeof(IActive).IsAssignableFrom(typeof(TEntity)))
+        {
+            builder.HasQueryFilter(GranitFilterNames.Active,
+                e => !IsActiveFilterEnabled
+                    || EF.Property<bool>(e, nameof(IActive.Activated)));
+        }
+
+        if (typeof(IProcessingRestrictable).IsAssignableFrom(typeof(TEntity)))
+        {
+            builder.HasQueryFilter(GranitFilterNames.ProcessingRestrictable,
+                e => !IsProcessingRestrictionFilterEnabled
+                    || !EF.Property<bool>(e, nameof(IProcessingRestrictable.IsProcessingRestricted)));
+        }
+
+        if (typeof(IPublishable).IsAssignableFrom(typeof(TEntity)))
+        {
+            builder.HasQueryFilter(GranitFilterNames.Publishable,
+                e => !IsPublishableFilterEnabled
+                    || EF.Property<bool>(e, nameof(IPublishable.IsPublished)));
+        }
+
+        if (typeof(IHasMergeTombstone).IsAssignableFrom(typeof(TEntity)))
+        {
+            builder.HasQueryFilter(GranitFilterNames.MergeTombstone,
+                e => !IsMergeTombstoneFilterEnabled
+                    || EF.Property<Guid?>(e, nameof(IHasMergeTombstone.MergedIntoId)) == null);
+        }
+    }
+
+    /// <summary>
+    /// Mirrors the parent's soft-delete / active filters onto a translation entity (EF Core
+    /// filter-consistency requirement on required principals), with <c>this</c>-bound bypass
+    /// flags — same shapes as the legacy proxy mirrors in <c>ConfigureTranslation</c>.
+    /// </summary>
+    private void ConfigureTranslationFilters<TTranslation, TParent>(ModelBuilder modelBuilder)
+        where TTranslation : class, ITranslation<TParent>
+        where TParent : Entity
+    {
+        Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TTranslation> builder =
+            modelBuilder.Entity<TTranslation>();
+
+        if (typeof(ISoftDeletable).IsAssignableFrom(typeof(TParent)))
+        {
+            builder.HasQueryFilter(GranitFilterNames.SoftDelete,
+                t => !IsSoftDeleteFilterEnabled
+                    || t.Parent == null
+                    || !EF.Property<bool>(t.Parent, nameof(ISoftDeletable.IsDeleted)));
+        }
+
+        if (typeof(IActive).IsAssignableFrom(typeof(TParent)))
+        {
+            builder.HasQueryFilter(GranitFilterNames.Active,
+                t => !IsActiveFilterEnabled
+                    || t.Parent == null
+                    || EF.Property<bool>(t.Parent, nameof(IActive.Activated)));
+        }
     }
 }

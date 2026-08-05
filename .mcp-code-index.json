@@ -44680,12 +44680,42 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/GranitDbContext.cs",
-      "line": 47,
+      "line": 48,
       "members": [
         {
           "name": "IsMultiTenantFilterEnabled",
           "kind": "property",
           "signature": "bool IsMultiTenantFilterEnabled",
+          "returnType": "bool"
+        },
+        {
+          "name": "IsSoftDeleteFilterEnabled",
+          "kind": "property",
+          "signature": "bool IsSoftDeleteFilterEnabled",
+          "returnType": "bool"
+        },
+        {
+          "name": "IsActiveFilterEnabled",
+          "kind": "property",
+          "signature": "bool IsActiveFilterEnabled",
+          "returnType": "bool"
+        },
+        {
+          "name": "IsProcessingRestrictionFilterEnabled",
+          "kind": "property",
+          "signature": "bool IsProcessingRestrictionFilterEnabled",
+          "returnType": "bool"
+        },
+        {
+          "name": "IsPublishableFilterEnabled",
+          "kind": "property",
+          "signature": "bool IsPublishableFilterEnabled",
+          "returnType": "bool"
+        },
+        {
+          "name": "IsMergeTombstoneFilterEnabled",
+          "kind": "property",
+          "signature": "bool IsMergeTombstoneFilterEnabled",
           "returnType": "bool"
         }
       ]

@@ -70,9 +70,7 @@ public abstract class QueryFilterSqlConformanceSuite(IRelationalConformanceFixtu
         }
     }
 
-    [Fact(Skip = "Repro of #3174: IDataFilter.Disable<T>() is folded into the cached plan for "
-        + "proxy-backed filters on relational providers — the bypass never reaches SQL. "
-        + "Un-skip when the flags become GranitDbContext instance members.")]
+    [Fact]
     public async Task Flow_scoped_disable_reveals_inactive_rows()
     {
         await using ConformanceHarness harness = await ConformanceHarness.CreateAsync(fixture);
