@@ -166,10 +166,12 @@ public static class WolverineHostApplicationBuilderExtensions
             opts.CodeGeneration.TypeLoadMode = messagingOptions.CodeGenerationMode;
 
             // Service-location policy: NotAllowed aborts `codegen write` when a dependency
-            // can't be inlined. All three previously-problematic registrations are now clean:
-            // ICurrentUserService + IWolverineUserContextSetter use direct AddScoped<IFoo, TConcrete>
-            // (no lambda); INotificationPublisher impls are internal but InternalsVisibleTo
-            // "WolverineHandlers" is declared in Granit.Notifications and Granit.Notifications.Wolverine.
+            // can't be inlined. Every concrete type reachable from a handler chain must be
+            // PUBLIC, not merely registered without a lambda: for a consumer's Static build the
+            // generated sources compile into the *host* assembly, which no framework
+            // InternalsVisibleTo grant can name — internal concretes therefore always degrade
+            // to service location there and abort the build (public-in-Internal-namespace is
+            // the accepted shape, e.g. WolverineCurrentUserService, WolverineLocalEventBus).
             opts.ServiceLocationPolicy = ServiceLocationPolicy.NotAllowed;
 
             // IDomainEvent — force local routing, never forward to external transports.

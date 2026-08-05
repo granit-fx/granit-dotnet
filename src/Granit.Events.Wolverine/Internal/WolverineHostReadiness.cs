@@ -14,7 +14,7 @@ namespace Granit.Events.Wolverine.Internal;
 /// hosted services (including Wolverine) have completed <c>StartAsync</c>,
 /// making it the safe point to enable Wolverine-backed event publishing.
 /// </remarks>
-internal sealed partial class WolverineHostReadiness(
+public sealed partial class WolverineHostReadiness(
     ILogger<WolverineHostReadiness> logger) : IHostedLifecycleService
 {
     private volatile bool _isReady;

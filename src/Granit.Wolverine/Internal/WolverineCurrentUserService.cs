@@ -29,7 +29,7 @@ namespace Granit.Wolverine.Internal;
 /// </para>
 /// <para>Compliance: no PII is logged.</para>
 /// </remarks>
-internal sealed class WolverineCurrentUserService(IHttpContextAccessor httpContextAccessor)
+public sealed class WolverineCurrentUserService(IHttpContextAccessor httpContextAccessor)
     : ICurrentUserService, IWolverineUserContextSetter
 {
     private static readonly AsyncLocal<string?> _overrideUserId = new();
