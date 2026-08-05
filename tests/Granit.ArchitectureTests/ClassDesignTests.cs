@@ -44,7 +44,12 @@ public sealed class ClassDesignTests
             Architecture, "Granit.",
             // Wolverine requires middleware constructor parameters to be public,
             // even when the interface is an internal implementation detail.
-            "Granit.Wolverine.Internal.IWolverineUserContextSetter");
+            "Granit.Wolverine.Internal.IWolverineUserContextSetter",
+            // Wolverine codegen instantiates these concretes from generated code (#3186) —
+            // public class required, but they stay implementation details.
+            "Granit.Wolverine.Internal.WolverineCurrentUserService",
+            "Granit.Events.Wolverine.Internal.WolverineHostReadiness",
+            "Granit.Events.Wolverine.Internal.WolverineLocalEventBus");
 
     [Fact]
     public void Concrete_exception_classes_should_be_sealed() =>
