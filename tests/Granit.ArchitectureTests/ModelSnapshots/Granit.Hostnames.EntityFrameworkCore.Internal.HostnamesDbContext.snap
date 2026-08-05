@@ -1,0 +1,213 @@
+Model: 
+  EntityType: DnsConflict Owned
+    Properties: 
+      ManagedHostnameId (no field, Guid) Shadow Required PK FK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      __synthesizedOrdinal (no field, int) Shadow Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+      ConflictType (DnsConflictType) Required MaxLength(21)
+        Annotations: 
+          MaxLength: 21
+          Npgsql:ValueGenerationStrategy: None
+      Details (string) Required MaxLength(1024)
+        Annotations: 
+          MaxLength: 1024
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      ManagedHostnameId, __synthesizedOrdinal PK
+    Foreign keys: 
+      DnsConflict {'ManagedHostnameId'} -> ManagedHostname {'Id'} Required Ownership Cascade ToDependent: Conflicts
+    Annotations: 
+      Relational:ContainerColumnName: Conflicts
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: hostnames_managed_hostnames
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: ExpectedDnsRecord Owned
+    Properties: 
+      ManagedHostnameId (no field, Guid) Shadow Required PK FK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      __synthesizedOrdinal (no field, int) Shadow Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+      Name (string) Required MaxLength(253)
+        Annotations: 
+          MaxLength: 253
+          Npgsql:ValueGenerationStrategy: None
+      RecordType (DnsRecordType) Required MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      Value (string) Required MaxLength(512)
+        Annotations: 
+          MaxLength: 512
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      ManagedHostnameId, __synthesizedOrdinal PK
+    Foreign keys: 
+      ExpectedDnsRecord {'ManagedHostnameId'} -> ManagedHostname {'Id'} Required Ownership Cascade ToDependent: ExpectedDnsRecords
+    Annotations: 
+      Relational:ContainerColumnName: ExpectedDnsRecords
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: hostnames_managed_hostnames
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: ManagedHostname
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CertExpiresAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CertificateStatus (CertificateStatus) Required MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyStamp (string) Required Concurrency MaxLength(36)
+        Annotations: 
+          MaxLength: 36
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      FailedCheckCount (int) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Host (Hostname) Required Index MaxLength(253)
+        Annotations: 
+          MaxLength: 253
+          Npgsql:ValueGenerationStrategy: None
+      IsPrimary (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      LastCheckedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      NextCheckAt (DateTimeOffset?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      OwnerId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      OwnerType (string) Required Index MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      Status (HostnameStatus) Required Index MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      VerificationToken (string) MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+    Navigations: 
+      Conflicts (IReadOnlyList<DnsConflict>) Collection ToDependent DnsConflict
+        Annotations: 
+          EagerLoaded: True
+      ExpectedDnsRecords (IReadOnlyList<ExpectedDnsRecord>) Collection ToDependent ExpectedDnsRecord
+        Annotations: 
+          EagerLoaded: True
+    Keys: 
+      Id PK
+    Indexes: 
+      Host Unique
+        Annotations: 
+          Relational:Name: uq_hostnames_managed_hostnames_host
+      OwnerType, OwnerId
+        Annotations: 
+          Relational:Name: ix_hostnames_managed_hostnames_owner
+      Status, NextCheckAt
+        Annotations: 
+          Relational:Name: ix_hostnames_managed_hostnames_poll
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: hostnames_managed_hostnames
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: WorkflowTransitionRecord
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Comment (string) MaxLength(2000)
+        Annotations: 
+          MaxLength: 2000
+          Npgsql:ValueGenerationStrategy: None
+      EntityId (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      EntityType (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      NewState (string) Required MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      PreviousState (string) Required MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TransitionedAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TransitionedBy (string) Required Index MaxLength(450)
+        Annotations: 
+          MaxLength: 450
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      TenantId, TransitionedAt
+        Annotations: 
+          Relational:Name: ix_workflow_transition_records_tenantid_at
+      TransitionedBy, TransitionedAt
+        Annotations: 
+          Relational:Name: ix_workflow_transition_records_by_user_at
+      EntityType, EntityId, TransitionedAt
+        Annotations: 
+          Relational:Name: ix_workflow_transition_records_entity_type_id_at
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: workflow_transition_records
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  ManagedHostname[MultiTenant]: e => (Not(value(Granit.Hostnames.EntityFrameworkCore.Internal.HostnamesDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Hostnames.EntityFrameworkCore.Internal.HostnamesDbContext).CurrentTenantId))
+  WorkflowTransitionRecord[MultiTenant]: e => (Not(value(Granit.Hostnames.EntityFrameworkCore.Internal.HostnamesDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Hostnames.EntityFrameworkCore.Internal.HostnamesDbContext).CurrentTenantId))

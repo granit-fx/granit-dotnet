@@ -1,0 +1,70 @@
+Model: 
+  EntityType: CookieConsentRecord
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      AnonymizedIp (string) MaxLength(45)
+        Annotations: 
+          MaxLength: 45
+          Npgsql:ValueGenerationStrategy: None
+      CmpSource (string) Required MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      CorrelationId (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DecidedAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeniedCategories (IReadOnlyList<string>) Required MaxLength(512)
+        Annotations: 
+          MaxLength: 512
+          Npgsql:ValueGenerationStrategy: None
+      GrantedCategories (IReadOnlyList<string>) Required MaxLength(512)
+        Annotations: 
+          MaxLength: 512
+          Npgsql:ValueGenerationStrategy: None
+      Mode (CookieConsentMode) Required MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserAgent (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      CreatedBy
+        Annotations: 
+          Relational:Name: ix_cookie_consent_records_created_by
+      TenantId, DecidedAt
+        Annotations: 
+          Relational:Name: ix_cookie_consent_records_tenant_decided_at
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: cookie_consent_records
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  CookieConsentRecord[MultiTenant]: e => (Not(value(Granit.Http.Cookies.EntityFrameworkCore.Internal.CookiesDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Http.Cookies.EntityFrameworkCore.Internal.CookiesDbContext).CurrentTenantId))

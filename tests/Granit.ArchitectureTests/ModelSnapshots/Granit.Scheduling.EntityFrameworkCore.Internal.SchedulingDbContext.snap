@@ -1,0 +1,77 @@
+Model: 
+  EntityType: ScheduledAction
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      AttemptCount (int) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CancelledBy (string) MaxLength(450)
+        Annotations: 
+          MaxLength: 450
+          Npgsql:ValueGenerationStrategy: None
+      CorrelationId (string) Index MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ExecuteAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ExecutedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      FailureReason (string) MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      PayloadJson (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      PayloadType (string) Required MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      Status (ScheduledActionStatus) Required Index MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      CorrelationId
+        Annotations: 
+          Relational:Name: ix_scheduling_scheduled_actions_correlation_id
+      Status, ExecuteAt
+        Annotations: 
+          Relational:Name: ix_scheduling_scheduled_actions_status_execute_at
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: scheduling_scheduled_actions
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  ScheduledAction[MultiTenant]: e => (Not(value(Granit.Scheduling.EntityFrameworkCore.Internal.SchedulingDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Scheduling.EntityFrameworkCore.Internal.SchedulingDbContext).CurrentTenantId))

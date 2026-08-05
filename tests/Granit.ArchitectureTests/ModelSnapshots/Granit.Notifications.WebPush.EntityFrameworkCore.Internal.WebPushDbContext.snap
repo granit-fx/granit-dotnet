@@ -1,0 +1,59 @@
+Model: 
+  EntityType: WebPushSubscription
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Auth (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      Endpoint (string) Required Index MaxLength(2048)
+        Annotations: 
+          MaxLength: 2048
+          Npgsql:ValueGenerationStrategy: None
+      ExpirationTime (long?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      P256dh (string) Required MaxLength(512)
+        Annotations: 
+          MaxLength: 512
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      Endpoint, TenantId Unique
+        Annotations: 
+          Relational:Name: uq_notifications_web_push_subscriptions_endpoint_tenant
+      UserId, TenantId
+        Annotations: 
+          Relational:Name: ix_notifications_web_push_subscriptions_user_tenant
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: notifications_web_push_subscriptions
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  WebPushSubscription[MultiTenant]: e => (Not(value(Granit.Notifications.WebPush.EntityFrameworkCore.Internal.WebPushDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Notifications.WebPush.EntityFrameworkCore.Internal.WebPushDbContext).CurrentTenantId))

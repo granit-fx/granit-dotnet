@@ -1,0 +1,92 @@
+Model: 
+  EntityType: IndexedEntryRow<Guid>
+    Properties: 
+      TenantId (Guid?) Required PK Index AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Key (Guid) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CharCount (int) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Content (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DataSubjectId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      IsTruncated (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Language (string) MaxLength(16)
+        Annotations: 
+          MaxLength: 16
+          Npgsql:ValueGenerationStrategy: None
+      SearchVector (NpgsqlTsVector) Required Index BeforeSave:Ignore AfterSave:Ignore ValueGenerated.OnAddOrUpdate
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+          Relational:ColumnType: tsvector
+          Relational:ComputedColumnSql: to_tsvector('english'::regconfig, coalesce("Content", ''))
+          Relational:IsStored: True
+      Summary (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Tags (string[]) Element type: string Required
+        Annotations: 
+          ElementType: Element type: string Required
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      TenantId, Key PK
+    Indexes: 
+      SearchVector
+        Annotations: 
+          Npgsql:IndexMethod: GIN
+          Relational:Name: ix_indexing_indexed_entry_guid_search_vector_gin
+      TenantId, DataSubjectId
+        Annotations: 
+          Relational:Name: ix_indexing_indexed_entry_guid_data_subject
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: indexing_indexed_entry_guid
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: IndexingRebuildCheckpointRow
+    Properties: 
+      TenantId (Guid?) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      SourceName (string) Required PK AfterSave:Throw MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyStamp (string) Required Concurrency MaxLength(36)
+        Annotations: 
+          MaxLength: 36
+          Npgsql:ValueGenerationStrategy: None
+      LastProcessedKey (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      UpdatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      TenantId, SourceName PK
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: indexing_rebuild_checkpoint
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  IndexedEntryRow[MultiTenant]: e => (Not(value(Granit.Indexing.EntityFrameworkCore.IndexingDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Indexing.EntityFrameworkCore.IndexingDbContext).CurrentTenantId))

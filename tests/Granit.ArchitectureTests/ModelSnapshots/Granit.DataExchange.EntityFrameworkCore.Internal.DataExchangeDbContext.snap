@@ -1,0 +1,324 @@
+Model: 
+  EntityType: ExportPresetEntity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DefinitionName (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      Fields (List<string>) Required Element type: string Required
+        Annotations: 
+          ElementType: Element type: string Required
+          Npgsql:ValueGenerationStrategy: None
+      Format (string) Required MaxLength(10)
+        Annotations: 
+          MaxLength: 10
+          Npgsql:ValueGenerationStrategy: None
+      IncludeIdForImport (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      PresetName (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      SavedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      SavedBy (string) Required MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      DefinitionName, PresetName, TenantId Unique
+        Annotations: 
+          Relational:Name: uq_data_exchange_export_presets_def_name_tenant
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: data_exchange_export_presets
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: ExternalIdMappingEntity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DefinitionName (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      ExternalId (string) Required Index MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      InternalId (Guid) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      DefinitionName, ExternalId, TenantId Unique
+        Annotations: 
+          Relational:Name: uq_data_exchange_external_id_mappings_def_ext_tenant
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: data_exchange_external_id_mappings
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: SavedMappingEntity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DefinitionName (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      SavedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      SavedBy (string) Required MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Navigations: 
+      Mappings (List<ImportColumnMapping>) Collection ToDependent ImportColumnMapping
+        Annotations: 
+          EagerLoaded: True
+    Keys: 
+      Id PK
+    Indexes: 
+      DefinitionName, TenantId Unique
+        Annotations: 
+          Relational:Name: uq_data_exchange_saved_mappings_def_tenant
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: data_exchange_saved_mappings
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: ExportJob
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      BlobReference (BlobReference) MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      CompletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyStamp (string) Required Concurrency MaxLength(36)
+        Annotations: 
+          MaxLength: 36
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      DefinitionName (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      ErrorMessage (string) MaxLength(2000)
+        Annotations: 
+          MaxLength: 2000
+          Npgsql:ValueGenerationStrategy: None
+      FileDeletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      FileName (string) MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      Format (string) Required MaxLength(10)
+        Annotations: 
+          MaxLength: 10
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      Request (ExportRequest) Required
+        Annotations: 
+          Granit:JsonSerialized: True
+          Npgsql:ValueGenerationStrategy: None
+      RowCount (int?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Status (ExportJobStatus) Required Index MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      DefinitionName, Status
+        Annotations: 
+          Relational:Name: ix_data_exchange_export_jobs_definition_status
+      TenantId, Status
+        Annotations: 
+          Relational:Name: ix_data_exchange_export_jobs_tenant_status
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: data_exchange_export_jobs
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: ImportJob
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      BlobReference (BlobReference) Required MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      CompletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyStamp (string) Required Concurrency MaxLength(36)
+        Annotations: 
+          MaxLength: 36
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      DefinitionName (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      EntityTypeName (string) Required MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      FileDeletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      FileSizeBytes (long) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Mappings (IReadOnlyList<ImportColumnMapping>)
+        Annotations: 
+          Granit:JsonSerialized: True
+          Npgsql:ValueGenerationStrategy: None
+      MimeType (string) Required MaxLength(127)
+        Annotations: 
+          MaxLength: 127
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      OriginalFileName (string) Required MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      Report (ImportReport)
+        Annotations: 
+          Granit:JsonSerialized: True
+          Npgsql:ValueGenerationStrategy: None
+      Status (ImportJobStatus) Required Index MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      DefinitionName, Status
+        Annotations: 
+          Relational:Name: ix_data_exchange_import_jobs_definition_status
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: data_exchange_import_jobs
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: ImportColumnMapping Owned
+    Properties: 
+      SavedMappingEntityId (no field, Guid) Shadow Required PK FK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      __synthesizedOrdinal (no field, int) Shadow Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+      Confidence (MappingConfidence) Required MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      SourceColumn (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TargetProperty (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      SavedMappingEntityId, __synthesizedOrdinal PK
+    Foreign keys: 
+      ImportColumnMapping {'SavedMappingEntityId'} -> SavedMappingEntity {'Id'} Required Ownership Cascade ToDependent: Mappings
+    Annotations: 
+      Relational:ContainerColumnName: Mappings
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: data_exchange_saved_mappings
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  ExportPresetEntity[MultiTenant]: e => (Not(value(Granit.DataExchange.EntityFrameworkCore.Internal.DataExchangeDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.DataExchange.EntityFrameworkCore.Internal.DataExchangeDbContext).CurrentTenantId))
+  ExternalIdMappingEntity[MultiTenant]: e => (Not(value(Granit.DataExchange.EntityFrameworkCore.Internal.DataExchangeDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.DataExchange.EntityFrameworkCore.Internal.DataExchangeDbContext).CurrentTenantId))
+  SavedMappingEntity[MultiTenant]: e => (Not(value(Granit.DataExchange.EntityFrameworkCore.Internal.DataExchangeDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.DataExchange.EntityFrameworkCore.Internal.DataExchangeDbContext).CurrentTenantId))
+  ExportJob[MultiTenant]: e => (Not(value(Granit.DataExchange.EntityFrameworkCore.Internal.DataExchangeDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.DataExchange.EntityFrameworkCore.Internal.DataExchangeDbContext).CurrentTenantId))
+  ImportJob[MultiTenant]: e => (Not(value(Granit.DataExchange.EntityFrameworkCore.Internal.DataExchangeDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.DataExchange.EntityFrameworkCore.Internal.DataExchangeDbContext).CurrentTenantId))

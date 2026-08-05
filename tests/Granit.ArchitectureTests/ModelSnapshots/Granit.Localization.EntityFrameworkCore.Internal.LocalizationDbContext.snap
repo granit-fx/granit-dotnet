@@ -1,0 +1,63 @@
+Model: 
+  EntityType: LocalizationOverride
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(450)
+        Annotations: 
+          MaxLength: 450
+          Npgsql:ValueGenerationStrategy: None
+      CultureName (string) Required Index MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      Key (string) Required Index MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(450)
+        Annotations: 
+          MaxLength: 450
+          Npgsql:ValueGenerationStrategy: None
+      ResourceName (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Value (string) Required MaxLength(4000)
+        Annotations: 
+          MaxLength: 4000
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      TenantId, ResourceName, CultureName
+        Annotations: 
+          Relational:Name: ix_localization_overrides_tenant_resource_culture
+      TenantId, ResourceName, CultureName, Key Unique
+        Annotations: 
+          Relational:Name: uq_localization_overrides_tenant_resource_culture_key
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: localization_overrides
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  LocalizationOverride[MultiTenant]: e => (Not(value(Granit.Localization.EntityFrameworkCore.Internal.LocalizationDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Localization.EntityFrameworkCore.Internal.LocalizationDbContext).CurrentTenantId))

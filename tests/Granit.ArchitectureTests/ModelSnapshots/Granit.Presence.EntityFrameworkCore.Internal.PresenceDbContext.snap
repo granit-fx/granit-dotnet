@@ -1,0 +1,48 @@
+Model: 
+  EntityType: UserPresence
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(450)
+        Annotations: 
+          MaxLength: 450
+          Npgsql:ValueGenerationStrategy: None
+      ManualStatus (ManualPresenceStatus) Required ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+          ProviderClrType: System.Int16
+          Relational:DefaultValue: Available
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(450)
+        Annotations: 
+          MaxLength: 450
+          Npgsql:ValueGenerationStrategy: None
+      OverrideUntilUtc (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      UserId Unique
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: presence_user_presence
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:

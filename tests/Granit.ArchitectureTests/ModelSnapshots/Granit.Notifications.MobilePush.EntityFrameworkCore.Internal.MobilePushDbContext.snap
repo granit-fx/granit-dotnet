@@ -1,0 +1,56 @@
+Model: 
+  EntityType: MobilePushToken
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      DeviceToken (string) Required MaxLength(4096)
+        Annotations: 
+          MaxLength: 4096
+          Npgsql:ValueGenerationStrategy: None
+      DeviceTokenHash (string) Required Index MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      Platform (MobilePlatform) Required MaxLength(16)
+        Annotations: 
+          MaxLength: 16
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      DeviceTokenHash, TenantId Unique
+        Annotations: 
+          Relational:Name: uq_notifications_mobile_push_tokens_device_hash_tenant
+      UserId, TenantId
+        Annotations: 
+          Relational:Name: ix_notifications_mobile_push_tokens_user_tenant
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: notifications_mobile_push_tokens
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  MobilePushToken[MultiTenant]: e => (Not(value(Granit.Notifications.MobilePush.EntityFrameworkCore.Internal.MobilePushDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Notifications.MobilePush.EntityFrameworkCore.Internal.MobilePushDbContext).CurrentTenantId))

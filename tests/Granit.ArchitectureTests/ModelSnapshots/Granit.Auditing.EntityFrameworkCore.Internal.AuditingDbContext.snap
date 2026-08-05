@@ -1,0 +1,152 @@
+Model: 
+  EntityType: AuditEntityChange
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      AuditEntryId (Guid) Required FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+          Relational:ColumnName: AuditLogEntryId
+      ChangeType (AuditChangeType) Required MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      EntityId (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      EntityType (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Navigations: 
+      PropertyChanges (ICollection<AuditPropertyChange>) Collection ToDependent AuditPropertyChange
+    Keys: 
+      Id PK
+    Foreign keys: 
+      AuditEntityChange {'AuditEntryId'} -> AuditEntry {'Id'} Required Cascade ToDependent: EntityChanges
+    Indexes: 
+      AuditEntryId
+      EntityType, EntityId, AuditEntryId
+        Annotations: 
+          Relational:Name: ix_audit_log_entity_changes_type_id
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: audit_log_entity_changes
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: AuditEntry
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Category (AuditCategory) Required Index MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+      CorrelationId (string) Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      IpAddress (string) MaxLength(45)
+        Annotations: 
+          MaxLength: 45
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Timestamp (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserAgent (string) MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      UserId (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      UserName (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+    Navigations: 
+      EntityChanges (ICollection<AuditEntityChange>) Collection ToDependent AuditEntityChange
+    Keys: 
+      Id PK
+    Indexes: 
+      CorrelationId
+        Annotations: 
+          Relational:Name: ix_audit_log_log_entries_correlation
+      Timestamp
+        Annotations: 
+          Relational:Name: ix_audit_log_log_entries_timestamp
+      Category, Timestamp
+        Annotations: 
+          Relational:Name: ix_audit_log_log_entries_category_timestamp
+      TenantId, Timestamp
+        Annotations: 
+          Relational:Name: ix_audit_log_log_entries_tenant_timestamp
+      UserId, Timestamp
+        Annotations: 
+          Relational:Name: ix_audit_log_log_entries_user_timestamp
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: audit_log_log_entries
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: AuditPropertyChange
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      AuditEntityChangeId (Guid) Required FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      NewValue (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      OriginalValue (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      PropertyName (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Foreign keys: 
+      AuditPropertyChange {'AuditEntityChangeId'} -> AuditEntityChange {'Id'} Required Cascade ToDependent: PropertyChanges
+    Indexes: 
+      AuditEntityChangeId
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: audit_log_property_changes
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  AuditEntityChange[MultiTenant]: e => (Not(value(Granit.Auditing.EntityFrameworkCore.Internal.AuditingDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Auditing.EntityFrameworkCore.Internal.AuditingDbContext).CurrentTenantId))
+  AuditEntry[MultiTenant]: e => (Not(value(Granit.Auditing.EntityFrameworkCore.Internal.AuditingDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Auditing.EntityFrameworkCore.Internal.AuditingDbContext).CurrentTenantId))

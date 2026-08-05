@@ -1,0 +1,322 @@
+Model: 
+  EntityType: SigningKey
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ActivatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Algorithm (string) Required MaxLength(32)
+        Annotations: 
+          MaxLength: 32
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyStamp (string) Required Concurrency MaxLength(36)
+        Annotations: 
+          MaxLength: 36
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      EncryptedKeyMaterial (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ExpiresAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      KeyId (string) Required Index MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+      KeySize (int) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      KeyType (string) Required Index MaxLength(32)
+        Annotations: 
+          MaxLength: 32
+          Npgsql:ValueGenerationStrategy: None
+      RetiredAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Status (SigningKeyStatus) Required Index MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      KeyId Unique
+        Annotations: 
+          Relational:Name: uq_openiddict_signing_keys_key_id
+      KeyType Unique
+        Annotations: 
+          Relational:Filter: "Status" = 'Active'
+          Relational:Name: uq_openiddict_signing_keys_active_type
+      KeyType, Status
+        Annotations: 
+          Relational:Name: ix_openiddict_signing_keys_type_status
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_signing_keys
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: GranitOpenIddictApplication
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ApplicationType (string) MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+      ClientId (string) Index MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      ClientSecret (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ClientType (string) MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyToken (string) Concurrency MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+      ConsentType (string) MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+      DisplayName (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DisplayNames (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      JsonWebKeySet (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Permissions (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      PostLogoutRedirectUris (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Properties (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      RedirectUris (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Requirements (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Settings (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Navigations: 
+      Authorizations (ICollection<GranitOpenIddictAuthorization>) Collection ToDependent GranitOpenIddictAuthorization Inverse: Application
+      Tokens (ICollection<GranitOpenIddictToken>) Collection ToDependent GranitOpenIddictToken Inverse: Application
+    Keys: 
+      Id PK
+    Indexes: 
+      ClientId Unique
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_applications
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: GranitOpenIddictAuthorization
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ApplicationId (no field, Guid?) Shadow FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyToken (string) Concurrency MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+      CreationDate (DateTime?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Properties (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Scopes (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Status (string) Index MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+      Subject (string) Index MaxLength(400)
+        Annotations: 
+          MaxLength: 400
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Type (string) Index MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+    Navigations: 
+      Application (GranitOpenIddictApplication) Optional ToPrincipal GranitOpenIddictApplication Inverse: Authorizations
+      Tokens (ICollection<GranitOpenIddictToken>) Collection ToDependent GranitOpenIddictToken Inverse: Authorization
+    Keys: 
+      Id PK
+    Foreign keys: 
+      GranitOpenIddictAuthorization {'ApplicationId'} -> GranitOpenIddictApplication {'Id'} ClientSetNull ToDependent: Authorizations ToPrincipal: Application
+    Indexes: 
+      ApplicationId, Status, Subject, Type
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_authorizations
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: GranitOpenIddictScope
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyToken (string) Concurrency MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+      Description (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Descriptions (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DisplayName (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DisplayNames (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Name (string) Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      Properties (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Resources (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      Name Unique
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_scopes
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: GranitOpenIddictToken
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ApplicationId (no field, Guid?) Shadow FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      AuthorizationId (no field, Guid?) Shadow FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyToken (string) Concurrency MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+      CreationDate (DateTime?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ExpirationDate (DateTime?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      LastActivityAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Payload (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Properties (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      RedemptionDate (DateTime?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ReferenceId (string) Index MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      Status (string) Index MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+      Subject (string) Index MaxLength(400)
+        Annotations: 
+          MaxLength: 400
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Type (string) Index MaxLength(150)
+        Annotations: 
+          MaxLength: 150
+          Npgsql:ValueGenerationStrategy: None
+    Navigations: 
+      Application (GranitOpenIddictApplication) Optional ToPrincipal GranitOpenIddictApplication Inverse: Tokens
+      Authorization (GranitOpenIddictAuthorization) Optional ToPrincipal GranitOpenIddictAuthorization Inverse: Tokens
+    Keys: 
+      Id PK
+    Foreign keys: 
+      GranitOpenIddictToken {'ApplicationId'} -> GranitOpenIddictApplication {'Id'} ClientSetNull ToDependent: Tokens ToPrincipal: Application
+      GranitOpenIddictToken {'AuthorizationId'} -> GranitOpenIddictAuthorization {'Id'} ClientSetNull ToDependent: Tokens ToPrincipal: Authorization
+    Indexes: 
+      AuthorizationId
+      ReferenceId Unique
+      ApplicationId, Status, Subject, Type
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_tokens
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  GranitOpenIddictApplication[MultiTenant]: e => ((Not(value(Granit.OpenIddict.EntityFrameworkCore.Internal.OpenIddictDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == null)) OrElse (Property(e, "TenantId") == value(Granit.OpenIddict.EntityFrameworkCore.Internal.OpenIddictDbContext).CurrentTenantId))
+  GranitOpenIddictAuthorization[MultiTenant]: e => ((Not(value(Granit.OpenIddict.EntityFrameworkCore.Internal.OpenIddictDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == null)) OrElse (Property(e, "TenantId") == value(Granit.OpenIddict.EntityFrameworkCore.Internal.OpenIddictDbContext).CurrentTenantId))
+  GranitOpenIddictScope[MultiTenant]: e => ((Not(value(Granit.OpenIddict.EntityFrameworkCore.Internal.OpenIddictDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == null)) OrElse (Property(e, "TenantId") == value(Granit.OpenIddict.EntityFrameworkCore.Internal.OpenIddictDbContext).CurrentTenantId))
+  GranitOpenIddictToken[MultiTenant]: e => ((Not(value(Granit.OpenIddict.EntityFrameworkCore.Internal.OpenIddictDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == null)) OrElse (Property(e, "TenantId") == value(Granit.OpenIddict.EntityFrameworkCore.Internal.OpenIddictDbContext).CurrentTenantId))

@@ -1,0 +1,179 @@
+Model: 
+  EntityType: PromptCategory
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      DeletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeletedBy (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      IsDeleted (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      IsSystem (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      Name (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      TenantId, Name Unique
+        Annotations: 
+          Relational:Name: ix_ai_prompts_categories_tenant_name
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: ai_prompts_categories
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: PromptTemplate
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Content (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      DeletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeletedBy (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      Icon (string) MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      IconColor (HexColor) MaxLength(9)
+        Annotations: 
+          MaxLength: 9
+          Npgsql:ValueGenerationStrategy: None
+      IsDeleted (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      IsSystem (bool) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      Name (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      OwnerId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ShortDescription (string) Required MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Version (int) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Navigations: 
+      CategoryLinks (List<PromptTemplateCategory>) Collection ToDependent PromptTemplateCategory
+    Keys: 
+      Id PK
+    Indexes: 
+      TenantId, OwnerId
+        Annotations: 
+          Relational:Name: ix_ai_prompts_templates_tenant_owner
+      TenantId, IsSystem, OwnerId, Name
+        Annotations: 
+          Relational:Name: ix_ai_prompts_templates_tenant_system_owner_name
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: ai_prompts_templates
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: PromptTemplateCategory
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CategoryId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      PromptTemplateId (Guid) Required FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Foreign keys: 
+      PromptTemplateCategory {'PromptTemplateId'} -> PromptTemplate {'Id'} Required Cascade ToDependent: CategoryLinks
+    Indexes: 
+      CategoryId
+        Annotations: 
+          Relational:Name: ix_ai_prompts_template_categories_category
+      PromptTemplateId, CategoryId Unique
+        Annotations: 
+          Relational:Name: ix_ai_prompts_template_categories_prompt_category
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: ai_prompts_template_categories
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  PromptCategory[MultiTenant]: e => (Not(value(Granit.AI.Prompts.EntityFrameworkCore.Internal.AIPromptsDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.AI.Prompts.EntityFrameworkCore.Internal.AIPromptsDbContext).CurrentTenantId))
+  PromptCategory[SoftDelete]: e => (Not(value(Granit.AI.Prompts.EntityFrameworkCore.Internal.AIPromptsDbContext).IsSoftDeleteFilterEnabled) OrElse Not(Property(e, "IsDeleted")))
+  PromptTemplate[MultiTenant]: e => (Not(value(Granit.AI.Prompts.EntityFrameworkCore.Internal.AIPromptsDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.AI.Prompts.EntityFrameworkCore.Internal.AIPromptsDbContext).CurrentTenantId))
+  PromptTemplate[SoftDelete]: e => (Not(value(Granit.AI.Prompts.EntityFrameworkCore.Internal.AIPromptsDbContext).IsSoftDeleteFilterEnabled) OrElse Not(Property(e, "IsDeleted")))

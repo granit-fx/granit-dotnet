@@ -1,0 +1,452 @@
+Model: 
+  EntityType: GranitRole
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyStamp (string) Concurrency
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Description (string) MaxLength(512)
+        Annotations: 
+          MaxLength: 512
+          Npgsql:ValueGenerationStrategy: None
+      Name (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      NormalizedName (string) Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      NormalizedName Unique
+        Annotations: 
+          Relational:Name: RoleNameIndex
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_roles
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: GranitUserGroup
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Description (string) MaxLength(512)
+        Annotations: 
+          MaxLength: 512
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Name (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      TenantId, Name Unique
+        Annotations: 
+          Relational:Name: uq_openiddict_user_groups_tenant_name
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_user_groups
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: GranitUserGroupMember
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      GroupId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      UserId
+        Annotations: 
+          Relational:Name: ix_openiddict_user_group_members_user_id
+      GroupId, UserId Unique
+        Annotations: 
+          Relational:Name: uq_openiddict_user_group_members_group_user
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_user_group_members
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: LocalIdentity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      AccessFailedCount (int) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyStamp (string) Concurrency
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConsecutiveLockouts (int) Required ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+          Relational:DefaultValue: 0
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      CustomAttributesJson (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeletedBy (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      DeletionEventDispatchedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Email (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      EmailConfirmed (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      FirstName (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      IsDeleted (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      LastName (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      LockoutEnabled (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      LockoutEnd (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      NormalizedEmail (string) Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      NormalizedUserName (string) Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      PasswordHash (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      PhoneNumber (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      PhoneNumberConfirmed (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      RegistrationEventPendingSince (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      SecurityStamp (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TwoFactorEnabled (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (Guid) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserName (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      NormalizedEmail
+        Annotations: 
+          Relational:Name: EmailIndex
+      NormalizedUserName Unique
+        Annotations: 
+          Relational:Name: UserNameIndex
+      TenantId
+        Annotations: 
+          Relational:Name: ix_openiddict_users_tenant_id
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_users
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: IdentityPasskeyData Owned
+    Properties: 
+      IdentityUserPasskeyCredentialId (no field, byte[]) Shadow Required PK FK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      AttestationObject (byte[]) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ClientDataJson (byte[]) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      IsBackedUp (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      IsBackupEligible (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      IsUserVerified (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Name (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      PublicKey (byte[]) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      SignCount (uint) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Transports (string[]) Element type: string Required
+        Annotations: 
+          ElementType: Element type: string Required
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      IdentityUserPasskeyCredentialId PK
+    Foreign keys: 
+      IdentityPasskeyData {'IdentityUserPasskeyCredentialId'} -> IdentityUserPasskey<Guid> {'CredentialId'} Unique Required RequiredDependent Ownership Cascade ToDependent: Data
+    Annotations: 
+      Relational:ContainerColumnName: Data
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_user_passkeys
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: IdentityRoleClaim<Guid>
+    Properties: 
+      Id (int) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+      ClaimType (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ClaimValue (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      RoleId (Guid) Required FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Foreign keys: 
+      IdentityRoleClaim<Guid> {'RoleId'} -> GranitRole {'Id'} Required Cascade
+    Indexes: 
+      RoleId
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_role_claims
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: IdentityUserClaim<Guid>
+    Properties: 
+      Id (int) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+      ClaimType (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ClaimValue (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (Guid) Required FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Foreign keys: 
+      IdentityUserClaim<Guid> {'UserId'} -> LocalIdentity {'Id'} Required Cascade
+    Indexes: 
+      UserId
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_user_claims
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: IdentityUserLogin<Guid>
+    Properties: 
+      LoginProvider (string) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ProviderKey (string) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ProviderDisplayName (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (Guid) Required FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      LoginProvider, ProviderKey PK
+    Foreign keys: 
+      IdentityUserLogin<Guid> {'UserId'} -> LocalIdentity {'Id'} Required Cascade
+    Indexes: 
+      UserId
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_user_logins
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: IdentityUserPasskey<Guid>
+    Properties: 
+      CredentialId (byte[]) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (Guid) Required FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Navigations: 
+      Data (IdentityPasskeyData) Required ToDependent IdentityPasskeyData
+        Annotations: 
+          EagerLoaded: True
+    Keys: 
+      CredentialId PK
+    Foreign keys: 
+      IdentityUserPasskey<Guid> {'UserId'} -> LocalIdentity {'Id'} Required Cascade
+    Indexes: 
+      UserId
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_user_passkeys
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: IdentityUserRole<Guid>
+    Properties: 
+      UserId (Guid) Required PK FK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      RoleId (Guid) Required PK FK Index AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      UserId, RoleId PK
+    Foreign keys: 
+      IdentityUserRole<Guid> {'RoleId'} -> GranitRole {'Id'} Required Cascade
+      IdentityUserRole<Guid> {'UserId'} -> LocalIdentity {'Id'} Required Cascade
+    Indexes: 
+      RoleId
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_user_roles
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: IdentityUserToken<Guid>
+    Properties: 
+      UserId (Guid) Required PK FK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      LoginProvider (string) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Name (string) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Value (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      UserId, LoginProvider, Name PK
+    Foreign keys: 
+      IdentityUserToken<Guid> {'UserId'} -> LocalIdentity {'Id'} Required Cascade
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: openiddict_user_tokens
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  GranitUserGroup[MultiTenant]: e => ((Not(value(Granit.Identity.Local.EntityFrameworkCore.Internal.IdentityLocalDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == null)) OrElse (Property(e, "TenantId") == value(Granit.Identity.Local.EntityFrameworkCore.Internal.IdentityLocalDbContext).CurrentTenantId))
+  GranitUserGroupMember[MultiTenant]: e => ((Not(value(Granit.Identity.Local.EntityFrameworkCore.Internal.IdentityLocalDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == null)) OrElse (Property(e, "TenantId") == value(Granit.Identity.Local.EntityFrameworkCore.Internal.IdentityLocalDbContext).CurrentTenantId))
+  LocalIdentity[MultiTenant]: e => ((Not(value(Granit.Identity.Local.EntityFrameworkCore.Internal.IdentityLocalDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == null)) OrElse (Property(e, "TenantId") == value(Granit.Identity.Local.EntityFrameworkCore.Internal.IdentityLocalDbContext).CurrentTenantId))
+  LocalIdentity[SoftDelete]: u => (Not(value(Granit.Identity.Local.EntityFrameworkCore.Extensions.IdentityLocalModelBuilderExtensions+SoftDeleteProxy).SoftDeleteEnabled) OrElse Not(u.IsDeleted))

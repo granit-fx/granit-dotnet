@@ -1,0 +1,52 @@
+Model: 
+  EntityType: TenantFeatureOverride
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(450)
+        Annotations: 
+          MaxLength: 450
+          Npgsql:ValueGenerationStrategy: None
+      FeatureName (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(450)
+        Annotations: 
+          MaxLength: 450
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Value (string) Required MaxLength(2000)
+        Annotations: 
+          MaxLength: 2000
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      TenantId, FeatureName Unique
+        Annotations: 
+          Relational:Name: uq_features_overrides_tenant_feature
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: features_overrides
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  TenantFeatureOverride[MultiTenant]: e => (Not(value(Granit.Features.EntityFrameworkCore.Internal.FeaturesDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Features.EntityFrameworkCore.Internal.FeaturesDbContext).CurrentTenantId))

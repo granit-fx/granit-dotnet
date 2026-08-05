@@ -1,0 +1,52 @@
+Model: 
+  EntityType: MergeIdempotencyEntry
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Key (string) Required Index MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+      LoserId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      RequestHash (string) Required Index MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      ResultJson (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ResultMac (string) Required MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      SurvivorId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      CreatedAt
+      TenantId, Key, RequestHash Unique
+      TenantId, SurvivorId, LoserId
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: entity_merge_idempotency
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:

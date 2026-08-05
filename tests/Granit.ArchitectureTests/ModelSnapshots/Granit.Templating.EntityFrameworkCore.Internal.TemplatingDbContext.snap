@@ -1,0 +1,207 @@
+Model: 
+  EntityType: TemplateCategoryEntity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      Description (string) MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      Icon (string) MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      Name (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      SortOrder (int) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      SortOrder, Name
+        Annotations: 
+          Relational:Name: ix_templating_categories_sort
+      TenantId, Name Unique
+        Annotations: 
+          Relational:Name: uq_templating_categories_tenant_name
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: templating_categories
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: TemplateRevisionEntity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CategoryId (Guid?) FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyStamp (string) Required Concurrency MaxLength(36)
+        Annotations: 
+          MaxLength: 36
+          Npgsql:ValueGenerationStrategy: None
+      Content (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      Culture (string) Index MaxLength(10)
+        Annotations: 
+          MaxLength: 10
+          Npgsql:ValueGenerationStrategy: None
+      IsPublished (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      LayoutName (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      LifecycleStatus (WorkflowLifecycleStatus) Required Index MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      MimeType (string) Required MaxLength(127)
+        Annotations: 
+          MaxLength: 127
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      PublishedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      PublishedBy (string) MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      TemplateName (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Version (int) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      VersionId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Foreign keys: 
+      TemplateRevisionEntity {'CategoryId'} -> TemplateCategoryEntity {'Id'} SetNull
+    Indexes: 
+      CategoryId
+      TemplateName, Culture
+        Annotations: 
+          Relational:Name: ix_templating_revisions_name_culture
+      VersionId, Version
+        Annotations: 
+          Relational:Name: ix_templating_revisions_version
+      TemplateName, Culture, LifecycleStatus
+        Annotations: 
+          Relational:Name: ix_templating_revisions_name_culture_status
+      TenantId, TemplateName, Culture Unique
+        Annotations: 
+          Relational:Filter: "IsPublished" = true
+          Relational:Name: uq_templating_revisions_published
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: templating_revisions
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: WorkflowTransitionRecord
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Comment (string) MaxLength(2000)
+        Annotations: 
+          MaxLength: 2000
+          Npgsql:ValueGenerationStrategy: None
+      EntityId (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      EntityType (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      NewState (string) Required MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      PreviousState (string) Required MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TransitionedAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TransitionedBy (string) Required Index MaxLength(450)
+        Annotations: 
+          MaxLength: 450
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      TenantId, TransitionedAt
+        Annotations: 
+          Relational:Name: ix_workflow_transition_records_tenantid_at
+      TransitionedBy, TransitionedAt
+        Annotations: 
+          Relational:Name: ix_workflow_transition_records_by_user_at
+      EntityType, EntityId, TransitionedAt
+        Annotations: 
+          Relational:Name: ix_workflow_transition_records_entity_type_id_at
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: workflow_transition_records
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  TemplateCategoryEntity[MultiTenant]: e => (Not(value(Granit.Templating.EntityFrameworkCore.Internal.TemplatingDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Templating.EntityFrameworkCore.Internal.TemplatingDbContext).CurrentTenantId))
+  TemplateRevisionEntity[MultiTenant]: e => (Not(value(Granit.Templating.EntityFrameworkCore.Internal.TemplatingDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Templating.EntityFrameworkCore.Internal.TemplatingDbContext).CurrentTenantId))
+  TemplateRevisionEntity[Publishable]: e => (Not(value(Granit.Templating.EntityFrameworkCore.Internal.TemplatingDbContext).IsPublishableFilterEnabled) OrElse Property(e, "IsPublished"))
+  WorkflowTransitionRecord[MultiTenant]: e => (Not(value(Granit.Templating.EntityFrameworkCore.Internal.TemplatingDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Templating.EntityFrameworkCore.Internal.TemplatingDbContext).CurrentTenantId))

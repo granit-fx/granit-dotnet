@@ -1,0 +1,229 @@
+Model: 
+  EntityType: DeletionRequestEntity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CancelledAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ExecutedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      MissingProviders (string) MaxLength(1000)
+        Annotations: 
+          MaxLength: 1000
+          Npgsql:ValueGenerationStrategy: None
+      Reason (string) Required MaxLength(2000)
+        Annotations: 
+          MaxLength: 2000
+          Npgsql:ValueGenerationStrategy: None
+      Regulation (string) MaxLength(40)
+        Annotations: 
+          MaxLength: 40
+          Npgsql:ValueGenerationStrategy: None
+      RequestedAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ScheduledDeletionAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      State (DeletionRequestState) Required Index MaxLength(30)
+        Annotations: 
+          MaxLength: 30
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      State, ScheduledDeletionAt
+        Annotations: 
+          Relational:Name: ix_privacy_deletion_requests_due
+      TenantId, UserId, RequestedAt
+        Annotations: 
+          Relational:Name: ix_privacy_deletion_requests_user_timeline
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: privacy_deletion_requests
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: ExportAssemblyCheckpointRow
+    Properties: 
+      RequestId (Guid) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CompletedShardObjectKeys (List<string>) Required
+        Annotations: 
+          Granit:JsonSerialized: True
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyStamp (string) Required Concurrency MaxLength(36)
+        Annotations: 
+          MaxLength: 36
+          Npgsql:ValueGenerationStrategy: None
+      LastCompletedShardIndex (int) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      NextFragmentIndex (int) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UpdatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      RequestId, TenantId PK
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: privacy_export_assembly_checkpoints
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: ExportRequestEntity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ArchiveBlobReferenceId (BlobReference) MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      CallerUserId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CompletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      MissingProviders (List<string>) Required
+        Annotations: 
+          Granit:JsonSerialized: True
+          Npgsql:ValueGenerationStrategy: None
+      RequestedAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      State (ExportRequestState) Required MaxLength(30)
+        Annotations: 
+          MaxLength: 30
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      TenantId, CallerUserId, RequestedAt
+        Annotations: 
+          Relational:Name: ix_privacy_export_requests_caller_timeline
+      TenantId, UserId, RequestedAt
+        Annotations: 
+          Relational:Name: ix_privacy_export_requests_user_timeline
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: privacy_export_requests
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: LegalDocument
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyStamp (string) Required Concurrency MaxLength(36)
+        Annotations: 
+          MaxLength: 36
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Description (string) MaxLength(2000)
+        Annotations: 
+          MaxLength: 2000
+          Npgsql:ValueGenerationStrategy: None
+      DisplayName (string) Required MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      DocumentBlobId (Guid?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DocumentId (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      IsPublished (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      LifecycleStatus (WorkflowLifecycleStatus) Required Index MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TemplateName (string) MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Version (int) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      VersionId (Guid) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      DocumentId, Version
+        Annotations: 
+          Relational:Name: ix_privacy_legal_documents_version
+      TenantId, DocumentId Unique
+        Annotations: 
+          Relational:Filter: "IsPublished" = true
+          Relational:Name: uq_privacy_legal_documents_published
+      TenantId, DocumentId, LifecycleStatus
+        Annotations: 
+          Relational:Name: ix_privacy_legal_documents_tenant_status
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: privacy_legal_documents
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  DeletionRequestEntity[MultiTenant]: e => (Not(value(Granit.Privacy.EntityFrameworkCore.Internal.PrivacyDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Privacy.EntityFrameworkCore.Internal.PrivacyDbContext).CurrentTenantId))
+  ExportAssemblyCheckpointRow[MultiTenant]: e => (Not(value(Granit.Privacy.EntityFrameworkCore.Internal.PrivacyDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Privacy.EntityFrameworkCore.Internal.PrivacyDbContext).CurrentTenantId))
+  ExportRequestEntity[MultiTenant]: e => (Not(value(Granit.Privacy.EntityFrameworkCore.Internal.PrivacyDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Privacy.EntityFrameworkCore.Internal.PrivacyDbContext).CurrentTenantId))
+  LegalDocument[MultiTenant]: e => (Not(value(Granit.Privacy.EntityFrameworkCore.Internal.PrivacyDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Privacy.EntityFrameworkCore.Internal.PrivacyDbContext).CurrentTenantId))
+  LegalDocument[Publishable]: e => (Not(value(Granit.Privacy.EntityFrameworkCore.Internal.PrivacyDbContext).IsPublishableFilterEnabled) OrElse Property(e, "IsPublished"))

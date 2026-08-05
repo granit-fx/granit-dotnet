@@ -1,0 +1,109 @@
+Model: 
+  EntityType: ApiKeyEntry
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      AllowedCidrs (List<string>) Required Element type: string Required
+        Annotations: 
+          ElementType: Element type: string Required
+          Npgsql:ValueGenerationStrategy: None
+      CacheBehavior (CacheBehavior) Required MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      DeletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeletedBy (string) MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      Environment (string) Required MaxLength(10)
+        Annotations: 
+          MaxLength: 10
+          Npgsql:ValueGenerationStrategy: None
+      ExpiresAt (DateTimeOffset?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      HashedKey (string) Required Index MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      IsDeleted (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      LastExpirationNotifiedAt (DateTimeOffset?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      LastFourChars (string) Required MaxLength(4)
+        Annotations: 
+          MaxLength: 4
+          Npgsql:ValueGenerationStrategy: None
+      LastUsedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      Name (string) Required MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      Permissions (List<string>) Required Element type: string Required
+        Annotations: 
+          ElementType: Element type: string Required
+          Npgsql:ValueGenerationStrategy: None
+      Prefix (string) Required MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      RevokedAt (DateTimeOffset?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Type (ApiKeyType) Required MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      HashedKey Unique
+        Annotations: 
+          Relational:Name: uq_authentication_api_keys_entries_hashed_key
+      TenantId
+        Annotations: 
+          Relational:Name: ix_authentication_api_keys_entries_tenant_id
+      ExpiresAt, LastExpirationNotifiedAt, RevokedAt
+        Annotations: 
+          Relational:Name: ix_authentication_api_keys_entries_expiring_scan
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: authentication_api_keys_entries
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  ApiKeyEntry[MultiTenant]: e => (Not(value(Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal.AuthenticationApiKeysDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal.AuthenticationApiKeysDbContext).CurrentTenantId))
+  ApiKeyEntry[SoftDelete]: e => (Not(value(Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal.AuthenticationApiKeysDbContext).IsSoftDeleteFilterEnabled) OrElse Not(Property(e, "IsDeleted")))

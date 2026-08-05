@@ -1,0 +1,185 @@
+Model: 
+  EntityType: Reaction
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      Emoji (string) Required Index MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      EntryId (Guid) Required FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Foreign keys: 
+      Reaction {'EntryId'} -> TimelineEntry {'Id'} Required Cascade
+    Indexes: 
+      EntryId, TenantId
+        Annotations: 
+          Relational:Name: ix_timeline_reactions_by_entry
+      EntryId, UserId, Emoji Unique
+        Annotations: 
+          Relational:Name: ix_timeline_reactions_unique
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: timeline_reactions
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: TimelineAttachment
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      BlobId (Guid) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ContentType (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      EntryId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      FileName (string) Required MaxLength(512)
+        Annotations: 
+          MaxLength: 512
+          Npgsql:ValueGenerationStrategy: None
+      SizeBytes (long) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      EntryId, TenantId
+        Annotations: 
+          Relational:Name: ix_timeline_attachments_entry
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: timeline_attachments
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: TimelineEntry
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      AuthorId (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      AuthorName (string) Required MaxLength(512)
+        Annotations: 
+          MaxLength: 512
+          Npgsql:ValueGenerationStrategy: None
+      Body (string) Required MaxLength(65536)
+        Annotations: 
+          MaxLength: 65536
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      DeletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeletedBy (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      EditedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      EntityId (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      EntityType (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      EntryType (TimelineEntryType) Required MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      IsDeleted (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ParentEntryId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      SourceId (string) Index MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+      SourceKey (string) Index MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      ParentEntryId
+        Annotations: 
+          Relational:Name: ix_timeline_entries_parent
+      EntityType, EntityId, TenantId, CreatedAt
+        Annotations: 
+          Relational:Name: ix_timeline_entries_entity_stream
+      TenantId, EntityType, EntityId, SourceKey, SourceId Unique
+        Annotations: 
+          Relational:Filter: "SourceKey" IS NOT NULL
+          Relational:Name: ux_timeline_entries_shadow
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: timeline_entries
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  Reaction[MultiTenant]: e => (Not(value(Granit.Timeline.EntityFrameworkCore.Internal.TimelineDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Timeline.EntityFrameworkCore.Internal.TimelineDbContext).CurrentTenantId))
+  TimelineAttachment[MultiTenant]: e => (Not(value(Granit.Timeline.EntityFrameworkCore.Internal.TimelineDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Timeline.EntityFrameworkCore.Internal.TimelineDbContext).CurrentTenantId))
+  TimelineEntry[MultiTenant]: e => (Not(value(Granit.Timeline.EntityFrameworkCore.Internal.TimelineDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Timeline.EntityFrameworkCore.Internal.TimelineDbContext).CurrentTenantId))
+  TimelineEntry[SoftDelete]: e => (Not(value(Granit.Timeline.EntityFrameworkCore.Internal.TimelineDbContext).IsSoftDeleteFilterEnabled) OrElse Not(Property(e, "IsDeleted")))

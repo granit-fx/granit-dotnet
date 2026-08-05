@@ -1,0 +1,178 @@
+Model: 
+  EntityType: AIUsageRecordEntity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConversationId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CostCurrency (string) MaxLength(3)
+        Annotations: 
+          MaxLength: 3
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      Duration (TimeSpan?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      EstimatedCost (decimal?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+          Precision: 18
+          Scale: 8
+      InputTokens (int) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Model (string) Required Index MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      OutputTokens (int) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      PromptTemplateName (string) MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      PromptTemplateVersion (int?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      PromptVersion (string) MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+      Provider (string) Required Index MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (Guid?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      WorkspaceName (string) Required Index MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      TenantId, ConversationId
+        Annotations: 
+          Relational:Name: ix_ai_usage_records_tenant_conversation
+      TenantId, Provider, Model
+        Annotations: 
+          Relational:Name: ix_ai_usage_records_tenant_provider_model
+      TenantId, WorkspaceName, CreatedAt
+        Annotations: 
+          Relational:Name: ix_ai_usage_records_tenant_workspace_date
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: ai_usage_records
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: AIWorkspaceEntity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Activated (bool) Required Sentinel:True ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+          Relational:DefaultValue: True
+      ApiKey (string) MaxLength(2000)
+        Annotations: 
+          MaxLength: 2000
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      DeletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeletedBy (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      DisplayName (string) MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      Endpoint (string) MaxLength(2000)
+        Annotations: 
+          MaxLength: 2000
+          Npgsql:ValueGenerationStrategy: None
+      IsDeleted (bool) Required ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+          Relational:DefaultValue: False
+      Key (string) Required Index MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      MaxOutputTokens (int?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Model (string) Required MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      Provider (string) Required MaxLength(50)
+        Annotations: 
+          MaxLength: 50
+          Npgsql:ValueGenerationStrategy: None
+      SystemPrompt (string) MaxLength(10000)
+        Annotations: 
+          MaxLength: 10000
+          Npgsql:ValueGenerationStrategy: None
+      Temperature (float?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      TenantId, Key Unique
+        Annotations: 
+          Relational:Name: uq_ai_workspaces_tenant_name
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: ai_workspaces
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  AIUsageRecordEntity[MultiTenant]: e => (Not(value(Granit.AI.EntityFrameworkCore.Internal.AIDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.AI.EntityFrameworkCore.Internal.AIDbContext).CurrentTenantId))
+  AIWorkspaceEntity[Active]: e => (Not(value(Granit.AI.EntityFrameworkCore.Internal.AIDbContext).IsActiveFilterEnabled) OrElse Property(e, "Activated"))
+  AIWorkspaceEntity[MultiTenant]: e => (Not(value(Granit.AI.EntityFrameworkCore.Internal.AIDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.AI.EntityFrameworkCore.Internal.AIDbContext).CurrentTenantId))
+  AIWorkspaceEntity[SoftDelete]: e => (Not(value(Granit.AI.EntityFrameworkCore.Internal.AIDbContext).IsSoftDeleteFilterEnabled) OrElse Not(Property(e, "IsDeleted")))

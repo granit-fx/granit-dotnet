@@ -1,0 +1,83 @@
+Model: 
+  EntityType: ConformanceOrder
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConcurrencyStamp (string) Required Concurrency MaxLength(36)
+        Annotations: 
+          MaxLength: 36
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeletedBy (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      IsDeleted (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Label (string) Required MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Status (ConformanceOrderStatus) Required MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: Orders
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: ConformanceToggle
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Activated (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Label (string) Required MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: Toggles
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  ConformanceOrder[MultiTenant]: e => (Not(value(Granit.Testing.Persistence.ConformanceDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Testing.Persistence.ConformanceDbContext).CurrentTenantId))
+  ConformanceOrder[SoftDelete]: e => (Not(value(Granit.Testing.Persistence.ConformanceDbContext).IsSoftDeleteFilterEnabled) OrElse Not(Property(e, "IsDeleted")))
+  ConformanceToggle[Active]: e => (Not(value(Granit.Testing.Persistence.ConformanceDbContext).IsActiveFilterEnabled) OrElse Property(e, "Activated"))

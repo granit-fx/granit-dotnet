@@ -1,0 +1,166 @@
+Model: 
+  EntityType: Conversation
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      DeletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeletedBy (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      IsDeleted (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      IsFavorite (bool) Required ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+          Relational:DefaultValue: False
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      OwnerId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Title (string) Required MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      WorkspaceKey (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+    Navigations: 
+      Messages (_messages, IReadOnlyList<Message>) Collection ToDependent Message
+    Keys: 
+      Id PK
+    Indexes: 
+      TenantId, OwnerId
+        Annotations: 
+          Relational:Name: ix_ai_chat_conversations_tenant_owner
+      TenantId, OwnerId, CreatedAt
+        Annotations: 
+          Relational:Name: ix_ai_chat_conversations_tenant_owner_created
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: ai_chat_conversations
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: Message
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Content (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConversationId (Guid) Required FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      Role (MessageRole) Required MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      WorkspaceKey (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Foreign keys: 
+      Message {'ConversationId'} -> Conversation {'Id'} Required Cascade ToDependent: Messages
+    Indexes: 
+      ConversationId, CreatedAt
+        Annotations: 
+          Relational:Name: ix_ai_chat_messages_conversation_created
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: ai_chat_messages
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: MessageReport
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Category (MessageReportCategory?) MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      ConversationId (Guid) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      MessageId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      OwnerId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Reason (string) Required MaxLength(2000)
+        Annotations: 
+          MaxLength: 2000
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      TenantId, MessageId
+        Annotations: 
+          Relational:Name: ix_ai_chat_message_reports_tenant_message
+      TenantId, OwnerId
+        Annotations: 
+          Relational:Name: ix_ai_chat_message_reports_tenant_owner
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: ai_chat_message_reports
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  Conversation[MultiTenant]: e => (Not(value(Granit.AI.Chat.EntityFrameworkCore.Internal.AIChatDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.AI.Chat.EntityFrameworkCore.Internal.AIChatDbContext).CurrentTenantId))
+  Conversation[SoftDelete]: e => (Not(value(Granit.AI.Chat.EntityFrameworkCore.Internal.AIChatDbContext).IsSoftDeleteFilterEnabled) OrElse Not(Property(e, "IsDeleted")))
+  MessageReport[MultiTenant]: e => (Not(value(Granit.AI.Chat.EntityFrameworkCore.Internal.AIChatDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.AI.Chat.EntityFrameworkCore.Internal.AIChatDbContext).CurrentTenantId))

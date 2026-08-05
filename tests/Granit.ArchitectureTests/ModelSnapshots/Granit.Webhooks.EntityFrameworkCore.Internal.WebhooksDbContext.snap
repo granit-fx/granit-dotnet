@@ -1,0 +1,195 @@
+Model: 
+  EntityType: WebhookDeliveryAttempt
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeliveryId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DurationMs (long) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ErrorMessage (string) MaxLength(2000)
+        Annotations: 
+          MaxLength: 2000
+          Npgsql:ValueGenerationStrategy: None
+      EventType (string) Required MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      HttpStatusCode (int?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      IsSuccess (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      OccurredAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Payload (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+          Relational:ColumnType: text
+      PayloadHash (string) Required MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      SubscriptionId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TargetUrl (string) Required MaxLength(2048)
+        Annotations: 
+          MaxLength: 2048
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      DeliveryId Unique
+        Annotations: 
+          Relational:Name: uq_webhooks_delivery_attempts_deliveryid
+      SubscriptionId, OccurredAt
+        Annotations: 
+          Relational:Name: ix_webhooks_delivery_attempts_subscriptionid_occurredat
+      TenantId, OccurredAt
+        Annotations: 
+          Relational:Name: ix_webhooks_delivery_attempts_tenantid_occurredat
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: webhooks_delivery_attempts
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: WebhookSigningKey
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ExpiresAt (DateTimeOffset?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      LastRotationNotificationAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ProtectedSecret (string) Required MaxLength(1000)
+        Annotations: 
+          MaxLength: 1000
+          Npgsql:ValueGenerationStrategy: None
+      RevokedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Status (WebhookSigningKeyStatus) Required Index ValueGenerated.OnAdd MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+          Relational:DefaultValue: Active
+      SubscriptionId (Guid) Required FK Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Foreign keys: 
+      WebhookSigningKey {'SubscriptionId'} -> WebhookSubscription {'Id'} Required Cascade ToDependent: SigningKeys
+    Indexes: 
+      ExpiresAt
+        Annotations: 
+          Relational:Name: ix_webhooks_signing_keys_expires_at
+      SubscriptionId, Status
+        Annotations: 
+          Relational:Name: ix_webhooks_signing_keys_subscription_status
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: webhooks_signing_keys
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: WebhookSubscription
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ConsecutiveFailureCount (int) Required ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+          Relational:DefaultValue: 0
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(450)
+        Annotations: 
+          MaxLength: 450
+          Npgsql:ValueGenerationStrategy: None
+      DeactivationReason (string) MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      EventType (string) Required Index MaxLength(200)
+        Annotations: 
+          MaxLength: 200
+          Npgsql:ValueGenerationStrategy: None
+      LastSuccessAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(450)
+        Annotations: 
+          MaxLength: 450
+          Npgsql:ValueGenerationStrategy: None
+      SigningSecretHint (string) MaxLength(32)
+        Annotations: 
+          MaxLength: 32
+          Npgsql:ValueGenerationStrategy: None
+      Status (WebhookSubscriptionStatus) Required Index ValueGenerated.OnAdd MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+          Relational:DefaultValue: Active
+      SuspendedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      SuspendedBy (string) MaxLength(450)
+        Annotations: 
+          MaxLength: 450
+          Npgsql:ValueGenerationStrategy: None
+      TargetUrl (HttpsUrl) Required MaxLength(2048)
+        Annotations: 
+          MaxLength: 2048
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Navigations: 
+      SigningKeys (_signingKeys, IReadOnlyList<WebhookSigningKey>) Collection ToDependent WebhookSigningKey PropertyAccessMode.Field
+    Keys: 
+      Id PK
+    Indexes: 
+      EventType, TenantId, Status
+        Annotations: 
+          Relational:Name: ix_webhooks_subscriptions_eventtype_tenantid_status
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: webhooks_subscriptions
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  WebhookDeliveryAttempt[MultiTenant]: e => (Not(value(Granit.Webhooks.EntityFrameworkCore.Internal.WebhooksDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Webhooks.EntityFrameworkCore.Internal.WebhooksDbContext).CurrentTenantId))
+  WebhookSubscription[MultiTenant]: e => (Not(value(Granit.Webhooks.EntityFrameworkCore.Internal.WebhooksDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Webhooks.EntityFrameworkCore.Internal.WebhooksDbContext).CurrentTenantId))

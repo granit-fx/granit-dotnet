@@ -1,0 +1,83 @@
+Model: 
+  EntityType: BlobDescriptor
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ContainerName (string) Required Index MaxLength(100)
+        Annotations: 
+          MaxLength: 100
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeclaredContentType (string) Required MaxLength(127)
+        Annotations: 
+          MaxLength: 127
+          Npgsql:ValueGenerationStrategy: None
+      DeletedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeletionReason (string) MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      MaxAllowedBytes (long) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ObjectKey (string) Required Index MaxLength(1024)
+        Annotations: 
+          MaxLength: 1024
+          Npgsql:ValueGenerationStrategy: None
+      OriginalFileName (string) Required MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      RejectionReason (string) MaxLength(500)
+        Annotations: 
+          MaxLength: 500
+          Npgsql:ValueGenerationStrategy: None
+      SizeBytes (long?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Status (BlobStatus) Required MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ValidatedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      VerifiedContentType (string) MaxLength(127)
+        Annotations: 
+          MaxLength: 127
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      ObjectKey Unique
+        Annotations: 
+          Relational:Name: uq_blob_storage_descriptors_object_key
+      TenantId, ContainerName
+        Annotations: 
+          Relational:Name: ix_blob_storage_descriptors_tenant_container
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: blob_storage_descriptors
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  BlobDescriptor[MultiTenant]: e => (Not(value(Granit.BlobStorage.EntityFrameworkCore.Internal.BlobStorageDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.BlobStorage.EntityFrameworkCore.Internal.BlobStorageDbContext).CurrentTenantId))

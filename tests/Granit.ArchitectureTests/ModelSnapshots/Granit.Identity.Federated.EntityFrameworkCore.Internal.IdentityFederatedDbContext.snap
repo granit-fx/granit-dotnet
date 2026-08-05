@@ -1,0 +1,81 @@
+Model: 
+  EntityType: FederatedIdentity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Email (string) MaxLength(2048)
+        Annotations: 
+          MaxLength: 2048
+          Npgsql:ValueGenerationStrategy: None
+      EmailHash (string) Index MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      Enabled (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ExternalUserId (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      FirstName (string) MaxLength(2048)
+        Annotations: 
+          MaxLength: 2048
+          Npgsql:ValueGenerationStrategy: None
+      LastName (string) MaxLength(2048)
+        Annotations: 
+          MaxLength: 2048
+          Npgsql:ValueGenerationStrategy: None
+      LastSyncedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      MetadataJson (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (Guid) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Username (string) MaxLength(2048)
+        Annotations: 
+          MaxLength: 2048
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      TenantId, EmailHash
+        Annotations: 
+          Relational:Name: ix_identity_federated_user_cache_tenant_email_hash
+      TenantId, ExternalUserId Unique
+        Annotations: 
+          Relational:Name: uq_identity_federated_user_cache_tenant_external_id
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: identity_federated_user_cache_entries
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  FederatedIdentity[MultiTenant]: e => (Not(value(Granit.Identity.Federated.EntityFrameworkCore.Internal.IdentityFederatedDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Identity.Federated.EntityFrameworkCore.Internal.IdentityFederatedDbContext).CurrentTenantId))

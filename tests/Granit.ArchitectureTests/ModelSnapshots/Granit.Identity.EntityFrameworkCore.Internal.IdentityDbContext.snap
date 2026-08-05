@@ -1,0 +1,224 @@
+Model: 
+  EntityType: User
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DisplayName (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      Email (string) Required MaxLength(4096)
+        Annotations: 
+          MaxLength: 4096
+          Npgsql:ValueGenerationStrategy: None
+      EmailHash (string) Index MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      FirstName (string) MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+      IsEnabled (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      LastName (string) MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      PhoneNumber (string) MaxLength(4096)
+        Annotations: 
+          MaxLength: 4096
+          Npgsql:ValueGenerationStrategy: None
+      PhoneNumberHash (string) MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      PreferredLocale (string) MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Timezone (string) MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      EmailHash
+        Annotations: 
+          Relational:Name: ix_identity_users_email_hash
+      TenantId
+        Annotations: 
+          Relational:Name: ix_identity_users_tenant_id
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: identity_users
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: DeviceTrustEntity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DeviceId (string) Required Index MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+      Level (DeviceTrustLevel) Required MaxLength(16)
+        Annotations: 
+          MaxLength: 16
+          Npgsql:ValueGenerationStrategy: None
+      Reason (string) MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      TrustedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      TrustedUntil (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (string) Required Index MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      UserId, DeviceId Unique
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: identity_device_trusts
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: UserBehavioralProfileEntity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Count (int) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      FirstSeenAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Kind (BehavioralObservationKind) Required Index MaxLength(32)
+        Annotations: 
+          MaxLength: 32
+          Npgsql:ValueGenerationStrategy: None
+      LastSeenAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (string) Required Index MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+      Value (string) Required Index MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      UserId, Kind, Value Unique
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: identity_user_behavioral_profiles
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: UserSessionReviewEntity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Decision (UserSessionReviewDecision) Required MaxLength(16)
+        Annotations: 
+          MaxLength: 16
+          Npgsql:ValueGenerationStrategy: None
+      ReviewedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      SessionId (string) Required Index MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+      UserId (string) Required Index MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      UserId, SessionId Unique
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: identity_user_session_reviews
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: UserSessionRiskEntity
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      AssessedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Level (UserSessionRiskLevel) Required MaxLength(16)
+        Annotations: 
+          MaxLength: 16
+          Npgsql:ValueGenerationStrategy: None
+      ReasonsJson (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      SessionId (string) Required Index MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+      UserId (string) Required Index MaxLength(128)
+        Annotations: 
+          MaxLength: 128
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      UserId, SessionId Unique
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: identity_user_session_risks
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  User[MultiTenant]: e => (Not(value(Granit.Identity.EntityFrameworkCore.Internal.IdentityDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Identity.EntityFrameworkCore.Internal.IdentityDbContext).CurrentTenantId))

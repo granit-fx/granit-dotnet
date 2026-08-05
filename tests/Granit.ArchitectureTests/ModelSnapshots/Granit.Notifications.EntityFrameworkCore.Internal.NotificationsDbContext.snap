@@ -1,0 +1,229 @@
+Model: 
+  EntityType: NotificationDeliveryAttempt
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ChannelName (string) Required Index MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      DeliveryId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      DurationMs (long) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ErrorMessage (string) MaxLength(2048)
+        Annotations: 
+          MaxLength: 2048
+          Npgsql:ValueGenerationStrategy: None
+      IsSuccess (bool?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      NotificationId (Guid) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      NotificationTypeName (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      OccurredAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      RecipientUserId (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      DeliveryId Unique
+        Annotations: 
+          Relational:Name: uq_notifications_delivery_attempts_delivery_id
+      NotificationId, ChannelName
+        Annotations: 
+          Relational:Name: ix_notifications_delivery_attempts_notification
+      TenantId, OccurredAt
+        Annotations: 
+          Relational:Name: ix_notifications_delivery_attempts_audit
+    Annotations: 
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: notifications_delivery_attempts
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: NotificationPreference
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ChannelName (string) Required Index MaxLength(64)
+        Annotations: 
+          MaxLength: 64
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      IsEnabled (bool) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ModifiedBy (string) MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      NotificationTypeName (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      UserId, NotificationTypeName, ChannelName, TenantId Unique
+        Annotations: 
+          Relational:Name: uq_notifications_preferences_user_type_channel_tenant
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: notifications_preferences
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: NotificationSubscription
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      EntityId (string) Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      EntityType (string) Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      NotificationTypeName (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      UserId (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      EntityType, EntityId, TenantId
+        Annotations: 
+          Relational:Name: ix_notifications_subscriptions_entity
+      UserId, NotificationTypeName, TenantId
+        Annotations: 
+          Relational:Name: ix_notifications_subscriptions_global
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: notifications_subscriptions
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+  EntityType: UserNotification
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Data (JsonElement) Required
+        Annotations: 
+          Granit:JsonSerialized: True
+          Npgsql:ValueGenerationStrategy: None
+      NotificationId (Guid) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      NotificationTypeName (string) Required MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      ReadAt (DateTimeOffset?)
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      RecipientUserId (string) Required Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      RelatedEntityId (string) Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      RelatedEntityType (string) Index MaxLength(256)
+        Annotations: 
+          MaxLength: 256
+          Npgsql:ValueGenerationStrategy: None
+      Severity (NotificationSeverity) Required MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      State (UserNotificationState) Required Index MaxLength(20)
+        Annotations: 
+          MaxLength: 20
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      RecipientUserId, TenantId, State, CreatedAt
+        Annotations: 
+          Relational:Name: ix_notifications_user_notifications_inbox
+      RelatedEntityType, RelatedEntityId, TenantId, CreatedAt
+        Annotations: 
+          Relational:Name: ix_notifications_user_notifications_entity_feed
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: notifications_user_notifications
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  NotificationPreference[MultiTenant]: e => (Not(value(Granit.Notifications.EntityFrameworkCore.Internal.NotificationsDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Notifications.EntityFrameworkCore.Internal.NotificationsDbContext).CurrentTenantId))
+  NotificationSubscription[MultiTenant]: e => (Not(value(Granit.Notifications.EntityFrameworkCore.Internal.NotificationsDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Notifications.EntityFrameworkCore.Internal.NotificationsDbContext).CurrentTenantId))
+  UserNotification[MultiTenant]: e => (Not(value(Granit.Notifications.EntityFrameworkCore.Internal.NotificationsDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.Notifications.EntityFrameworkCore.Internal.NotificationsDbContext).CurrentTenantId))

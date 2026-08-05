@@ -1,0 +1,46 @@
+Model: 
+  EntityType: DatabaseBlobContent
+    Properties: 
+      Id (Guid) Required PK AfterSave:Throw ValueGenerated.OnAdd
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      Content (byte[]) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedAt (DateTimeOffset) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      CreatedBy (string) Required
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+      ObjectKey (string) Required Index MaxLength(1024)
+        Annotations: 
+          MaxLength: 1024
+          Npgsql:ValueGenerationStrategy: None
+      TenantId (Guid?) Index
+        Annotations: 
+          Npgsql:ValueGenerationStrategy: None
+    Keys: 
+      Id PK
+    Indexes: 
+      ObjectKey Unique
+        Annotations: 
+          Relational:Name: uq_blob_storage_contents_object_key
+      TenantId, ObjectKey
+        Annotations: 
+          Relational:Name: ix_blob_storage_contents_tenant_object_key
+    Annotations: 
+      QueryFilter: Microsoft.EntityFrameworkCore.Metadata.Internal.QueryFilterCollection
+      Relational:FunctionName: 
+      Relational:Schema: 
+      Relational:SqlQuery: 
+      Relational:TableName: blob_storage_contents
+      Relational:ViewName: 
+      Relational:ViewSchema: 
+Annotations: 
+  Npgsql:ValueGenerationStrategy: IdentityByDefaultColumn
+  ProductVersion: 10.0.10
+  Relational:MaxIdentifierLength: 63
+
+Query filters:
+  DatabaseBlobContent[MultiTenant]: e => (Not(value(Granit.BlobStorage.Database.Internal.BlobStorageDatabaseDbContext).IsMultiTenantFilterEnabled) OrElse (Property(e, "TenantId") == value(Granit.BlobStorage.Database.Internal.BlobStorageDatabaseDbContext).CurrentTenantId))
