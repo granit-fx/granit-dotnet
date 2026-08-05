@@ -7,6 +7,7 @@ using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -25,7 +26,8 @@ internal sealed partial class GranitMigrationRunner(
     IGranitMigrationLock migrationLock,
     IOptions<GranitMigrateOptions> options,
     ILogger<GranitMigrationRunner> logger,
-    IMigrationBatchResumer? batchResumer = null) : IGranitMigrationRunner
+    IMigrationBatchResumer? batchResumer = null,
+    IHostEnvironment? environment = null) : IGranitMigrationRunner
 {
     private readonly GranitMigrateOptions _options = options.Value;
 
@@ -51,6 +53,16 @@ internal sealed partial class GranitMigrationRunner(
             }
 
             LogMigrationStart(migratableModules.Count);
+        }
+
+        // Fail closed (epic #3143 Phase 6): a host without a real distributed lock must
+        // refuse to migrate instead of migrating unlocked and exiting 0. NullMigrationLock
+        // is the "no provider registered" fallback — with N replicas it would let every
+        // one of them migrate concurrently.
+        if (migrationLock is NullMigrationLock && _options.IsDistributedLockRequired(environment))
+        {
+            LogNoDistributedLock();
+            return 1;
         }
 
         // One distributed lock for every mode: with N replicas, exactly one migrates or
@@ -381,6 +393,13 @@ internal sealed partial class GranitMigrationRunner(
         Message = "No data-migration infrastructure registered (AddGranitPersistenceMigrations). "
             + "Nothing to resume.")]
     private partial void LogNoResumeInfrastructure();
+
+    [LoggerMessage(Level = LogLevel.Critical,
+        Message = "No distributed migration lock is registered (NullMigrationLock resolved) and "
+            + "'Persistence:Migrate:RequireDistributedLock' resolves to true — refusing to run "
+            + "unlocked. Register a provider lock (AddGranitPostgres / AddGranitSqlServer) or "
+            + "set the option to false for single-instance hosts.")]
+    private partial void LogNoDistributedLock();
 
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Discovered migratable module '{ModuleName}' with DbContext '{ContextName}'.")]

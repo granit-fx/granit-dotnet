@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Hosting;
 
 namespace Granit.Persistence.EntityFrameworkCore.Hosting.Options;
 
@@ -36,6 +37,31 @@ public sealed class GranitMigrateOptions
     [Required]
     public string ConnectionStringName { get; set; } = "DefaultConnection";
 #pragma warning restore GRSEC003
+
+    /// <summary>
+    /// Whether missing distributed-lock prerequisites (no provider lock registered, missing
+    /// connection string, missing <c>DbProviderFactory</c>) abort the migration instead of
+    /// silently proceeding unlocked. Default: <c>null</c> = required outside the Development
+    /// environment.
+    /// </summary>
+    /// <remarks>
+    /// A misconfigured multi-replica host that migrates unlocked and exits 0 is the failure
+    /// mode this option closes (fail-open → fail-closed, epic #3143 Phase 6). Set to
+    /// <c>false</c> only for single-instance hosts that deliberately run without a
+    /// distributed lock. Use <see cref="IsDistributedLockRequired"/> to resolve the
+    /// effective value.
+    /// </remarks>
+    public bool? RequireDistributedLock { get; set; }
+
+    /// <summary>
+    /// Resolves the effective <see cref="RequireDistributedLock"/> value:
+    /// an explicit setting wins; otherwise the lock is required unless the host runs in
+    /// the Development environment (unknown environment counts as production — fail closed).
+    /// </summary>
+    /// <param name="environment">The host environment, when available.</param>
+    /// <returns><c>true</c> when missing lock prerequisites must abort the migration.</returns>
+    public bool IsDistributedLockRequired(IHostEnvironment? environment) =>
+        RequireDistributedLock ?? !(environment?.IsDevelopment() ?? false);
 
     /// <summary>
     /// Whether to run data seeding after migrations complete. Default: <c>true</c>.

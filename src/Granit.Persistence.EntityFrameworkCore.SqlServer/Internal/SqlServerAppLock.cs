@@ -2,6 +2,7 @@ using System.Data.Common;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -22,6 +23,12 @@ namespace Granit.Persistence.EntityFrameworkCore.SqlServer.Internal;
 /// negative value if the lock cannot be acquired (another instance is migrating).
 /// </para>
 /// <para>
+/// When lock prerequisites are missing (connection string, provider factory) the behavior
+/// is governed by <see cref="GranitMigrateOptions.RequireDistributedLock"/>: outside
+/// Development the lock <b>fails closed</b> (throws — the migration aborts non-zero)
+/// instead of degrading to an unlocked no-op run.
+/// </para>
+/// <para>
 /// Registered automatically by <c>AddGranitSqlServer()</c>. The Microsoft.Data.SqlClient
 /// provider factory must be available at runtime.
 /// </para>
@@ -29,24 +36,44 @@ namespace Granit.Persistence.EntityFrameworkCore.SqlServer.Internal;
 internal sealed partial class SqlServerAppLock(
     IConfiguration configuration,
     IOptions<GranitMigrateOptions> options,
-    ILogger<SqlServerAppLock> logger) : IGranitMigrationLock
+    ILogger<SqlServerAppLock> logger,
+    IHostEnvironment? environment = null) : IGranitMigrationLock
 {
     private const string ProviderInvariantName = "Microsoft.Data.SqlClient";
 
     public async Task<IAsyncDisposable?> TryAcquireAsync(
         string resource, CancellationToken cancellationToken)
     {
+        bool required = options.Value.IsDistributedLockRequired(environment);
         string connectionStringName = options.Value.ConnectionStringName;
         string? connectionString = configuration.GetConnectionString(connectionStringName);
 
         if (string.IsNullOrEmpty(connectionString))
         {
+            if (required)
+            {
+                throw new InvalidOperationException(
+                    $"Distributed migration lock requires the '{connectionStringName}' connection "
+                    + "string, which is not configured. Refusing to migrate unlocked. Configure the "
+                    + "connection string (or 'Persistence:Migrate:ConnectionStringName'), or set "
+                    + "'Persistence:Migrate:RequireDistributedLock' to false for single-instance hosts.");
+            }
+
             LogNoConnectionString(connectionStringName);
             return NoOpHandle.Instance;
         }
 
         if (!DbProviderFactories.TryGetFactory(ProviderInvariantName, out DbProviderFactory? factory))
         {
+            if (required)
+            {
+                throw new InvalidOperationException(
+                    "Distributed migration lock requires the Microsoft.Data.SqlClient "
+                    + "DbProviderFactory, which is not registered. Refusing to migrate unlocked. "
+                    + "Call AddGranitSqlServer(), or set "
+                    + "'Persistence:Migrate:RequireDistributedLock' to false for single-instance hosts.");
+            }
+
             LogNoProviderFactory();
             return NoOpHandle.Instance;
         }
@@ -137,7 +164,8 @@ internal sealed partial class SqlServerAppLock(
 
     /// <summary>
     /// Returned when the lock infrastructure is unavailable (no connection string,
-    /// provider not registered). Migrations proceed without a distributed lock.
+    /// provider not registered) and <see cref="GranitMigrateOptions.RequireDistributedLock"/>
+    /// resolves to <c>false</c>. Migrations proceed without a distributed lock.
     /// </summary>
     private sealed class NoOpHandle : IAsyncDisposable
     {
