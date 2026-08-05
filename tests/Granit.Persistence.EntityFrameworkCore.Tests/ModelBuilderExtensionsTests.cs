@@ -138,50 +138,48 @@ public sealed class ModelBuilderExtensionsTests
     }
 
     [Fact]
-    public void ApplyGranitConventions_MultiTenant_FilterExpression_MatchesCurrentTenant()
+    public void GranitDbContext_MultiTenant_Filter_MatchesCurrentTenant()
     {
-        // Filter compiled and invoked directly, without the EF Core InMemory pipeline
-        // (EF Core's partial evaluator may capture the value at query compilation time;
-        // direct compilation via Compile() guarantees the closure is dynamic)
+        // The context-bound filter uses EF.Property (not compilable in-process), so the
+        // behavior is asserted through queries: only the active tenant's rows are visible.
         var tenantA = Guid.NewGuid();
         SharedTenant.Id = tenantA;
 
         using TestMultiTenantDbContext context = CreateMultiTenantContext();
-        LambdaExpression? filter = context.Model.FindEntityType(typeof(TestTenantEntity))
-            ?.GetDeclaredQueryFilters()
-            .FirstOrDefault(f => f.Key == GranitFilterNames.MultiTenant)?.Expression;
-        filter.ShouldNotBeNull();
+        context.Database.EnsureCreated();
+        context.TenantEntities.AddRange(
+            new TestTenantEntity { Name = "mine", TenantId = tenantA },
+            new TestTenantEntity { Name = "other", TenantId = Guid.NewGuid() },
+            new TestTenantEntity { Name = "none", TenantId = null });
+        context.SaveChanges();
 
-        var compiled = (Func<TestTenantEntity, bool>)filter!.Compile();
-
-        compiled(new TestTenantEntity { TenantId = tenantA }).ShouldBeTrue("entity of current tenant must pass");
-        compiled(new TestTenantEntity { TenantId = Guid.NewGuid() }).ShouldBeFalse("entity of another tenant must be filtered");
-        compiled(new TestTenantEntity { TenantId = null }).ShouldBeFalse("entity without tenant must be filtered");
+        List<TestTenantEntity> visible = [.. context.TenantEntities];
+        visible.ShouldHaveSingleItem("only the active tenant's rows must pass the filter");
+        visible[0].Name.ShouldBe("mine");
 
         SharedTenant.Id = null;
     }
 
     [Fact]
-    public void ApplyGranitConventions_MultiTenant_FilterExpression_EvaluatesDynamically()
+    public void GranitDbContext_MultiTenant_Filter_EvaluatesDynamically()
     {
-        // Verifies that the closure dynamically re-evaluates currentTenant.Id
-        // (same behavior as production with AsyncLocal ICurrentTenant)
+        // Verifies the filter re-evaluates CurrentTenantId per query on the SAME context —
+        // the parameterised behavior that prevents the frozen-tenant leak.
         var tenantA = Guid.NewGuid();
+        var tenantB = Guid.NewGuid();
         SharedTenant.Id = tenantA;
 
         using TestMultiTenantDbContext context = CreateMultiTenantContext();
-        LambdaExpression? filter = context.Model.FindEntityType(typeof(TestTenantEntity))
-            ?.GetDeclaredQueryFilters()
-            .FirstOrDefault(f => f.Key == GranitFilterNames.MultiTenant)?.Expression;
-        var compiled = (Func<TestTenantEntity, bool>)filter!.Compile();
+        context.Database.EnsureCreated();
+        context.TenantEntities.AddRange(
+            new TestTenantEntity { Name = "a", TenantId = tenantA },
+            new TestTenantEntity { Name = "b", TenantId = tenantB });
+        context.SaveChanges();
 
-        compiled(new TestTenantEntity { TenantId = tenantA }).ShouldBeTrue();
+        context.TenantEntities.Single().Name.ShouldBe("a");
 
-        var tenantB = Guid.NewGuid();
         SharedTenant.Id = tenantB;
-
-        compiled(new TestTenantEntity { TenantId = tenantB }).ShouldBeTrue("filter must re-evaluate after tenant change");
-        compiled(new TestTenantEntity { TenantId = tenantA }).ShouldBeFalse("previous tenant must be filtered");
+        context.TenantEntities.Single().Name.ShouldBe("b", "the filter must re-evaluate after a tenant change");
 
         SharedTenant.Id = null;
     }
@@ -448,7 +446,7 @@ public sealed class ModelBuilderExtensionsTests
     }
 
     [Fact]
-    public void ApplyGranitConventions_CombinedEntity_BothFiltersActive()
+    public void GranitDbContext_CombinedEntity_BothFiltersActive()
     {
         var tenantA = Guid.NewGuid();
         SharedTenant.Id = tenantA;
@@ -456,28 +454,21 @@ public sealed class ModelBuilderExtensionsTests
         SharedDataFilter.SetEnabled<IMultiTenant>(true);
 
         using TestDbContextWithCombined context = CreateContextWithCombined();
-        IReadOnlyCollection<IQueryFilter> filters = context.Model
-            .FindEntityType(typeof(TestCombinedEntity))!.GetDeclaredQueryFilters();
+        context.Database.EnsureCreated();
+        context.CombinedEntities.AddRange(
+            new TestCombinedEntity { TenantId = tenantA, IsDeleted = false },
+            new TestCombinedEntity { TenantId = tenantA, IsDeleted = true },
+            new TestCombinedEntity { TenantId = Guid.NewGuid(), IsDeleted = false });
+        context.SaveChanges();
 
-        var compiledSd = (Func<TestCombinedEntity, bool>)filters.First(f => f.Key == GranitFilterNames.SoftDelete).Expression!.Compile();
-        var compiledMt = (Func<TestCombinedEntity, bool>)filters.First(f => f.Key == GranitFilterNames.MultiTenant).Expression!.Compile();
-
-        bool passes(TestCombinedEntity e) => compiledSd(e) && compiledMt(e);
-
-        // Correct tenant, not deleted — passes both
-        passes(new TestCombinedEntity { TenantId = tenantA, IsDeleted = false }).ShouldBeTrue("correct tenant + not deleted");
-
-        // Correct tenant but deleted — excluded by soft delete
-        passes(new TestCombinedEntity { TenantId = tenantA, IsDeleted = true }).ShouldBeFalse("correct tenant but deleted");
-
-        // Different tenant, not deleted — excluded by multi-tenant
-        passes(new TestCombinedEntity { TenantId = Guid.NewGuid(), IsDeleted = false }).ShouldBeFalse("wrong tenant");
+        // Only the current-tenant, non-deleted row survives both filters.
+        context.CombinedEntities.Count().ShouldBe(1);
 
         SharedTenant.Id = null;
     }
 
     [Fact]
-    public void ApplyGranitConventions_CombinedEntity_IndependentBypass()
+    public void GranitDbContext_CombinedEntity_IndependentBypass()
     {
         var tenantA = Guid.NewGuid();
         SharedTenant.Id = tenantA;
@@ -485,17 +476,15 @@ public sealed class ModelBuilderExtensionsTests
         SharedDataFilter.SetEnabled<IMultiTenant>(true);    // multi-tenant active
 
         using TestDbContextWithCombined context = CreateContextWithCombined();
-        IReadOnlyCollection<IQueryFilter> filters = context.Model
-            .FindEntityType(typeof(TestCombinedEntity))!.GetDeclaredQueryFilters();
+        context.Database.EnsureCreated();
+        context.CombinedEntities.AddRange(
+            new TestCombinedEntity { TenantId = tenantA, IsDeleted = true },
+            new TestCombinedEntity { TenantId = Guid.NewGuid(), IsDeleted = true });
+        context.SaveChanges();
 
-        var compiledSd = (Func<TestCombinedEntity, bool>)filters.First(f => f.Key == GranitFilterNames.SoftDelete).Expression!.Compile();
-        var compiledMt = (Func<TestCombinedEntity, bool>)filters.First(f => f.Key == GranitFilterNames.MultiTenant).Expression!.Compile();
-
-        // Soft delete bypassed — deleted entity from correct tenant passes compiledSd
-        compiledSd(new TestCombinedEntity { TenantId = tenantA, IsDeleted = true }).ShouldBeTrue("soft delete bypassed");
-
-        // Multi-tenant still active — wrong tenant filtered by compiledMt
-        compiledMt(new TestCombinedEntity { TenantId = Guid.NewGuid(), IsDeleted = true }).ShouldBeFalse("multi-tenant still active");
+        // Soft delete bypassed → the deleted current-tenant row is visible;
+        // multi-tenant still active → the other tenant's row stays hidden.
+        context.CombinedEntities.Count().ShouldBe(1);
 
         SharedTenant.Id = null;
         SharedDataFilter.SetEnabled<ISoftDeletable>(true);
@@ -869,14 +858,12 @@ internal sealed class TestDbContext(DbContextOptions<TestDbContext> options) : D
         modelBuilder.ApplyGranitConventions();
 }
 
-internal sealed class TestMultiTenantDbContext(DbContextOptions<TestMultiTenantDbContext> options, ICurrentTenant currentTenant) : DbContext(options)
+// GranitDbContext derivative: since #3162 the tenant filter is ONLY registered by the base
+// class (this-bound, parameterised) — the legacy ApplyGranitConventions tenant overload is gone.
+internal sealed class TestMultiTenantDbContext(DbContextOptions<TestMultiTenantDbContext> options, ICurrentTenant currentTenant)
+    : GranitDbContext(options, currentTenant)
 {
-    private readonly ICurrentTenant _currentTenant = currentTenant;
-
     public DbSet<TestTenantEntity> TenantEntities => Set<TestTenantEntity>();
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder) =>
-        modelBuilder.ApplyGranitConventions(_currentTenant);
 }
 
 // DbContext without multi-tenant filter (currentTenant not provided)
@@ -911,16 +898,11 @@ internal sealed class TestDbContextWithDataFilter(
 
 internal sealed class TestDbContextWithCombined(
     DbContextOptions<TestDbContextWithCombined> options,
-    ICurrentTenant? currentTenant,
-    IDataFilter? dataFilter) : DbContext(options)
+    ICurrentTenant currentTenant,
+    IDataFilter? dataFilter)
+    : GranitDbContext(options, currentTenant, dataFilter)
 {
-    private readonly ICurrentTenant? _currentTenant = currentTenant;
-    private readonly IDataFilter? _dataFilter = dataFilter;
-
     public DbSet<TestCombinedEntity> CombinedEntities => Set<TestCombinedEntity>();
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder) =>
-        modelBuilder.ApplyGranitConventions(_currentTenant, _dataFilter);
 }
 
 internal sealed class TestProcessingRestrictableEntity : IProcessingRestrictable
