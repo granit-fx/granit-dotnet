@@ -13,34 +13,49 @@ using Microsoft.Extensions.Options;
 namespace Granit.Persistence.EntityFrameworkCore.Hosting.Internal;
 
 /// <summary>
-/// Orchestrates EF Core migrations across all <see cref="IMigratableModule{TContext}"/> modules
-/// discovered from the Granit module dependency graph.
+/// Orchestrates every migration path — full EF Core schema migrations across all
+/// <see cref="IMigratableModule{TContext}"/> modules discovered from the Granit module
+/// dependency graph (<see cref="MigrationRunMode.Full"/>), and the startup resumption of
+/// pending data-migration cycles (<see cref="MigrationRunMode.ResumeBatches"/>) — under
+/// one distributed lock, one timeout, and one exit-code contract.
 /// </summary>
 internal sealed partial class GranitMigrationRunner(
     GranitApplication application,
     IServiceScopeFactory scopeFactory,
     IGranitMigrationLock migrationLock,
-    GranitMigrateOptions options,
-    ILogger<GranitMigrationRunner> logger) : IGranitMigrationRunner
+    IOptions<GranitMigrateOptions> options,
+    ILogger<GranitMigrationRunner> logger,
+    IMigrationBatchResumer? batchResumer = null) : IGranitMigrationRunner
 {
-    public async Task<int> RunAsync(CancellationToken cancellationToken = default)
+    private readonly GranitMigrateOptions _options = options.Value;
+
+    public async Task<int> RunAsync(
+        MigrationRunMode mode = MigrationRunMode.Full,
+        CancellationToken cancellationToken = default)
     {
         using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeoutCts.CancelAfter(options.Timeout);
+        timeoutCts.CancelAfter(_options.Timeout);
         CancellationToken ct = timeoutCts.Token;
 
-        // Discover migratable modules in topological order
-        List<(GranitModule Module, Type DbContextType)> migratableModules = DiscoverMigratableModules();
+        List<(GranitModule Module, Type DbContextType)> migratableModules = [];
 
-        if (migratableModules.Count == 0)
+        if (mode == MigrationRunMode.Full)
         {
-            LogNoMigratableModules();
-            return 0;
+            // Discover migratable modules in topological order
+            migratableModules = DiscoverMigratableModules();
+
+            if (migratableModules.Count == 0)
+            {
+                LogNoMigratableModules();
+                return 0;
+            }
+
+            LogMigrationStart(migratableModules.Count);
         }
 
-        LogMigrationStart(migratableModules.Count);
-
-        // Acquire distributed lock
+        // One distributed lock for every mode: with N replicas, exactly one migrates or
+        // resumes — the others skip. A per-mode lock resource would let a full run and a
+        // startup resume overlap, dispatching batch commands mid-schema-migration.
         await using IAsyncDisposable? lockHandle = await migrationLock
             .TryAcquireAsync("GranitMigration", ct)
             .ConfigureAwait(false);
@@ -53,6 +68,11 @@ internal sealed partial class GranitMigrationRunner(
 
         try
         {
+            if (mode == MigrationRunMode.ResumeBatches)
+            {
+                return await ResumeBatchesAsync(ct).ConfigureAwait(false);
+            }
+
             // Force PostConfigure<TenantIsolationOptions> to run, setting
             // GranitDbDefaults.HostDbSchema before any EF Core model compilation.
             await using (AsyncServiceScope initScope = scopeFactory.CreateAsyncScope())
@@ -63,7 +83,7 @@ internal sealed partial class GranitMigrationRunner(
                 if (GranitDbDefaults.HostDbSchema is not null)
                 {
                     IConfiguration? config = initScope.ServiceProvider.GetService<IConfiguration>();
-                    string? connectionString = config?.GetConnectionString("DefaultConnection");
+                    string? connectionString = config?.GetConnectionString(_options.ConnectionStringName);
                     if (connectionString is not null)
                     {
                         await SchemaEnsurer.EnsureSchemasAsync(
@@ -91,7 +111,7 @@ internal sealed partial class GranitMigrationRunner(
             // 3. Ensure tenant internal tables.
             // 4. Tenant pass: legacy (IsHostOnly=false) + ITenantDataSeedContributor per tenant
             //    → seeds tenant-specific data (products, articles, users).
-            if (options.SeedAfterMigration)
+            if (_options.SeedAfterMigration)
             {
                 await SeedHostAsync(ct).ConfigureAwait(false);
 
@@ -111,7 +131,7 @@ internal sealed partial class GranitMigrationRunner(
         }
         catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
-            LogMigrationTimeout(options.Timeout);
+            LogMigrationTimeout(_options.Timeout);
             return 1;
         }
         catch (OperationCanceledException)
@@ -159,21 +179,39 @@ internal sealed partial class GranitMigrationRunner(
         return result;
     }
 
+    /// <summary>
+    /// Dispatches resume commands for pending data-migration cycles via
+    /// <see cref="IMigrationBatchResumer"/>. Runs inside the shared lock/timeout envelope.
+    /// </summary>
+    private async Task<int> ResumeBatchesAsync(CancellationToken ct)
+    {
+        if (batchResumer is null)
+        {
+            // AddGranitPersistenceMigrations() was not called — there is no data-migration
+            // infrastructure and therefore nothing to resume.
+            LogNoResumeInfrastructure();
+            return 0;
+        }
+
+        await batchResumer.ResumeAsync(ct).ConfigureAwait(false);
+        return 0;
+    }
+
     private async Task MigrateWithRetryAsync(GranitModule module, Type dbContextType, CancellationToken ct)
     {
         string moduleName = module.GetType().Name;
 
-        for (int attempt = 1; attempt <= options.MaxRetries; attempt++)
+        for (int attempt = 1; attempt <= _options.MaxRetries; attempt++)
         {
             try
             {
                 await MigrateDbContextAsync(moduleName, dbContextType, ct).ConfigureAwait(false);
                 return;
             }
-            catch (Exception ex) when (attempt < options.MaxRetries && !ct.IsCancellationRequested)
+            catch (Exception ex) when (attempt < _options.MaxRetries && !ct.IsCancellationRequested)
             {
-                LogRetry(moduleName, attempt, options.MaxRetries, ex);
-                await Task.Delay(options.RetryDelay, ct).ConfigureAwait(false);
+                LogRetry(moduleName, attempt, _options.MaxRetries, ex);
+                await Task.Delay(_options.RetryDelay, ct).ConfigureAwait(false);
             }
         }
     }
@@ -237,7 +275,7 @@ internal sealed partial class GranitMigrationRunner(
                 string schemaName = await schemaProvider.GetSchemaNameAsync(tenantId, ct).ConfigureAwait(false);
 
                 IConfiguration? config = tenantScope.ServiceProvider.GetService<IConfiguration>();
-                string? connectionString = config?.GetConnectionString("DefaultConnection");
+                string? connectionString = config?.GetConnectionString(_options.ConnectionStringName);
                 if (connectionString is not null)
                 {
                     await SchemaEnsurer.EnsureSchemasAsync(
@@ -338,6 +376,11 @@ internal sealed partial class GranitMigrationRunner(
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Migration skipped — another instance holds the migration lock.")]
     private partial void LogMigrationSkipped();
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "No data-migration infrastructure registered (AddGranitPersistenceMigrations). "
+            + "Nothing to resume.")]
+    private partial void LogNoResumeInfrastructure();
 
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Discovered migratable module '{ModuleName}' with DbContext '{ContextName}'.")]

@@ -1,7 +1,9 @@
 using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
+using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Persistence.EntityFrameworkCore.Hosting.Extensions;
 
@@ -13,16 +15,21 @@ public static partial class PersistenceHostingWebApplicationExtensions
     /// <summary>
     /// Checks whether the <c>--migrate</c> CLI flag is present in the application arguments.
     /// </summary>
+    /// <remarks>
+    /// Returns <c>false</c> when <c>AddGranitMigrateSupport()</c> was never called
+    /// (no <see cref="IGranitMigrationRunner"/> registered), whatever the process arguments.
+    /// </remarks>
     /// <param name="app">The web application.</param>
     /// <returns><c>true</c> if the migration flag is present; otherwise <c>false</c>.</returns>
     public static bool HasGranitMigrateFlag(this WebApplication app)
     {
-        GranitMigrateOptions? options = app.Services.GetService<GranitMigrateOptions>();
-
-        if (options is null)
+        if (app.Services.GetService<IGranitMigrationRunner>() is null)
         {
             return false;
         }
+
+        GranitMigrateOptions options =
+            app.Services.GetRequiredService<IOptions<GranitMigrateOptions>>().Value;
 
         return Environment.GetCommandLineArgs().Contains(options.CliFlag);
     }
@@ -53,7 +60,7 @@ public static partial class PersistenceHostingWebApplicationExtensions
 
         try
         {
-            exitCode = await runner.RunAsync().ConfigureAwait(false);
+            exitCode = await runner.RunAsync(MigrationRunMode.Full).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {

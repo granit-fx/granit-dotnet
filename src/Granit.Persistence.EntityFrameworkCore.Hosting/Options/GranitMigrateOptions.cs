@@ -1,10 +1,23 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Granit.Persistence.EntityFrameworkCore.Hosting.Options;
 
 /// <summary>
-/// Configuration options for the Granit migration runner.
+/// Configuration options for the Granit migration runner. Bound from the
+/// <see cref="SectionName"/> configuration section by <c>AddGranitMigrateSupport()</c>;
+/// a code-level configure delegate passed to that method wins over configuration values.
 /// </summary>
 public sealed class GranitMigrateOptions
 {
+    /// <summary>
+    /// Configuration section name in <c>appsettings.json</c>: <c>"Persistence:Migrate"</c>.
+    /// </summary>
+    /// <remarks>
+    /// Distinct from <c>"Persistence:Migrations"</c> (<c>MigrationStartupOptions</c>), which
+    /// configures data-migration batch execution — this section configures the runner itself.
+    /// </remarks>
+    public const string SectionName = "Persistence:Migrate";
+
     /// <summary>
     /// The CLI argument that triggers migration mode. Default: <c>"--migrate"</c>.
     /// </summary>
@@ -12,7 +25,17 @@ public sealed class GranitMigrateOptions
     /// Only CLI arguments are supported — environment variables are intentionally excluded
     /// to prevent Kubernetes CrashLoopBackOff when accidentally set on a Deployment.
     /// </remarks>
+    [Required]
     public string CliFlag { get; set; } = "--migrate";
+
+    /// <summary>
+    /// Name of the connection string used by the migration runner's schema-ensuring passes
+    /// and by the provider distributed locks. Default: <c>"DefaultConnection"</c>.
+    /// </summary>
+#pragma warning disable GRSEC003 // Property holds a connection string NAME (configuration key), not a secret
+    [Required]
+    public string ConnectionStringName { get; set; } = "DefaultConnection";
+#pragma warning restore GRSEC003
 
     /// <summary>
     /// Whether to run data seeding after migrations complete. Default: <c>true</c>.
@@ -43,6 +66,7 @@ public sealed class GranitMigrateOptions
     /// <summary>
     /// Maximum number of retry attempts for transient database failures. Default: 3.
     /// </summary>
+    [Range(1, 100)]
     public int MaxRetries { get; set; } = 3;
 
     /// <summary>

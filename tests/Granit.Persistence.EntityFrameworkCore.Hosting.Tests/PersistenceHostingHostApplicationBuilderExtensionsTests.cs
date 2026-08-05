@@ -3,6 +3,7 @@ using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
@@ -11,14 +12,46 @@ namespace Granit.Persistence.EntityFrameworkCore.Hosting.Tests;
 public sealed class PersistenceHostingHostApplicationBuilderExtensionsTests
 {
     [Fact]
-    public void AddGranitMigrateSupport_RegistersMigrateOptions()
+    public void AddGranitMigrateSupport_BindsOptionsFromPersistenceMigrateSection()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+        builder.Configuration["Persistence:Migrate:MaxRetries"] = "7";
+        builder.Configuration["Persistence:Migrate:ConnectionStringName"] = "MigrationsDb";
+        builder.Configuration["Persistence:Migrate:SeedAfterMigration"] = "false";
 
         builder.AddGranitMigrateSupport();
 
-        builder.Services.ShouldContain(
-            d => d.ServiceType == typeof(GranitMigrateOptions));
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+        GranitMigrateOptions options = sp.GetRequiredService<IOptions<GranitMigrateOptions>>().Value;
+
+        options.MaxRetries.ShouldBe(7);
+        options.ConnectionStringName.ShouldBe("MigrationsDb");
+        options.SeedAfterMigration.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void AddGranitMigrateSupport_ConfigureDelegate_WinsOverConfiguration()
+    {
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+        builder.Configuration["Persistence:Migrate:MaxRetries"] = "7";
+
+        builder.AddGranitMigrateSupport(opts => opts.MaxRetries = 2);
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+        sp.GetRequiredService<IOptions<GranitMigrateOptions>>().Value.MaxRetries.ShouldBe(2);
+    }
+
+    [Fact]
+    public void AddGranitMigrateSupport_InvalidConfiguration_FailsValidation()
+    {
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+        builder.Configuration["Persistence:Migrate:MaxRetries"] = "0";
+
+        builder.AddGranitMigrateSupport();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+        Should.Throw<OptionsValidationException>(
+            () => sp.GetRequiredService<IOptions<GranitMigrateOptions>>().Value);
     }
 
     [Fact]
@@ -55,7 +88,7 @@ public sealed class PersistenceHostingHostApplicationBuilderExtensionsTests
         });
 
         using ServiceProvider sp = builder.Services.BuildServiceProvider();
-        GranitMigrateOptions options = sp.GetRequiredService<GranitMigrateOptions>();
+        GranitMigrateOptions options = sp.GetRequiredService<IOptions<GranitMigrateOptions>>().Value;
 
         options.CliFlag.ShouldBe("--custom-migrate");
         options.MaxRetries.ShouldBe(5);
@@ -79,7 +112,7 @@ public sealed class PersistenceHostingHostApplicationBuilderExtensionsTests
         builder.AddGranitMigrateSupport();
 
         using ServiceProvider sp = builder.Services.BuildServiceProvider();
-        GranitMigrateOptions options = sp.GetRequiredService<GranitMigrateOptions>();
+        GranitMigrateOptions options = sp.GetRequiredService<IOptions<GranitMigrateOptions>>().Value;
         options.SeedOnStartup.ShouldBeFalse();
     }
 

@@ -1,19 +1,17 @@
 // =============================================================================
 // Tests — MigrationStartupService
 // =============================================================================
-// Verifies that pending and in-progress cycles are resumed at startup, that
-// completed cycles are ignored, and that exceptions do not block startup.
-// MigrationProgressDbContext uses the EF Core InMemory provider.
+// The service is a thin startup trigger since the orchestration unification
+// (#3167): it delegates to IGranitMigrationRunner in ResumeBatches mode — the
+// runner owns the lock, timeout, and exit-code semantics. These tests verify
+// the delegation, the missing-runner warning path, and that neither failures
+// nor exceptions block application startup.
 // =============================================================================
 
-using Granit.Commands;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
-using Granit.Persistence.EntityFrameworkCore.Migrations.Messages;
-using Granit.Persistence.EntityFrameworkCore.Migrations.Options;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
 
@@ -21,331 +19,69 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Tests;
 
 public sealed class MigrationStartupServiceTests
 {
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
-    /// <summary>
-    /// Creates a real <see cref="IDbContextFactory{TContext}"/> backed by EF Core InMemory,
-    /// pre-seeded with the given rows. Uses a real service provider so all contexts
-    /// from the factory share the same in-memory database service.
-    /// </summary>
-    private static IDbContextFactory<MigrationProgressDbContext> CreateFactory(
-        params MigrationProgress[] rows)
-    {
-        string dbName = Guid.NewGuid().ToString();
-        ServiceCollection services = new();
-        services.AddDbContextFactory<MigrationProgressDbContext>(
-            opts => opts.UseInMemoryDatabase(dbName));
-        ServiceProvider sp = services.BuildServiceProvider();
-
-        IDbContextFactory<MigrationProgressDbContext> factory =
-            sp.GetRequiredService<IDbContextFactory<MigrationProgressDbContext>>();
-
-        if (rows.Length > 0)
-        {
-            using MigrationProgressDbContext seed = factory.CreateDbContext();
-            seed.MigrationProgresses.AddRange(rows);
-            seed.SaveChanges();
-        }
-
-        return factory;
-    }
-
-    /// <summary>
-    /// Returns an <see cref="IAsyncEnumerable{T}"/> that yields the given tenant identifiers.
-    /// </summary>
-    private static async IAsyncEnumerable<Guid> ToAsyncEnumerable(params Guid[] tenantIds)
-    {
-        foreach (Guid id in tenantIds)
-        {
-            yield return id;
-        }
-
-        await Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Collects all <see cref="RunMigrationBatchCommand"/> instances dispatched via the sender.
-    /// </summary>
-    private static List<RunMigrationBatchCommand> GetDispatchedCommands(ICommandSender sender) =>
-        sender.ReceivedCalls()
-           .Where(c => c.GetMethodInfo().Name == nameof(ICommandSender.SendAsync))
-           .Select(c => c.GetArguments()[0])
-           .OfType<RunMigrationBatchCommand>()
-           .ToList();
-
-    private static MigrationStartupService BuildService(
-        IDbContextFactory<MigrationProgressDbContext> factory,
-        ITenantEnumerator tenantEnumerator,
-        ICommandSender commandSender,
-        int defaultBatchSize = 200,
-        IGranitMigrationLock? migrationLock = null)
-    {
-        // MigrationStartupService is Singleton and creates a scope per dispatch to resolve
-        // the Scoped ICommandSender. Wrap the mocked sender in a real IServiceScopeFactory
-        // so GetRequiredService<ICommandSender>() inside the service returns the mock.
-        ServiceCollection services = new();
-        services.AddSingleton(commandSender);
-        IServiceScopeFactory scopeFactory = services.BuildServiceProvider()
-            .GetRequiredService<IServiceScopeFactory>();
-
-        return new(
-            factory,
-            tenantEnumerator,
-            scopeFactory,
-            migrationLock ?? new NullMigrationLock(),
-            Microsoft.Extensions.Options.Options.Create(new MigrationStartupOptions { DefaultBatchSize = defaultBatchSize }),
-            NullLogger<MigrationStartupService>.Instance);
-    }
-
-    // -------------------------------------------------------------------------
-    // No pending cycles
-    // -------------------------------------------------------------------------
-
     [Fact]
-    public async Task StartAsync_NoPendingCycles_DoesNotDispatch()
+    public async Task StartAsync_DelegatesToRunner_InResumeBatchesMode()
     {
-        ICommandSender commandSender = Substitute.For<ICommandSender>();
-        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
-        enumerator.GetActiveTenantIdsAsync(Arg.Any<CancellationToken>())
-            .Returns(ToAsyncEnumerable());
+        IGranitMigrationRunner runner = Substitute.For<IGranitMigrationRunner>();
+        runner.RunAsync(Arg.Any<MigrationRunMode>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(0));
 
-        MigrationStartupService sut = BuildService(CreateFactory(), enumerator, commandSender);
+        MigrationStartupService sut = new(NullLogger<MigrationStartupService>.Instance, runner);
 
         await sut.StartAsync(TestContext.Current.CancellationToken);
 
-        commandSender.ReceivedCalls().ShouldBeEmpty();
-    }
-
-    // -------------------------------------------------------------------------
-    // Completed and failed rows are ignored
-    // -------------------------------------------------------------------------
-
-    [Fact]
-    public async Task StartAsync_OnlyCompletedAndFailedRows_DoesNotDispatch()
-    {
-        ICommandSender commandSender = Substitute.For<ICommandSender>();
-        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
-        enumerator.GetActiveTenantIdsAsync(Arg.Any<CancellationToken>())
-            .Returns(ToAsyncEnumerable());
-
-        MigrationProgress[] rows =
-        [
-            new() { Id = Guid.NewGuid(), CycleId = "done", Status = MigrationStatus.Completed },
-            new() { Id = Guid.NewGuid(), CycleId = "err",  Status = MigrationStatus.Failed    },
-        ];
-
-        MigrationStartupService sut = BuildService(CreateFactory(rows), enumerator, commandSender);
-
-        await sut.StartAsync(TestContext.Current.CancellationToken);
-
-        commandSender.ReceivedCalls().ShouldBeEmpty();
-    }
-
-    // -------------------------------------------------------------------------
-    // Pending row dispatches a command
-    // -------------------------------------------------------------------------
-
-    [Fact]
-    public async Task StartAsync_PendingRow_DispatchesOneCommand()
-    {
-        ICommandSender commandSender = Substitute.For<ICommandSender>();
-        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
-        enumerator.GetActiveTenantIdsAsync(Arg.Any<CancellationToken>())
-            .Returns(ToAsyncEnumerable());
-
-        MigrationProgress[] rows =
-        [
-            new() { Id = Guid.NewGuid(), CycleId = "cycle-a", Status = MigrationStatus.Pending, TenantId = null },
-        ];
-
-        MigrationStartupService sut = BuildService(CreateFactory(rows), enumerator, commandSender, defaultBatchSize: 100);
-
-        await sut.StartAsync(TestContext.Current.CancellationToken);
-
-        List<RunMigrationBatchCommand> commands = GetDispatchedCommands(commandSender);
-        commands.ShouldHaveSingleItem();
-        commands[0].CycleId.ShouldBe("cycle-a");
-        commands[0].BatchSize.ShouldBe(100);
-    }
-
-    // -------------------------------------------------------------------------
-    // InProgress row with cursor resumes from cursor
-    // -------------------------------------------------------------------------
-
-    [Fact]
-    public async Task StartAsync_InProgressRowWithCursor_UsesCursorInCommand()
-    {
-        ICommandSender commandSender = Substitute.For<ICommandSender>();
-        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
-        enumerator.GetActiveTenantIdsAsync(Arg.Any<CancellationToken>())
-            .Returns(ToAsyncEnumerable());
-
-        MigrationProgress[] rows =
-        [
-            new()
-            {
-                Id         = Guid.NewGuid(),
-                CycleId    = "cycle-resume",
-                Status     = MigrationStatus.InProgress,
-                LastCursor = "{\"lastId\":\"abc\"}",
-                TenantId   = null,
-            },
-        ];
-
-        MigrationStartupService sut = BuildService(CreateFactory(rows), enumerator, commandSender);
-
-        await sut.StartAsync(TestContext.Current.CancellationToken);
-
-        List<RunMigrationBatchCommand> commands = GetDispatchedCommands(commandSender);
-        commands.ShouldHaveSingleItem();
-        commands[0].CycleId.ShouldBe("cycle-resume");
-        commands[0].Cursor.ShouldBe("{\"lastId\":\"abc\"}");
-    }
-
-    // -------------------------------------------------------------------------
-    // TenantId = null maps to Guid.Empty
-    // -------------------------------------------------------------------------
-
-    [Fact]
-    public async Task StartAsync_NullTenantId_MapsToGuidEmpty()
-    {
-        ICommandSender commandSender = Substitute.For<ICommandSender>();
-        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
-        enumerator.GetActiveTenantIdsAsync(Arg.Any<CancellationToken>())
-            .Returns(ToAsyncEnumerable());
-
-        MigrationProgress[] rows =
-        [
-            new() { Id = Guid.NewGuid(), CycleId = "single-tenant", Status = MigrationStatus.Pending, TenantId = null },
-        ];
-
-        MigrationStartupService sut = BuildService(CreateFactory(rows), enumerator, commandSender);
-
-        await sut.StartAsync(TestContext.Current.CancellationToken);
-
-        List<RunMigrationBatchCommand> commands = GetDispatchedCommands(commandSender);
-        commands.ShouldHaveSingleItem();
-        commands[0].TenantId.ShouldBe(Guid.Empty);
-    }
-
-    // -------------------------------------------------------------------------
-    // Multi-tenant enumerator — one command per tenant per cycle
-    // -------------------------------------------------------------------------
-
-    [Fact]
-    public async Task StartAsync_TwoTenants_DispatchesTwoCommandsForOneCycle()
-    {
-        var tenantA = Guid.NewGuid();
-        var tenantB = Guid.NewGuid();
-
-        ICommandSender commandSender = Substitute.For<ICommandSender>();
-        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
-        enumerator.GetActiveTenantIdsAsync(Arg.Any<CancellationToken>())
-            .Returns(ToAsyncEnumerable(tenantA, tenantB));
-
-        MigrationProgress[] rows =
-        [
-            new()
-            {
-                Id         = Guid.NewGuid(),
-                CycleId    = "schema-cycle",
-                Status     = MigrationStatus.Pending,
-                TenantId   = tenantA,
-                LastCursor = "cursor-a",
-            },
-        ];
-
-        MigrationStartupService sut = BuildService(CreateFactory(rows), enumerator, commandSender);
-
-        await sut.StartAsync(TestContext.Current.CancellationToken);
-
-        List<RunMigrationBatchCommand> commands = GetDispatchedCommands(commandSender);
-
-        // Two commands — one per tenant.
-        commands.Count.ShouldBe(2);
-
-        // Tenant A reuses its stored cursor.
-        RunMigrationBatchCommand commandA = commands.Single(c => c.TenantId == tenantA);
-        commandA.CycleId.ShouldBe("schema-cycle");
-        commandA.Cursor.ShouldBe("cursor-a");
-
-        // Tenant B has no stored row → null cursor (start from beginning).
-        RunMigrationBatchCommand commandB = commands.Single(c => c.TenantId == tenantB);
-        commandB.CycleId.ShouldBe("schema-cycle");
-        commandB.Cursor.ShouldBeNull();
-    }
-
-    // -------------------------------------------------------------------------
-    // Distributed lock — only one replica resumes
-    // -------------------------------------------------------------------------
-
-    [Fact]
-    public async Task StartAsync_LockNotAcquired_DoesNotDispatch()
-    {
-        ICommandSender commandSender = Substitute.For<ICommandSender>();
-        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
-        enumerator.GetActiveTenantIdsAsync(Arg.Any<CancellationToken>())
-            .Returns(ToAsyncEnumerable());
-
-        // Another instance holds the lock: TryAcquireAsync returns null.
-        IGranitMigrationLock blockingLock = Substitute.For<IGranitMigrationLock>();
-        blockingLock.TryAcquireAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((IAsyncDisposable?)null);
-
-        MigrationProgress[] rows =
-        [
-            new() { Id = Guid.NewGuid(), CycleId = "cycle-a", Status = MigrationStatus.Pending, TenantId = null },
-        ];
-
-        MigrationStartupService sut = BuildService(
-            CreateFactory(rows), enumerator, commandSender, migrationLock: blockingLock);
-
-        await sut.StartAsync(TestContext.Current.CancellationToken);
-
-        commandSender.ReceivedCalls().ShouldBeEmpty();
+        await runner.Received(1).RunAsync(
+            MigrationRunMode.ResumeBatches, Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task StartAsync_AcquiresStartupLockResource()
+    public async Task StartAsync_RunnerNotRegistered_DoesNotThrow()
     {
-        ICommandSender commandSender = Substitute.For<ICommandSender>();
-        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
-        enumerator.GetActiveTenantIdsAsync(Arg.Any<CancellationToken>())
-            .Returns(ToAsyncEnumerable());
+        // Migrations-only host (AddGranitMigrateSupport never called): the service warns
+        // and skips instead of maintaining a parallel resume pipeline.
+        MigrationStartupService sut = new(
+            NullLogger<MigrationStartupService>.Instance, migrationRunner: null);
 
-        IGranitMigrationLock migrationLock = Substitute.For<IGranitMigrationLock>();
-        migrationLock.TryAcquireAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((IAsyncDisposable?)null);
-
-        MigrationStartupService sut = BuildService(
-            CreateFactory(), enumerator, commandSender, migrationLock: migrationLock);
-
-        await sut.StartAsync(TestContext.Current.CancellationToken);
-
-        await migrationLock.Received(1).TryAcquireAsync(
-            "GranitMigrationStartup", Arg.Any<CancellationToken>());
+        await Should.NotThrowAsync(
+            () => sut.StartAsync(TestContext.Current.CancellationToken));
     }
 
-    // -------------------------------------------------------------------------
-    // Exception does not block startup
-    // -------------------------------------------------------------------------
+    [Fact]
+    public async Task StartAsync_NonZeroExitCode_DoesNotThrow()
+    {
+        IGranitMigrationRunner runner = Substitute.For<IGranitMigrationRunner>();
+        runner.RunAsync(Arg.Any<MigrationRunMode>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(1));
+
+        MigrationStartupService sut = new(NullLogger<MigrationStartupService>.Instance, runner);
+
+        // A failed resume is logged, never rethrown — startup must continue.
+        await Should.NotThrowAsync(
+            () => sut.StartAsync(TestContext.Current.CancellationToken));
+    }
 
     [Fact]
-    public async Task StartAsync_FactoryThrows_DoesNotPropagateException()
+    public async Task StartAsync_RunnerThrows_DoesNotPropagateException()
     {
-        IDbContextFactory<MigrationProgressDbContext> factory =
-            Substitute.For<IDbContextFactory<MigrationProgressDbContext>>();
-        factory.CreateDbContext().Returns(_ => throw new InvalidOperationException("db unavailable"));
+        IGranitMigrationRunner runner = Substitute.For<IGranitMigrationRunner>();
+        runner.RunAsync(Arg.Any<MigrationRunMode>(), Arg.Any<CancellationToken>())
+            .Throws(new InvalidOperationException("db unavailable"));
 
-        ICommandSender commandSender = Substitute.For<ICommandSender>();
-        ITenantEnumerator enumerator = Substitute.For<ITenantEnumerator>();
+        MigrationStartupService sut = new(NullLogger<MigrationStartupService>.Instance, runner);
 
-        MigrationStartupService sut = BuildService(factory, enumerator, commandSender);
+        await Should.NotThrowAsync(
+            () => sut.StartAsync(TestContext.Current.CancellationToken));
+    }
 
-        Func<Task> act = () => sut.StartAsync(TestContext.Current.CancellationToken);
+    [Fact]
+    public async Task StopAsync_CompletesSynchronously()
+    {
+        MigrationStartupService sut = new(
+            NullLogger<MigrationStartupService>.Instance, migrationRunner: null);
 
-        await Should.NotThrowAsync(act);
+        Task stop = sut.StopAsync(TestContext.Current.CancellationToken);
+
+        stop.IsCompletedSuccessfully.ShouldBeTrue();
+        await stop;
     }
 }

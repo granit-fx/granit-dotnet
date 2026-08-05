@@ -42,7 +42,13 @@ public static class PersistenceMigrationsHostApplicationBuilderExtensions
     ///     <see cref="ITenantEnumerator"/> <b>before</b> calling this method.
     ///   </item>
     ///   <item>
-    ///     <c>MigrationStartupService</c> — hosted service that resumes pending cycles at startup.
+    ///     <c>MigrationStartupService</c> — hosted service that triggers the resume of pending
+    ///     cycles at startup through <see cref="IGranitMigrationRunner"/> (registered by
+    ///     <c>AddGranitMigrateSupport()</c> from the Hosting package — one code path, one lock).
+    ///   </item>
+    ///   <item>
+    ///     <see cref="IMigrationBatchResumer"/> — dispatches the per-cycle resume commands;
+    ///     consumed by the runner's <see cref="MigrationRunMode.ResumeBatches"/> mode.
     ///   </item>
     ///   <item>
     ///     <see cref="MigrationStartupOptions"/> — bound from the
@@ -87,10 +93,17 @@ public static class PersistenceMigrationsHostApplicationBuilderExtensions
         // Bridge ITenantEnumerator → IDataSeedTenantProvider for DataSeeder tenant iteration.
         builder.Services.TryAddSingleton<IDataSeedTenantProvider, TenantEnumeratorDataSeedTenantProvider>();
 
-        // Fallback lock for MigrationStartupService when the Hosting package is not used.
-        // Provider packages (AddGranitPostgres / AddGranitSqlServer) register the real
-        // distributed lock with AddSingleton (replace), which wins regardless of order.
+        // Fallback lock so IGranitMigrationLock always resolves. Provider packages
+        // (AddGranitPostgres / AddGranitSqlServer) register the real distributed lock
+        // with AddSingleton (replace), which wins regardless of order. Since the
+        // orchestration unification (#3167) the only lock consumer is the migration
+        // runner — this fallback keeps resolution safe for Migrations-only hosts.
         builder.Services.TryAddSingleton<IGranitMigrationLock, NullMigrationLock>();
+
+        // Resume-command dispatcher — consumed by the runner's ResumeBatches mode.
+        // Public interface so the Hosting package never touches the internal
+        // MigrationProgressDbContext (same seam as IMigrationProgressDbEnsurer).
+        builder.Services.TryAddSingleton<IMigrationBatchResumer, MigrationBatchResumer>();
 
         // Migration batch executor. The first command per cycle is dispatched via ICommandSender
         // (Granit.Wolverine or another provider); RunMigrationBatchHandler cascades subsequent
