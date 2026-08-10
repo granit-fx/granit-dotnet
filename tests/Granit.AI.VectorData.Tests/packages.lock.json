@@ -494,10 +494,10 @@
       "Microsoft.Extensions.VectorData.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.8.0",
-        "contentHash": "M9Bq6FoD7UeZfiVyF8n1xOAiiXKz4ubJV/O7X872rzBW+nifT1W0VgIlp7fSNSxni8VTdm9QL0etl2E5Aj3jFw==",
+        "resolved": "10.8.2",
+        "contentHash": "e4AkXSuZaslSXCZLWpqBgjBYafwOh/b3LQp+RWIiJrvFjJXM9VUYVHRbbxWQTDuMxKPKFADRch5Dy3EKmBCHkA==",
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.8.0"
+          "Microsoft.Extensions.AI.Abstractions": "10.8.2"
         }
       },
       "xunit.v3.extensibility.core": {

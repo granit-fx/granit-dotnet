@@ -3,6 +3,14 @@
     <PackageId>Granit.Http.ApiDocumentation</PackageId>
     <Description>OpenAPI documentation and URL-based API versioning for Granit applications. Generates one OpenAPI document per declared API version, with JWT Bearer security scheme, [InternalApi] endpoint filtering, and RFC 8594 deprecation headers. Pair with Granit.Http.ApiDocumentation.Scalar for the interactive UI.</Description>
     <IsPackable>true</IsPackable>
+    <!-- AV0029/AV0030 (new in Asp.Versioning 10.2) push consumers onto the library's own
+         OpenAPI integration: AddApiVersioning().AddOpenApi() + MapOpenApi().WithDocumentPerVersion().
+         Granit deliberately does not use it. RegisterGranitDocument builds one NAMED document per
+         major version with framework-owned Info/Contact/logo, ShouldInclude filtering ([InternalApi]),
+         and the Granit transformer pipeline — none of which the built-in integration exposes. Both
+         paths would register competing documents for the same versions. Revisit only as a deliberate
+         migration, never as a side effect of a version bump. -->
+    <NoWarn>$(NoWarn);AV0029;AV0030</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

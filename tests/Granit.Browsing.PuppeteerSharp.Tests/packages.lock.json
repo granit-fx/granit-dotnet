@@ -570,8 +570,8 @@
       "PuppeteerSharp": {
         "type": "CentralTransitive",
         "requested": "[25.*, )",
-        "resolved": "25.4.0",
-        "contentHash": "150Y122/V1OFIfPicM/A744xdrhRr9tX8zXQzGtUUlGiUfTuLZDHOD9HgFrmJz95Ni22SGOa5Bk3MNxmFLTrKA==",
+        "resolved": "25.5.0",
+        "contentHash": "U9qxwlmXHUCO3WGzb+6rvHcTBJdVIhT8DmN56XaQjBAgUmxndaTBo+/J4MWFbqgDzcjrLdSaHCdh6FhRK6vu+g==",
         "dependencies": {
           "Microsoft.Extensions.Logging": "8.0.0",
           "Microsoft.IO.RecyclableMemoryStream": "3.0.1",
