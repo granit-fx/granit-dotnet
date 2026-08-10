@@ -20,12 +20,15 @@ internal sealed partial class TwilioNotificationProvider(
     IOptionsMonitor<TwilioOptions> options,
     ILogger<TwilioNotificationProvider> logger) : ISmsSender, IWhatsAppSender
 {
+    /// <summary>Keyed-service and named-<see cref="HttpClient"/> key.</summary>
+    private const string ProviderName = "Twilio";
+
     /// <inheritdoc />
     async Task ISmsSender.SendAsync(SmsMessage message, CancellationToken cancellationToken)
     {
         using Activity? activity = NotificationsTwilioActivitySource.Source.StartActivity(NotificationsTwilioActivitySource.Operations.SendSms);
         TwilioOptions opts = options.CurrentValue;
-        HttpClient client = httpClientFactory.CreateClient("Twilio");
+        HttpClient client = httpClientFactory.CreateClient(ProviderName);
 
         string fromNumber = message.SenderId ?? opts.DefaultSmsFromNumber;
         string endpoint = $"2010-04-01/Accounts/{opts.AccountSid}/Messages.json";
@@ -39,7 +42,7 @@ internal sealed partial class TwilioNotificationProvider(
 
         using HttpResponseMessage response = await client.PostAsync(
             endpoint, content, cancellationToken).ConfigureAwait(false);
-        await response.EnsureGranitSuccessAsync(logger, "Twilio", endpoint, cancellationToken).ConfigureAwait(false);
+        await response.EnsureGranitSuccessAsync(logger, ProviderName, endpoint, cancellationToken).ConfigureAwait(false);
 
         LogSmsSent(LogRedaction.Phone(message.To));
     }
@@ -49,7 +52,7 @@ internal sealed partial class TwilioNotificationProvider(
     {
         using Activity? activity = NotificationsTwilioActivitySource.Source.StartActivity(NotificationsTwilioActivitySource.Operations.SendWhatsApp);
         TwilioOptions opts = options.CurrentValue;
-        HttpClient client = httpClientFactory.CreateClient("Twilio");
+        HttpClient client = httpClientFactory.CreateClient(ProviderName);
 
         string whatsAppNumber = opts.DefaultWhatsAppFromNumber ?? opts.DefaultSmsFromNumber;
         string endpoint = $"2010-04-01/Accounts/{opts.AccountSid}/Messages.json";
@@ -65,7 +68,7 @@ internal sealed partial class TwilioNotificationProvider(
 
         using HttpResponseMessage response = await client.PostAsync(
             endpoint, content, cancellationToken).ConfigureAwait(false);
-        await response.EnsureGranitSuccessAsync(logger, "Twilio", endpoint, cancellationToken).ConfigureAwait(false);
+        await response.EnsureGranitSuccessAsync(logger, ProviderName, endpoint, cancellationToken).ConfigureAwait(false);
 
         LogWhatsAppSent(LogRedaction.Phone(message.To), message.TemplateName);
     }

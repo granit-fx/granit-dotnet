@@ -24,6 +24,9 @@ internal sealed partial class BrevoNotificationProvider(
     IOptionsMonitor<BrevoOptions> options,
     ILogger<BrevoNotificationProvider> logger) : IEmailSender, ISmsSender, IWhatsAppSender
 {
+    /// <summary>Keyed-service and named-<see cref="HttpClient"/> key.</summary>
+    private const string ProviderName = "Brevo";
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -35,7 +38,7 @@ internal sealed partial class BrevoNotificationProvider(
     {
         using Activity? activity = NotificationsBrevoActivitySource.Source.StartActivity(NotificationsBrevoActivitySource.Operations.SendEmail);
         BrevoOptions opts = options.CurrentValue;
-        HttpClient client = httpClientFactory.CreateClient("Brevo");
+        HttpClient client = httpClientFactory.CreateClient(ProviderName);
 
         var to = new { email = message.To, name = message.ToName };
 
@@ -55,7 +58,7 @@ internal sealed partial class BrevoNotificationProvider(
 
         using HttpResponseMessage response = await client.PostAsJsonAsync(
             "smtp/email", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
-        await response.EnsureGranitSuccessAsync(logger, "Brevo", "smtp/email", cancellationToken).ConfigureAwait(false);
+        await response.EnsureGranitSuccessAsync(logger, ProviderName, "smtp/email", cancellationToken).ConfigureAwait(false);
 
         LogEmailSent(LogRedaction.Email(message.To));
     }
@@ -65,7 +68,7 @@ internal sealed partial class BrevoNotificationProvider(
     {
         using Activity? activity = NotificationsBrevoActivitySource.Source.StartActivity(NotificationsBrevoActivitySource.Operations.SendSms);
         BrevoOptions opts = options.CurrentValue;
-        HttpClient client = httpClientFactory.CreateClient("Brevo");
+        HttpClient client = httpClientFactory.CreateClient(ProviderName);
 
         object payload = new
         {
@@ -77,7 +80,7 @@ internal sealed partial class BrevoNotificationProvider(
 
         using HttpResponseMessage response = await client.PostAsJsonAsync(
             "transactionalSMS/sms", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
-        await response.EnsureGranitSuccessAsync(logger, "Brevo", "transactionalSMS/sms", cancellationToken).ConfigureAwait(false);
+        await response.EnsureGranitSuccessAsync(logger, ProviderName, "transactionalSMS/sms", cancellationToken).ConfigureAwait(false);
 
         LogSmsSent(LogRedaction.Phone(message.To));
     }
@@ -86,7 +89,7 @@ internal sealed partial class BrevoNotificationProvider(
     async Task IWhatsAppSender.SendAsync(WhatsAppMessage message, CancellationToken cancellationToken)
     {
         using Activity? activity = NotificationsBrevoActivitySource.Source.StartActivity(NotificationsBrevoActivitySource.Operations.SendWhatsApp);
-        HttpClient client = httpClientFactory.CreateClient("Brevo");
+        HttpClient client = httpClientFactory.CreateClient(ProviderName);
 
         object payload = new
         {
@@ -99,7 +102,7 @@ internal sealed partial class BrevoNotificationProvider(
 
         using HttpResponseMessage response = await client.PostAsJsonAsync(
             "whatsapp/sendTemplate", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
-        await response.EnsureGranitSuccessAsync(logger, "Brevo", "whatsapp/sendTemplate", cancellationToken).ConfigureAwait(false);
+        await response.EnsureGranitSuccessAsync(logger, ProviderName, "whatsapp/sendTemplate", cancellationToken).ConfigureAwait(false);
 
         LogWhatsAppSent(LogRedaction.Phone(message.To), message.TemplateName);
     }

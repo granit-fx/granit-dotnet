@@ -40,6 +40,9 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// <summary>Header set on the response when a user-supplied <c>$top</c> was clamped to the EntitySet's <see cref="ODataEntitySetDescriptor.MaxTop"/>. Lets observability tools spot misconfigured BI refresh jobs.</summary>
     internal const string MaxTopAppliedHeader = "OData-MaxTop-Applied";
 
+    /// <summary>Problem-details title for every rejected OData query option.</summary>
+    private const string QueryOptionNotSupportedTitle = "Query option not supported";
+
     /// <summary>Rate-limit policy name applied to every tenant-feed OData route. Hosts configure quotas under <c>RateLimiting:Policies:granit-odata</c>.</summary>
     public const string RateLimitPolicyName = "granit-odata";
 
@@ -747,7 +750,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
                     + string.Join("; ", ex.Errors.Select(e =>
                         e.Field is null ? $"[{e.Code}] {e.Message}" : $"[{e.Code}] {e.Field}: {e.Message}")),
                 statusCode: StatusCodes.Status400BadRequest,
-                title: "Query option not supported");
+                title: QueryOptionNotSupportedTitle);
         }
 
         ODataValidationSettings validationSettings = validationSettingsCache.GetOrCreate(
@@ -762,7 +765,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
             return TypedResults.Problem(
                 detail: ex.Message,
                 statusCode: StatusCodes.Status400BadRequest,
-                title: "Query option not supported");
+                title: QueryOptionNotSupportedTitle);
         }
 
         ODataQuerySettings querySettings = new() { PageSize = descriptor.PageSize };
@@ -810,7 +813,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
             return (null, TypedResults.Problem(
                 detail: ex.Message,
                 statusCode: StatusCodes.Status400BadRequest,
-                title: "Query option not supported"));
+                title: QueryOptionNotSupportedTitle));
         }
 
         ODataFilterTranslationResult translation = ODataFilterTranslator.Translate(filterClause);
@@ -820,7 +823,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
             return (null, TypedResults.Problem(
                 detail: translation.RejectionDetail,
                 statusCode: StatusCodes.Status400BadRequest,
-                title: "Query option not supported"));
+                title: QueryOptionNotSupportedTitle));
         }
 
         return (translation.Predicate, null);
@@ -998,7 +1001,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
             return (TypedResults.Problem(
                 detail: ex.Message,
                 statusCode: StatusCodes.Status400BadRequest,
-                title: "Query option not supported"), "odata_validation_failed");
+                title: QueryOptionNotSupportedTitle), "odata_validation_failed");
         }
 
         return ValidateExpandItems(clause.SelectedItems, prefix: null, depth: 0, descriptor, allowedExpandPaths);

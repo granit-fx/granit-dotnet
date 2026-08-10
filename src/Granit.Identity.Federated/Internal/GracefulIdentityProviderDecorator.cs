@@ -105,14 +105,11 @@ internal sealed partial class GracefulIdentityProviderDecorator(
 
     private async Task<T> DegradeAsync<T>(Func<Task<T>> operation, T degraded)
     {
+        // Only IdentityProviderException degrades — cancellation (request abort, host
+        // shutdown) is not a provider failure and propagates untouched.
         try
         {
             return await operation().ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-            // Never swallow cancellation — request abort / host shutdown must propagate.
-            throw;
         }
         catch (IdentityProviderException ex)
         {

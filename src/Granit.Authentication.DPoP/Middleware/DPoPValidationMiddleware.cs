@@ -19,6 +19,9 @@ internal sealed partial class DPoPValidationMiddleware(
     IOptions<DPoPValidationOptions> options,
     ILogger<DPoPValidationMiddleware> logger)
 {
+    /// <summary>Authorization scheme prefix, trailing space included.</summary>
+    private const string SchemePrefix = "DPoP ";
+
     public async Task InvokeAsync(HttpContext context)
     {
         DPoPValidationOptions opts = options.Value;
@@ -38,7 +41,7 @@ internal sealed partial class DPoPValidationMiddleware(
         // Only process authenticated requests with DPoP header or when DPoP is required
         bool hasDPoPHeader = context.Request.Headers.ContainsKey("DPoP");
         bool hasDPoPScheme = context.Request.Headers.Authorization
-            .ToString().StartsWith("DPoP ", StringComparison.OrdinalIgnoreCase);
+            .ToString().StartsWith(SchemePrefix, StringComparison.OrdinalIgnoreCase);
 
         if (!hasDPoPHeader && !hasDPoPScheme)
         {
@@ -56,7 +59,7 @@ internal sealed partial class DPoPValidationMiddleware(
         // the Authorization header with DPoP scheme (used at the token endpoint).
         string? proofJwt = hasDPoPHeader
             ? context.Request.Headers["DPoP"].ToString()
-            : context.Request.Headers.Authorization.ToString()["DPoP ".Length..];
+            : context.Request.Headers.Authorization.ToString()[SchemePrefix.Length..];
 
         if (string.IsNullOrWhiteSpace(proofJwt))
         {
@@ -115,9 +118,9 @@ internal sealed partial class DPoPValidationMiddleware(
         }
 
         string authHeader = context.Request.Headers.Authorization.ToString();
-        if (authHeader.StartsWith("DPoP ", StringComparison.OrdinalIgnoreCase))
+        if (authHeader.StartsWith(SchemePrefix, StringComparison.OrdinalIgnoreCase))
         {
-            return authHeader["DPoP ".Length..];
+            return authHeader[SchemePrefix.Length..];
         }
 
         if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))

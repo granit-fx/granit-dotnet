@@ -23,6 +23,9 @@ internal sealed class MagickNetImageProcessor(
     ICurrentTenant currentTenant,
     IOptions<ImagingMagickNetOptions> options) : IImageProcessor
 {
+    /// <summary>Reported format when the magic-byte sniff finds no supported signature.</summary>
+    private const string UnknownFormat = "unknown";
+
     /// <inheritdoc/>
     public async Task<IImagePipeline> LoadAsync(Stream source, CancellationToken cancellationToken = default)
     {
@@ -65,7 +68,7 @@ internal sealed class MagickNetImageProcessor(
 
         if (!ImageFormatDetector.IsSafeRasterFormat(source.Span))
         {
-            throw new UnsupportedImageFormatException("unknown");
+            throw new UnsupportedImageFormatException(UnknownFormat);
         }
 
         MagickImage image = new(source.Span);
@@ -84,7 +87,7 @@ internal sealed class MagickNetImageProcessor(
         // precisely to vet declared pixel dimensions BEFORE deciding whether to decode.
         if (!ImageFormatDetector.IsSafeRasterFormat(source.Span))
         {
-            throw new UnsupportedImageFormatException("unknown");
+            throw new UnsupportedImageFormatException(UnknownFormat);
         }
 
         try
@@ -138,7 +141,7 @@ internal sealed class MagickNetImageProcessor(
 
         if (!ImageFormatDetector.IsSafeRasterFormat(header[..bytesRead]))
         {
-            throw new UnsupportedImageFormatException("unknown");
+            throw new UnsupportedImageFormatException(UnknownFormat);
         }
     }
 
@@ -153,7 +156,7 @@ internal sealed class MagickNetImageProcessor(
 
         if (!ImageFormatDetector.IsSafeRasterFormat(header.AsSpan(0, bytesRead)))
         {
-            throw new UnsupportedImageFormatException("unknown");
+            throw new UnsupportedImageFormatException(UnknownFormat);
         }
     }
 }

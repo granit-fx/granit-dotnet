@@ -70,12 +70,9 @@ internal static class ODataEdmModelBuilder
 
         // $expand closure targets: registered explicitly (no EntitySet) so
         // the whitelist below applies to them exactly as to the roots.
-        foreach (Type type in whitelistByType.Keys)
+        foreach (Type type in whitelistByType.Keys.Where(t => !typeConfigurations.ContainsKey(t)))
         {
-            if (!typeConfigurations.ContainsKey(type))
-            {
-                typeConfigurations[type] = builder.AddEntityType(type);
-            }
+            typeConfigurations[type] = builder.AddEntityType(type);
         }
 
         foreach ((Type type, EntityTypeConfiguration configuration) in typeConfigurations)

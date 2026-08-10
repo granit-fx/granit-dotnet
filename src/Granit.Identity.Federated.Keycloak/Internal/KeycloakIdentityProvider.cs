@@ -42,6 +42,7 @@ internal sealed partial class KeycloakIdentityProvider(
 {
     private const string ProviderName = "keycloak";
     private const string GetUserOperation = "get_user";
+    private const string ListUsersOperation = "list_users";
 
     /// <summary>
     /// Keycloak client attribute (operator-set on the client in Keycloak) declaring the device kind of the
@@ -101,8 +102,8 @@ internal sealed partial class KeycloakIdentityProvider(
         catch (HttpRequestException ex) when (IsAuthorizationFailure(ex))
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
-            metrics.RecordOperationError(null, "list_users", ProviderName);
-            throw new IdentityProviderUnauthorizedException(ProviderName, "list_users", ex);
+            metrics.RecordOperationError(null, ListUsersOperation, ProviderName);
+            throw new IdentityProviderUnauthorizedException(ProviderName, ListUsersOperation, ex);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -111,9 +112,9 @@ internal sealed partial class KeycloakIdentityProvider(
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
-            metrics.RecordOperationError(null, "list_users", ProviderName);
+            metrics.RecordOperationError(null, ListUsersOperation, ProviderName);
             LogKeycloakGetUsersFailed(ex);
-            throw ClassifyReadFault(ex, "list_users");
+            throw ClassifyReadFault(ex, ListUsersOperation);
         }
     }
 

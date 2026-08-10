@@ -179,9 +179,9 @@ public abstract class GranitDbContext : DbContext
                 .Invoke(this, [modelBuilder]);
         }
 
-        foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes().ToList())
+        foreach (Type clrType in modelBuilder.Model.GetEntityTypes().Select(et => et.ClrType).ToList())
         {
-            Type? translationInterface = entityType.ClrType
+            Type? translationInterface = clrType
                 .GetInterfaces()
                 .FirstOrDefault(i => i.IsGenericType
                     && i.GetGenericTypeDefinition() == typeof(ITranslation<>));
@@ -189,7 +189,7 @@ public abstract class GranitDbContext : DbContext
             if (translationInterface is not null)
             {
                 ConfigureTranslationFiltersMethod
-                    .MakeGenericMethod(entityType.ClrType, translationInterface.GetGenericArguments()[0])
+                    .MakeGenericMethod(clrType, translationInterface.GetGenericArguments()[0])
                     .Invoke(this, [modelBuilder]);
             }
         }
