@@ -44,8 +44,8 @@ public static class CookiesEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddGranitDbContext<CookiesDbContext>(configure);
 
         // Durable ledger replaces the base module's NullConsentLedger. RemoveAll + Add is
-        // deterministic in both wiring orders: registered first, the base TryAdd no-ops;
-        // registered second, the Null default is removed here.
+        // deterministic in both wiring orders: registered first, the base TryAdd no-ops,
+        // and registered second, the Null default is removed here.
         builder.Services.RemoveAll<IConsentLedger>();
         builder.Services.AddScoped<IConsentLedger, EfCoreConsentLedger>();
 

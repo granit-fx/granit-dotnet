@@ -193,8 +193,8 @@ public static class ObservabilityServiceCollectionExtensions
             .AddMeter("Granit.*");
 
         // Meters emitted by embedded third-party libraries under their own namespace
-        // (e.g. FusionCache's "ZiggyCreatures.Caching.Fusion") fall outside the wildcard;
-        // modules declare them via GranitMeterRegistry.Register().
+        // (e.g. FusionCache's "ZiggyCreatures.Caching.Fusion") fall outside the wildcard,
+        // so modules declare them via GranitMeterRegistry.Register().
         foreach (string meter in GranitMeterRegistry.GetRegisteredMeters())
         {
             metrics.AddMeter(meter);

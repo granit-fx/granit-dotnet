@@ -40,8 +40,8 @@ public class IdentityFederatedPersonalDataDeletionHandler
         ArgumentNullException.ThrowIfNull(currentTenant);
 
         // Distributed dispatch carries no ambient tenant — establish it from the event so the
-        // multi-tenant query filter exposes the rows the eraser's explicit predicate targets;
-        // without it the erasure silently no-ops on tenant-scoped mirrors while the saga acks.
+        // multi-tenant query filter exposes the rows the eraser's explicit predicate targets.
+        // Without it the erasure silently no-ops on tenant-scoped mirrors while the saga acks.
         // A null resolved scope (no tenant on the event, none ambient) erases across ALL
         // partitions: Art. 17 must not leave a mirror behind in any scope.
         Guid? tenantId = @event.TenantId ?? (currentTenant.IsAvailable ? currentTenant.Id : null);

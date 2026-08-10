@@ -102,7 +102,7 @@ internal sealed partial class LlmImageAnalyzer(
     private static string NormalizeContentType(string contentType) =>
         AllowedContentTypes.Contains(contentType) ? contentType : "other";
 
-    // Preserves the analyzer's exception-based contract over the primitive's status codes;
+    // Preserves the analyzer's exception-based contract over the primitive's status codes.
     // ErrorMessage is PII-safe by the primitive's contract (never echoes model output).
     private static ImageAnalysis MapResult(StructuredCompletionResult<LlmAnalysisResponse> completion) =>
         completion.Status switch

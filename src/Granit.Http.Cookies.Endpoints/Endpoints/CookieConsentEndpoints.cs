@@ -60,8 +60,8 @@ internal static class CookieConsentEndpoints
         HttpContext context,
         CancellationToken cancellationToken)
     {
-        // Data minimisation at capture (GDPR Art. 5(1)(c)): irreversible IP masking;
-        // the factory truncates the user-agent — the ledger never sees a raw identifier.
+        // Data minimisation at capture (GDPR Art. 5(1)(c)): the IP masking is irreversible
+        // and the factory truncates the user-agent, so the ledger never sees a raw identifier.
         string? anonymizedIp = IpAddressAnonymizer.Mask(context.Connection.RemoteIpAddress);
         string userAgentHeader = context.Request.Headers.UserAgent.ToString();
 

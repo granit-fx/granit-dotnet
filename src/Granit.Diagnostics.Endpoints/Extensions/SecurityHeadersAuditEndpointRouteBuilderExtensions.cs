@@ -24,8 +24,8 @@ public static class SecurityHeadersAuditEndpointRouteBuilderExtensions
         this IEndpointRouteBuilder endpoints,
         Action<SecurityHeadersAuditOptions>? configure = null)
     {
-        // Bound from Diagnostics:Endpoints:SecurityHeadersAudit by the module;
-        // the delegate overrides on top.
+        // Bound from Diagnostics:Endpoints:SecurityHeadersAudit by the module, with
+        // the delegate overriding on top.
         SecurityHeadersAuditOptions options =
             endpoints.ServiceProvider.GetService<IOptions<SecurityHeadersAuditOptions>>()?.Value ?? new();
         configure?.Invoke(options);

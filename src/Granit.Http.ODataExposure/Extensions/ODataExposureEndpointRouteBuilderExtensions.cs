@@ -711,8 +711,8 @@ public static class ODataExposureEndpointRouteBuilderExtensions
 
         // #1392 silent-clamp contract: an over-cap $top is pinned down to MaxTop BEFORE
         // validation so options.Validate() — which enforces the model-bound MaxTop set via
-        // SetMaxTop and would otherwise return 400 — accepts it. ApplyTo applies the same cap;
-        // the OData-MaxTop-Applied header was already emitted above from the original value.
+        // SetMaxTop and would otherwise return 400 — accepts it. ApplyTo applies the same cap,
+        // and the OData-MaxTop-Applied header was already emitted above from the original value.
         options = ClampTopToCap(options, httpContext, descriptor.MaxTop);
 
         // #3004 — the user's $filter is translated into the engine's strict predicate tree
