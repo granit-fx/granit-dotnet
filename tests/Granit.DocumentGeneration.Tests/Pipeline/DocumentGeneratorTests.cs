@@ -26,8 +26,14 @@ public sealed class DocumentGeneratorTests
 
     private static readonly byte[] PdfBytes = [0x25, 0x50, 0x44, 0x46]; // %PDF magic
 
-    private static readonly DocumentGenerationMetrics Metrics = CreateMetrics();
-    private static readonly ICurrentTenant Tenant = CreateTenant();
+    // Instance fields, deliberately not static. A static initializer runs lazily on the first
+    // static access of the class — and here that access is `PdfBytes`, read *inside* a
+    // `.Returns(...)` argument. Configuring these substitutes at that moment clobbers
+    // NSubstitute's pending last-call state ("Could not find a call to return from"), failing
+    // whichever test xUnit happens to run first. Field initializers run in the per-test
+    // constructor instead, before any call is recorded.
+    private readonly DocumentGenerationMetrics _metrics = CreateMetrics();
+    private readonly ICurrentTenant _tenant = CreateTenant();
 
     private static DocumentGenerationMetrics CreateMetrics()
     {
@@ -65,7 +71,7 @@ public sealed class DocumentGeneratorTests
                 Arg.Any<CancellationToken>())
             .Returns(new DocumentResult(PdfBytes, DocumentFormat.Pdf));
 
-        DocumentGenerator sut = new(textRenderer, [pdfRenderer], Metrics, Tenant);
+        DocumentGenerator sut = new(textRenderer, [pdfRenderer], _metrics, _tenant);
 
         // Act
         DocumentResult result = await sut.GenerateAsync(
@@ -98,7 +104,7 @@ public sealed class DocumentGeneratorTests
                 Arg.Any<CancellationToken>())
             .Returns(new DocumentResult(PdfBytes, DocumentFormat.Pdf));
 
-        DocumentGenerator sut = new(textRenderer, [pdfRenderer], Metrics, Tenant);
+        DocumentGenerator sut = new(textRenderer, [pdfRenderer], _metrics, _tenant);
 
         // Act — no targetFormat parameter
         DocumentResult result = await sut.GenerateAsync(
@@ -135,7 +141,7 @@ public sealed class DocumentGeneratorTests
                 Arg.Any<CancellationToken>())
             .Returns(new DocumentResult(new byte[] { 0x50, 0x4B }, DocumentFormat.Excel));
 
-        DocumentGenerator sut = new(textRenderer, [excelRenderer], Metrics, Tenant);
+        DocumentGenerator sut = new(textRenderer, [excelRenderer], _metrics, _tenant);
 
         // Act — override default Pdf with Excel
         DocumentResult result = await sut.GenerateAsync(
@@ -165,7 +171,7 @@ public sealed class DocumentGeneratorTests
         excelOnly.CanRender(DocumentFormat.Pdf).Returns(false);
         excelOnly.CanRender(DocumentFormat.Excel).Returns(true);
 
-        DocumentGenerator sut = new(textRenderer, [excelOnly], Metrics, Tenant);
+        DocumentGenerator sut = new(textRenderer, [excelOnly], _metrics, _tenant);
 
         // Act
         Func<Task> act = async () =>
@@ -203,7 +209,7 @@ public sealed class DocumentGeneratorTests
                 Arg.Any<CancellationToken>())
             .Returns(new DocumentResult(PdfBytes, DocumentFormat.Pdf));
 
-        DocumentGenerator sut = new(textRenderer, [renderer], Metrics, Tenant);
+        DocumentGenerator sut = new(textRenderer, [renderer], _metrics, _tenant);
 
         // Act
         await sut.GenerateAsync(
@@ -230,7 +236,7 @@ public sealed class DocumentGeneratorTests
 
         IDocumentRenderer renderer = Substitute.For<IDocumentRenderer>();
 
-        DocumentGenerator sut = new(textRenderer, [renderer], Metrics, Tenant);
+        DocumentGenerator sut = new(textRenderer, [renderer], _metrics, _tenant);
 
         // Act
         DocumentResult result = await sut.GenerateAsync(
