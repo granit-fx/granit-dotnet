@@ -8,7 +8,7 @@ untrusted input. Each harness lives in its own subdirectory and uses
 
 | Harness | Module | Surface |
 | --- | --- | --- |
-| [`Granit.QueryEngine.Fuzz`](./Granit.QueryEngine.Fuzz/) | [`Granit.QueryEngine.AspNetCore`](../src/Granit.QueryEngine.AspNetCore/) | HTTP query-string binder (`QueryRequestBinder.BindAsync`) |
+| [`Granit.QueryEngine.Fuzz`](./Granit.QueryEngine.Fuzz/) | [`Granit.QueryEngine.Endpoints`](../src/Granit.QueryEngine.Endpoints/) | HTTP query-string binder (`QueryRequestBinder.BindAsync`) |
 | [`Granit.DataExchange.Csv.Fuzz`](./Granit.DataExchange.Csv.Fuzz/) | [`Granit.DataExchange.Csv`](../src/Granit.DataExchange.Csv/) | Sep-backed CSV parser (`SepCsvFileParser.ExtractHeadersAsync` + `ParseAsync`) |
 | [`Granit.DataExchange.Excel.Fuzz`](./Granit.DataExchange.Excel.Fuzz/) | [`Granit.DataExchange.Excel`](../src/Granit.DataExchange.Excel/) | Sylvan-backed Excel parser (`SylvanExcelFileParser.ExtractHeadersAsync` + `ParseAsync`) |
 | [`Granit.QueryEngine.AI.Fuzz`](./Granit.QueryEngine.AI.Fuzz/) | [`Granit.QueryEngine.AI`](../src/Granit.QueryEngine.AI/) | Post-LLM JSON deserialization (`LlmNaturalLanguageQueryTranslator.TryDeserializeAndConvert`) |
@@ -23,7 +23,7 @@ They are built and exercised exclusively by the `cifuzz-*` GitHub workflows.
 sudo apt-get install -y afl++
 dotnet tool install -g SharpFuzz.CommandLine   # one-time
 dotnet publish fuzz/Granit.QueryEngine.Fuzz -c Release -o ./out/queryengine_fuzz
-sharpfuzz ./out/queryengine_fuzz/Granit.QueryEngine.AspNetCore.dll
+sharpfuzz ./out/queryengine_fuzz/Granit.QueryEngine.Endpoints.dll
 sharpfuzz ./out/queryengine_fuzz/Granit.QueryEngine.Abstractions.dll
 AFL_SKIP_CPUFREQ=1 afl-fuzz \
   -i fuzz/Granit.QueryEngine.Fuzz/seeds \
