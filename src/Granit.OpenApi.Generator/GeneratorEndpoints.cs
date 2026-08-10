@@ -111,6 +111,9 @@ internal static class GeneratorEndpoints
         new("timeline", e => e.MapGranitTimeline()),
         new("validation", e => e.MapGranitValidation()),
         new("webhooks", e => e.MapGranitWebhooks()),
-        new("workflow", e => e.MapGranitWorkflow()),
+        // The /transitions pair is mapped by an extension generic over the host's state enum, hence the
+        // generator's placeholder enum (see GeneratorStubWorkflowDefinition) — without it the emitted
+        // workflow contract would cover the history route only.
+        new("workflow", e => e.MapGranitWorkflow().MapGranitWorkflowTransition<WorkflowState>()),
     ];
 }
