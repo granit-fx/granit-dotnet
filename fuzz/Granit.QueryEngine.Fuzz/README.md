@@ -1,7 +1,7 @@
 # Granit.QueryEngine.Fuzz
 
 SharpFuzz + AFL++ harness around `QueryRequestBinder.BindAsync` from
-`Granit.QueryEngine.AspNetCore`.
+`Granit.QueryEngine.Endpoints`.
 
 ## What it fuzzes
 
@@ -9,7 +9,7 @@ The binder parses HTTP query strings into `QueryRequest`, including the brackete
 `filter[field.op]=value` and `presets[group]=name` syntax. The harness mutates the
 query-string body and asserts that the binder never throws an unexpected exception.
 
-- Target source: [`../../src/Granit.QueryEngine.AspNetCore/Binding/QueryRequestBinder.cs`](../../src/Granit.QueryEngine.AspNetCore/Binding/QueryRequestBinder.cs)
+- Target source: [`../../src/Granit.QueryEngine.Endpoints/Binding/QueryRequestBinder.cs`](../../src/Granit.QueryEngine.Endpoints/Binding/QueryRequestBinder.cs)
 - Method: `QueryRequestBinder.BindAsync(HttpContext, ParameterInfo)`
 
 ## Running locally
@@ -18,7 +18,7 @@ query-string body and asserts that the binder never throws an unexpected excepti
 sudo apt-get install -y afl++
 dotnet tool install -g SharpFuzz.CommandLine          # one-time
 dotnet publish fuzz/Granit.QueryEngine.Fuzz -c Release -o ./out/queryengine_fuzz
-sharpfuzz ./out/queryengine_fuzz/Granit.QueryEngine.AspNetCore.dll
+sharpfuzz ./out/queryengine_fuzz/Granit.QueryEngine.Endpoints.dll
 sharpfuzz ./out/queryengine_fuzz/Granit.QueryEngine.Abstractions.dll
 AFL_SKIP_CPUFREQ=1 afl-fuzz \
   -i fuzz/Granit.QueryEngine.Fuzz/seeds \

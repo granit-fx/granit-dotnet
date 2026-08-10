@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.QueryEngine.AspNetCore\Granit.QueryEngine.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.QueryEngine.Endpoints\Granit.QueryEngine.Endpoints.csproj" />
   </ItemGroup>
 
 </Project>
