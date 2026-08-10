@@ -155,7 +155,7 @@ internal static partial class ConnectTokenEndpoints
             IOidcPrincipalFactory principalFactory = context.RequestServices
                 .GetRequiredService<IOidcPrincipalFactory>();
             ClaimsPrincipal principal = await principalFactory.CreateUserPrincipalAsync(
-                user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
+                user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, context.RequestAborted)
                 .ConfigureAwait(false);
 
             string grantType = request.GrantType!;
@@ -311,7 +311,7 @@ internal static partial class ConnectTokenEndpoints
         ImmutableArray<string> scopes = request.GetScopes();
         IOidcPrincipalFactory principalFactory = context.RequestServices.GetRequiredService<IOidcPrincipalFactory>();
         ClaimsPrincipal principal = await principalFactory.CreateUserPrincipalAsync(
-            user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
+            user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, context.RequestAborted)
             .ConfigureAwait(false);
 
         metrics.RecordTokenIssued(tenantId, TwoFactorGrantType);
@@ -410,7 +410,7 @@ internal static partial class ConnectTokenEndpoints
         ImmutableArray<string> scopes = request.GetScopes();
         IOidcPrincipalFactory principalFactory = context.RequestServices.GetRequiredService<IOidcPrincipalFactory>();
         ClaimsPrincipal principal = await principalFactory.CreateUserPrincipalAsync(
-            user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
+            user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, context.RequestAborted)
             .ConfigureAwait(false);
 
         metrics.RecordTokenIssued(tenantId, PasskeyGrantType);

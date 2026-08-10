@@ -86,7 +86,7 @@ internal static class MigrationAnalyzerHelpers
             return null;
         }
 
-        ISymbol? symbol = context.SemanticModel.GetSymbolInfo(invocation).Symbol;
+        ISymbol? symbol = context.SemanticModel.GetSymbolInfo(invocation, context.CancellationToken).Symbol;
         if (symbol is not IMethodSymbol methodSymbol)
         {
             return null;

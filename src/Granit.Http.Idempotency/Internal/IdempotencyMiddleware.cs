@@ -381,7 +381,7 @@ internal sealed partial class IdempotencyMiddleware(
 
         if (entry.ResponseBody is { Length: > 0 })
         {
-            await context.Response.Body.WriteAsync(entry.ResponseBody).ConfigureAwait(false);
+            await context.Response.Body.WriteAsync(entry.ResponseBody, context.RequestAborted).ConfigureAwait(false);
         }
     }
 
