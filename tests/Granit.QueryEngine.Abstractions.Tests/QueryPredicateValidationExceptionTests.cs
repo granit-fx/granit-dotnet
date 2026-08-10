@@ -41,8 +41,5 @@ public sealed class QueryPredicateValidationExceptionTests
     }
 
     [Fact]
-    public void Rejects_Empty_Error_List()
-    {
-        Should.Throw<ArgumentException>(() => new QueryPredicateValidationException([]));
-    }
+    public void Rejects_Empty_Error_List() => Should.Throw<ArgumentException>(() => new QueryPredicateValidationException([]));
 }

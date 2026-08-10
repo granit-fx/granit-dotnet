@@ -25,13 +25,11 @@ namespace Granit.Identity.EntityFrameworkCore;
 public sealed class GranitIdentityEntityFrameworkCoreModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
-        // Durable session-security state store (risk verdicts, device trust, behavioural profile, single-use
-        // session-review decisions), persisting to the User DbContext. Overrides the in-memory default from
-        // Granit.Identity.Abstractions so verdicts, trusted devices, habitual profiles and review idempotency
-        // all survive restarts and span instances. The DbContext itself is registered by
-        // AddGranitIdentityEntityFrameworkCore.
+    // Durable session-security state store (risk verdicts, device trust, behavioural profile, single-use
+    // session-review decisions), persisting to the User DbContext. Overrides the in-memory default from
+    // Granit.Identity.Abstractions so verdicts, trusted devices, habitual profiles and review idempotency
+    // all survive restarts and span instances. The DbContext itself is registered by
+    // AddGranitIdentityEntityFrameworkCore.
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.AddScoped<IIdentitySecurityStateStore, EfCoreIdentitySecurityStateStore>();
-    }
 }

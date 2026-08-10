@@ -26,10 +26,7 @@ public sealed class FilterOperatorInferenceTests
     }
 
     [Fact]
-    public void Unsupported_Type_Offers_No_Operators()
-    {
-        FilterOperatorInference.GetOperators(typeof(Uri)).ShouldBeEmpty();
-    }
+    public void Unsupported_Type_Offers_No_Operators() => FilterOperatorInference.GetOperators(typeof(Uri)).ShouldBeEmpty();
 
     [Fact]
     public void Single_Argument_Overload_Never_Offers_Null_Checks()
@@ -82,12 +79,10 @@ public sealed class FilterOperatorInferenceTests
     }
 
     [Fact]
-    public void Nullable_Overload_On_Unsupported_Type_Stays_Empty()
-    {
-        // A nullable column of an unsupported type still filters nothing — null checks are
-        // only offered on top of a non-empty base operator set.
+    // A nullable column of an unsupported type still filters nothing — null checks are
+    // only offered on top of a non-empty base operator set.
+    public void Nullable_Overload_On_Unsupported_Type_Stays_Empty() =>
         FilterOperatorInference.GetOperators(typeof(Uri), isNullableColumn: true).ShouldBeEmpty();
-    }
 
     [Theory]
     [InlineData(typeof(string), true)]
@@ -96,8 +91,5 @@ public sealed class FilterOperatorInferenceTests
     [InlineData(typeof(int), false)]
     [InlineData(typeof(Guid), false)]
     [InlineData(typeof(DayOfWeek), false)]
-    public void IsNullableColumnType_Distinguishes_Reference_And_Nullable_Value_Types(Type clrType, bool expected)
-    {
-        FilterOperatorInference.IsNullableColumnType(clrType).ShouldBe(expected);
-    }
+    public void IsNullableColumnType_Distinguishes_Reference_And_Nullable_Value_Types(Type clrType, bool expected) => FilterOperatorInference.IsNullableColumnType(clrType).ShouldBe(expected);
 }

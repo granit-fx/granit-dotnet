@@ -26,7 +26,7 @@ namespace Granit.Http.Cookies.Domain;
 /// </para>
 /// </remarks>
 [AuditIgnore]
-public class CookieConsentRecord : CreationAuditedEntity, IMultiTenant
+public sealed class CookieConsentRecord : CreationAuditedEntity, IMultiTenant
 {
     /// <summary>Maximum stored length of the client User-Agent header.</summary>
     public const int MaxUserAgentLength = 256;

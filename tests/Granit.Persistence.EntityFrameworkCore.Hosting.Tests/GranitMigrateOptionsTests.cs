@@ -41,11 +41,9 @@ public sealed class GranitMigrateOptionsTests
     }
 
     [Fact]
-    public void IsDistributedLockRequired_UnknownEnvironment_FailsClosed()
-    {
-        // No IHostEnvironment available (bare DI, tools) → production assumption.
+    // No IHostEnvironment available (bare DI, tools) → production assumption.
+    public void IsDistributedLockRequired_UnknownEnvironment_FailsClosed() =>
         new GranitMigrateOptions().IsDistributedLockRequired(null).ShouldBeTrue();
-    }
 
     private sealed class FakeEnvironment(string name) : IHostEnvironment
     {
@@ -56,9 +54,7 @@ public sealed class GranitMigrateOptionsTests
     }
 
     [Fact]
-    public void SectionName_is_the_documented_configuration_section()
-    {
-        // Contract with appsettings/Helm overlays — renaming silently orphans deployed config.
+    // Contract with appsettings/Helm overlays — renaming silently orphans deployed config.
+    public void SectionName_is_the_documented_configuration_section() =>
         GranitMigrateOptions.SectionName.ShouldBe("Persistence:Migrate");
-    }
 }

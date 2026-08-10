@@ -21,7 +21,7 @@ internal sealed class EntityTrackingInterceptor(
     // post-commit: publishing from SavingChangesAsync fired follower notifications for
     // saves that subsequently failed or rolled back. Keyed per context instance —
     // ConditionalWeakTable so a context that never completes cannot leak.
-    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<DbContext, List<EntityStateChange>> _pendingChanges = new();
+    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<DbContext, List<EntityStateChange>> _pendingChanges = [];
 
     /// <inheritdoc/>
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(

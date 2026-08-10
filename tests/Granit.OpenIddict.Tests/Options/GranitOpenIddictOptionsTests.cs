@@ -22,10 +22,8 @@ public sealed class GranitOpenIddictOptionsTests
     }
 
     [Fact]
-    public void WithFapi2Profile_DoesNotRequireJar()
-    {
-        // FAPI 2.0 mandates PAR, not JAR (JAR is FAPI 1 Advanced). Forcing RequireJar broke
-        // the normal PAR-only flow — clients pushing plain params get no `request` object.
+    // FAPI 2.0 mandates PAR, not JAR (JAR is FAPI 1 Advanced). Forcing RequireJar broke
+    // the normal PAR-only flow — clients pushing plain params get no `request` object.
+    public void WithFapi2Profile_DoesNotRequireJar() =>
         new GranitOpenIddictOptions().WithFapi2Profile().RequireJar.ShouldBeFalse();
-    }
 }

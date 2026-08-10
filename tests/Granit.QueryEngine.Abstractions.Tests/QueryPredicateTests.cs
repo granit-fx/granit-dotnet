@@ -77,16 +77,10 @@ public sealed class QueryPredicateTests
     }
 
     [Fact]
-    public void And_Rejects_Empty_Operands()
-    {
-        Should.Throw<ArgumentException>(() => QueryPredicate.And());
-    }
+    public void And_Rejects_Empty_Operands() => Should.Throw<ArgumentException>(() => QueryPredicate.And());
 
     [Fact]
-    public void Or_Rejects_Empty_Operands()
-    {
-        Should.Throw<ArgumentException>(() => QueryPredicate.Or());
-    }
+    public void Or_Rejects_Empty_Operands() => Should.Throw<ArgumentException>(() => QueryPredicate.Or());
 
     [Fact]
     public void And_Rejects_Null_Operand()
@@ -96,10 +90,7 @@ public sealed class QueryPredicateTests
     }
 
     [Fact]
-    public void Not_Rejects_Null_Operand()
-    {
-        Should.Throw<ArgumentNullException>(() => QueryPredicate.Not(null!));
-    }
+    public void Not_Rejects_Null_Operand() => Should.Throw<ArgumentNullException>(() => QueryPredicate.Not(null!));
 
     [Fact]
     public void Factories_Compose_Nested_Trees()
