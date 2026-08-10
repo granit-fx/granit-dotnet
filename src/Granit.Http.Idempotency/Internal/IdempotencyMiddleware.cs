@@ -309,24 +309,7 @@ internal sealed partial class IdempotencyMiddleware(
             return;
         }
 
-        // Capture response headers, filtering anything that must not be
-        // replayed to a later retry (Set-Cookie rotation, WWW-Authenticate
-        // challenges, etc. — see IdempotencyOptions.ExcludedResponseHeaders).
-        Dictionary<string, string[]> headers = [];
-        foreach (System.Collections.Generic.KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues> h in context.Response.Headers)
-        {
-            if (_opts.ExcludedResponseHeaders.Contains(h.Key))
-            {
-                continue;
-            }
-
-            // HTTP header values are never null — null-suppression is intentional
-            string[] values = h.Value.ToArray()!;
-            if (values.Length > 0)
-            {
-                headers[h.Key] = values;
-            }
-        }
+        Dictionary<string, string[]> headers = CaptureReplayableHeaders(context);
 
         byte[] responseBody = captureStream.GetReadOnlySequence().ToArray();
 
@@ -350,6 +333,32 @@ internal sealed partial class IdempotencyMiddleware(
         {
             LogKeyExpiredBeforeTerminalWrite(_logger, redisKey);
         }
+    }
+
+    /// <summary>
+    /// Snapshots the response headers, dropping anything that must not be replayed to a later
+    /// retry (Set-Cookie rotation, WWW-Authenticate challenges — see
+    /// <see cref="IdempotencyOptions.ExcludedResponseHeaders"/>).
+    /// </summary>
+    private Dictionary<string, string[]> CaptureReplayableHeaders(HttpContext context)
+    {
+        Dictionary<string, string[]> headers = [];
+        foreach (System.Collections.Generic.KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues> h in context.Response.Headers)
+        {
+            if (_opts.ExcludedResponseHeaders.Contains(h.Key))
+            {
+                continue;
+            }
+
+            // HTTP header values are never null — null-suppression is intentional
+            string[] values = h.Value.ToArray()!;
+            if (values.Length > 0)
+            {
+                headers[h.Key] = values;
+            }
+        }
+
+        return headers;
     }
 
     // =========================================================================

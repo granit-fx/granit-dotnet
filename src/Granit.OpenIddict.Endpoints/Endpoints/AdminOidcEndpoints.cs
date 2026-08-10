@@ -649,29 +649,6 @@ internal static class AdminOidcEndpoints
         (int size, int offset) = ResolvePaging(page, pageSize);
         var clientIdCache = new Dictionary<string, string?>(StringComparer.Ordinal);
 
-        async Task<AdminOidcAuthorizationResponse> BuildAsync(object auth)
-        {
-            string? id = await authorizationManager.GetIdAsync(auth, cancellationToken).ConfigureAwait(false);
-            var descriptor = new OpenIddictAuthorizationDescriptor();
-            await authorizationManager.PopulateAsync(descriptor, auth, cancellationToken).ConfigureAwait(false);
-
-            string? resolvedClientId = null;
-            if (descriptor.ApplicationId is not null
-                && !clientIdCache.TryGetValue(descriptor.ApplicationId, out resolvedClientId))
-            {
-                object? app = await applicationManager.FindByIdAsync(descriptor.ApplicationId, cancellationToken).ConfigureAwait(false);
-                resolvedClientId = app is not null
-                    ? await applicationManager.GetClientIdAsync(app, cancellationToken).ConfigureAwait(false)
-                    : null;
-                clientIdCache[descriptor.ApplicationId] = resolvedClientId;
-            }
-
-            return new AdminOidcAuthorizationResponse(
-                Guid.TryParse(id, out Guid parsedId) ? parsedId : Guid.Empty,
-                descriptor.Subject, resolvedClientId, descriptor.Status, descriptor.Type,
-                [.. descriptor.Scopes]);
-        }
-
         // A clientId filter is resolved to the internal application id — the manager filters
         // authorizations by application id, not by the public client_id.
         string? applicationId = null;
@@ -692,7 +669,9 @@ internal static class AdminOidcEndpoints
             var pageItems = new List<AdminOidcAuthorizationResponse>();
             await foreach (object auth in authorizationManager.ListAsync(size, offset, cancellationToken).ConfigureAwait(false))
             {
-                pageItems.Add(await BuildAsync(auth).ConfigureAwait(false));
+                pageItems.Add(await BuildAuthorizationResponseAsync(
+                    authorizationManager, applicationManager, clientIdCache, auth, cancellationToken)
+                    .ConfigureAwait(false));
             }
 
             long total = await authorizationManager.CountAsync(cancellationToken).ConfigureAwait(false);
@@ -719,11 +698,46 @@ internal static class AdminOidcEndpoints
         var results = new List<AdminOidcAuthorizationResponse>();
         foreach (object auth in allMatches.Skip(offset).Take(size))
         {
-            results.Add(await BuildAsync(auth).ConfigureAwait(false));
+            results.Add(await BuildAuthorizationResponseAsync(
+                    authorizationManager, applicationManager, clientIdCache, auth, cancellationToken)
+                    .ConfigureAwait(false));
         }
 
         return TypedResults.Ok(new PagedResult<AdminOidcAuthorizationResponse>(
             results, allMatches.Count, offset + results.Count < allMatches.Count));
+    }
+
+    /// <summary>
+    /// Projects one OpenIddict authorization onto its response shape, resolving the public
+    /// client_id through <paramref name="clientIdCache"/> so a page sharing an application
+    /// costs a single application lookup.
+    /// </summary>
+    private static async Task<AdminOidcAuthorizationResponse> BuildAuthorizationResponseAsync(
+        IOpenIddictAuthorizationManager authorizationManager,
+        IOpenIddictApplicationManager applicationManager,
+        Dictionary<string, string?> clientIdCache,
+        object auth,
+        CancellationToken cancellationToken)
+    {
+        string? id = await authorizationManager.GetIdAsync(auth, cancellationToken).ConfigureAwait(false);
+        var descriptor = new OpenIddictAuthorizationDescriptor();
+        await authorizationManager.PopulateAsync(descriptor, auth, cancellationToken).ConfigureAwait(false);
+
+        string? resolvedClientId = null;
+        if (descriptor.ApplicationId is not null
+            && !clientIdCache.TryGetValue(descriptor.ApplicationId, out resolvedClientId))
+        {
+            object? app = await applicationManager.FindByIdAsync(descriptor.ApplicationId, cancellationToken).ConfigureAwait(false);
+            resolvedClientId = app is not null
+                ? await applicationManager.GetClientIdAsync(app, cancellationToken).ConfigureAwait(false)
+                : null;
+            clientIdCache[descriptor.ApplicationId] = resolvedClientId;
+        }
+
+        return new AdminOidcAuthorizationResponse(
+            Guid.TryParse(id, out Guid parsedId) ? parsedId : Guid.Empty,
+            descriptor.Subject, resolvedClientId, descriptor.Status, descriptor.Type,
+            [.. descriptor.Scopes]);
     }
 
     /// <summary>

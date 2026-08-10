@@ -20,52 +20,62 @@ internal sealed class GranitOwnershipIndexConvention : IModelFinalizingConventio
     {
         foreach (IConventionEntityType entityType in modelBuilder.Metadata.GetEntityTypes())
         {
-            if (!typeof(IOwnable).IsAssignableFrom(entityType.ClrType))
-            {
-                continue;
-            }
-
-            string? tableName = entityType.GetTableName();
-            if (tableName is null)
-            {
-                continue; // Keyless / TPH-derived / view-mapped — no own table to index.
-            }
-
-            bool isMultiTenant = typeof(IMultiTenant).IsAssignableFrom(entityType.ClrType);
-            string[] propertyNames = isMultiTenant
-                ? [nameof(IMultiTenant.TenantId), nameof(IOwnable.OwnerId)]
-                : [nameof(IOwnable.OwnerId)];
-
-            List<IConventionProperty> properties = [];
-            foreach (string name in propertyNames)
-            {
-                IConventionProperty? property = entityType.FindProperty(name);
-                if (property is null)
-                {
-                    properties.Clear();
-                    break;
-                }
-
-                properties.Add(property);
-            }
-
-            if (properties.Count == 0)
-            {
-                continue;
-            }
-
-            bool alreadyIndexed = entityType.GetIndexes().Any(idx =>
-                idx.Properties.Count == propertyNames.Length
-                && idx.Properties.Select(p => p.Name).SequenceEqual(propertyNames));
-
-            if (alreadyIndexed)
-            {
-                continue;
-            }
-
-            string suffix = isMultiTenant ? "tenant_owner" : "owner";
-            entityType.Builder.HasIndex(properties)
-                ?.Metadata.SetDatabaseName($"ix_{tableName}_{suffix}");
+            ApplyOwnershipIndex(entityType);
         }
     }
+
+    private static void ApplyOwnershipIndex(IConventionEntityType entityType)
+    {
+        if (!typeof(IOwnable).IsAssignableFrom(entityType.ClrType))
+        {
+            return;
+        }
+
+        string? tableName = entityType.GetTableName();
+        if (tableName is null)
+        {
+            return; // Keyless / TPH-derived / view-mapped — no own table to index.
+        }
+
+        bool isMultiTenant = typeof(IMultiTenant).IsAssignableFrom(entityType.ClrType);
+        string[] propertyNames = isMultiTenant
+            ? [nameof(IMultiTenant.TenantId), nameof(IOwnable.OwnerId)]
+            : [nameof(IOwnable.OwnerId)];
+
+        if (!TryResolveProperties(entityType, propertyNames, out List<IConventionProperty> properties)
+            || IsAlreadyIndexed(entityType, propertyNames))
+        {
+            return;
+        }
+
+        string suffix = isMultiTenant ? "tenant_owner" : "owner";
+        entityType.Builder.HasIndex(properties)
+            ?.Metadata.SetDatabaseName($"ix_{tableName}_{suffix}");
+    }
+
+    private static bool TryResolveProperties(
+        IConventionEntityType entityType,
+        string[] propertyNames,
+        out List<IConventionProperty> properties)
+    {
+        properties = [];
+        foreach (string name in propertyNames)
+        {
+            IConventionProperty? property = entityType.FindProperty(name);
+            if (property is null)
+            {
+                properties.Clear();
+                return false;
+            }
+
+            properties.Add(property);
+        }
+
+        return true;
+    }
+
+    private static bool IsAlreadyIndexed(IConventionEntityType entityType, string[] propertyNames) =>
+        entityType.GetIndexes().Any(idx =>
+            idx.Properties.Count == propertyNames.Length
+            && idx.Properties.Select(p => p.Name).SequenceEqual(propertyNames));
 }

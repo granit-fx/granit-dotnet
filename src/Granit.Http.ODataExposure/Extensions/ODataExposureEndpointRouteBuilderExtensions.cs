@@ -433,50 +433,64 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     {
         foreach (string path in descriptor.ExpandWhitelist ?? [])
         {
-            if (string.IsNullOrWhiteSpace(path))
+            if (!string.IsNullOrWhiteSpace(path))
             {
-                continue;
+                ValidateExpandPath(path, descriptor, exportDefinitions, scalarsByType, navigationsByType, errors);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Walks one dotted <c>$expand</c> path segment by segment, recording the navigations it
+    /// traverses and the scalar whitelist of every type it reaches. Stops at the first bad
+    /// segment, appending the error in place.
+    /// </summary>
+    private static void ValidateExpandPath(
+        string path,
+        ODataEntitySetDescriptor descriptor,
+        IReadOnlyList<IExportDefinitionDescriptor> exportDefinitions,
+        Dictionary<Type, IReadOnlyList<string>> scalarsByType,
+        Dictionary<Type, HashSet<string>> navigationsByType,
+        List<string> errors)
+    {
+        Type currentType = descriptor.EntityType;
+        foreach (string segment in path.Split('.', StringSplitOptions.TrimEntries))
+        {
+            PropertyInfo? navigation = Array.Find(
+                currentType.GetProperties(BindingFlags.Public | BindingFlags.Instance),
+                p => string.Equals(p.Name, segment, StringComparison.OrdinalIgnoreCase));
+
+            if (navigation is null || !ODataEdmModelBuilder.IsNavigationOrCollection(navigation.PropertyType))
+            {
+                errors.Add(
+                    $"EntitySet '{descriptor.EntitySetName}' whitelists $expand path '{path}' but '{segment}' is not a navigation property on '{currentType.Name}'. Fix the path or remove it from ExpandWhitelist(...).");
+                break;
             }
 
-            Type currentType = descriptor.EntityType;
-            foreach (string segment in path.Split('.', StringSplitOptions.TrimEntries))
+            if (!navigationsByType.TryGetValue(currentType, out HashSet<string>? navigations))
             {
-                PropertyInfo? navigation = Array.Find(
-                    currentType.GetProperties(BindingFlags.Public | BindingFlags.Instance),
-                    p => string.Equals(p.Name, segment, StringComparison.OrdinalIgnoreCase));
+                navigations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                navigationsByType[currentType] = navigations;
+            }
 
-                if (navigation is null || !ODataEdmModelBuilder.IsNavigationOrCollection(navigation.PropertyType))
+            navigations.Add(navigation.Name);
+
+            Type targetType = ODataEdmModelBuilder.ResolveNavigationTargetType(navigation.PropertyType);
+            if (!scalarsByType.ContainsKey(targetType))
+            {
+                IExportDefinitionDescriptor? export = exportDefinitions
+                    .FirstOrDefault(e => e.EntityType == targetType);
+                if (export is null)
                 {
                     errors.Add(
-                        $"EntitySet '{descriptor.EntitySetName}' whitelists $expand path '{path}' but '{segment}' is not a navigation property on '{currentType.Name}'. Fix the path or remove it from ExpandWhitelist(...).");
+                        $"EntitySet '{descriptor.EntitySetName}' whitelists $expand path '{path}' reaching target type '{targetType.Name}', which has no registered IExportDefinitionDescriptor. Per ADR-050 every type reachable through $expand needs an export-derived scalar whitelist — register an ExportDefinition for {targetType.Name} (services.AddExportDefinition<{targetType.Name}, {targetType.Name}ExportDefinition>()) or remove the path.");
                     break;
                 }
 
-                if (!navigationsByType.TryGetValue(currentType, out HashSet<string>? navigations))
-                {
-                    navigations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                    navigationsByType[currentType] = navigations;
-                }
-
-                navigations.Add(navigation.Name);
-
-                Type targetType = ODataEdmModelBuilder.ResolveNavigationTargetType(navigation.PropertyType);
-                if (!scalarsByType.ContainsKey(targetType))
-                {
-                    IExportDefinitionDescriptor? export = exportDefinitions
-                        .FirstOrDefault(e => e.EntityType == targetType);
-                    if (export is null)
-                    {
-                        errors.Add(
-                            $"EntitySet '{descriptor.EntitySetName}' whitelists $expand path '{path}' reaching target type '{targetType.Name}', which has no registered IExportDefinitionDescriptor. Per ADR-050 every type reachable through $expand needs an export-derived scalar whitelist — register an ExportDefinition for {targetType.Name} (services.AddExportDefinition<{targetType.Name}, {targetType.Name}ExportDefinition>()) or remove the path.");
-                        break;
-                    }
-
-                    scalarsByType[targetType] = ScalarFieldsOf(export);
-                }
-
-                currentType = targetType;
+                scalarsByType[targetType] = ScalarFieldsOf(export);
             }
+
+            currentType = targetType;
         }
     }
 
@@ -1028,58 +1042,80 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     {
         foreach (ExpandedReferenceSelectItem item in items.OfType<ExpandedReferenceSelectItem>())
         {
-            IReadOnlyList<string> navSegments = [.. item.PathToNavigationProperty
-                .OfType<NavigationPropertySegment>()
-                .Select(s => s.NavigationProperty.Name)];
-            if (navSegments.Count == 0)
+            (ProblemHttpResult? Rejection, string Reason) result =
+                ValidateExpandItem(item, prefix, depth, descriptor, allowedExpandPaths);
+            if (result.Rejection is not null)
             {
-                continue;
+                return result;
             }
+        }
 
-            string path = prefix is null
-                ? string.Join('.', navSegments)
-                : $"{prefix}.{string.Join('.', navSegments)}";
-            int itemDepth = depth + navSegments.Count;
+        return (null, string.Empty);
+    }
 
-            long extraLevels = (item as ExpandedNavigationSelectItem)?.LevelsOption switch
-            {
-                null => 0,
-                { IsMaxLevel: true } => long.MaxValue,
-                { } levels => levels.Level - 1,
-            };
+    /// <summary>
+    /// Gates a single expand item: depth first (a too-deep path is a depth problem even when
+    /// un-whitelisted), then whitelist membership for the path and each <c>$levels</c>
+    /// repetition, then recursion into its own nested expands.
+    /// </summary>
+    private static (ProblemHttpResult? Rejection, string Reason) ValidateExpandItem(
+        ExpandedReferenceSelectItem item,
+        string? prefix,
+        int depth,
+        ODataEntitySetDescriptor descriptor,
+        FrozenSet<string> allowedExpandPaths)
+    {
+        IReadOnlyList<string> navSegments = [.. item.PathToNavigationProperty
+            .OfType<NavigationPropertySegment>()
+            .Select(s => s.NavigationProperty.Name)];
+        if (navSegments.Count == 0)
+        {
+            return (null, string.Empty);
+        }
 
-            if (extraLevels == long.MaxValue || itemDepth + extraLevels > descriptor.MaxExpansionDepth)
+        string path = prefix is null
+            ? string.Join('.', navSegments)
+            : $"{prefix}.{string.Join('.', navSegments)}";
+        int itemDepth = depth + navSegments.Count;
+
+        long extraLevels = (item as ExpandedNavigationSelectItem)?.LevelsOption switch
+        {
+            null => 0,
+            { IsMaxLevel: true } => long.MaxValue,
+            { } levels => levels.Level - 1,
+        };
+
+        if (extraLevels == long.MaxValue || itemDepth + extraLevels > descriptor.MaxExpansionDepth)
+        {
+            return (TypedResults.Problem(
+                detail: $"$expand nesting depth at '{path}' exceeds the maximum of {descriptor.MaxExpansionDepth} on the '{descriptor.EntitySetName}' EntitySet.",
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Expand depth exceeded"), "expand_depth_exceeded");
+        }
+
+        // $levels repeats the LAST navigation segment — each repetition is
+        // a deeper dotted path and must be whitelisted like explicit nesting.
+        string levelPath = path;
+        for (long level = 0; level <= extraLevels; level++)
+        {
+            if (!allowedExpandPaths.Contains(levelPath))
             {
                 return (TypedResults.Problem(
-                    detail: $"$expand nesting depth at '{path}' exceeds the maximum of {descriptor.MaxExpansionDepth} on the '{descriptor.EntitySetName}' EntitySet.",
+                    detail: $"$expand of '{levelPath}' is not permitted on the '{descriptor.EntitySetName}' EntitySet. Allowed paths: {string.Join(", ", allowedExpandPaths.Order(StringComparer.OrdinalIgnoreCase))}.",
                     statusCode: StatusCodes.Status400BadRequest,
-                    title: "Expand depth exceeded"), "expand_depth_exceeded");
+                    title: "Expand path not whitelisted"), "expand_not_whitelisted");
             }
 
-            // $levels repeats the LAST navigation segment — each repetition is
-            // a deeper dotted path and must be whitelisted like explicit nesting.
-            string levelPath = path;
-            for (long level = 0; level <= extraLevels; level++)
-            {
-                if (!allowedExpandPaths.Contains(levelPath))
-                {
-                    return (TypedResults.Problem(
-                        detail: $"$expand of '{levelPath}' is not permitted on the '{descriptor.EntitySetName}' EntitySet. Allowed paths: {string.Join(", ", allowedExpandPaths.Order(StringComparer.OrdinalIgnoreCase))}.",
-                        statusCode: StatusCodes.Status400BadRequest,
-                        title: "Expand path not whitelisted"), "expand_not_whitelisted");
-                }
+            levelPath = $"{levelPath}.{navSegments[^1]}";
+        }
 
-                levelPath = $"{levelPath}.{navSegments[^1]}";
-            }
-
-            if (item is ExpandedNavigationSelectItem { SelectAndExpand: { } nested })
+        if (item is ExpandedNavigationSelectItem { SelectAndExpand: { } nested })
+        {
+            (ProblemHttpResult? Rejection, string Reason) nestedResult =
+                ValidateExpandItems(nested.SelectedItems, path, itemDepth, descriptor, allowedExpandPaths);
+            if (nestedResult.Rejection is not null)
             {
-                (ProblemHttpResult? Rejection, string Reason) nestedResult =
-                    ValidateExpandItems(nested.SelectedItems, path, itemDepth, descriptor, allowedExpandPaths);
-                if (nestedResult.Rejection is not null)
-                {
-                    return nestedResult;
-                }
+                return nestedResult;
             }
         }
 

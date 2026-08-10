@@ -220,62 +220,75 @@ internal sealed partial class EfImportExecutor<TEntity, TContext> : IImportExecu
 
         foreach (RowOutcome<TEntity> row in batch)
         {
-            if (row.IsSkipped)
+            PendingRow? pendingRow = ClassifyRow(row, state);
+            if (pendingRow is not null)
             {
-                state.SkippedRows++;
-                continue;
+                pendingRows.Add(pendingRow);
             }
-
-            if (row.Error is not null || row.Entity is null)
-            {
-                state.FailedRows++;
-                state.Errors.Add(row.Error ?? new ImportRowError(
-                    row.RowNumber, ImportRowErrorKind.Conversion,
-                    [UnexpectedOutcomeErrorCode],
-                    "Row outcome carried neither an entity nor an error."));
-                continue;
-            }
-
-            TEntity entity = row.Entity;
-            RecordIdentity identity = row.Identity ?? RecordIdentity.Insert();
-
-            if (identity.Operation == RecordOperation.Skip)
-            {
-                state.SkippedRows++;
-                continue;
-            }
-
-            if (identity.Operation == RecordOperation.Ambiguous)
-            {
-                state.FailedRows++;
-                state.Errors.Add(new ImportRowError(
-                    row.RowNumber, ImportRowErrorKind.Identity,
-                    identity.ReasonCodes.Count > 0 ? identity.ReasonCodes : [IdentityReasonCodes.AmbiguousMatch],
-                    "Identity could not be resolved unambiguously."));
-                continue;
-            }
-
-            if (identity.Operation == RecordOperation.Insert)
-            {
-                pendingRows.Add(PendingRow.ForInsert(row, entity, identity.ExternalId));
-                continue;
-            }
-
-            // Update or Upsert — both require a key to look existing rows up by.
-            if (identity.Key is null)
-            {
-                state.FailedRows++;
-                state.Errors.Add(new ImportRowError(
-                    row.RowNumber, ImportRowErrorKind.Identity,
-                    [IdentityReasonCodes.AmbiguousMatch],
-                    $"Identity operation '{identity.Operation}' carried no key."));
-                continue;
-            }
-
-            pendingRows.Add(PendingRow.ForLookup(row, entity, identity.Key.Value, identity.KeyKind, identity.Operation));
         }
 
         return pendingRows;
+    }
+
+    /// <summary>
+    /// Classifies a single row: returns the <see cref="PendingRow"/> that still needs a
+    /// persistence decision, or <see langword="null"/> once the row has been accounted for on
+    /// <paramref name="state"/> as skipped or failed.
+    /// </summary>
+    private static PendingRow? ClassifyRow(RowOutcome<TEntity> row, ExecutionState state)
+    {
+        if (row.IsSkipped)
+        {
+            state.SkippedRows++;
+            return null;
+        }
+
+        if (row.Error is not null || row.Entity is null)
+        {
+            state.FailedRows++;
+            state.Errors.Add(row.Error ?? new ImportRowError(
+                row.RowNumber, ImportRowErrorKind.Conversion,
+                [UnexpectedOutcomeErrorCode],
+                "Row outcome carried neither an entity nor an error."));
+            return null;
+        }
+
+        TEntity entity = row.Entity;
+        RecordIdentity identity = row.Identity ?? RecordIdentity.Insert();
+
+        if (identity.Operation == RecordOperation.Skip)
+        {
+            state.SkippedRows++;
+            return null;
+        }
+
+        if (identity.Operation == RecordOperation.Ambiguous)
+        {
+            state.FailedRows++;
+            state.Errors.Add(new ImportRowError(
+                row.RowNumber, ImportRowErrorKind.Identity,
+                identity.ReasonCodes.Count > 0 ? identity.ReasonCodes : [IdentityReasonCodes.AmbiguousMatch],
+                "Identity could not be resolved unambiguously."));
+            return null;
+        }
+
+        if (identity.Operation == RecordOperation.Insert)
+        {
+            return PendingRow.ForInsert(row, entity, identity.ExternalId);
+        }
+
+        // Update or Upsert — both require a key to look existing rows up by.
+        if (identity.Key is null)
+        {
+            state.FailedRows++;
+            state.Errors.Add(new ImportRowError(
+                row.RowNumber, ImportRowErrorKind.Identity,
+                [IdentityReasonCodes.AmbiguousMatch],
+                $"Identity operation '{identity.Operation}' carried no key."));
+            return null;
+        }
+
+        return PendingRow.ForLookup(row, entity, identity.Key.Value, identity.KeyKind, identity.Operation);
     }
 
     /// <summary>

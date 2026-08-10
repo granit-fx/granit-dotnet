@@ -30,41 +30,66 @@ internal sealed class GranitTranslationConvention : IModelFinalizingConvention
                 continue;
             }
 
-            IConventionProperty? culture = entityType.FindProperty(nameof(ITranslation.Culture));
-            if (culture is not null)
-            {
-                if (culture.GetMaxLength() is null)
-                {
-                    culture.SetMaxLength(20);
-                }
+            ConfigureCulture(entityType);
+            ConfigureParentRelationship(modelBuilder, entityType, translationInterface);
+            ConfigureUniqueIndex(entityType);
+        }
+    }
 
-                culture.SetIsNullable(false);
-            }
+    private static void ConfigureCulture(IConventionEntityType entityType)
+    {
+        IConventionProperty? culture = entityType.FindProperty(nameof(ITranslation.Culture));
+        if (culture is null)
+        {
+            return;
+        }
 
-            Type parentType = translationInterface.GetGenericArguments()[0];
-            IConventionEntityType? parentEntityType = modelBuilder.Metadata.FindEntityType(parentType);
-            IConventionProperty? parentId = entityType.FindProperty(nameof(ITranslation.ParentId));
+        if (culture.GetMaxLength() is null)
+        {
+            culture.SetMaxLength(20);
+        }
 
-            if (parentEntityType is not null && parentId is not null)
-            {
-                IConventionForeignKeyBuilder? fkBuilder = entityType.Builder.HasRelationship(
-                    parentEntityType, [parentId], parentEntityType.FindPrimaryKey()!);
-                fkBuilder?.Metadata.SetDeleteBehavior(Microsoft.EntityFrameworkCore.DeleteBehavior.Cascade);
-                fkBuilder?.Metadata.SetDependentToPrincipal(
-                    entityType.ClrType.GetProperty(nameof(ITranslation<Entity>.Parent)));
-            }
+        culture.SetIsNullable(false);
+    }
 
-            IConventionProperty? cultureProperty = entityType.FindProperty(nameof(ITranslation.Culture));
-            if (parentId is not null && cultureProperty is not null)
-            {
-                IConventionProperty[] indexProperties = [parentId, cultureProperty];
-                bool exists = entityType.GetIndexes().Any(i =>
-                    i.Properties.Select(p => p.Name).SequenceEqual(indexProperties.Select(p => p.Name)));
-                if (!exists)
-                {
-                    entityType.Builder.HasIndex(indexProperties)?.Metadata.SetIsUnique(true);
-                }
-            }
+    private static void ConfigureParentRelationship(
+        IConventionModelBuilder modelBuilder,
+        IConventionEntityType entityType,
+        Type translationInterface)
+    {
+        Type parentType = translationInterface.GetGenericArguments()[0];
+        IConventionEntityType? parentEntityType = modelBuilder.Metadata.FindEntityType(parentType);
+        IConventionProperty? parentId = entityType.FindProperty(nameof(ITranslation.ParentId));
+
+        if (parentEntityType is null || parentId is null)
+        {
+            return;
+        }
+
+        IConventionForeignKeyBuilder? fkBuilder = entityType.Builder.HasRelationship(
+            parentEntityType, [parentId], parentEntityType.FindPrimaryKey()!);
+        fkBuilder?.Metadata.SetDeleteBehavior(Microsoft.EntityFrameworkCore.DeleteBehavior.Cascade);
+        fkBuilder?.Metadata.SetDependentToPrincipal(
+            entityType.ClrType.GetProperty(nameof(ITranslation<Entity>.Parent)));
+    }
+
+    private static void ConfigureUniqueIndex(IConventionEntityType entityType)
+    {
+        IConventionProperty? parentId = entityType.FindProperty(nameof(ITranslation.ParentId));
+        IConventionProperty? culture = entityType.FindProperty(nameof(ITranslation.Culture));
+
+        if (parentId is null || culture is null)
+        {
+            return;
+        }
+
+        IConventionProperty[] indexProperties = [parentId, culture];
+        bool exists = entityType.GetIndexes().Any(i =>
+            i.Properties.Select(p => p.Name).SequenceEqual(indexProperties.Select(p => p.Name)));
+
+        if (!exists)
+        {
+            entityType.Builder.HasIndex(indexProperties)?.Metadata.SetIsUnique(true);
         }
     }
 }
