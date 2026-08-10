@@ -259,9 +259,9 @@ internal sealed partial class InternalLoopbackHandler(
         };
 
         foreach (KeyValuePair<string, StringValues> header in source.Headers
-            .Where(h => !response.Headers.TryAddWithoutValidation(h.Key, (IEnumerable<string>)h.Value!)))
+            .Where(h => !response.Headers.TryAddWithoutValidation(h.Key, (IEnumerable<string>)h.Value)))
         {
-            response.Content.Headers.TryAddWithoutValidation(header.Key, (IEnumerable<string>)header.Value!);
+            response.Content.Headers.TryAddWithoutValidation(header.Key, (IEnumerable<string>)header.Value);
         }
 
         return response;

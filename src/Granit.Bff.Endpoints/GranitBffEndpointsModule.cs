@@ -42,7 +42,7 @@ public sealed class GranitBffEndpointsModule : GranitModule
 
         context.Services.TryAddScoped<IBffLogoutOrchestrator, DefaultBffLogoutOrchestrator>();
 
-        bool isDevelopment = context.Builder!.Environment.IsDevelopment();
+        bool isDevelopment = context.Builder.Environment.IsDevelopment();
 
         // In development (HTTP), use "." prefix instead of "__Host-" on BFF session cookies.
         // __Host- requires HTTPS — browsers silently ignore the cookie on HTTP.

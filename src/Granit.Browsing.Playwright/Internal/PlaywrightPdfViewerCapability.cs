@@ -104,7 +104,7 @@ internal sealed partial class PlaywrightPdfViewerCapability : IPdfViewerCapabili
             string root = Path.GetFullPath(
                 string.IsNullOrWhiteSpace(_tempFileOptions.Value.RootDirectory)
                     ? Path.Combine(Path.GetTempPath(), "granit")
-                    : _tempFileOptions.Value.RootDirectory!);
+                    : _tempFileOptions.Value.RootDirectory);
             if (!resolvedPath.StartsWith(root, StringComparison.Ordinal))
             {
                 throw new SandboxViolationException(

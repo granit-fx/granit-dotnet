@@ -65,7 +65,7 @@ internal sealed partial class VaultCacheEncryptionPostConfigure(
 
         SecretRequest request = string.IsNullOrWhiteSpace(vaultOptions.Value.SecretVersion)
             ? SecretRequest.Latest(secretName)
-            : SecretRequest.At(secretName, vaultOptions.Value.SecretVersion!);
+            : SecretRequest.At(secretName, vaultOptions.Value.SecretVersion);
 
         SecretDescriptor descriptor = secretStore
             .GetSecretAsync(request)

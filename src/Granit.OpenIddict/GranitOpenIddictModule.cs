@@ -99,7 +99,7 @@ public sealed class GranitOpenIddictModule : GranitModule
         // PostConfigure that resets names to ASP.NET Core defaults.
         context.Services.AddSingleton<ICookieDefinitionContributor, IdentityCookieDefinitionContributor>();
 
-        bool isDevelopment = context.Builder!.Environment.IsDevelopment();
+        bool isDevelopment = context.Builder.Environment.IsDevelopment();
 
         PostConfigureIdentityCookie(context.Services, isDevelopment,
             Microsoft.AspNetCore.Identity.IdentityConstants.ApplicationScheme,

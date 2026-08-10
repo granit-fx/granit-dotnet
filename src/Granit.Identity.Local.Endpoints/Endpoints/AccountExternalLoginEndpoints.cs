@@ -638,7 +638,7 @@ internal static partial class AccountExternalLoginEndpoints
             query["returnUrl"] = returnUrl;
         }
 
-        string redirectUrl = QueryHelpers.AddQueryString(options.ExternalLoginCallbackRedirectUrl!, query);
+        string redirectUrl = QueryHelpers.AddQueryString(options.ExternalLoginCallbackRedirectUrl, query);
         return TypedResults.Redirect(redirectUrl);
     }
 

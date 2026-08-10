@@ -124,14 +124,14 @@ internal sealed class FluentValidationSchemaTransformer(IJsonSchemaWriter writer
         {
             propertySchema.Extensions ??= new Dictionary<string, IOpenApiExtension>();
             propertySchema.Extensions["x-granit-validator"] =
-                new JsonNodeExtension(JsonValue.Create(validatorCode)!);
+                new JsonNodeExtension(JsonValue.Create(validatorCode));
         }
 
         if (constraints["x-granit-pattern-hint"]?.GetValue<string>() is { } hintKey)
         {
             propertySchema.Extensions ??= new Dictionary<string, IOpenApiExtension>();
             propertySchema.Extensions["x-granit-pattern-hint"] =
-                new JsonNodeExtension(JsonValue.Create(hintKey)!);
+                new JsonNodeExtension(JsonValue.Create(hintKey));
         }
     }
 

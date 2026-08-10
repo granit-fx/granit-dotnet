@@ -220,7 +220,7 @@ internal static class PrivacyExportDownloadEndpoints
         // read), but only the data subject can receive the actual archive bytes —
         // the data goes to the subject's notification email, not back to the
         // operator. 404 hides the existence of subjects in other tenants.
-        if (status is null || status!.SubjectUserId != callerUserId)
+        if (status is null || status.SubjectUserId != callerUserId)
         {
             return TypedResults.Problem(
                 detail: $"Export request '{requestId}' not found.",

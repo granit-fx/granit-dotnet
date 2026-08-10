@@ -122,7 +122,7 @@ internal sealed partial class GoogleCloudSecretStore(
             // Caller passed a fully-qualified resource name — try to parse it directly.
             if (SecretVersionName.TryParse(request.Name, out SecretVersionName? parsed))
             {
-                return parsed!;
+                return parsed;
             }
 
             throw new SecretVaultConfigurationException(

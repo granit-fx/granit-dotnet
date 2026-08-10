@@ -243,7 +243,7 @@ internal sealed class CompiledDataMapper<TEntity> : IDataMapper<TEntity> where T
         bool isFlags = enumType.IsDefined(typeof(FlagsAttribute), inherit: false);
         return value =>
             Enum.TryParse(enumType, value.Trim(), ignoreCase: true, out object? result)
-                && (isFlags || Enum.IsDefined(enumType, result!))
+                && (isFlags || Enum.IsDefined(enumType, result))
                 ? ConversionResult.Success(result)
                 : ConversionResult.Failure(InvalidFormatErrorCode);
     }

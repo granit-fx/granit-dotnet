@@ -91,7 +91,7 @@ internal sealed class DefaultSearchService<TKey, TResult> : ISearchService<TKey,
         // AND the caller identified itself. Anonymous / system callers bypass the cap.
         if (items.Length == 0 && !string.IsNullOrEmpty(request.PrincipalIdentifier))
         {
-            string principalHash = PrincipalIdentifierHasher.Hash(request.PrincipalIdentifier!);
+            string principalHash = PrincipalIdentifierHasher.Hash(request.PrincipalIdentifier);
             if (_rateLimiter.RecordEmptyResultAndShouldThrottle(principalHash))
             {
                 activity?.SetStatus(ActivityStatusCode.Error, "empty_result_rate_limited");

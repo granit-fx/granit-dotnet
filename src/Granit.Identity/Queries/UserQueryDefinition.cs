@@ -40,7 +40,7 @@ public sealed class UserQueryDefinition : QueryDefinition<User>
             .Column(u => u.CreatedAt, c => c.Label("Created At").LabelKey("Identity.Columns.CreatedAt").Sortable())
             .Column(u => u.ModifiedAt, c => c.Label("Modified At").LabelKey("Identity.Columns.ModifiedAt").Sortable())
             .AllowGroupBy(u => u.IsEnabled)
-            .GlobalSearch(u => u.DisplayName!, u => u.FirstName!, u => u.LastName!)
+            .GlobalSearch(u => u.DisplayName, u => u.FirstName, u => u.LastName)
             .DefaultSort("-CreatedAt")
             .DefaultPageSize(25);
 }

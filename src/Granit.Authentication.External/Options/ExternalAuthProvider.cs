@@ -56,7 +56,7 @@ public sealed class ExternalAuthProvider
     public Dictionary<string, string?> Properties { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>The resolved scheme name: <see cref="Name"/> when set, otherwise <see cref="Type"/>.</summary>
-    public string SchemeName => string.IsNullOrWhiteSpace(Name) ? Type : Name!;
+    public string SchemeName => string.IsNullOrWhiteSpace(Name) ? Type : Name;
 
     /// <summary>
     /// The label to display for this provider: <see cref="DisplayName"/> when set, otherwise the

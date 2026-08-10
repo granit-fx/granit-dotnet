@@ -47,7 +47,7 @@ internal sealed class EfTemplateSummaryQueryableSource(
                     ? WorkflowLifecycleStatus.Draft
                     : WorkflowLifecycleStatus.Published,
                 LastModifiedAt = g.Max(r => r.CreatedAt),
-                LastModifiedBy = g.OrderByDescending(r => r.CreatedAt).Select(r => r.CreatedBy).First()!,
+                LastModifiedBy = g.OrderByDescending(r => r.CreatedAt).Select(r => r.CreatedBy).First(),
                 HasPublishedVersion = g.Any(r => r.IsPublished),
                 LayoutName = g.OrderByDescending(r => r.CreatedAt).Select(r => r.LayoutName).First(),
                 CategoryId = g.OrderByDescending(r => r.CreatedAt).Select(r => r.CategoryId).First(),

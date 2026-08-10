@@ -35,7 +35,7 @@ public sealed class GranitHttpCookiesModule : GranitModule
         // Override the default antiforgery cookie name to avoid leaking the technology stack.
         // Production: __Host- prefix (Secure + Path=/ + no Domain, RFC 6265bis §4.1.3.2).
         // Development: simple name without __Host- (requires HTTPS, incompatible with HTTP dev).
-        bool isDevelopment = context.Builder!.Environment.IsDevelopment();
+        bool isDevelopment = context.Builder.Environment.IsDevelopment();
 
         context.Services.AddAntiforgery(options =>
         {
