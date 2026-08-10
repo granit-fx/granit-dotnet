@@ -86,8 +86,8 @@
       "WolverineFx": {
         "type": "Direct",
         "requested": "[6.*, )",
-        "resolved": "6.24.6",
-        "contentHash": "yoqNP5csLygJA1DHe0Jhbs2O8W7CgNmuaSMISOioVpcCG0/Ca1TWY4X3UCRrfxklJOllqn04KmBMmELWZQpPTw==",
+        "resolved": "6.25.3",
+        "contentHash": "jvm+8uzyeWiW+G6Ud4gvFUzaB9VGPpeCBtuWuD41RTQhQdu4m1GtPrbBQqJpea2ZvuzucHTO7Hnh/hOhgSNZ8Q==",
         "dependencies": {
           "JasperFx": "2.39.5",
           "JasperFx.Events": "2.39.5",
@@ -107,11 +107,11 @@
       "WolverineFx.RuntimeCompilation": {
         "type": "Direct",
         "requested": "[6.*, )",
-        "resolved": "6.24.6",
-        "contentHash": "3m4pglGvvEgXtNrFEkNyGLGH+4ZQInrt7tz8k2c6X2M5aeMul64zCBGswq+KSXYT1JWyVETliSnnST4SSwo5Gg==",
+        "resolved": "6.25.3",
+        "contentHash": "f97Bz8I3cVNMSYVkbNM9G9SQm3760Lb/ChLWS2IPQiK8pbYyS/0vD7rjrOtBMNbqUoAsCU2LaefTtywUCNpUhg==",
         "dependencies": {
           "JasperFx.RuntimeCompiler": "5.0.0",
-          "WolverineFx": "6.24.6"
+          "WolverineFx": "6.25.3"
         }
       },
       "xunit.runner.visualstudio": {

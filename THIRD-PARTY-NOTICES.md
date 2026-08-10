@@ -8,7 +8,20 @@ Only **direct dependencies** are listed here. Transitive dependencies are
 covered by their own license notices, restored from NuGet by the consumer
 (Granit packages do not redistribute their binaries).
 
-Last updated: 2026-07-26 (global NuGet version refresh via `dotnet restore --force-evaluate`;
+Last updated: 2026-08-10 (global NuGet version refresh via `dotnet restore --force-evaluate`;
+28 packages bumped within their existing major ranges — notable: WolverineFx 6.24.6 → 6.25.3,
+Asp.Versioning 10.0.1 → 10.2.1, WireMock.Net 2.13 → 2.14, Anthropic 12.39 → 12.40,
+Elastic.Clients.Elasticsearch 9.4.2 → 9.5.0, PuppeteerSharp 25.4 → 25.5, AWSSDK refresh;
+EF Core / ASP.NET Core stay at 10.0.10, already latest. Reconciled the direct-package versions
+that had drifted from the lock since the last sweep (AngleSharp 1.5.2 → 1.7.1,
+Microsoft.Extensions.AI 10.8.1 → 10.8.3, PDFtoImage 5.2.1 → 5.3.0, Magick.NET 14.15 → 14.16,
+Scriban 7.2.5 → 7.2.6, Scalar 2.16.16 → 2.16.18) and corrected the Apache-2.0 count, which was
+one short. Removed two entries that are not direct dependencies: NetTopologySuite (now only
+transitive, via Npgsql) and ZiggyCreatures.FusionCache.OpenTelemetry (deliberately never
+referenced — `Granit.Caching` registers the FusionCache OTel sources by name to keep the
+exporter stack out of its graph); both central `PackageVersion` entries dropped with them.
+No packages added; license summary recomputed).
+Prior: 2026-07-26 (global NuGet version refresh via `dotnet restore --force-evaluate`;
 78 packages bumped within their existing major ranges — notable: WolverineFx 6.16 → 6.22,
 OpenIddict 7.5 → 7.6, Microsoft.IdentityModel 8.16 → 8.19 (transitive), Anthropic 12.32 → 12.39,
 Microsoft.Extensions.AI 10.7 → 10.8, WireMock.Net 2.11 → 2.13, Testcontainers 4.12 → 4.13,
@@ -27,9 +40,9 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 
 | License      | Package count |
 | ------------ | ------------- |
-| MIT          | 102           |
-| Apache-2.0   | 48            |
-| BSD-3-Clause | 3             |
+| MIT          | 101           |
+| Apache-2.0   | 49            |
+| BSD-3-Clause | 2             |
 | BSD-2-Clause | 2             |
 | PostgreSQL   | 2             |
 
@@ -41,10 +54,10 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| AngleSharp | 1.5.2 | Copyright (c) 2013-2025 AngleSharp Contributors |
-| Anthropic | 12.39.0 | Copyright 2026 Anthropic |
-| Asp.Versioning.Mvc | 10.0.0 | (c) .NET Foundation |
-| Asp.Versioning.Mvc.ApiExplorer | 10.0.0 | (c) .NET Foundation |
+| AngleSharp | 1.7.1 | Copyright (c) 2013-2025 AngleSharp Contributors |
+| Anthropic | 12.40.0 | Copyright 2026 Anthropic |
+| Asp.Versioning.Mvc | 10.2.1 | (c) .NET Foundation |
+| Asp.Versioning.Mvc.ApiExplorer | 10.2.1 | (c) .NET Foundation |
 | AspNet.Security.OAuth.Apple | 10.0.0 | (c) .NET Foundation |
 | AspNet.Security.OAuth.GitHub | 10.0.0 | (c) .NET Foundation |
 | Azure.AI.OpenAI | 2.1.0 | (c) Microsoft Corporation |
@@ -74,9 +87,9 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 | Microsoft.EntityFrameworkCore | 10.0.10 | (c) Microsoft Corporation |
 | Microsoft.EntityFrameworkCore.Relational | 10.0.10 | (c) Microsoft Corporation |
 | Microsoft.EntityFrameworkCore.SqlServer | 10.0.10 | (c) Microsoft Corporation |
-| Microsoft.Extensions.AI | 10.8.1 | (c) Microsoft Corporation |
-| Microsoft.Extensions.AI.Abstractions | 10.8.1 | (c) Microsoft Corporation |
-| Microsoft.Extensions.AI.OpenAI | 10.8.1 | (c) Microsoft Corporation |
+| Microsoft.Extensions.AI | 10.8.3 | (c) Microsoft Corporation |
+| Microsoft.Extensions.AI.Abstractions | 10.8.3 | (c) Microsoft Corporation |
+| Microsoft.Extensions.AI.OpenAI | 10.8.3 | (c) Microsoft Corporation |
 | Microsoft.Extensions.ApiDescription.Server | 10.0.10 | (c) Microsoft Corporation |
 | Microsoft.Extensions.Caching.Abstractions | 10.0.10 | (c) Microsoft Corporation |
 | Microsoft.Extensions.Caching.Hybrid | 10.8.0 | (c) Microsoft Corporation |
@@ -96,47 +109,46 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 | Microsoft.Extensions.Logging.Abstractions | 10.0.10 | (c) Microsoft Corporation |
 | Microsoft.Extensions.Options | 10.0.10 | (c) Microsoft Corporation |
 | Microsoft.Extensions.Options.ConfigurationExtensions | 10.0.10 | (c) Microsoft Corporation |
-| Microsoft.Extensions.VectorData.Abstractions | 10.8.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.VectorData.Abstractions | 10.8.2 | (c) Microsoft Corporation |
 | Microsoft.IO.RecyclableMemoryStream | 3.0.1 | (c) Microsoft Corporation |
 | Microsoft.Playwright | 1.61.0 | (c) Microsoft Corporation |
 | MimeKit | 4.17.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
 | Mjml.Net | 4.11.0 | Copyright (c) Sebastian Stehle |
 | OllamaSharp | 5.4.30 | Copyright (c) 2023-2026 Awalon |
 | PdfPig | 0.1.15 | Copyright (c) Eliot Jones |
-| PDFtoImage | 5.2.1 | Copyright (c) David Sungaila |
+| PDFtoImage | 5.3.0 | Copyright (c) David Sungaila |
 | Pgvector.EntityFrameworkCore | 0.3.0 | Copyright (c) Andrew Kane |
-| PuppeteerSharp | 25.3.4 | PuppeteerSharp Contributors |
-| Scalar.AspNetCore | 2.16.16 | Scalar Contributors |
+| PuppeteerSharp | 25.5.0 | PuppeteerSharp Contributors |
+| Scalar.AspNetCore | 2.16.18 | Scalar Contributors |
 | Sep | 0.15.1 | Copyright (c) 2023 nietras |
 | SmartFormat | 3.6.1 | Copyright 2011-2025 SmartFormat Project |
 | StackExchange.Redis | 2.13.17 | Copyright 2014-2026 Stack Exchange, Inc. |
 | Sylvan.Data.Excel | 0.5.7 | Copyright (c) Mark Pflug |
 | System.Composition.AttributedModel | 9.0.18 | (c) Microsoft Corporation |
 | System.Text.Json | 9.0.18 | (c) Microsoft Corporation |
-| WolverineFx | 6.22.0 | JasperFx Contributors |
-| WolverineFx.EntityFrameworkCore | 6.22.0 | JasperFx Contributors |
-| WolverineFx.FluentValidation | 6.22.0 | JasperFx Contributors |
-| WolverineFx.Postgresql | 6.22.0 | JasperFx Contributors |
-| WolverineFx.RuntimeCompilation | 6.22.0 | JasperFx Contributors |
-| WolverineFx.SqlServer | 6.22.0 | JasperFx Contributors |
+| WolverineFx | 6.25.3 | JasperFx Contributors |
+| WolverineFx.EntityFrameworkCore | 6.25.3 | JasperFx Contributors |
+| WolverineFx.FluentValidation | 6.25.3 | JasperFx Contributors |
+| WolverineFx.Postgresql | 6.25.3 | JasperFx Contributors |
+| WolverineFx.RuntimeCompilation | 6.25.3 | JasperFx Contributors |
+| WolverineFx.SqlServer | 6.25.3 | JasperFx Contributors |
 | Yarp.ReverseProxy | 2.3.0 | (c) Microsoft Corporation |
 | ZiggyCreatures.FusionCache | 2.6.0 | Copyright (c) Jody Donetti |
 | ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis | 2.6.0 | Copyright (c) Jody Donetti |
-| ZiggyCreatures.FusionCache.OpenTelemetry | 2.6.0 | Copyright (c) Jody Donetti |
 | ZiggyCreatures.FusionCache.Serialization.SystemTextJson | 2.6.0 | Copyright (c) Jody Donetti |
 
 ### Apache-2.0
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| AWSSDK.CognitoIdentityProvider | 4.0.103 | Amazon Web Services, Inc. |
-| AWSSDK.KeyManagementService | 4.0.100.6 | Amazon Web Services, Inc. |
-| AWSSDK.S3 | 4.0.101.4 | Amazon Web Services, Inc. |
-| AWSSDK.SecretsManager | 4.0.100.6 | Amazon Web Services, Inc. |
-| AWSSDK.SimpleEmailV2 | 4.0.102 | Amazon Web Services, Inc. |
-| AWSSDK.SimpleNotificationService | 4.0.100.6 | Amazon Web Services, Inc. |
+| AWSSDK.CognitoIdentityProvider | 4.0.103.1 | Amazon Web Services, Inc. |
+| AWSSDK.KeyManagementService | 4.0.100.7 | Amazon Web Services, Inc. |
+| AWSSDK.S3 | 4.0.102 | Amazon Web Services, Inc. |
+| AWSSDK.SecretsManager | 4.0.100.7 | Amazon Web Services, Inc. |
+| AWSSDK.SimpleEmailV2 | 4.0.102.1 | Amazon Web Services, Inc. |
+| AWSSDK.SimpleNotificationService | 4.0.100.7 | Amazon Web Services, Inc. |
 | DnsClient | 1.8.0 | Copyright (c) Michael Conrad (MichaCo) |
-| Elastic.Clients.Elasticsearch | 9.4.2 | Copyright Elasticsearch B.V. |
+| Elastic.Clients.Elasticsearch | 9.5.0 | Copyright Elasticsearch B.V. |
 | Fido2 | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | Fido2.AspNet | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | Fido2.Models | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
@@ -147,7 +159,7 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 | Google.Cloud.Kms.V1 | 3.26.0 | Copyright (c) Google LLC |
 | Google.Cloud.SecretManager.V1 | 2.8.0 | Copyright (c) Google LLC |
 | Google.Cloud.Storage.V1 | 4.15.0 | Copyright (c) Google LLC |
-| Magick.NET-Q8-AnyCPU | 14.15.0 | Copyright 2013-2026 Dirk Lemstra |
+| Magick.NET-Q8-AnyCPU | 14.16.0 | Copyright 2013-2026 Dirk Lemstra |
 | MaxMind.GeoIP2 | 6.1.0 | Copyright (c) MaxMind, Inc. |
 | ModelContextProtocol | 1.4.1 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | ModelContextProtocol.AspNetCore | 1.4.1 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
@@ -176,21 +188,15 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
 | Markdig | 1.3.2 | Copyright (c) Alexandre Mutel |
-| Scriban | 7.2.5 | Copyright (c) Alexandre Mutel |
-
-### BSD-3-Clause
-
-| Package | Version | Copyright |
-| ------- | ------- | --------- |
-| NetTopologySuite | 2.5.0 | Copyright (c) NetTopologySuite Team |
+| Scriban | 7.2.6 | Copyright (c) Alexandre Mutel |
 
 ### MIT (OData)
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
 | Microsoft.AspNetCore.OData | 9.4.1 | Copyright (c) Microsoft Corporation |
-| Microsoft.OData.Core | 8.4.x | Copyright (c) Microsoft Corporation |
-| Microsoft.OData.Edm | 8.4.x | Copyright (c) Microsoft Corporation |
+| Microsoft.OData.Core | 8.4.0 | Copyright (c) Microsoft Corporation |
+| Microsoft.OData.Edm | 8.4.0 | Copyright (c) Microsoft Corporation |
 
 ### PostgreSQL License
 
@@ -232,7 +238,7 @@ code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06
 | SQLitePCLRaw.core | 3.0.3 | Copyright (c) SourceGear, LLC (Eric Sink) |
 | TngTech.ArchUnitNET | 0.13.3 | Copyright (c) 2019-2025 TNG Technology Consulting GmbH |
 | TngTech.ArchUnitNET.xUnit | 0.13.3 | Copyright (c) 2019-2025 TNG Technology Consulting GmbH |
-| WireMock.Net | 2.13.0 | Copyright (c) WireMock.Net Contributors |
+| WireMock.Net | 2.14.0 | Copyright (c) WireMock.Net Contributors |
 | xunit.v3 | 3.2.2 | Copyright (C) .NET Foundation |
 | xunit.v3.extensibility.core | 3.2.2 | Copyright (C) .NET Foundation |
 | xunit.runner.visualstudio | 3.1.5 | Copyright (C) .NET Foundation |

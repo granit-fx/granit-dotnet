@@ -1,4 +1,4 @@
-using Granit.QueryEngine.AspNetCore.Binding;
+using Granit.QueryEngine.Endpoints.Binding;
 using Microsoft.AspNetCore.Http;
 using SharpFuzz;
 

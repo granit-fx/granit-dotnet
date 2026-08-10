@@ -19,7 +19,7 @@ jobs:
           - name: queryengine
             project: fuzz/Granit.QueryEngine.Fuzz
             assemblies: >-
-              Granit.QueryEngine.AspNetCore.dll
+              Granit.QueryEngine.Endpoints.dll
               Granit.QueryEngine.Abstractions.dll
           - name: csv
             project: fuzz/Granit.DataExchange.Csv.Fuzz

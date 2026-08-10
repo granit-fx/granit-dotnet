@@ -753,8 +753,8 @@
       "AngleSharp": {
         "type": "CentralTransitive",
         "requested": "[1.*, )",
-        "resolved": "1.7.0",
-        "contentHash": "v1R++46dblGRBo2/fKFUfgtZOaFnDGQhqBM0AarxgZSJuumj1e1vexBbjlTv2hx3Olr3qeoJa2yUoWyv5fuJ5A=="
+        "resolved": "1.7.1",
+        "contentHash": "QBblGpRB3SYD66Mls7fHyl1mWkP93n7ErWDWHc1vd9sPHhdlTkmUoY3CjgfjcWNxGF9m7xjNyztRfErXqoBKOA=="
       },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "CentralTransitive",
@@ -891,8 +891,8 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.24.6",
-        "contentHash": "yoqNP5csLygJA1DHe0Jhbs2O8W7CgNmuaSMISOioVpcCG0/Ca1TWY4X3UCRrfxklJOllqn04KmBMmELWZQpPTw==",
+        "resolved": "6.25.3",
+        "contentHash": "jvm+8uzyeWiW+G6Ud4gvFUzaB9VGPpeCBtuWuD41RTQhQdu4m1GtPrbBQqJpea2ZvuzucHTO7Hnh/hOhgSNZ8Q==",
         "dependencies": {
           "JasperFx": "2.39.5",
           "JasperFx.Events": "2.39.5",
