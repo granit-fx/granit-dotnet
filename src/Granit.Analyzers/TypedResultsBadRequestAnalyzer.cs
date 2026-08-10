@@ -70,7 +70,7 @@ public sealed class TypedResultsBadRequestAnalyzer : SingleRuleAnalyzerBase
             return;
         }
 
-        ISymbol? symbol = context.SemanticModel.GetSymbolInfo(invocation).Symbol;
+        ISymbol? symbol = context.SemanticModel.GetSymbolInfo(invocation, context.CancellationToken).Symbol;
         if (symbol is not IMethodSymbol methodSymbol)
         {
             return;

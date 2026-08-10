@@ -48,7 +48,7 @@ public sealed class DateTimeNowAnalyzer : SingleRuleAnalyzerBase
             return;
         }
 
-        ISymbol? symbol = context.SemanticModel.GetSymbolInfo(memberAccess).Symbol;
+        ISymbol? symbol = context.SemanticModel.GetSymbolInfo(memberAccess, context.CancellationToken).Symbol;
         if (symbol is not IPropertySymbol propertySymbol)
         {
             return;
