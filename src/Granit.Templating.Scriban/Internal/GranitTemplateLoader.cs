@@ -68,7 +68,7 @@ internal sealed class GranitTemplateLoader(IServiceProvider serviceProvider) : I
         foreach (ITemplateResolver resolver in resolvers)
         {
             TemplateDescriptor? descriptor = await resolver
-                .TryResolveAsync(culturalKey)
+                .TryResolveAsync(culturalKey, context.CancellationToken)
                 .ConfigureAwait(false);
 
             if (descriptor is not null)
@@ -84,7 +84,7 @@ internal sealed class GranitTemplateLoader(IServiceProvider serviceProvider) : I
             foreach (ITemplateResolver resolver in resolvers)
             {
                 TemplateDescriptor? descriptor = await resolver
-                    .TryResolveAsync(neutralKey)
+                    .TryResolveAsync(neutralKey, context.CancellationToken)
                     .ConfigureAwait(false);
 
                 if (descriptor is not null)

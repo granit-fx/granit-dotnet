@@ -70,7 +70,7 @@ public sealed class AlterColumnWithoutContractAnalyzer : GranitMigrationAnalyzer
             return;
         }
 
-        ITypeSymbol? oldType = context.SemanticModel.GetTypeInfo(typeofExpr.Type).Type;
+        ITypeSymbol? oldType = context.SemanticModel.GetTypeInfo(typeofExpr.Type, context.CancellationToken).Type;
         if (oldType is null)
         {
             return;

@@ -20,7 +20,9 @@ internal sealed class RegulationBasedCookieConsentModelProvider(
             return info;
         }
 
-        PrivacyRegulationProfile profile = await regulationResolver.ResolveAsync().ConfigureAwait(false);
+        PrivacyRegulationProfile profile = await regulationResolver
+            .ResolveAsync(httpContext.RequestAborted)
+            .ConfigureAwait(false);
 
         ConsentModelInfo result = new(
             MapConsentMode(profile.CookieConsentModel),

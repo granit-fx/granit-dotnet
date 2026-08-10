@@ -74,7 +74,7 @@ public sealed class PrivacyExportSubjectSubstitutionAnalyzer : SingleRuleAnalyze
             return;
         }
 
-        ISymbol? typeSymbol = context.SemanticModel.GetSymbolInfo(creation).Symbol;
+        ISymbol? typeSymbol = context.SemanticModel.GetSymbolInfo(creation, context.CancellationToken).Symbol;
         if (typeSymbol is not IMethodSymbol ctor || ctor.MethodKind != MethodKind.Constructor)
         {
             return;
@@ -91,8 +91,8 @@ public sealed class PrivacyExportSubjectSubstitutionAnalyzer : SingleRuleAnalyze
             return;
         }
 
-        ISymbol? subjectSymbol = context.SemanticModel.GetSymbolInfo(subjectArg.Expression).Symbol;
-        ISymbol? callerSymbol = context.SemanticModel.GetSymbolInfo(callerArg.Expression).Symbol;
+        ISymbol? subjectSymbol = context.SemanticModel.GetSymbolInfo(subjectArg.Expression, context.CancellationToken).Symbol;
+        ISymbol? callerSymbol = context.SemanticModel.GetSymbolInfo(callerArg.Expression, context.CancellationToken).Symbol;
 
         // Skip when either argument doesn't bind to a symbol (literals, method calls,
         // dynamic expressions) — over-flagging those would dwarf the true-positive rate.
