@@ -1,5 +1,9 @@
 using System.Text.RegularExpressions;
+using Granit.ArchitectureTests.Abstractions;
 using Granit.ArchitectureTests.Abstractions.Rules;
+using Granit.BackgroundJobs;
+using Granit.BackgroundJobs.Internal;
+using Granit.Reflection;
 using Shouldly;
 using Xunit;
 
@@ -12,6 +16,7 @@ namespace Granit.ArchitectureTests;
 /// <item><c>[RecurringJob]</c> requires <c>IBackgroundJob</c></item>
 /// <item><c>IBackgroundJob</c> types must reside in a <c>Jobs/</c> folder</item>
 /// <item>Jobs must not live in a <c>*.Wolverine</c> package</item>
+/// <item>every <c>IBackgroundJob</c> resolves a handler on the channel path</item>
 /// </list>
 /// </summary>
 public sealed partial class BackgroundJobConventionTests
@@ -109,6 +114,49 @@ public sealed partial class BackgroundJobConventionTests
             "IBackgroundJob types must not live in *.Wolverine packages — move them to a " +
             "*.BackgroundJobs sub-project's Jobs/ folder. " +
             $"Violators: {string.Join(", ", violations)}");
+    }
+
+    /// <summary>
+    /// Every <c>IBackgroundJob</c> must bind a handler under the in-process channel worker's
+    /// rule, not only under Wolverine's. The two dispatch paths are advertised as equivalent
+    /// and the channel path is the documented default — a job that only resolves under
+    /// Wolverine fails silently forever on that default (#3206).
+    /// </summary>
+    [Fact]
+    public void Jobs_must_resolve_a_handler_on_the_channel_path()
+    {
+        List<Type> jobs =
+        [
+            .. ArchitectureLoader.LoadAssemblies("Granit.", typeof(BackgroundJobConventionTests).Assembly)
+                .SelectMany(static a => a.GetLoadableTypes())
+                .Where(static t => typeof(IBackgroundJob).IsAssignableFrom(t)
+                    && t is { IsInterface: false, IsAbstract: false, IsGenericTypeDefinition: false })
+                .OrderBy(static t => t.FullName, StringComparer.Ordinal),
+        ];
+
+        // Guard against a green run caused by an empty scan (missing ProjectReference).
+        jobs.ShouldNotBeEmpty("No IBackgroundJob types found — the satellite packages are " +
+            "probably not referenced by Granit.ArchitectureTests.csproj.");
+
+        List<string> violations = [];
+
+        foreach (Type job in jobs)
+        {
+            try
+            {
+                BackgroundJobHandlerResolver.Resolve(job);
+            }
+            catch (InvalidOperationException ex)
+            {
+                violations.Add($"{job.FullName}: {ex.Message}");
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Every IBackgroundJob must have exactly one handler in its own assembly: a public " +
+            "non-generic type whose name ends in 'Handler'/'Consumer', with a public HandleAsync/Handle " +
+            "method taking the job as first parameter. " +
+            $"Violators:{Environment.NewLine}{string.Join(Environment.NewLine, violations)}");
     }
 
     private static string FindRepoRoot()

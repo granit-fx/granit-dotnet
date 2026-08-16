@@ -17,13 +17,12 @@ namespace Granit.BackgroundJobs.Internal;
 /// for the in-process dispatch path.
 /// </summary>
 /// <remarks>
-/// Handler resolution follows the Wolverine convention: a type named
-/// <c>{MessageTypeName}Handler</c> in the message's assembly, exposing a public
-/// <c>HandleAsync</c> (or <c>Handle</c>) method whose first parameter is the message.
-/// Remaining parameters are resolved from the DI scope; a trailing
-/// <see cref="CancellationToken"/> is honoured. Static handler classes are supported —
-/// instance handlers are resolved from DI or activated via
-/// <see cref="ActivatorUtilities"/>.
+/// Handler resolution is delegated to <see cref="BackgroundJobHandlerResolver"/>, which
+/// mirrors Wolverine's binding rule (the handler method's first parameter type, not the
+/// handler class name) so both dispatch paths invoke the same handler. Remaining method
+/// parameters are resolved from the DI scope; a <see cref="CancellationToken"/> parameter
+/// is honoured. Static handler classes are supported — instance handlers are resolved from
+/// DI or activated via <see cref="ActivatorUtilities"/>.
 /// </remarks>
 internal sealed partial class BackgroundJobWorker(
     Channel<BackgroundJobEnvelope> channel,
@@ -32,8 +31,6 @@ internal sealed partial class BackgroundJobWorker(
     BackgroundJobsMetrics metrics,
     ILogger<BackgroundJobWorker> logger) : BackgroundService
 {
-    private static readonly string[] HandlerMethodNames = ["HandleAsync", "Handle"];
-
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -78,7 +75,7 @@ internal sealed partial class BackgroundJobWorker(
         long startTimestamp = Stopwatch.GetTimestamp();
         try
         {
-            // Invoke the handler by resolving the Wolverine-convention HandleAsync method.
+            // Invoke the handler Wolverine would bind for this message type.
             await InvokeHandlerAsync(scope.ServiceProvider, envelope.Message, cancellationToken)
                 .ConfigureAwait(false);
 
@@ -126,43 +123,16 @@ internal sealed partial class BackgroundJobWorker(
     }
 
     /// <summary>
-    /// Resolves the handler for the message type and invokes its handle method.
-    /// Wolverine convention: the handler type name is <c>{MessageTypeName}Handler</c>;
-    /// the method is <c>HandleAsync</c> or <c>Handle</c> with the message as first
-    /// parameter, services from the scope for the remaining parameters, and an optional
-    /// <see cref="CancellationToken"/>.
+    /// Resolves the handler for the message type via <see cref="BackgroundJobHandlerResolver"/>
+    /// and invokes its handle method: the message as first argument, services from the scope
+    /// for the remaining parameters, and the ambient <see cref="CancellationToken"/>.
     /// </summary>
     private static async Task InvokeHandlerAsync(
         IServiceProvider services,
         object message,
         CancellationToken cancellationToken)
     {
-        Type messageType = message.GetType();
-        string expectedHandlerName = $"{messageType.Name}Handler";
-
-        Type? handlerType = messageType.Assembly
-            .GetTypes()
-            .FirstOrDefault(t => t.Name == expectedHandlerName && !t.IsInterface && !t.IsGenericTypeDefinition);
-
-        if (handlerType is null)
-        {
-            throw new InvalidOperationException(
-                $"No handler '{expectedHandlerName}' found in assembly '{messageType.Assembly.GetName().Name}' " +
-                $"for message type '{messageType.Name}'.");
-        }
-
-        MethodInfo? method = handlerType
-            .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-            .FirstOrDefault(m => HandlerMethodNames.Contains(m.Name)
-                && m.GetParameters() is [{ } first, ..]
-                && first.ParameterType.IsAssignableFrom(messageType));
-
-        if (method is null)
-        {
-            throw new InvalidOperationException(
-                $"Handler '{handlerType.Name}' does not have a public HandleAsync/Handle method " +
-                $"taking '{messageType.Name}' as its first parameter.");
-        }
+        (Type handlerType, MethodInfo method) = BackgroundJobHandlerResolver.Resolve(message.GetType());
 
         ParameterInfo[] parameters = method.GetParameters();
         object?[] args = new object?[parameters.Length];

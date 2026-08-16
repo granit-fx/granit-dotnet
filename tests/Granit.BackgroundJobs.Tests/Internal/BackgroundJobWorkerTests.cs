@@ -354,6 +354,18 @@ public sealed class BackgroundJobWorkerTests
         await _cleanupService.Received(1).CleanupAsync(Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task ProcessAsync_HandlerNamedAfterTheAction_IsStillInvoked()
+    {
+        // Regression #3206: satellites ship {Action}Handler, not {Action}JobHandler.
+        // The channel path must bind it exactly like Wolverine does.
+        var envelope = new BackgroundJobEnvelope(new SweepExpiredJob());
+
+        await RunWorkerWithEnvelopeAsync(envelope);
+
+        await _cleanupService.Received(1).CleanupAsync(Arg.Any<CancellationToken>());
+    }
+
     // =========================================================================
     // Handler resolution — missing handler
     // =========================================================================
@@ -447,6 +459,21 @@ public sealed class BackgroundJobWorkerTests
     public interface IFakeCleanupService
     {
         Task CleanupAsync(CancellationToken cancellationToken);
+    }
+
+    /// <summary>
+    /// The naming every <c>Granit.{Module}.BackgroundJobs</c> satellite actually uses:
+    /// <c>{Action}Job</c> handled by <c>{Action}Handler</c> (CLAUDE.md §Background Jobs).
+    /// </summary>
+    public sealed record SweepExpiredJob : IBackgroundJob;
+
+    public sealed class SweepExpiredHandler
+    {
+        public static Task HandleAsync(
+            SweepExpiredJob job,
+            IFakeCleanupService service,
+            CancellationToken cancellationToken) =>
+            service.CleanupAsync(cancellationToken);
     }
 
     public static class ServiceInjectedJobHandler

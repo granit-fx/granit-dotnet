@@ -13,6 +13,11 @@
     <InternalsVisibleTo Include="Granit.BackgroundJobs.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.BackgroundJobs.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="Granit.BackgroundJobs.Wolverine.Tests" />
+    <!-- The handler-resolution architecture rule runs the real BackgroundJobHandlerResolver
+         against every satellite's job type. -->
+    <InternalsVisibleTo Include="Granit.ArchitectureTests" />
+    <!-- Channel-path smoke test over a job/handler pair shipped by a real satellite (#3206). -->
+    <InternalsVisibleTo Include="Granit.Auditing.BackgroundJobs.Tests" />
     <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
