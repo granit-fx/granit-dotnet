@@ -54,7 +54,7 @@ jobs:
       # phase otherwise takes ~21 min. threads: 0 = use all cores; ram leaves ~3 GB
       # headroom for the OS and the extractor.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
+        uses: github/codeql-action/init@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
         with:
           languages: csharp
           build-mode: none
